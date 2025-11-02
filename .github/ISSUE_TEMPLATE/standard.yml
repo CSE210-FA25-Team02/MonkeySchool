@@ -1,0 +1,65 @@
+name: "🚀 New Issue"
+description: "Create a detailed issue for feature, bug, or enhancement"
+title: "[Type] Short summary of the issue"
+assignees: []
+
+body:
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: "📂 Type of Issue"
+      description: "Select the nature of this issue."
+      options:
+        - 🐛 Bug
+        - ✨ Feature Request
+        - 🧱 Enhancement
+        - 🧪 Experiment / Prototype
+        - 🧭 Documentation
+        - ⚙️ Refactor / Cleanup
+    validations:
+      required: true
+
+  - type: input
+    id: summary
+    attributes:
+      label: "📝 Summary"
+      description: "Briefly describe what this issue is about."
+      placeholder: "E.g., Add role-based JWT auth middleware"
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: "📖 Detailed Description"
+      description: "Explain the issue in depth. Include background context, expected vs actual behavior, or user stories."
+      placeholder: |
+        **Context:** Why is this needed?
+        **Expected Behavior:** What should happen?
+        **Actual Behavior (if bug):** What happens instead?
+        **Impact:** What part of the system does this affect?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🔥 Priority"
+      options:
+        - 🟥 Critical
+        - 🟧 High
+        - 🟨 Medium
+        - 🟩 Low
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "✅ Acceptance Criteria"
+      description: "Define when this issue can be considered 'done'."
+      placeholder: |
+        - [ ] Feature works as expected across all roles
+        - [ ] Unit and integration tests pass
+        - [ ] Code reviewed and merged
+        - [ ] Documentation updated
