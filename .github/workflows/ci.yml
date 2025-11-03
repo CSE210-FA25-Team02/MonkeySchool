@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: dbname
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "24.x"
+
+      - name: Install dependencies
+        run: cd code && npm install
+
+      - name: Lint
+        run: cd code && npm run lint
+
+      - name: Test
+        run: |
+          echo "DATABASE_URL=postgresql://user:password@localhost:5432/dbname_test?schema=public" > code/.env.test
+          cd code && npm test
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/dbname?schema=public
+
+      - name: Comment PR with coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          lcov-file: ./coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          delete-old-comments: true
