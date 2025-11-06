@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 
-const VALID_ROLES = ["PROFESSOR", "TA", "STUDENT"];
+const VALID_ROLES = ["PROFESSOR", "TA", "STUDENT", "TUTOR"];
 
 /**
  * Assign or update a user's role in a class.
