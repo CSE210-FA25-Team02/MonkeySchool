@@ -1,15 +1,15 @@
 model Group {
   id      String    @id @default(cuid())
-  name    String    // Group/team name
-  logoUrl String?   // Optional: group logo
-  mantra  String?   // Optional: team motto
-  github  String?   // Optional: shared repo link
+  name    String
+  logoUrl String?
+  mantra  String?
+  github  String?
 
   classId String
-  class   Class     @relation(fields: [classId], references: [id])
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
 
-  // A group has multiple members
-  members GroupRole[]
+  members     GroupRole[]
+  supervisors GroupSupervisor[] // NEW
 
   @@map("groups")
 }

@@ -1,21 +1,20 @@
 enum ClassRoleType {
   PROFESSOR
   TA
+  TUTOR
   STUDENT
 }
 
 model ClassRole {
   id      String        @id @default(cuid())
-  role    ClassRoleType // Class-level authority, not group responsibility
+  role    ClassRoleType
 
   userId  String
   classId String
 
-  // Link back to related User and Class models
-  user  User  @relation(fields: [userId], references: [id])
-  class Class @relation(fields: [classId], references: [id])
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
 
-  // A user can only have one class role in a class
   @@unique([userId, classId], name: "user_class_unique")
   @@map("class_roles")
 }

@@ -18,7 +18,8 @@ export async function getUserById(id) {
     where: { id },
     include: {
       classRoles: { include: { class: true } },
-      groupRoles: { include: { group: true } }
+      groupRoles: { include: { group: true } },
+      groupSupervises: { include: { group: true } }
     }
   });
 }
@@ -43,9 +44,11 @@ export async function updateUser(id, data) {
 export async function deleteUser(id) {
   await prisma.classRole.deleteMany({ where: { userId: id } });
   await prisma.groupRole.deleteMany({ where: { userId: id } });
+  await prisma.groupSupervisor.deleteMany({ where: { userId: id } });
 
   return prisma.user.delete({
     where: { id }
   });
 }
+
 

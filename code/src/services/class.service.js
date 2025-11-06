@@ -34,7 +34,12 @@ export async function getClassById(id) {
     where: { id },
     include: {
       members: { include: { user: true } },
-      groups: true
+      groups: {
+        include: {
+          members: { include: { user: true } },
+          supervisors: { include: { user: true } }
+        }
+      }
     }
   });
 }
