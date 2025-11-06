@@ -1,0 +1,15 @@
+model Group {
+  id      String    @id @default(cuid())
+  name    String    // Group/team name
+  logoUrl String?   // Optional: group logo
+  mantra  String?   // Optional: team motto
+  github  String?   // Optional: shared repo link
+
+  classId String
+  class   Class     @relation(fields: [classId], references: [id])
+
+  // A group has multiple members
+  members GroupRole[]
+
+  @@map("groups")
+}

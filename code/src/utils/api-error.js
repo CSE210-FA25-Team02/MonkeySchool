@@ -4,6 +4,8 @@
  * Standardized error classes for consistent error handling across the application
  */
 
+// code/src/utils/api-error.js
+
 /**
  * Base class for API errors
  */

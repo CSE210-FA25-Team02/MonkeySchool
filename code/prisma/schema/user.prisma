@@ -1,0 +1,23 @@
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  name        String
+  pronunciation String?    // Student-provided phonetic pronunciation
+  pronouns    String?      // Optional gender pronouns
+  phone       String?      // Optional contact phone number
+  photoUrl    String?      // Profile photo or avatar URL
+  github      String?      // GitHub profile link
+  timezone    String?      // Used for availability scheduling
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // A user can belong to multiple classes
+  classRoles  ClassRole[]
+
+  // A user can belong to multiple groups (or none)
+  groupRoles  GroupRole[]
+
+  @@index([name])
+  @@index([email])
+  @@map("users")
+}

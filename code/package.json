@@ -13,6 +13,7 @@
     "db:studio": "prisma studio",
     "lint": "eslint src --ext .js",
     "format": "prettier --write \"src/**/*.js\"",
+    "test:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
     "test": "export $(cat .env.test | xargs) && npm run test:e2e",
     "test:e2e": "npm-run-all -s db:test:migrate test:coverage db:test:drop",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
