@@ -28,13 +28,18 @@ defineFeature(feature, (test) => {
       await request.post("/api/classRoles/assign").send({
         userId: context.user.id,
         classId: context.klass.id,
-        role,
+        role: role.toUpperCase(),
       });
     });
 
     then(/^"(.*)" should have role "(.*)" in "(.*)"$/, async (_, role) => {
       const cr = await prisma.classRole.findUnique({
-        where: { user_class_unique: { userId: context.user.id, classId: context.klass.id } },
+        where: {
+          user_class_unique: {
+            userId: context.user.id,
+            classId: context.klass.id,
+          },
+        },
       });
       expect(cr.role).toBe(role.toUpperCase());
     });
@@ -58,13 +63,18 @@ defineFeature(feature, (test) => {
       await request.post("/api/classRoles/assign").send({
         userId: context.user.id,
         classId: context.klass.id,
-        role: newRole,
+        role: newRole.toUpperCase(),
       });
     });
 
     then(/^"(.*)" should have role "(.*)" in "(.*)"$/, async (_, newRole) => {
       const cr = await prisma.classRole.findUnique({
-        where: { user_class_unique: { userId: context.user.id, classId: context.klass.id } },
+        where: {
+          user_class_unique: {
+            userId: context.user.id,
+            classId: context.klass.id,
+          },
+        },
       });
       expect(cr.role).toBe(newRole.toUpperCase());
     });
