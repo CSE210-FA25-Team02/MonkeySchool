@@ -67,7 +67,7 @@ npm run db:migrate
 You can pre-populate the database with a realistic **CSE 210 class** including roles and project groups:
 
 ```
-node scripts/mock/seed.js
+node scripts/mock/db-seed.js
 ```
 
 This will insert:
