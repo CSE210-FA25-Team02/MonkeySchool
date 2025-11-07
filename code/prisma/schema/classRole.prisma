@@ -1,0 +1,20 @@
+enum ClassRoleType {
+  PROFESSOR
+  TA
+  TUTOR
+  STUDENT
+}
+
+model ClassRole {
+  id      String        @id @default(cuid())
+  role    ClassRoleType
+
+  userId  String
+  classId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId], name: "user_class_unique")
+  @@map("class_roles")
+}

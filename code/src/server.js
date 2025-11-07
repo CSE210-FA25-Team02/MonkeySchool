@@ -4,6 +4,8 @@
  * Starts the Express server and handles graceful shutdown
  */
 
+// code/src/server.js
+
 import { createApp } from "./app.js";
 import { env } from "./config/env.js";
 import { disconnectPrisma } from "./lib/prisma.js";

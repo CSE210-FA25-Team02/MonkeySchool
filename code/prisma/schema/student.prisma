@@ -1,3 +1,5 @@
+// code/prisma/schema/student.prisma
+
 model Student {
   id        String   @id @default(cuid())
   email     String   @unique

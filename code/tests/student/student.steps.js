@@ -3,6 +3,8 @@ import { context } from "../steps.context.js";
 import * as shared from "./student.steps.shared.js";
 import { prisma } from "../../src/lib/prisma.js";
 
+// code/tests/student/student.steps.js
+
 const feature = loadFeature("./features/student.feature");
 
 defineFeature(feature, (test) => {

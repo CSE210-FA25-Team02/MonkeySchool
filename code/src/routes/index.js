@@ -4,8 +4,13 @@
  * Aggregates and exports all application routes
  */
 
+// code/src/routes/index.js
+
 import { Router } from "express";
 import studentRoutes from "./student.routes.js";
+import userRoutes from "./user.routes.js";
+import classRoutes from "./class.routes.js";
+import classRoleRoutes from "./classRole.routes.js";
 
 const router = Router();
 
@@ -53,5 +58,8 @@ router.get("/hello", (req, res) => {
  * Mount route modules
  */
 router.use("/students", studentRoutes);
+router.use("/users", userRoutes);
+router.use("/classes", classRoutes);
+router.use("/classRoles", classRoleRoutes);
 
 export default router;

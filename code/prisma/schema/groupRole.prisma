@@ -1,0 +1,18 @@
+enum GroupRoleType {
+  LEADER
+  MEMBER
+}
+
+model GroupRole {
+  id      String        @id @default(cuid())
+  role    GroupRoleType @default(MEMBER)
+
+  userId  String
+  groupId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId], name: "user_group_unique")
+  @@map("group_roles")
+}

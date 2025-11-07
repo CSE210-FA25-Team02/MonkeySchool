@@ -3,6 +3,8 @@ import { request } from "../steps.config.js";
 import { createId } from "@paralleldrive/cuid2";
 import { JSDOM } from "jsdom";
 
+// code/tests/student/student.steps.shared.js
+
 /**
  * Helper function to parse HTML response and extract data
  */

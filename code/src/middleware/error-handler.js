@@ -4,6 +4,8 @@
  * Centralized error handler that returns HTML responses for HTMX
  */
 
+// code/src/middleware/error-handler.js
+
 import { ApiError } from "../utils/api-error.js";
 import { env } from "../config/env.js";
 import { Prisma } from "@prisma/client";

@@ -1,0 +1,15 @@
+model Group {
+  id      String    @id @default(cuid())
+  name    String
+  logoUrl String?
+  mantra  String?
+  github  String?
+
+  classId String
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  members     GroupRole[]
+  supervisors GroupSupervisor[] // NEW
+
+  @@map("groups")
+}

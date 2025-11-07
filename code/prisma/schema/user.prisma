@@ -1,0 +1,21 @@
+model User {
+  id            String             @id @default(cuid())
+  email         String             @unique
+  name          String
+  pronunciation String?
+  pronouns      String?
+  phone         String?
+  photoUrl      String?
+  github        String?
+  timezone      String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  classRoles      ClassRole[]
+  groupRoles      GroupRole[]
+  groupSupervises GroupSupervisor[] // NEW
+
+  @@index([name])
+  @@index([email])
+  @@map("users")
+}
