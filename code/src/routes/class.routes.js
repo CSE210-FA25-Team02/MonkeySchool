@@ -7,6 +7,9 @@ const router = Router();
 // Invite lookup must come before /:id
 router.get("/invite/:code", asyncHandler(classController.getClassByInviteCode));
 
+// Class Create Form
+router.get("/form", asyncHandler(classController.renderCreateClassForm));
+
 // CRUD
 router.post("/", asyncHandler(classController.createClass));
 router.get("/:id", asyncHandler(classController.getClass));

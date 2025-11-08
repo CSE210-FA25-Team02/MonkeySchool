@@ -4,12 +4,22 @@
     <meta charset="UTF-8" />
     <title>Test Create Class</title>
     <link rel="stylesheet" href="./css/modal.css">
+    <script src="https://unpkg.com/htmx.org@1.9.3"></script>
 </head>
     <body>
         <h1>Professor Class Creation</h1>
-        <div id="class-create"></div>
+        <div id="modal-container"></div>
+        
+        <button
+            hx-get="/api/classes/form"
+            hx-target="body"
+            hx-swap="beforeend"
+            class="modal__button modal__button--primary"
+        >
+            Create New Class
+        </button>
 
-        <script src="createClass.js" defer></script>
+        
     </body>
 
 </html>

@@ -271,6 +271,37 @@ export function createStudentList(students, pagination = null, options = {}) {
 }
 
 /**
+ * Make form to create a new class
+ */
+
+export function createClassForm(quarters) {
+    return `
+        <section id="modal" class="modal__overlay" hx-on="click: if(event.target === this) this.remove()">
+            <div class="modal">
+                <h2>Create New Class</h2>
+                <form hx-post="/api/classes" hx-target="#modal" hx-swap="outerHTML">
+                    <label class="modal__label">
+                        Class Name:
+                        <input name="name" class="modal__input" required>
+                    </label>
+            
+                    <label class="modal__label">
+                        Quarter:
+                        <select name="quarter" class="modal__select" required>
+                            ${quarters.map(q => `<option value="${q}">${q}</option>`).join("")}
+                        </select>
+                    </label>
+            
+                    <div class="modal__actions">
+                        <button class="modal__button modal__button--primary">Create</button>
+                        <button type="button" class="modal__button modal__button--secondary" onclick="this.closest('.modal__overlay').remove()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>`;
+  }  
+
+/**
  * Creates pagination component
  */
 export function createPagination(pagination) {
@@ -415,4 +446,32 @@ export function formatDate(dateString, lang = "en") {
     month: "long",
     day: "numeric",
   });
+}
+
+export function getUpcomingQuarters(count = 8) {
+    const quarters = ['Winter', 'Spring', 'Summer', 'Fall'];
+    const currDate = new Date();
+    const currYear = currDate.getFullYear();
+    const currMonth = currDate.getMonth();
+
+    //What is the current quarter (0 to 2 = Winter, 3 to 5 = Spring, 6 to 7 = Summer, 8 to 12 = Fall)
+    let startIndex = currMonth < 3 ? 0 : currMonth < 6 ? 1 : currMonth < 8 ? 2 : 3;
+
+    const quarterList = [];
+    let yearIndex = currYear;
+    let qIndex = startIndex;
+
+    for (let i = 0; i < count; i++) {
+        quarterList.push(`${quarters[qIndex]} ${yearIndex}`);
+        qIndex++;
+
+        if (qIndex === quarters.length){ 
+            qIndex = 0;
+            yearIndex++;
+        }
+
+    }
+
+    return quarterList;
+
 }

@@ -1,4 +1,12 @@
-.modal-overlay {
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  width: 350px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal__overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,22 +19,13 @@
   z-index: 1000;
 }
 
-.modal {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  width: 350px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.modal label {
+.modal__label {
   display: block;
   margin-bottom: 10px;
 }
 
-.modal input,
-.modal select,
-.modal textarea {
+.modal__input,
+.modal__select{
   width: 100%;
   margin-top: 5px;
   padding: 8px;
@@ -35,26 +34,26 @@
   box-sizing: border-box;
 }
 
-.modal-actions {
+.modal__actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 15px;
 }
 
-.btn {
+.modal__button {
   padding: 6px 12px;
   cursor: pointer;
 }
 
-.btn-primary {
+.modal__button--primary {
   background-color: #1B6A59;
   color: #F2A93B;
   border: none;
   border-radius: 4px;
 }
 
-.btn-secondary {
+.modal__button--secondary {
   background-color: #ccc;
   color: black;
   border: none;
