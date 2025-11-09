@@ -18,7 +18,7 @@ defineFeature(feature, (test) => {
 
   test("Create a new class", ({ when, then, and }) => {
     when(/^I create a class named "(.*)"$/, async (name) => {
-      context.response = await request.post("/api/classes").send({ name });
+      context.response = await request.post("/api/classes/create").send({ name });
       context.klass = context.response.body;
     });
 
