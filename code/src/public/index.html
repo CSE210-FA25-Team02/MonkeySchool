@@ -3,54 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Student Management System - Accessible, internationalized web application">
-    <meta name="theme-color" content="#4a90e2">
+    <meta name="description" content="Monkey School - Student Management System - Accessible, internationalized web application">
+    <meta name="theme-color" content="#0E534A">
     <meta name="color-scheme" content="light dark">
     
-    <title>Student Management System</title>
+    <title>Monkey School</title>
     
     <!-- HTMX Library -->
     <script src="https://unpkg.com/htmx.org@1.9.8" 
             integrity="sha384-rgjA7mptc2ETQqXoYC3/zJvkU7K/aP44Y+z7xQuJiVnB/422P/Ak+F/AqFR7E4Wr" 
             crossorigin="anonymous"></script>
+    <script>
+        // Configure HTMX globally before DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configure HTMX to handle errors properly
+            if (typeof htmx !== 'undefined') {
+                // Set default swap delay to 0 for immediate updates
+                htmx.config.defaultSwapDelay = 0;
+                // Set default swap style to innerHTML
+                htmx.config.defaultSwapStyle = 'innerHTML';
+            }
+        });
+    </script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer" />
     
     <!-- Custom Styles -->
     <link rel="stylesheet" href="/css/main.css">
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://unpkg.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 </head>
 <body>
     <!-- Skip to main content for screen readers -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
-    <header class="header" role="banner">
+    <!-- Navigation Bar (Left Fixed) -->
+    <div id="navbar" class="navbar"></div>
+    
+    <!-- Sub-Menu (Collapsible Side Menu) -->
+    <div id="submenu" class="submenu"></div>
+    
+    <!-- Header (Top Bar) -->
+    <header id="header" class="header" role="banner">
         <div class="container">
-            <h1 class="header__title">
-                <a href="/" class="header__link">Student Management System</a>
-            </h1>
-            <nav class="header__nav" role="navigation" aria-label="Main navigation">
-                <ul class="nav-list">
-                    <li class="nav-list__item">
-                        <a href="/api/students" 
-                           class="nav-list__link" 
-                           hx-get="/api/students" 
-                           hx-target="#main-content"
-                           hx-push-url="true">
-                            Students
-                        </a>
-                    </li>
-                    <li class="nav-list__item">
-                        <a href="/api/students/new" 
-                           class="nav-list__link" 
-                           hx-get="/api/students/new" 
-                           hx-target="#main-content"
-                           hx-push-url="true">
-                            Add Student
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            <div class="header__content">
+                <div class="header__left">
+                    <!-- Empty - no title text -->
+                </div>
+                <div class="header__right">
+                    <!-- Profile dropdown will be added by Header component -->
+                </div>
+            </div>
         </div>
     </header>
 
@@ -63,7 +72,7 @@
             <!-- Initial content -->
             <section class="welcome" role="region" aria-labelledby="welcome-title">
                 <h2 id="welcome-title" class="welcome__title">
-                    Welcome to Student Management System
+                    Welcome to Monkey School
                 </h2>
                 <p class="welcome__description">
                     A modern, accessible, and internationalized platform for managing student records.
@@ -108,19 +117,10 @@
         </div>
     </main>
 
-    <footer class="footer" role="contentinfo">
+    <!-- Footer -->
+    <footer id="footer" class="footer" role="contentinfo">
         <div class="container">
-            <p class="footer__text">
-                &copy; 2024 Student Management System. 
-                <span class="footer__accessibility">
-                    Built with accessibility and internationalization in mind.
-                </span>
-            </p>
-            <div class="footer__links">
-                <a href="#" class="footer__link">Privacy Policy</a>
-                <a href="#" class="footer__link">Accessibility Statement</a>
-                <a href="#" class="footer__link">Contact Support</a>
-            </div>
+            <!-- Footer content will be added by Footer component -->
         </div>
     </footer>
 
@@ -129,39 +129,236 @@
          class="loading" 
          aria-live="polite" 
          aria-atomic="true"
-         style="display: none;">
+         style="display: none; visibility: hidden; opacity: 0; pointer-events: none;">
         <div class="loading__spinner" role="status">
             <span class="sr-only">Loading content, please wait...</span>
         </div>
     </div>
 
+    <!-- Navigation Components -->
+    <script type="module" src="/js/app.js"></script>
+    
     <!-- HTMX Configuration and Custom Scripts -->
     <script>
         // Configure HTMX
         document.addEventListener('DOMContentLoaded', function() {
-            // Show loading indicator on HTMX requests
+            // Helper function to hide loading spinner (aggressive and synchronous)
+            function hideLoading() {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    // Set all hiding properties immediately and synchronously
+                    loading.style.setProperty('display', 'none', 'important');
+                    loading.style.setProperty('visibility', 'hidden', 'important');
+                    loading.style.setProperty('opacity', '0', 'important');
+                    loading.style.setProperty('pointer-events', 'none', 'important');
+                    loading.setAttribute('aria-hidden', 'true');
+                    
+                    // Also add a class to ensure it stays hidden
+                    loading.classList.add('loading--hidden');
+                    
+                    // Use multiple approaches to ensure it's hidden
+                    setTimeout(function() {
+                        if (loading) {
+                            loading.style.setProperty('display', 'none', 'important');
+                            loading.style.setProperty('visibility', 'hidden', 'important');
+                            loading.style.setProperty('opacity', '0', 'important');
+                        }
+                    }, 0);
+                    
+                    // Use requestAnimationFrame as well
+                    requestAnimationFrame(function() {
+                        if (loading) {
+                            loading.style.setProperty('display', 'none', 'important');
+                            loading.style.setProperty('visibility', 'hidden', 'important');
+                            loading.style.setProperty('opacity', '0', 'important');
+                        }
+                    });
+                }
+            }
+            
+            // Helper function to show loading spinner (only for non-error requests)
+            function showLoading() {
+                // Don't show if we're already handling an error
+                if (isErrorResponse) {
+                    return;
+                }
+                const loading = document.getElementById('loading');
+                if (loading && !loading.classList.contains('loading--hidden')) {
+                    loading.style.removeProperty('display');
+                    loading.style.removeProperty('visibility');
+                    loading.style.removeProperty('opacity');
+                    loading.style.removeProperty('pointer-events');
+                    loading.style.display = 'flex';
+                    loading.style.visibility = 'visible';
+                    loading.style.opacity = '1';
+                    loading.style.pointerEvents = 'auto';
+                    loading.removeAttribute('aria-hidden');
+                    loading.classList.remove('loading--hidden');
+                }
+            }
+            
+            // Track if we're handling an error to prevent showing spinner
+            let isErrorResponse = false;
+            
+            // Show loading indicator on HTMX requests (but check for errors first)
             document.body.addEventListener('htmx:beforeRequest', function(evt) {
-                document.getElementById('loading').style.display = 'block';
+                isErrorResponse = false; // Reset error flag
+                // Remove hidden class to allow showing
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.classList.remove('loading--hidden');
+                }
+                // Show loading for normal requests (but it will be hidden if error occurs)
+                showLoading();
             });
             
+            // Hide loading after request completes (check response status IMMEDIATELY)
             document.body.addEventListener('htmx:afterRequest', function(evt) {
-                document.getElementById('loading').style.display = 'none';
+                // Check if this is an error response - this fires right after response is received
+                if (evt.detail.xhr) {
+                    const status = evt.detail.xhr.status;
+                    // Hide loading IMMEDIATELY for any error status (4xx, 5xx)
+                    if (status >= 400) {
+                        isErrorResponse = true;
+                        hideLoading();
+                        // Force hide multiple times to be absolutely sure
+                        setTimeout(hideLoading, 0);
+                        setTimeout(hideLoading, 10);
+                    } else if (status >= 200 && status < 300) {
+                        // Success response - hide loading normally
+                        hideLoading();
+                    } else {
+                        // Other status - hide loading as fallback
+                        hideLoading();
+                    }
+                } else {
+                    // No xhr object - hide loading as fallback
+                    hideLoading();
+                }
             });
             
-            // Handle errors gracefully
+            // Handle HTMX beforeSwap to catch 404 errors and ensure proper swapping
+            document.body.addEventListener('htmx:beforeSwap', function(evt) {
+                // For 404 errors, hide loading immediately and ensure proper swap
+                if (evt.detail.xhr && evt.detail.xhr.status === 404) {
+                    isErrorResponse = true;
+                    // Hide loading MULTIPLE times to ensure it's gone
+                    hideLoading();
+                    setTimeout(hideLoading, 0);
+                    setTimeout(hideLoading, 10);
+                    setTimeout(hideLoading, 50);
+                    
+                    evt.detail.shouldSwap = true;
+                    // Ensure target is main-content
+                    if (!evt.detail.target || evt.detail.target.id !== 'main-content') {
+                        evt.detail.target = document.getElementById('main-content');
+                    }
+                    
+                    // Prevent default error handling that might show loading
+                    evt.detail.pathInfo = evt.detail.pathInfo || {};
+                } else if (evt.detail.xhr && evt.detail.xhr.status >= 400) {
+                    // For any other error status, mark as error response
+                    isErrorResponse = true;
+                    hideLoading();
+                    setTimeout(hideLoading, 0);
+                    setTimeout(hideLoading, 10);
+                }
+            });
+            
+            // Handle errors gracefully - show not-implemented page for 404s immediately
             document.body.addEventListener('htmx:responseError', function(evt) {
                 console.error('HTMX Error:', evt.detail);
-                document.getElementById('loading').style.display = 'none';
+                isErrorResponse = true;
+                hideLoading(); // Hide loading immediately
+                
+                // For 404 errors, show the not-implemented page immediately (no delay)
+                // Only if the response wasn't already handled by beforeSwap
+                // This is a fallback in case the server response wasn't properly handled
+                if (evt.detail.xhr && evt.detail.xhr.status === 404) {
+                    // Hide loading multiple times to be absolutely sure
+                    hideLoading();
+                    setTimeout(hideLoading, 0);
+                    setTimeout(hideLoading, 50);
+                    setTimeout(hideLoading, 100);
+                    
+                    const mainContent = document.getElementById('main-content');
+                    // Only show fallback if content hasn't been updated and no not-implemented section exists
+                    if (mainContent && !mainContent.querySelector('.not-implemented')) {
+                        // Show immediately without delay, with container wrapper to match layout
+                        // This matches the structure returned by the server error handler
+                        mainContent.innerHTML = `
+                            <div class="container">
+                                <section class="not-implemented" role="region" aria-labelledby="not-implemented-title">
+                                    <div class="not-implemented__content">
+                                        <h2 id="not-implemented-title" class="not-implemented__title">🚧 This page is not yet available.</h2>
+                                        <p class="not-implemented__message">
+                                            Please check back soon.
+                                        </p>
+                                        <div class="not-implemented__actions">
+                                            <a href="/dashboard" 
+                                               class="btn btn--primary"
+                                               hx-get="/dashboard"
+                                               hx-target="#main-content"
+                                               hx-push-url="true">
+                                                Go Back to Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        `;
+                        
+                        // Hide loading again after content is set
+                        setTimeout(hideLoading, 0);
+                    }
+                }
             });
             
-            // Announce navigation changes to screen readers
+            // Handle HTMX timeout errors - hide loading and show error
+            document.body.addEventListener('htmx:timeout', function(evt) {
+                isErrorResponse = true;
+                hideLoading();
+            });
+            
+            // Handle HTMX sendError - hide loading on any send error
+            document.body.addEventListener('htmx:sendError', function(evt) {
+                isErrorResponse = true;
+                hideLoading();
+            });
+            
+            // Final safeguard: Hide loading after swap completes
+            document.body.addEventListener('htmx:afterSwap', function(evt) {
+                // Always hide loading after swap, regardless of status
+                hideLoading();
+            });
+            
+            // Ultimate safeguard: Hide loading after everything settles
+            // Also handle accessibility announcements
             document.body.addEventListener('htmx:afterSettle', function(evt) {
+                // Final check to ensure loading is hidden (critical for 404 errors)
+                hideLoading();
+                
+                // Multiple attempts to ensure it's hidden
+                setTimeout(hideLoading, 0);
+                setTimeout(hideLoading, 50);
+                setTimeout(hideLoading, 100);
+                setTimeout(hideLoading, 200);
+                
+                // Reset error flag for next request only if we're not on an error page
                 const mainContent = document.getElementById('main-content');
+                if (mainContent && !mainContent.querySelector('.not-implemented')) {
+                    isErrorResponse = false;
+                }
+                
+                // Focus management for accessibility
                 if (mainContent) {
                     // Focus management for accessibility
                     const firstHeading = mainContent.querySelector('h1, h2, h3');
                     if (firstHeading) {
-                        firstHeading.focus();
+                        // Use setTimeout to ensure focus happens after DOM updates
+                        setTimeout(() => {
+                            firstHeading.focus();
+                        }, 50);
                     }
                     
                     // Announce content change
@@ -173,10 +370,52 @@
                     document.body.appendChild(announcement);
                     
                     setTimeout(() => {
-                        document.body.removeChild(announcement);
+                        if (document.body.contains(announcement)) {
+                            document.body.removeChild(announcement);
+                        }
                     }, 1000);
                 }
             });
+            
+            // MUTATION OBSERVER: Watch for any changes to loading element and force hide on errors
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement && window.MutationObserver) {
+                const observer = new MutationObserver(function(mutations) {
+                    // If loading is being shown but we have an error response, hide it immediately
+                    if (isErrorResponse) {
+                        const loading = document.getElementById('loading');
+                        if (loading) {
+                            const display = window.getComputedStyle(loading).display;
+                            const visibility = window.getComputedStyle(loading).visibility;
+                            // If it's visible in any way, force hide it
+                            if (display !== 'none' || visibility !== 'hidden') {
+                                hideLoading();
+                            }
+                        }
+                    }
+                });
+                
+                // Observe changes to style attribute and class list
+                observer.observe(loadingElement, {
+                    attributes: true,
+                    attributeFilter: ['style', 'class'],
+                    childList: false,
+                    subtree: false
+                });
+            }
+            
+            // FINAL SAFEGUARD: Periodically check and hide loading if error page is shown
+            setInterval(function() {
+                const mainContent = document.getElementById('main-content');
+                const loading = document.getElementById('loading');
+                // If we have a not-implemented page showing, loading should definitely be hidden
+                if (mainContent && mainContent.querySelector('.not-implemented') && loading) {
+                    const display = window.getComputedStyle(loading).display;
+                    if (display !== 'none') {
+                        hideLoading();
+                    }
+                }
+            }, 100); // Check every 100ms
         });
         
         // Enhanced form validation
@@ -191,22 +430,30 @@
             });
             
             // Validate name
-            if (!nameInput.value.trim()) {
+            if (nameInput && !nameInput.value.trim()) {
                 const nameError = form.querySelector('#name-error');
-                nameError.textContent = 'Name is required';
+                if (nameError) {
+                    nameError.textContent = 'Name is required';
+                }
                 isValid = false;
             }
             
             // Validate email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailInput.value.trim()) {
-                const emailError = form.querySelector('#email-error');
-                emailError.textContent = 'Email is required';
-                isValid = false;
-            } else if (!emailRegex.test(emailInput.value)) {
-                const emailError = form.querySelector('#email-error');
-                emailError.textContent = 'Please enter a valid email address';
-                isValid = false;
+            if (emailInput) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailInput.value.trim()) {
+                    const emailError = form.querySelector('#email-error');
+                    if (emailError) {
+                        emailError.textContent = 'Email is required';
+                    }
+                    isValid = false;
+                } else if (!emailRegex.test(emailInput.value)) {
+                    const emailError = form.querySelector('#email-error');
+                    if (emailError) {
+                        emailError.textContent = 'Please enter a valid email address';
+                    }
+                    isValid = false;
+                }
             }
             
             return isValid;

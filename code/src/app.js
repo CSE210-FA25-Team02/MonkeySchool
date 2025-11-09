@@ -39,13 +39,22 @@ export function createApp() {
           scriptSrc: [
             "'self'",
             "'unsafe-inline'", // Required for HTMX inline event handlers
+            "'unsafe-eval'", // Required for ES6 modules in some browsers
             "https://unpkg.com", // For HTMX CDN
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],
-          styleSrc: ["'self'", "'unsafe-inline'"], // For dynamic styling
+          styleSrc: [
+            "'self'", 
+            "'unsafe-inline'", // For dynamic styling
+            "https://cdnjs.cloudflare.com", // For Font Awesome
+          ],
           connectSrc: ["'self'"],
           imgSrc: ["'self'", "data:", "blob:"],
-          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          fontSrc: [
+            "'self'", 
+            "https://fonts.gstatic.com",
+            "https://cdnjs.cloudflare.com", // For Font Awesome fonts
+          ],
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
@@ -114,6 +123,28 @@ export function createApp() {
           <p>📅 Version: 1.0.0</p>
           <p>🌍 Environment: ${env.NODE_ENV}</p>
         </div>
+      `);
+    } else {
+      res.sendFile(path.join(__dirname, "public", "index.html"));
+    }
+  });
+
+  // Dashboard route (alias for home)
+  app.get("/dashboard", (req, res) => {
+    const isHtmxRequest = req.headers["hx-request"];
+
+    if (isHtmxRequest) {
+      // Return welcome content for dashboard
+      res.send(`
+        <section class="welcome" role="region" aria-labelledby="welcome-title">
+          <h2 id="welcome-title" class="welcome__title">
+            Welcome to Monkey School
+          </h2>
+          <p class="welcome__description">
+            A modern, accessible, and internationalized platform for managing student records.
+            Built with HTMX for seamless user interactions and designed with accessibility in mind.
+          </p>
+        </section>
       `);
     } else {
       res.sendFile(path.join(__dirname, "public", "index.html"));
