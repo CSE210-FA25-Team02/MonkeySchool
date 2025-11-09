@@ -4,7 +4,7 @@ import * as classService from "../services/class.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
 import { getUpcomingQuarters } from "../utils/html-templates.js";
-import { createClassForm } from "../utils/html-templates.js";
+import { createClassForm, displayInvite, createClassPage, createBaseLayout } from "../utils/html-templates.js";
 
 /**
  * Create a new class
@@ -18,21 +18,7 @@ export const createClass = asyncHandler(async (req, res) => {
   const inviteUrl = `${req.protocol}://${req.get('host')}/invite/${klass.inviteCode}`;
 
   if (isHTMX) {
-    res.status(201).send(`
-      <section id="modal" class="modal__overlay" hx-on="click: if(event.target === this) this.remove()">
-        <div class="modal">
-          <h2>Class Created!</h2>
-          <p>Your class invite:</p>
-          <section style="display:flex; align-items:center; gap:10px;">
-            <input type="text" id="class-code" readonly value="${inviteUrl}" class="modal__input" />
-            <button class="modal__button modal__button--primary" onclick="navigator.clipboard.writeText(document.getElementById('class-code').value)">Copy</button>
-          </section>
-          <section class="modal__actions">
-            <button type="button" class="modal__button modal__button--secondary" onclick="this.closest('.modal__overlay').remove()">Close</button>
-          </section>
-        </div>
-      </section>
-    `);
+    res.status(201).send(displayInvite(inviteUrl));
   } else {
     res.status(201).json(klass);
   }
@@ -81,4 +67,12 @@ export const deleteClass = asyncHandler(async (req, res) => {
 export const renderCreateClassForm = asyncHandler(async (req, res)  => {
   const upcomingQuarters = getUpcomingQuarters();
   res.send(createClassForm(upcomingQuarters));
+});
+
+export const closeCreateClassForm = asyncHandler(async (req, res)  => {
+  res.send("");
+});
+
+export const renderClassPage = asyncHandler(async (req, res) =>  {
+  res.send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
 });

@@ -79,7 +79,7 @@ export function createBaseLayout(title, content, options = {}) {
     </footer>
 
     <!-- Loading indicator for HTMX requests -->
-    <div id="loading" class="loading" aria-live="polite" aria-atomic="true">
+    <div id="loading" class="loading" aria-live="polite" aria-atomic="true" style="display: none;">
         <div class="loading__spinner" role="status">
             <span class="sr-only">Loading content, please wait...</span>
         </div>
@@ -276,10 +276,10 @@ export function createStudentList(students, pagination = null, options = {}) {
 
 export function createClassForm(quarters) {
     return `
-        <section id="modal" class="modal__overlay" hx-on="click: if(event.target === this) this.remove()">
+        <section id="modal" class="modal__overlay">
             <div class="modal">
                 <h2>Create New Class</h2>
-                <form hx-post="/api/classes" hx-target="#modal" hx-swap="outerHTML">
+                <form hx-post="/api/classes/create" hx-target="#modal" hx-swap="outerHTML">
                     <label class="modal__label">
                         Class Name:
                         <input name="name" class="modal__input" required>
@@ -294,12 +294,53 @@ export function createClassForm(quarters) {
             
                     <div class="modal__actions">
                         <button class="modal__button modal__button--primary">Create</button>
-                        <button type="button" class="modal__button modal__button--secondary" onclick="this.closest('.modal__overlay').remove()">Cancel</button>
+                        <button type="button" class="modal__button modal__button--secondary" hx-get="/api/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Cancel</button>
                     </div>
                 </form>
             </div>
-        </section>`;
+        </section>
+    `;
   }  
+
+export function displayInvite(inviteURL) {
+    return `
+      <section id="modal" class="modal__overlay">
+        <div class="modal">
+          <h2>Class Created!</h2>
+          <p>Your class invite:</p>
+          <section style="display:flex; align-items:center; gap:10px;">
+            <input type="text" id="class-code" readonly value="${inviteURL}" class="modal__input" />
+          </section>
+          <section class="modal__actions">
+            <button type="button" class="modal__button modal__button--secondary" hx-get="/api/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Close</button>
+          </section>
+        </div>
+      </section>`;
+  }
+
+export function createClassPage (user) {
+    const isProfessor = user?.isProf === true;
+
+    //TODO: This is temporary, please change
+    return `
+        <body>
+            <h1>Your Classes</h1>
+            <div id="modal-container"></div>
+
+            ${isProfessor ? `
+                <button
+                    hx-get="/api/classes/form"
+                    hx-target="#modal-container"
+                    hx-swap="beforeend"
+                    class="modal__button modal__button--primary"
+                >
+                    Create New Class
+                </button>
+            ` : ""}
+        </body>
+    `;
+}
+
 
 /**
  * Creates pagination component
