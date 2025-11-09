@@ -18,11 +18,24 @@ import { createErrorMessage } from "../utils/html-templates.js";
  * @param {'body' | 'query' | 'params'} type - Part of request to validate
  * @returns {import('express').RequestHandler} Express middleware
  */
-export function validate(schema, type = "body") {
+export function validate(schema, type = "full") {
   return (req, res, next) => {
     try {
-      const validated = schema.parse(req[type]);
-      req[type] = validated;
+      if (type === "full") {
+        // Validate full request object with params, body, query
+        const validated = schema.parse({
+          params: req.params,
+          body: req.body,
+          query: req.query
+        });
+        // Merge validated data back to request
+        Object.assign(req.params, validated.params || {});
+        Object.assign(req.body, validated.body || {});
+        Object.assign(req.query, validated.query || {});
+      } else {
+        const validated = schema.parse(req[type]);
+        req[type] = validated;
+      }
       next();
     } catch (error) {
       if (error instanceof ZodError) {
