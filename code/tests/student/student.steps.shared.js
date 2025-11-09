@@ -44,17 +44,64 @@ function parseHtmlResponse(html) {
 }
 
 /**
- * Helper function to make HTMX-style requests
+ * Helper function to extract CSRF token from Set-Cookie header
  */
-function makeHtmxRequest(method, url, data = null) {
-  const req = request[method.toLowerCase()](url)
-    .set("HX-Request", "true")
-    .set("Content-Type", "application/x-www-form-urlencoded");
-
-  if (data) {
-    return req.send(data);
+function extractCsrfToken(setCookieHeader) {
+  if (!setCookieHeader) return null;
+  const cookies = Array.isArray(setCookieHeader)
+    ? setCookieHeader
+    : [setCookieHeader];
+  for (const cookie of cookies) {
+    const match = cookie.match(/_csrf=([^;]+)/);
+    if (match) {
+      return decodeURIComponent(match[1]);
+    }
   }
-  return req;
+  return null;
+}
+
+/**
+ * Helper function to make HTMX-style requests with CSRF token support
+ */
+async function makeHtmxRequest(method, url, data = null) {
+  const methodLower = method.toLowerCase();
+  const req = request[methodLower](url).set("HX-Request", "true");
+
+  // For POST/PUT, set content type
+  if (["post", "put", "patch"].includes(methodLower)) {
+    req.set("Content-Type", "application/x-www-form-urlencoded");
+  }
+
+  // Get CSRF token from previous response or make a GET request to get it
+  if (!context.csrfToken) {
+    const getResponse = await request
+      .get("/api/students")
+      .set("HX-Request", "true");
+    const token = extractCsrfToken(getResponse.headers["set-cookie"]);
+    if (token) {
+      context.csrfToken = token;
+    }
+  }
+
+  // Add CSRF token for state-changing requests
+  if (["POST", "PUT", "DELETE", "PATCH"].includes(method.toUpperCase())) {
+    if (context.csrfToken) {
+      req.set("X-CSRF-Token", context.csrfToken);
+      // Also add to form data if it's an object
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        data = { ...data, _csrf: context.csrfToken };
+      }
+    }
+  }
+
+  // Send request and update CSRF token from response
+  const response = data ? await req.send(data) : await req;
+  const newToken = extractCsrfToken(response.headers["set-cookie"]);
+  if (newToken) {
+    context.csrfToken = newToken;
+  }
+
+  return response;
 }
 
 export const aStudentWithNameAndEmail = (name, email) => {

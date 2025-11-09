@@ -12,4 +12,5 @@ export const context = {
   authUrl: undefined,
   decodedToken: undefined,
   error: undefined,
+  csrfToken: undefined,
 };

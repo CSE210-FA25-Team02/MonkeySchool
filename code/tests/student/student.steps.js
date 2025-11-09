@@ -14,6 +14,7 @@ defineFeature(feature, (test) => {
     await resetDatabase();
     context.student = undefined;
     context.response = undefined;
+    context.csrfToken = undefined;
   });
 
   test("Create a new student via HTMX", ({ given, when, then, and }) => {

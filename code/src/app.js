@@ -16,6 +16,7 @@ import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
+import { csrfToken } from "./middleware/csrf.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,6 +71,7 @@ export function createApp() {
         "HX-Target",
         "HX-Current-URL",
         "HX-Trigger",
+        "X-CSRF-Token",
       ],
     }),
   );
@@ -95,6 +97,9 @@ export function createApp() {
 
   // Cookie parsing
   app.use(cookieParser());
+
+  // CSRF protection - generate tokens for all requests
+  app.use(csrfToken);
 
   // Compression
   app.use(compression());

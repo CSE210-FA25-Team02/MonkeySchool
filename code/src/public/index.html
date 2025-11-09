@@ -14,6 +14,28 @@
             integrity="sha384-rgjA7mptc2ETQqXoYC3/zJvkU7K/aP44Y+z7xQuJiVnB/422P/Ak+F/AqFR7E4Wr" 
             crossorigin="anonymous"></script>
     
+    <!-- CSRF Token Configuration for HTMX -->
+    <script>
+      // Configure HTMX to include CSRF token in all requests
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get CSRF token from cookie
+        function getCookie(name) {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop().split(';').shift();
+          return null;
+        }
+        
+        const csrfToken = getCookie('_csrf');
+        if (csrfToken) {
+          // Configure HTMX to include CSRF token in all requests
+          document.body.addEventListener('htmx:configRequest', function(event) {
+            event.detail.headers['X-CSRF-Token'] = csrfToken;
+          });
+        }
+      });
+    </script>
+    
     <!-- Custom Styles -->
     <link rel="stylesheet" href="/css/main.css">
     

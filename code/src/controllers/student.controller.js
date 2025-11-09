@@ -113,7 +113,9 @@ export async function getStudentById(req, res) {
  */
 export async function showCreateForm(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
-  const formHtml = createStudentForm();
+  const formHtml = createStudentForm(null, {
+    csrfToken: req.csrfToken || res.locals.csrfToken || "",
+  });
 
   if (isHtmxRequest) {
     res.send(formHtml);
@@ -135,7 +137,9 @@ export async function showEditForm(req, res) {
 
   try {
     const student = await studentService.getStudentById(req.params.id);
-    const formHtml = createStudentForm(student);
+    const formHtml = createStudentForm(student, {
+      csrfToken: req.csrfToken || res.locals.csrfToken || "",
+    });
 
     if (isHtmxRequest) {
       res.send(formHtml);
@@ -213,7 +217,9 @@ export async function createStudent(req, res) {
     }
 
     const errorHtml = createErrorMessage(errorMessage);
-    const formHtml = createStudentForm(req.body);
+    const formHtml = createStudentForm(req.body, {
+      csrfToken: req.csrfToken || res.locals.csrfToken || "",
+    });
     const combinedHtml = errorHtml + formHtml;
 
     const statusCode = error.statusCode || 500;
@@ -290,7 +296,9 @@ export async function updateStudent(req, res) {
       // Use request body if student not found
     }
 
-    const formHtml = createStudentForm(formData);
+    const formHtml = createStudentForm(formData, {
+      csrfToken: req.csrfToken || res.locals.csrfToken || "",
+    });
     const combinedHtml = errorHtml + formHtml;
 
     const statusCode = error.statusCode || 500;

@@ -28,6 +28,28 @@ export function createBaseLayout(title, content, options = {}) {
     <!-- HTMX Library -->
     <script src="https://unpkg.com/htmx.org@1.9.8"></script>
     
+    <!-- CSRF Token Configuration for HTMX -->
+    <script>
+      // Configure HTMX to include CSRF token in all requests
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get CSRF token from cookie
+        function getCookie(name) {
+          const value = \`; \${document.cookie}\`;
+          const parts = value.split(\`; \${name}=\`);
+          if (parts.length === 2) return parts.pop().split(';').shift();
+          return null;
+        }
+        
+        const csrfToken = getCookie('_csrf');
+        if (csrfToken) {
+          // Configure HTMX to include CSRF token in all requests
+          document.body.addEventListener('htmx:configRequest', function(event) {
+            event.detail.headers['X-CSRF-Token'] = csrfToken;
+          });
+        }
+      });
+    </script>
+    
     <!-- Custom Styles -->
     <link rel="stylesheet" href="/css/main.css">
     
@@ -140,7 +162,7 @@ export function createStudentCard(student, options = {}) {
             Delete
         </button>
     </div>
-    `
+`
         : ""
     }
 </article>`;
@@ -154,6 +176,7 @@ export function createStudentForm(student = null, options = {}) {
     action = student ? `/api/students/${student.id}` : "/api/students",
     method = student ? "put" : "post",
     title = student ? "Edit Student" : "Add New Student",
+    csrfToken = "",
   } = options;
 
   return `
@@ -166,6 +189,8 @@ export function createStudentForm(student = null, options = {}) {
           hx-swap="innerHTML"
           novalidate
           aria-describedby="form-description">
+        
+        <input type="hidden" name="_csrf" value="${csrfToken}">
         
         <p id="form-description" class="form__description">
             ${student ? "Update the information below to modify the student record." : "Fill in the information below to create a new student record."}

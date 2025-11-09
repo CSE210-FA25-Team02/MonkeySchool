@@ -7,6 +7,7 @@
 import { Router } from "express";
 import * as studentController from "../controllers/student.controller.js";
 import { validate } from "../middleware/validate.js";
+import { validateCsrf } from "../middleware/csrf.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import {
   createStudentSchema,
@@ -59,6 +60,7 @@ router.get(
  */
 router.post(
   "/",
+  validateCsrf,
   validate(createStudentSchema, "body"),
   asyncHandler(studentController.createStudent),
 );
@@ -70,6 +72,7 @@ router.post(
  */
 router.put(
   "/:id",
+  validateCsrf,
   validate(studentIdSchema, "params"),
   validate(updateStudentSchema, "body"),
   asyncHandler(studentController.updateStudent),
@@ -82,6 +85,7 @@ router.put(
  */
 router.delete(
   "/:id",
+  validateCsrf,
   validate(studentIdSchema, "params"),
   asyncHandler(studentController.deleteStudent),
 );
