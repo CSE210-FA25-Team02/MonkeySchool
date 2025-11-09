@@ -51,7 +51,7 @@ async function verifyGoogleIdToken(idToken) {
 
     return ticket.getPayload();
   } catch (error) {
-    throw new UnauthorizedError("Invalid Google ID token");
+    throw new UnauthorizedError("Invalid Google ID token, error is", error);
   }
 }
 
@@ -190,7 +190,7 @@ export function verifyJWT(token) {
   try {
     return jwt.verify(token, env.JWT_SECRET);
   } catch (error) {
-    throw new UnauthorizedError("Invalid or expired token");
+    throw new UnauthorizedError("Invalid or expired token, error is", error);
   }
 }
 
