@@ -1028,7 +1028,7 @@ a:focus {
    CLASSES PAGE COMPONENTS
    ============================================================================ */
 
-  .modal {
+  .classes-modal {
     background: white;
     padding: 1.5rem;
     border-radius: 10px;
@@ -1036,7 +1036,7 @@ a:focus {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
   
-  .modal__overlay {
+  .classes-modal__overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -1049,13 +1049,13 @@ a:focus {
     z-index: 1000;
   }
   
-  .modal__label {
+  .classes-modal__label {
     display: block;
     margin-bottom: 10px;
   }
   
-  .modal__input,
-  .modal__select{
+  .classes-modal__input,
+  .classes-modal__select{
     width: 100%;
     margin-top: 5px;
     padding: 8px;
@@ -1064,26 +1064,26 @@ a:focus {
     box-sizing: border-box;
   }
   
-  .modal__actions {
+  .classes-modal__actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 15px;
   }
   
-  .modal__button {
+  .classes-modal__button {
     padding: 6px 12px;
     cursor: pointer;
   }
   
-  .modal__button--primary {
+  .classes-modal__button--primary {
     background-color: #1B6A59;
     color: #F2A93B;
     border: none;
     border-radius: 4px;
   }
   
-  .modal__button--secondary {
+  .classes-modal__button--secondary {
     background-color: #ccc;
     color: black;
     border: none;
