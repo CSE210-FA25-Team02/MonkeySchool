@@ -1,6 +1,13 @@
 import * as userService from "../services/user.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
+import {
+  createBaseLayout,
+  createErrorMessage,
+  createProfileLinkField,
+  createSuccessMessage,
+  createUserProfile,
+} from "../utils/html-templates.js";
 
 /**
  * Get user by ID
@@ -9,6 +16,37 @@ export const getUser = asyncHandler(async (req, res) => {
   const user = await userService.getUserById(req.params.id);
   if (!user) throw new NotFoundError("User not found");
   res.json(user);
+});
+
+/**
+ * Load User Profile Page
+ */
+export const renderUserProfilePage = asyncHandler(async (req, res) => {
+  const isHtmx = !!req.headers["hx-request"];
+  const mode = req.query.mode === "edit" ? "edit" : "view";
+
+  try {
+    const user = await userService.getUserById(req.params.id);
+    if (!user) throw new NotFoundError("User not found");
+
+    const profileHtml = createUserProfile(user, { mode });
+    const html = isHtmx
+      ? profileHtml
+      : createBaseLayout(`${user.name} - Profile`, profileHtml);
+
+    res.send(html);
+  } catch (err) {
+    const status = err.statusCode || 500;
+    const message =
+      status === 404 ? "User not found." : "Failed to load user profile.";
+
+    const errorHtml = createErrorMessage(message);
+    const html = isHtmx
+      ? errorHtml
+      : createBaseLayout("Error - Profile", errorHtml);
+
+    res.status(status).send(html);
+  }
 });
 
 /**
@@ -23,8 +61,32 @@ export const createUser = asyncHandler(async (req, res) => {
  * Update user profile
  */
 export const updateUser = asyncHandler(async (req, res) => {
-  const user = await userService.updateUser(req.params.id, req.body);
-  res.json(user);
+  const updatedUser = await userService.updateUser(req.params.id, req.body);
+  const isHtmx = !!req.headers["hx-request"];
+
+  if (isHtmx) {
+    const html =
+      createSuccessMessage("Profile updated successfully.") +
+      createUserProfile(updatedUser, { mode: "view" });
+    res.send(html);
+  } else {
+    res.json(updatedUser);
+  }
+});
+
+/**
+ * Load Profile Page Link Fields
+ */
+export const renderProfileLinkField = asyncHandler(async (req, res) => {
+  const { type } = req.query;
+
+  if (!["social", "chat"].includes(type)) {
+    res.status(400).send("Invalid link type");
+    return;
+  }
+
+  const html = createProfileLinkField("", { type });
+  res.send(html);
 });
 
 /**

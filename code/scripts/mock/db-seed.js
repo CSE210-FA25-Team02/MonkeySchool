@@ -9,7 +9,10 @@ async function main() {
     data: {
       email: "tpowell@ucsd.edu",
       name: "Prof. Powell",
+      preferredName: "Prof. Powell",
       pronouns: "he/him",
+      bio: "Hello, I am your professor this quarter. Looking forward to supporting your projects!",
+      socialLinks: ["https://www.linkedin.com/in/thomasapowell/"],
     },
   });
 
@@ -33,7 +36,9 @@ async function main() {
         data: {
           email: `user${i + 1}@ucsd.edu`,
           name: `User ${i + 1}`,
+          preferredName: `User ${i + 1}`,
           pronouns: "they/them",
+          chatLinks: i < 2 ? ["https://chatlink.example.com/team-alpha"] : [],
         },
       })
     )

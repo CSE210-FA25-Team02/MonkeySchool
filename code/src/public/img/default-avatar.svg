@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Default profile avatar">
+  <defs>
+    <linearGradient id="avatarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d3dce6"/>
+      <stop offset="100%" stop-color="#b0bccb"/>
+    </linearGradient>
+    <linearGradient id="avatarInnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f1f4f8"/>
+      <stop offset="100%" stop-color="#cdd6e2"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#avatarGradient)" rx="36" ry="36"/>
+  <g transform="translate(0,4)">
+    <circle cx="128" cy="88" r="56" fill="url(#avatarInnerGradient)"/>
+    <path d="M44 218c0-46.4 37.6-84 84-84s84 37.6 84 84" fill="url(#avatarInnerGradient)"/>
+  </g>
+</svg>
