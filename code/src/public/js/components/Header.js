@@ -29,8 +29,6 @@ export class Header {
    * Render the header HTML
    */
   render() {
-    // Check if header content already exists (might be server-rendered)
-    const existingContent = this.container.innerHTML.trim();
     
     // Always render just the profile dropdown (no title)
     const existingProfile = this.container.querySelector('.header__profile');

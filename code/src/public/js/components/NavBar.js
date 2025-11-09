@@ -5,7 +5,6 @@
  */
 
 import { navigationConfig } from '../config/navigationConfig.js';
-import { routes } from '../config/routesConfig.js';
 
 export class NavBar {
   constructor(containerId = 'navbar') {
@@ -116,7 +115,7 @@ export class NavBar {
     // Navigation item clicks
     const navItems = this.container.querySelectorAll('.navbar__item');
     navItems.forEach(item => {
-      item.addEventListener('click', (e) => {
+      item.addEventListener('click', () => {
         const path = item.dataset.path;
         const navIndex = item.dataset.navIndex;
         this.handleNavClick(path, navIndex, item);

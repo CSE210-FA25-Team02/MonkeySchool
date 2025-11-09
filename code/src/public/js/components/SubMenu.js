@@ -96,7 +96,7 @@ export class SubMenu {
     // Render menu items
     const list = this.container.querySelector('.submenu__list');
     if (list) {
-      list.innerHTML = navItem.subMenu.map((item, index) => {
+      list.innerHTML = navItem.subMenu.map((item, ) => {
         const isActive = this.isActiveRoute(item.path);
         const activeClass = isActive ? 'submenu__item--active' : '';
         
