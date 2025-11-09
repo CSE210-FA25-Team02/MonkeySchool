@@ -5,8 +5,6 @@
  * to prevent connection pool exhaustion in development with hot reloading.
  */
 
-// code/src/lib/prisma.js
-
 import { PrismaClient } from "@prisma/client";
 
 /**

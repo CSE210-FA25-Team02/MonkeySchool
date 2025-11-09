@@ -1,7 +1,8 @@
-// code/tests/class/class.steps.js
+/**
+ * User Management Tests
+ */
 
 import { loadFeature, defineFeature } from "jest-cucumber";
-import { prisma } from "../../src/lib/prisma.js";
 import { context } from "../steps.context.js";
 import { request } from "../steps.config.js";
 import { resetDatabase } from "../utils/reset-db.js";
@@ -17,7 +18,11 @@ defineFeature(feature, (test) => {
 
   test("Create a new user", ({ given, when, then, and }) => {
     given(/^no user exists with email "(.*)"$/, async (email) => {
-      await prisma.user.deleteMany({ where: { email } });
+      // Ensure no user exists by checking and deleting if found (using CSV service)
+      const existingUser = await userService.getUserByEmail(email);
+      if (existingUser) {
+        await userService.deleteUser(existingUser.id);
+      }
     });
 
     when(/^I create a user with name "(.*)" and email "(.*)"$/, async (name, email) => {
@@ -25,7 +30,7 @@ defineFeature(feature, (test) => {
     });
 
     then(/^a user with email "(.*)" should exist$/, async (email) => {
-      context.user = await prisma.user.findUnique({ where: { email } });
+      context.user = await userService.getUserByEmail(email);
       expect(context.user).not.toBeNull();
     });
 
@@ -44,7 +49,7 @@ defineFeature(feature, (test) => {
     });
 
     then(/^the user name should be "(.*)"$/, async (newName) => {
-      const updated = await prisma.user.findUnique({ where: { id: context.user.id } });
+      const updated = await userService.getUserById(context.user.id);
       expect(updated.name).toBe(newName);
     });
   });
@@ -59,7 +64,7 @@ defineFeature(feature, (test) => {
     });
 
     then(/^no user with email "(.*)" should exist$/, async () => {
-      const user = await prisma.user.findUnique({ where: { email: context.user.email } });
+      const user = await userService.getUserByEmail(context.user.email);
       expect(user).toBeNull();
     });
   });

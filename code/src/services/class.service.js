@@ -1,5 +1,8 @@
-// Service functions for Class-related database operations
-// code/src/services/class.service.js
+/**
+ * Class Service
+ *
+ * Service functions for Class-related database operations
+ */
 
 import { prisma } from "../lib/prisma.js";
 

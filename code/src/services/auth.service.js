@@ -2,7 +2,11 @@ import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
 import * as userService from "./user.service.js";
-import { BadRequestError, UnauthorizedError, ForbiddenError } from "../utils/api-error.js";
+import {
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+} from "../utils/api-error.js";
 
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -50,16 +54,16 @@ async function verifyGoogleIdToken(idToken) {
     });
 
     return ticket.getPayload();
-  } catch (error) {
-    throw new UnauthorizedError("Invalid Google ID token, error is", error);
+  } catch (_error) {
+    throw new UnauthorizedError("Invalid Google ID token");
   }
 }
 
 async function isEmailAuthorized(email) {
   if (!email) return false;
-  
+
   const emailLower = email.toLowerCase();
-  
+
   if (emailLower.endsWith("@ucsd.edu")) {
     return true;
   }
@@ -189,8 +193,7 @@ export function generateJWT(user) {
 export function verifyJWT(token) {
   try {
     return jwt.verify(token, env.JWT_SECRET);
-  } catch (error) {
-    throw new UnauthorizedError("Invalid or expired token, error is", error);
+  } catch (_error) {
+    throw new UnauthorizedError("Invalid or expired token");
   }
 }
-

@@ -5,8 +5,6 @@
  * to Express error handling middleware.
  */
 
-// code/src/utils/async-handler.js
-
 /**
  * Wraps an async route handler to catch errors and pass them to next()
  *

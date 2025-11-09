@@ -57,7 +57,8 @@ if (!parsed.success) {
 }
 
 // Validate DATABASE_URL only if not using CSV DB
-if (!parsed.data.USE_CSV_DB && !parsed.data.DATABASE_URL) {
+// In test mode with CSV DB, we don't need a real DATABASE_URL
+if (!parsed.data.USE_CSV_DB && !parsed.data.DATABASE_URL && parsed.data.NODE_ENV !== "test") {
   console.error("❌ DATABASE_URL is required when USE_CSV_DB is false");
   throw new Error("DATABASE_URL is required");
 }

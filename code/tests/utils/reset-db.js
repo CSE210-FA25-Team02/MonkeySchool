@@ -1,12 +1,49 @@
-// code/tests/utils/reset-db.js
-import { prisma } from "../../src/lib/prisma.js";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const USERS_HEADERS = [
+  "id",
+  "email",
+  "name",
+  "googleId",
+  "photoUrl",
+  "pronunciation",
+  "pronouns",
+  "phone",
+  "github",
+  "timezone",
+  "createdAt",
+  "updatedAt",
+];
+
+const STUDENTS_HEADERS = [
+  "id",
+  "email",
+  "name",
+  "createdAt",
+  "updatedAt",
+];
+
+/**
+ * Reset test database by clearing CSV files
+ * In test mode, we use CSV files instead of database
+ */
 export async function resetDatabase() {
-  // Delete lowest-level dependent relations first
-  await prisma.groupSupervisor.deleteMany();
-  await prisma.groupRole.deleteMany();
-  await prisma.group.deleteMany();
-  await prisma.classRole.deleteMany();
-  await prisma.class.deleteMany();
-  await prisma.user.deleteMany();
+  try {
+    const dataDir = path.join(__dirname, "../../data");
+    await fs.mkdir(dataDir, { recursive: true });
+
+    const usersCSVFile = path.join(dataDir, "users.csv");
+    await fs.writeFile(usersCSVFile, USERS_HEADERS.join(",") + "\n", "utf-8");
+
+    const studentsCSVFile = path.join(dataDir, "students.csv");
+    await fs.writeFile(studentsCSVFile, STUDENTS_HEADERS.join(",") + "\n", "utf-8");
+  } catch (error) {
+    console.error("Error resetting CSV database:", error);
+    throw error;
+  }
 }

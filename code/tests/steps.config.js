@@ -1,4 +1,8 @@
-// code/tests/steps.config.js
+/**
+ * Test Configuration
+ *
+ * Sets up the test application and request client
+ */
 
 import supertest from "supertest";
 import { createApp } from "../src/app.js";

@@ -3,3 +3,7 @@ coverage
 .env.test
 node_modules
 package-lock.json
+# Ignore test-generated CSV files, but keep the mock data CSV
+data/users.test.csv
+# Note: data/users.csv and data/students.csv are used by tests and may be modified
+# They are tracked in git for mock data but will be reset during tests

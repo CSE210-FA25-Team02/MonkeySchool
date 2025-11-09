@@ -1,6 +1,1 @@
 id,email,name,googleId,photoUrl,pronunciation,pronouns,phone,github,timezone,createdAt,updatedAt
-clx1234567890abcdef,mock.user1@example.com,John Doe,google_1234567890,https://lh3.googleusercontent.com/a/default-user=s96-c,John Doe,he/him,555-0101,johndoe,America/Los_Angeles,2025-11-07T00:00:00.000Z,2025-11-07T00:00:00.000Z
-clx2345678901bcdefg,mock.user2@example.com,Jane Smith,google_2345678901,https://lh3.googleusercontent.com/a/default-user=s96-c,Jane Smith,she/her,555-0102,janesmith,America/New_York,2025-11-07T00:00:00.000Z,2025-11-07T00:00:00.000Z
-clx3456789012cdefgh,mock.user3@example.com,Alex Johnson,google_3456789012,https://lh3.googleusercontent.com/a/default-user=s96-c,Alex Johnson,they/them,555-0103,alexj,UTC,2025-11-07T00:00:00.000Z,2025-11-07T00:00:00.000Z
-clx4567890123defghi,mock.user4@example.com,Sarah Williams,google_4567890123,https://lh3.googleusercontent.com/a/default-user=s96-c,Sarah Williams,she/her,555-0104,sarahw,America/Chicago,2025-11-07T00:00:00.000Z,2025-11-07T00:00:00.000Z
-clx5678901234efghij,mock.user5@example.com,Mike Brown,google_5678901234,https://lh3.googleusercontent.com/a/default-user=s96-c,Mike Brown,he/him,555-0105,mikebrown,America/Denver,2025-11-07T00:00:00.000Z,2025-11-07T00:00:00.000Z

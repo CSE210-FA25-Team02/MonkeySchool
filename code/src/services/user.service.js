@@ -1,5 +1,8 @@
-// Service functions for User-related database operations
-// code/src/services/user.service.js
+/**
+ * User Service
+ *
+ * Service functions for User-related database operations
+ */
 
 import { env } from "../config/env.js";
 

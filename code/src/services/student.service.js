@@ -4,13 +4,37 @@
  * Business logic layer for student operations
  */
 
-import { prisma } from "../lib/prisma.js";
+import { env } from "../config/env.js";
 import { NotFoundError, ConflictError } from "../utils/api-error.js";
+
+let csvService = null;
+let prismaClient = null;
+
+async function getCSVService() {
+  if (!csvService) {
+    const module = await import("./student.service.csv.js");
+    csvService = module;
+  }
+  return csvService;
+}
+
+async function getPrismaClient() {
+  if (!prismaClient) {
+    const { prisma } = await import("../lib/prisma.js");
+    prismaClient = prisma;
+  }
+  return prismaClient;
+}
 
 /**
  * Get all students with pagination
  */
 export async function getAllStudents(page = 1, limit = 10) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.getAllStudents(page, limit);
+  }
+  const prisma = await getPrismaClient();
   const skip = (page - 1) * limit;
 
   const [students, total] = await Promise.all([
@@ -33,6 +57,11 @@ export async function getAllStudents(page = 1, limit = 10) {
  * Get a single student by ID
  */
 export async function getStudentById(id) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.getStudentById(id);
+  }
+  const prisma = await getPrismaClient();
   const student = await prisma.student.findUnique({
     where: { id },
   });
@@ -48,6 +77,11 @@ export async function getStudentById(id) {
  * Create a new student
  */
 export async function createStudent(data) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.createStudent(data);
+  }
+  const prisma = await getPrismaClient();
   // Check if email already exists
   const existingStudent = await prisma.student.findUnique({
     where: { email: data.email },
@@ -68,6 +102,11 @@ export async function createStudent(data) {
  * Update a student
  */
 export async function updateStudent(id, data) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.updateStudent(id, data);
+  }
+  const prisma = await getPrismaClient();
   // Verify student exists
   await getStudentById(id);
 
@@ -94,6 +133,11 @@ export async function updateStudent(id, data) {
  * Delete a student
  */
 export async function deleteStudent(id) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.deleteStudent(id);
+  }
+  const prisma = await getPrismaClient();
   // Verify student exists
   await getStudentById(id);
 

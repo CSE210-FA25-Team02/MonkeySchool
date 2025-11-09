@@ -1,4 +1,9 @@
-// code/scripts/mock/db-seed.js
+/**
+ * Database Seeding Script
+ *
+ * Seeds the database with mock data for development and testing
+ */
+
 import { prisma } from "../../src/lib/prisma.js";
 
 async function main() {

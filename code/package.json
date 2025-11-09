@@ -13,11 +13,9 @@
     "db:studio": "prisma studio",
     "lint": "eslint src --ext .js",
     "format": "prettier --write \"src/**/*.js\"",
-    "test": "export $(grep -v '^#' .env.test | grep -v '^$' | xargs) && npm run test:e2e",
-    "test:e2e": "npm-run-all -s db:test:migrate test:coverage db:test:drop",
-    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand",
-    "db:test:migrate": "sh -c 'echo \"Using test database: $DATABASE_URL\" && prisma migrate deploy'",
-    "db:test:drop": "sh -c 'echo \"Dropping test database: $DATABASE_URL\" && npx prisma migrate reset --force'"
+    "test": "([ -f .env.test ] && export $(grep -v '^#' .env.test | grep -v '^$' | xargs) || true) && npm run test:coverage",
+    "test:e2e": "npm run test:coverage",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand"
   },
   "keywords": [
     "express",

@@ -4,8 +4,6 @@
  * Aggregates and exports all application routes
  */
 
-// code/src/routes/index.js
-
 import { Router } from "express";
 import studentRoutes from "./student.routes.js";
 import userRoutes from "./user.routes.js";

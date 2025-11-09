@@ -4,8 +4,6 @@
  * Zod schemas for validating student-related requests
  */
 
-// code/src/validators/student.validator.js
-
 import { z } from "zod";
 
 /**

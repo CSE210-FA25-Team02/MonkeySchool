@@ -4,8 +4,6 @@
  * Centralized error handler that returns HTML responses for HTMX
  */
 
-// code/src/middleware/error-handler.js
-
 import { ApiError } from "../utils/api-error.js";
 import { env } from "../config/env.js";
 import { Prisma } from "@prisma/client";
@@ -45,7 +43,7 @@ function handlePrismaError(err) {
 /**
  * Global error handler middleware for HTMX
  */
-export function errorHandler(err, req, res) {
+export function errorHandler(err, req, res, _next) {
   const isHtmxRequest = req.headers["hx-request"];
   let statusCode = 500;
   let message = "An unexpected error occurred.";
@@ -79,10 +77,20 @@ export function errorHandler(err, req, res) {
     }
   }
 
+  // Check if this is an API request (starts with /api)
+  const isApiRequest = req.originalUrl.startsWith("/api");
+
   // Create HTML error response
   const errorHtml = createErrorMessage(message, errors);
 
-  if (isHtmxRequest) {
+  if (isApiRequest && !isHtmxRequest) {
+    // Return JSON for API requests (non-HTMX)
+    res.status(statusCode).json({
+      success: false,
+      error: message,
+      ...(errors && { errors }),
+    });
+  } else if (isHtmxRequest) {
     // Return partial HTML for HTMX requests
     res.status(statusCode).send(errorHtml);
   } else {
@@ -92,7 +100,7 @@ export function errorHandler(err, req, res) {
       errorHtml,
       {
         description: "An error occurred while processing your request.",
-      },
+      }
     );
     res.status(statusCode).send(fullPage);
   }
@@ -137,7 +145,7 @@ export function notFoundHandler(req, res) {
       errorHtml,
       {
         description: "The requested page could not be found.",
-      },
+      }
     );
     res.status(404).send(fullPage);
   }

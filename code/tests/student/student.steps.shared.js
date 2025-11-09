@@ -1,9 +1,13 @@
+/**
+ * Student Test Steps - Shared Helpers
+ *
+ * Shared step definitions and helper functions for student tests
+ */
+
 import { context } from "../steps.context.js";
 import { request } from "../steps.config.js";
 import { createId } from "@paralleldrive/cuid2";
 import { JSDOM } from "jsdom";
-
-// code/tests/student/student.steps.shared.js
 
 /**
  * Helper function to parse HTML response and extract data

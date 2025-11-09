@@ -4,8 +4,6 @@
  * Defines all student-related endpoints for HTMX responses
  */
 
-// code/src/routes/student.routes.js
-
 import { Router } from "express";
 import * as studentController from "../controllers/student.controller.js";
 import { validate } from "../middleware/validate.js";

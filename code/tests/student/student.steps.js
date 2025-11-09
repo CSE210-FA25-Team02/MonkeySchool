@@ -1,15 +1,17 @@
+/**
+ * Student Management Tests
+ */
+
 import { loadFeature, defineFeature } from "jest-cucumber";
 import { context } from "../steps.context.js";
 import * as shared from "./student.steps.shared.js";
-import { prisma } from "../../src/lib/prisma.js";
-
-// code/tests/student/student.steps.js
+import { resetDatabase } from "../utils/reset-db.js";
 
 const feature = loadFeature("./features/student.feature");
 
 defineFeature(feature, (test) => {
   beforeEach(async () => {
-    await prisma.student.deleteMany();
+    await resetDatabase();
     context.student = undefined;
     context.response = undefined;
   });

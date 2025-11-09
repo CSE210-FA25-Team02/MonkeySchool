@@ -5,8 +5,6 @@
  * Returns HTML error responses for HTMX compatibility
  */
 
-// code/src/middleware/validate.js
-
 import { ZodError } from "zod";
 import { BadRequestError } from "../utils/api-error.js";
 import { createErrorMessage } from "../utils/html-templates.js";
