@@ -10,6 +10,7 @@ async function main() {
       email: "tpowell@ucsd.edu",
       name: "Prof. Powell",
       pronouns: "he/him",
+      isProf: true
     },
   });
 
@@ -34,6 +35,7 @@ async function main() {
           email: `user${i + 1}@ucsd.edu`,
           name: `User ${i + 1}`,
           pronouns: "they/them",
+          isProf: false
         },
       })
     )

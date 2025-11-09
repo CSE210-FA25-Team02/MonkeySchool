@@ -60,19 +60,22 @@ export const deleteClass = asyncHandler(async (req, res) => {
 
 
 /**
- * Class HTMX Section
- * 
+ * Open/Close Class Create Form
  */
 
 export const renderCreateClassForm = asyncHandler(async (req, res)  => {
   const upcomingQuarters = getUpcomingQuarters();
-  res.send(createClassForm(upcomingQuarters));
+  res.status(201).send(createClassForm(upcomingQuarters));
 });
 
 export const closeCreateClassForm = asyncHandler(async (req, res)  => {
-  res.send("");
+  res.status(204).send("");
 });
 
+/**
+ * Render Classes Page
+ */
+
 export const renderClassPage = asyncHandler(async (req, res) =>  {
-  res.send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
+  res.status(201).send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
 });

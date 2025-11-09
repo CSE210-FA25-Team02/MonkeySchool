@@ -74,6 +74,7 @@ CREATE TABLE "users" (
     "name" TEXT NOT NULL,
     "pronunciation" TEXT,
     "pronouns" TEXT,
+    "isProf" BOOLEAN NOT NULL DEFAULT false,
     "phone" TEXT,
     "photoUrl" TEXT,
     "github" TEXT,
