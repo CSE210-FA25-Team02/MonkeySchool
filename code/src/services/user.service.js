@@ -1,19 +1,42 @@
 // Service functions for User-related database operations
 // code/src/services/user.service.js
 
-import { prisma } from "../lib/prisma.js";
+import { env } from "../config/env.js";
 
-/**
- * Create a new user record.
- */
+let csvService = null;
+let prismaClient = null;
+
+async function getCSVService() {
+  if (!csvService) {
+    const module = await import("./user.service.csv.js");
+    csvService = module;
+  }
+  return csvService;
+}
+
+async function getPrismaClient() {
+  if (!prismaClient) {
+    const { prisma } = await import("../lib/prisma.js");
+    prismaClient = prisma;
+  }
+  return prismaClient;
+}
+
 export async function createUser(data) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.createUser(data);
+  }
+  const prisma = await getPrismaClient();
   return prisma.user.create({ data });
 }
 
-/**
- * Get a user by ID, including their class and group relationships.
- */
 export async function getUserById(id) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.getUserById(id);
+  }
+  const prisma = await getPrismaClient();
   return prisma.user.findUnique({
     where: { id },
     include: {
@@ -24,17 +47,30 @@ export async function getUserById(id) {
   });
 }
 
-/**
- * Get a user by email (used in OAuth login flow).
- */
 export async function getUserByEmail(email) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.getUserByEmail(email);
+  }
+  const prisma = await getPrismaClient();
   return prisma.user.findUnique({ where: { email } });
 }
 
-/**
- * Update user profile fields.
- */
+export async function getUserByGoogleId(googleId) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.getUserByGoogleId(googleId);
+  }
+  const prisma = await getPrismaClient();
+  return prisma.user.findUnique({ where: { googleId } });
+}
+
 export async function updateUser(id, data) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.updateUser(id, data);
+  }
+  const prisma = await getPrismaClient();
   return prisma.user.update({
     where: { id },
     data
@@ -42,6 +78,11 @@ export async function updateUser(id, data) {
 }
 
 export async function deleteUser(id) {
+  if (env.USE_CSV_DB) {
+    const service = await getCSVService();
+    return service.deleteUser(id);
+  }
+  const prisma = await getPrismaClient();
   await prisma.classRole.deleteMany({ where: { userId: id } });
   await prisma.groupRole.deleteMany({ where: { userId: id } });
   await prisma.groupSupervisor.deleteMany({ where: { userId: id } });

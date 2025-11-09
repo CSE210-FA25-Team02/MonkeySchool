@@ -12,6 +12,7 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
@@ -43,9 +44,15 @@ export function createApp() {
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],
           styleSrc: ["'self'", "'unsafe-inline'"], // For dynamic styling
-          connectSrc: ["'self'"],
-          imgSrc: ["'self'", "data:", "blob:"],
+          connectSrc: [
+            "'self'",
+            "https://oauth2.googleapis.com",
+            "https://accounts.google.com",
+          ],
+          imgSrc: ["'self'", "data:", "blob:", "https://lh3.googleusercontent.com"],
           fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          formAction: ["'self'", "https://accounts.google.com"],
+          frameSrc: ["'self'", "https://accounts.google.com"],
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
@@ -87,6 +94,9 @@ export function createApp() {
   // Body parsing
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+  // Cookie parsing
+  app.use(cookieParser());
 
   // Compression
   app.use(compression());
