@@ -7,7 +7,9 @@
  * TODO: Replace with proper session/JWT authentication
  */
 
-import { ApiError } from '../utils/api-error.js';
+import {
+  ApiError
+} from '../utils/api-error.js';
 
 /**
  * Middleware to check if user is authenticated
@@ -31,7 +33,7 @@ export const requireAuth = (req, res, next) => {
 
     // Attach userId to request for downstream middleware/controllers
     req.userId = userId;
-    
+
     next();
   } catch (error) {
     next(error);
@@ -48,11 +50,11 @@ export const requireAuth = (req, res, next) => {
  */
 export const optionalAuth = (req, res, next) => {
   const userId = req.query.userId || req.body.userId || req.params.userId;
-  
+
   if (userId) {
     req.userId = userId;
   }
-  
+
   next();
 };
 
@@ -63,6 +65,7 @@ export const optionalAuth = (req, res, next) => {
  * @param {string[]} allowedRoles - Array of allowed roles
  * @returns {Function} Express middleware function
  */
+// eslint-disable-next-line no-unused-vars
 export const requireRole = (allowedRoles) => {
   return (req, res, next) => {
     if (!req.userId) {
@@ -71,8 +74,7 @@ export const requireRole = (allowedRoles) => {
 
     // TODO: Fetch user role from database and check against allowedRoles
     // For now, we'll pass through as role checking will be done in service layer
-    
+
     next();
   };
 };
-
