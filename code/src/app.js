@@ -39,6 +39,7 @@ export function createApp() {
           scriptSrc: [
             "'self'",
             "'unsafe-inline'", // Required for HTMX inline event handlers
+            "'unsafe-eval'",
             "https://unpkg.com", // For HTMX CDN
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],

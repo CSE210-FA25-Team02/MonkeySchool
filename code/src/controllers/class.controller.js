@@ -4,8 +4,8 @@ import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
-import { getUpcomingQuarters } from "../utils/html-templates.js";
-import { createClassForm, displayInvite, createClassPage, createBaseLayout } from "../utils/html-templates.js";
+import { getUpcomingQuarters, createBaseLayout } from "../utils/html-templates.js";
+import { createClassForm, displayInvite, createClassPage } from "../utils/htmx-templates/classes-templates.js";
 
 /**
  * Create a new class
