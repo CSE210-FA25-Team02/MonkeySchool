@@ -33,6 +33,7 @@
           referrerpolicy="no-referrer" />
     
     <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/main.css">
     
     <!-- Preconnect for performance -->
@@ -64,26 +65,6 @@
                 <a href="/" class="header__link">Student Management System</a>
             </h1>
             <nav class="header__nav" role="navigation" aria-label="Main navigation">
-                <ul class="nav-list">
-                    <li class="nav-list__item">
-                        <a href="/api/students" 
-                           class="nav-list__link" 
-                           hx-get="/api/students" 
-                           hx-target="#main-content"
-                           hx-push-url="true">
-                            Students
-                        </a>
-                    </li>
-                    <li class="nav-list__item">
-                        <a href="/api/students/new" 
-                           class="nav-list__link" 
-                           hx-get="/api/students/new" 
-                           hx-target="#main-content"
-                           hx-push-url="true">
-                            Add Student
-                        </a>
-                    </li>
-                </ul>
                 <div id="auth-section" class="auth-section" style="display: none;">
                     <!-- User info and logout will be shown here when logged in -->
                 </div>
@@ -357,6 +338,7 @@
                 } else {
                     // No xhr object - hide loading as fallback
                     hideLoading();
+                }
                 document.getElementById('loading').style.display = 'none';
                 // Recheck auth after logout
                 if (evt.detail.pathInfo.requestPath.includes('/auth/logout')) {
