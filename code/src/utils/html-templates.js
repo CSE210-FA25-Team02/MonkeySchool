@@ -405,7 +405,7 @@ export function createSuccessMessage(message) {
  * Utility functions
  */
 export function escapeHtml(text) {
-    if (text == null || text == undefined) return ""
+    if (text == null) return ""
     if (typeof text !== "string") return String(text);
   const map = {
     "&": "&amp;",
