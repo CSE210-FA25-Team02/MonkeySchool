@@ -4,10 +4,9 @@ import { NotFoundError } from "../utils/api-error.js";
 import {
   createBaseLayout,
   createErrorMessage,
-  createProfileLinkField,
   createSuccessMessage,
-  createUserProfile,
 } from "../utils/html-templates.js";
+import {createUserProfile, createProfileLinkField} from "../utils/components/profile-page.js"
 
 /**
  * Get user by ID
