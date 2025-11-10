@@ -46,6 +46,7 @@ export const createClass = asyncHandler(async (req, res) => {
     try {
       await classRoleService.upsertClassRole({userId, classId, role: "PROFESSOR"});
     } catch (err) {
+      console.error("Unable to assign professor to class:", err);
       return res.status(500).send("Unable to assign professor to class.");
     }
   }
@@ -92,6 +93,7 @@ export const getClassByInviteCode = asyncHandler(async (req, res) => {
     try {
       await classRoleService.upsertClassRole({userId, classId, role: "STUDENT"});
     } catch (err) {
+      console.error("Unable to assign user to class:", err);
       return res.status(500).send("Unable to assign user to class.");
     }
   }
