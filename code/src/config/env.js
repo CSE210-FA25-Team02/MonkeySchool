@@ -30,6 +30,10 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().positive())
     .default("100"),
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+  JWT_SECRET: z.string().min(1),
+  AUTH_BASE_URL: z.string().url().default("http://localhost:3000"),
 });
 
 const parsed = envSchema.safeParse(process.env);
