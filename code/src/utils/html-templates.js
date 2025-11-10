@@ -62,9 +62,7 @@ export function createBaseLayout(title, content, options = {}) {
     </header>
 
     <main id="main-content" class="main" role="main" tabindex="-1">
-        <div class="container">
-            ${content}
-        </div>
+        ${content}
     </main>
 
     <footer class="footer" role="contentinfo">
@@ -594,8 +592,8 @@ export function createSuccessMessage(message) {
  * Utility functions
  */
 export function escapeHtml(text) {
-  if (typeof text !== "string") return text;
-
+    if (text == null || text == undefined) return ""
+    if (typeof text !== "string") return String(text);
   const map = {
     "&": "&amp;",
     "<": "&lt;",

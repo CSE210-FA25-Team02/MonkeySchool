@@ -68,6 +68,7 @@ export const updateUser = asyncHandler(async (req, res) => {
     const html =
       createSuccessMessage("Profile updated successfully.") +
       createUserProfile(updatedUser, { mode: "view" });
+    res.set("HX-Push", `/api/users/${updatedUser.id}/profile`);
     res.send(html);
   } else {
     res.json(updatedUser);
