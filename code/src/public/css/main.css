@@ -769,7 +769,7 @@ a:focus {
 .welcome {
   text-align: center;
   padding: var(--spacing-3xl) var(--spacing-xl);
-  background-color: white;
+  /* background-color: white; */
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
   background-color: var(--color-neutral-300);

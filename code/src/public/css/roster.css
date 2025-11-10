@@ -1,0 +1,194 @@
+/* ===============================
+   CLASS ROSTER PAGE STYLING
+   =============================== */
+
+/* Base layout */
+.roster-page {
+    padding: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+    color: #222;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  
+  .roster-content {
+    min-height: 400px;
+    contain: layout;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .roster-role-section {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .roster-member {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Title section */
+  .roster-page__title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: inherit;
+  }
+  
+  .roster-page__count {
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+  }
+  
+  /* Table structure */
+  .roster-table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 32px;
+  }
+  
+  .roster-table th,
+  .roster-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  .roster-table th {
+    background: rgba(0,0,0,0.04);
+    font-weight: 600;
+    color: #222;
+  }
+  
+  .roster-member:hover {
+    background-color: rgba(0,0,0,0.03);
+  }
+  
+  /* Name + email */
+  .roster-name {
+    font-weight: 500;
+    color: #111;
+  }
+  
+  .roster-email {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Dropdown */
+  .roster-role select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    color: #111;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .roster-role select:hover {
+    border-color: #888;
+  }
+  
+  /* Section titles */
+  .roster-role-section {
+    margin-bottom: 40px;
+  }
+  
+  .roster-role-section__title {
+    font-size: 20px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+    color: inherit;
+  }
+  
+  /* Success/error notifications */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    z-index: 1000;
+    animation: fadeInOut 3s ease;
+  }
+  
+  .notification--success {
+    background-color: #4caf50;
+  }
+  
+  .notification--error {
+    background-color: #e53935;
+  }
+  
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10px); }
+  }
+  
+  /* Remove the blue header completely */
+  .roster-page__header {
+    display: none !important;
+  }
+  
+  /* ===============================
+     DARK MODE SUPPORT
+     =============================== */
+  
+  @media (prefers-color-scheme: dark) {
+    .roster-page {
+      background-color: #1a1a1a;
+      color: #f1f1f1;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.05);
+    }
+  
+    .roster-table th,
+    .roster-table td {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+  
+    .roster-table th {
+      background-color: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+  
+    .roster-name {
+      color: #fff;
+    }
+  
+    .roster-email {
+      color: #ccc;
+    }
+  
+    .roster-role select {
+      background: #2b2b2b;
+      color: #fff;
+      border-color: rgba(255,255,255,0.3);
+    }
+  
+    .roster-role select:hover {
+      border-color: rgba(255,255,255,0.6);
+    }
+  
+    .roster-role-section__title {
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+      color: #fff;
+    }
+  
+    .notification--success {
+      background-color: #2e7d32;
+    }
+  
+    .notification--error {
+      background-color: #c62828;
+    }
+  }
+  

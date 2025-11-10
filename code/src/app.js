@@ -17,6 +17,8 @@ import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
+import { showRosterPage } from "./frontend/roster.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -120,9 +122,11 @@ export function createApp() {
     }
   });
 
+  // Roster frontend route
+  app.get("/roster/:classId", showRosterPage);
   // API routes
   app.use("/api", routes);
-
+  
   // Error handlers (must be last)
   app.use(notFoundHandler);
   app.use(errorHandler);
