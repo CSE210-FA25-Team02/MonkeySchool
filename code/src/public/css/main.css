@@ -703,6 +703,70 @@ a:focus {
 }
 
 /* ============================================================================
+   AUTH SECTION
+   ============================================================================ */
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-left: var(--spacing-lg);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.user-avatar {
+  border-radius: 50%;
+  border: 2px solid var(--color-neutral-200);
+}
+
+.user-name {
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-700);
+  font-weight: var(--font-weight-medium);
+}
+
+.btn--small {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  min-height: 32px;
+  min-width: 32px;
+}
+
+/* ============================================================================
+   LOGIN SECTION
+   ============================================================================ */
+
+.login-section {
+  margin: var(--spacing-2xl) 0;
+}
+
+.login-card {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl);
+  background-color: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.login-card h3 {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-neutral-900);
+}
+
+.login-card p {
+  margin-bottom: var(--spacing-xl);
+  color: var(--color-neutral-600);
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================================================
    MAIN CONTENT
    ============================================================================ */
 
@@ -1482,6 +1546,12 @@ a:focus {
 
   .nav-list {
     justify-content: flex-end;
+  }
+
+  .auth-section {
+    margin-left: 0;
+    justify-content: center;
+    width: 100%;
   }
 
   .student-grid {

@@ -60,6 +60,34 @@
                     <!-- Profile dropdown will be added by Header component -->
                 </div>
             </div>
+            <h1 class="header__title">
+                <a href="/" class="header__link">Student Management System</a>
+            </h1>
+            <nav class="header__nav" role="navigation" aria-label="Main navigation">
+                <ul class="nav-list">
+                    <li class="nav-list__item">
+                        <a href="/api/students" 
+                           class="nav-list__link" 
+                           hx-get="/api/students" 
+                           hx-target="#main-content"
+                           hx-push-url="true">
+                            Students
+                        </a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="/api/students/new" 
+                           class="nav-list__link" 
+                           hx-get="/api/students/new" 
+                           hx-target="#main-content"
+                           hx-push-url="true">
+                            Add Student
+                        </a>
+                    </li>
+                </ul>
+                <div id="auth-section" class="auth-section" style="display: none;">
+                    <!-- User info and logout will be shown here when logged in -->
+                </div>
+            </nav>
         </div>
     </header>
 
@@ -69,6 +97,12 @@
           tabindex="-1"
           hx-history-elt>
         <div class="container">
+            <!-- Error messages -->
+            <div id="error-message" class="alert alert--error" role="alert" style="display: none;">
+                <h2>Authentication Error</h2>
+                <p id="error-text"></p>
+            </div>
+            
             <!-- Initial content -->
             <section class="welcome" role="region" aria-labelledby="welcome-title">
                 <h2 id="welcome-title" class="welcome__title">
@@ -79,7 +113,23 @@
                     Built with HTMX for seamless user interactions and designed with accessibility in mind.
                 </p>
                 
-                <div class="welcome__actions">
+                <div id="login-section" class="login-section" style="display: none;">
+                    <div class="login-card">
+                        <h3>Sign in with Google</h3>
+                        <p>Please sign in with your UCSD Gmail account to continue.</p>
+                        <a href="/api/auth/login" class="btn btn--primary btn--large">
+                            <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px; vertical-align: middle;">
+                                <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                                <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                                <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.951H.957C.348 6.174 0 7.55 0 9s.348 2.826.957 4.049l3.007-2.342z"/>
+                                <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.951L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
+                            </svg>
+                            Sign in with Google
+                        </a>
+                    </div>
+                </div>
+                
+                <div id="welcome-actions" class="welcome__actions" style="display: none;">
                     <a href="/api/students" 
                        class="btn btn--primary btn--large"
                        hx-get="/api/students" 
@@ -140,6 +190,74 @@
     
     <!-- HTMX Configuration and Custom Scripts -->
     <script>
+        // Check authentication status and update UI
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/session');
+                const data = await response.json();
+                
+                const authSection = document.getElementById('auth-section');
+                const loginSection = document.getElementById('login-section');
+                const welcomeActions = document.getElementById('welcome-actions');
+                
+                if (data.user) {
+                    // User is logged in - show user info and logout in nav
+                    authSection.innerHTML = `
+                        <div class="user-info">
+                            ${data.user.photoUrl ? `<img src="${data.user.photoUrl}" alt="${data.user.name}" class="user-avatar" width="32" height="32">` : ''}
+                            <span class="user-name">${data.user.name}</span>
+                            <a href="/api/auth/logout" 
+                               class="btn btn--secondary btn--small"
+                               hx-get="/api/auth/logout"
+                               hx-target="#main-content">
+                                Logout
+                            </a>
+                        </div>
+                    `;
+                    authSection.style.display = 'flex';
+                    loginSection.style.display = 'none';
+                    welcomeActions.style.display = 'flex';
+                } else {
+                    // User is not logged in - hide nav auth section, show login in main content
+                    authSection.style.display = 'none';
+                    loginSection.style.display = 'block';
+                    welcomeActions.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking auth:', error);
+            }
+        }
+        
+        // Check for error in URL params
+        function checkUrlErrors() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            
+            if (error) {
+                const errorMessage = document.getElementById('error-message');
+                const errorText = document.getElementById('error-text');
+                
+                let message = 'An error occurred during authentication.';
+                if (error === 'email_not_authorized') {
+                    message = 'Your email is not authorized. Only UCSD emails (@ucsd.edu) or whitelisted external emails are allowed.';
+                } else if (error === 'no_code') {
+                    message = 'Authentication was cancelled or failed.';
+                } else if (error === 'token_exchange_failed') {
+                    message = 'Failed to complete authentication. Please try again.';
+                } else if (error === 'profile_fetch_failed') {
+                    message = 'Failed to retrieve your profile. Please try again.';
+                } else if (error === 'login_failed') {
+                    message = 'Login failed. Please try again.';
+                }
+                
+                errorText.textContent = message;
+                errorMessage.style.display = 'block';
+                
+                // Clear error from URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+        
         // Configure HTMX
         document.addEventListener('DOMContentLoaded', function() {
             // Helper function to hide loading spinner (aggressive and synchronous)
@@ -201,6 +319,11 @@
             let isErrorResponse = false;
             
             // Show loading indicator on HTMX requests (but check for errors first)
+            // Check auth status on page load
+            checkAuth();
+            checkUrlErrors();
+            
+            // Show loading indicator on HTMX requests
             document.body.addEventListener('htmx:beforeRequest', function(evt) {
                 isErrorResponse = false; // Reset error flag
                 // Remove hidden class to allow showing
@@ -234,6 +357,10 @@
                 } else {
                     // No xhr object - hide loading as fallback
                     hideLoading();
+                document.getElementById('loading').style.display = 'none';
+                // Recheck auth after logout
+                if (evt.detail.pathInfo.requestPath.includes('/auth/logout')) {
+                    setTimeout(checkAuth, 100);
                 }
             });
             

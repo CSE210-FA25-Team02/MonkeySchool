@@ -12,11 +12,13 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
+import { optionalAuth } from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,13 +50,19 @@ export function createApp() {
             "'unsafe-inline'", // For dynamic styling
             "https://cdnjs.cloudflare.com", // For Font Awesome
           ],
-          connectSrc: ["'self'"],
-          imgSrc: ["'self'", "data:", "blob:"],
           fontSrc: [
             "'self'", 
             "https://fonts.gstatic.com",
             "https://cdnjs.cloudflare.com", // For Font Awesome fonts
           ],
+          connectSrc: [
+            "'self'",
+            "https://oauth2.googleapis.com",
+            "https://www.googleapis.com",
+            "https://accounts.google.com",
+          ],
+          imgSrc: ["'self'", "data:", "blob:", "https:"], // Allow Google profile images
+          formAction: ["'self'", "https://accounts.google.com"], // Allow OAuth redirects
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
@@ -93,6 +101,9 @@ export function createApp() {
   });
   app.use("/api", limiter);
 
+  // Cookie parsing
+  app.use(cookieParser());
+
   // Body parsing
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -112,7 +123,7 @@ export function createApp() {
   app.set("views", path.join(__dirname, "views"));
 
   // Health check (returns HTML for HTMX compatibility)
-  app.get("/", (req, res) => {
+  app.get("/", optionalAuth, (req, res) => {
     const isHtmxRequest = req.headers["hx-request"];
 
     if (isHtmxRequest) {
