@@ -1,6 +1,7 @@
 // Class Controller - JSON API Edition
 
 import * as classService from "../services/class.service.js";
+import * as classRoleService from "../services/classRole.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
 import { getUpcomingQuarters } from "../utils/html-templates.js";
@@ -10,12 +11,50 @@ import { createClassForm, displayInvite, createClassPage, createBaseLayout } fro
  * Create a new class
  */
 export const createClass = asyncHandler(async (req, res) => {
-  const klass = await classService.createClass(req.body);
+  const { name, quarter } = req.body;
+  
+  // User Authentication
+  const userId = req.user?.id || 1;
+  if (!userId) {
+    return res.status(400).send("No user found. Authentication not implemented.");
+  }
+
+  const isProf = req.user?.isProf || true;
+  if (!isProf) {
+    return res.status(401).send("Unauthorized to create class.");
+  }
+  
+  // Validate input
+  if (!name || name.trim().length === 0) {
+    return res.status(400).send("Class name is required.");
+  }
+
+  // Create class
+  let klass;
+  try {
+    klass = await classService.createClass({ name, quarter });
+  } catch (err) {
+    console.error("Error creating class:", err);
+    return res.status(500).send("Failed to create class. Try again.");
+  }
+
+  // Get Class by invite code
+  const classId = klass.id;
+
+  // Add Professor who made call to class
+  if (userId && userId !== 1) {
+    try {
+      await classRoleService.upsertClassRole({userId, classId, role: "PROFESSOR"});
+    } catch (err) {
+      return res.status(500).send("Unable to assign professor to class.");
+    }
+  }
+
+  // Create invite URL
+  const inviteUrl = `${req.protocol}://${req.get('host')}/invite/${klass.inviteCode}`;
 
   // Check if request is HTMX
   const isHTMX = req.headers['hx-request'];
-
-  const inviteUrl = `${req.protocol}://${req.get('host')}/invite/${klass.inviteCode}`;
 
   if (isHTMX) {
     res.status(201).send(displayInvite(inviteUrl));
@@ -39,6 +78,25 @@ export const getClass = asyncHandler(async (req, res) => {
 export const getClassByInviteCode = asyncHandler(async (req, res) => {
   const klass = await classService.getClassByInviteCode(req.params.code);
   if (!klass) throw new NotFoundError("Class not found");
+
+  // User Authentication
+  const userId = req?.user?.id || 0;
+  if (!userId) {
+    return res.status(400).send("No user found. Authentication not implemented.");
+  }
+
+  const classId = klass.id;
+
+  // Add Student (assumed)
+  if (userId && userId !== 0) {
+    try {
+      await classRoleService.upsertClassRole({userId, classId, role: "STUDENT"});
+    } catch (err) {
+      return res.status(500).send("Unable to assign user to class.");
+    }
+  }
+
+
   res.json(klass);
 });
 
@@ -62,20 +120,18 @@ export const deleteClass = asyncHandler(async (req, res) => {
 /**
  * Open/Close Class Create Form
  */
-
 export const renderCreateClassForm = asyncHandler(async (req, res)  => {
   const upcomingQuarters = getUpcomingQuarters();
   res.status(201).send(createClassForm(upcomingQuarters));
 });
 
 export const closeCreateClassForm = asyncHandler(async (req, res)  => {
-  res.status(204).send("");
+  res.status(201).send("");
 });
 
 /**
  * Render Classes Page
  */
-
 export const renderClassPage = asyncHandler(async (req, res) =>  {
   res.status(201).send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
 });

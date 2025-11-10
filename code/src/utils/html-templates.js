@@ -319,7 +319,7 @@ export function displayInvite(inviteURL) {
   }
 
 export function createClassPage (user) {
-    const isProfessor = user?.isProf === true;
+    const isProfessor = user?.isProf || true;
 
     //TODO: This is temporary, please change
     return `
@@ -490,7 +490,7 @@ export function formatDate(dateString, lang = "en") {
 }
 
 export function getUpcomingQuarters(count = 8) {
-    const quarters = ['Winter', 'Spring', 'Summer', 'Fall'];
+    const quarters = ['WI', 'SP', 'SU', 'FA'];
     const currDate = new Date();
     const currYear = currDate.getFullYear();
     const currMonth = currDate.getMonth();
@@ -503,7 +503,8 @@ export function getUpcomingQuarters(count = 8) {
     let qIndex = startIndex;
 
     for (let i = 0; i < count; i++) {
-        quarterList.push(`${quarters[qIndex]} ${yearIndex}`);
+        const shortYear = yearIndex % 100;
+        quarterList.push(`${quarters[qIndex]}${shortYear}`);
         qIndex++;
 
         if (qIndex === quarters.length){ 
