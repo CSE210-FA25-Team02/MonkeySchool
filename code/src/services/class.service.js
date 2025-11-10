@@ -62,6 +62,28 @@ export async function updateClass(id, data) {
 }
 
 /**
+ * Get all classes for a specific user (based on their ClassRole memberships).
+ * Returns classes with user's role in each class.
+ */
+export async function getClassesByUserId(userId) {
+  const classRoles = await prisma.classRole.findMany({
+    where: { userId },
+    include: {
+      class: true
+    }
+  });
+
+  return classRoles.map(cr => ({
+    id: cr.class.id,
+    name: cr.class.name,
+    quarter: cr.class.quarter,
+    inviteCode: cr.class.inviteCode,
+    createdAt: cr.class.createdAt,
+    role: cr.role
+  }));
+}
+
+/**
  * Delete a class by ID.
  * Note: Deleting class will also delete ClassRole + Group + GroupRole via cascades if configured.
  */

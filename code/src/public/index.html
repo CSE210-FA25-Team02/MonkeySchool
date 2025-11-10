@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Student Management System - Accessible, internationalized web application">
     <meta name="theme-color" content="#4a90e2">
     <meta name="color-scheme" content="light dark">
-    
+
     <title>Student Management System</title>
-    
+
     <!-- HTMX Library -->
-    <script src="https://unpkg.com/htmx.org@1.9.8" 
-            integrity="sha384-rgjA7mptc2ETQqXoYC3/zJvkU7K/aP44Y+z7xQuJiVnB/422P/Ak+F/AqFR7E4Wr" 
-            crossorigin="anonymous"></script>
-    
+    <script src="https://unpkg.com/htmx.org@1.9.8"
+        integrity="sha384-rgjA7mptc2ETQqXoYC3/zJvkU7K/aP44Y+z7xQuJiVnB/422P/Ak+F/AqFR7E4Wr" crossorigin="anonymous">
+    </script>
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="/css/main.css">
-    
+
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://unpkg.com">
 </head>
+
 <body>
     <!-- Skip to main content for screen readers -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    
+
     <header class="header" role="banner">
         <div class="container">
             <h1 class="header__title">
@@ -32,20 +34,21 @@
             <nav class="header__nav" role="navigation" aria-label="Main navigation">
                 <ul class="nav-list">
                     <li class="nav-list__item">
-                        <a href="/api/students" 
-                           class="nav-list__link" 
-                           hx-get="/api/students" 
-                           hx-target="#main-content"
-                           hx-push-url="true">
+                        <a href="/api/classes/my-classes?userId=cmhshve9l0005h5t98gm3ek8w" class="nav-list__link"
+                            hx-get="/api/classes/my-classes?userId=cmhshve9l0005h5t98gm3ek8w" hx-target="#main-content"
+                            hx-push-url="true">
+                            My Classes
+                        </a>
+                    </li>
+                    <li class="nav-list__item">
+                        <a href="/api/students" class="nav-list__link" hx-get="/api/students" hx-target="#main-content"
+                            hx-push-url="true">
                             Students
                         </a>
                     </li>
                     <li class="nav-list__item">
-                        <a href="/api/students/new" 
-                           class="nav-list__link" 
-                           hx-get="/api/students/new" 
-                           hx-target="#main-content"
-                           hx-push-url="true">
+                        <a href="/api/students/new" class="nav-list__link" hx-get="/api/students/new"
+                            hx-target="#main-content" hx-push-url="true">
                             Add Student
                         </a>
                     </li>
@@ -54,11 +57,7 @@
         </div>
     </header>
 
-    <main id="main-content" 
-          class="main" 
-          role="main" 
-          tabindex="-1"
-          hx-history-elt>
+    <main id="main-content" class="main" role="main" tabindex="-1" hx-history-elt>
         <div class="container">
             <!-- Initial content -->
             <section class="welcome" role="region" aria-labelledby="welcome-title">
@@ -69,24 +68,18 @@
                     A modern, accessible, and internationalized platform for managing student records.
                     Built with HTMX for seamless user interactions and designed with accessibility in mind.
                 </p>
-                
+
                 <div class="welcome__actions">
-                    <a href="/api/students" 
-                       class="btn btn--primary btn--large"
-                       hx-get="/api/students" 
-                       hx-target="#main-content"
-                       hx-push-url="true">
+                    <a href="/api/students" class="btn btn--primary btn--large" hx-get="/api/students"
+                        hx-target="#main-content" hx-push-url="true">
                         View All Students
                     </a>
-                    <a href="/api/students/new" 
-                       class="btn btn--secondary btn--large"
-                       hx-get="/api/students/new" 
-                       hx-target="#main-content"
-                       hx-push-url="true">
+                    <a href="/api/students/new" class="btn btn--secondary btn--large" hx-get="/api/students/new"
+                        hx-target="#main-content" hx-push-url="true">
                         Add New Student
                     </a>
                 </div>
-                
+
                 <div class="welcome__features">
                     <h3 class="welcome__features-title">Features</h3>
                     <ul class="features-list">
@@ -111,7 +104,7 @@
     <footer class="footer" role="contentinfo">
         <div class="container">
             <p class="footer__text">
-                &copy; 2024 Student Management System. 
+                &copy; 2024 Student Management System.
                 <span class="footer__accessibility">
                     Built with accessibility and internationalization in mind.
                 </span>
@@ -125,11 +118,7 @@
     </footer>
 
     <!-- Loading indicator for HTMX requests -->
-    <div id="loading" 
-         class="loading" 
-         aria-live="polite" 
-         aria-atomic="true"
-         style="display: none;">
+    <div id="loading" class="loading" aria-live="polite" aria-atomic="true" style="display: none;">
         <div class="loading__spinner" role="status">
             <span class="sr-only">Loading content, please wait...</span>
         </div>
@@ -138,24 +127,24 @@
     <!-- HTMX Configuration and Custom Scripts -->
     <script>
         // Configure HTMX
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Show loading indicator on HTMX requests
-            document.body.addEventListener('htmx:beforeRequest', function(evt) {
+            document.body.addEventListener('htmx:beforeRequest', function (evt) {
                 document.getElementById('loading').style.display = 'block';
             });
-            
-            document.body.addEventListener('htmx:afterRequest', function(evt) {
+
+            document.body.addEventListener('htmx:afterRequest', function (evt) {
                 document.getElementById('loading').style.display = 'none';
             });
-            
+
             // Handle errors gracefully
-            document.body.addEventListener('htmx:responseError', function(evt) {
+            document.body.addEventListener('htmx:responseError', function (evt) {
                 console.error('HTMX Error:', evt.detail);
                 document.getElementById('loading').style.display = 'none';
             });
-            
+
             // Announce navigation changes to screen readers
-            document.body.addEventListener('htmx:afterSettle', function(evt) {
+            document.body.addEventListener('htmx:afterSettle', function (evt) {
                 const mainContent = document.getElementById('main-content');
                 if (mainContent) {
                     // Focus management for accessibility
@@ -163,7 +152,7 @@
                     if (firstHeading) {
                         firstHeading.focus();
                     }
-                    
+
                     // Announce content change
                     const announcement = document.createElement('div');
                     announcement.setAttribute('aria-live', 'polite');
@@ -171,32 +160,32 @@
                     announcement.className = 'sr-only';
                     announcement.textContent = 'Page content updated';
                     document.body.appendChild(announcement);
-                    
+
                     setTimeout(() => {
                         document.body.removeChild(announcement);
                     }, 1000);
                 }
             });
         });
-        
+
         // Enhanced form validation
         function validateForm(form) {
             const nameInput = form.querySelector('input[name="name"]');
             const emailInput = form.querySelector('input[name="email"]');
             let isValid = true;
-            
+
             // Clear previous errors
             form.querySelectorAll('.form-group__error').forEach(error => {
                 error.textContent = '';
             });
-            
+
             // Validate name
             if (!nameInput.value.trim()) {
                 const nameError = form.querySelector('#name-error');
                 nameError.textContent = 'Name is required';
                 isValid = false;
             }
-            
+
             // Validate email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailInput.value.trim()) {
@@ -208,12 +197,12 @@
                 emailError.textContent = 'Please enter a valid email address';
                 isValid = false;
             }
-            
+
             return isValid;
         }
-        
+
         // Add form validation listener
-        document.body.addEventListener('submit', function(evt) {
+        document.body.addEventListener('submit', function (evt) {
             if (evt.target.classList.contains('student-form')) {
                 if (!validateForm(evt.target)) {
                     evt.preventDefault();
@@ -222,4 +211,5 @@
         });
     </script>
 </body>
+
 </html>
