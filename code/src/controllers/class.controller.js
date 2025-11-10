@@ -50,8 +50,12 @@ export const updateClass = asyncHandler(async (req, res) => {
  * Requires authentication via middleware
  */
 export const getUserClasses = asyncHandler(async (req, res) => {
-  // userId is attached by auth middleware
-  const userId = req.userId;
+  // userId from authenticated user (JWT)
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
 
   const classes = await classService.getClassesByUserId(userId);
   res.json(classes);
@@ -59,10 +63,11 @@ export const getUserClasses = asyncHandler(async (req, res) => {
 
 /**
  * Render class list page for HTMX
- * Query parameter: userId (temporary until auth is implemented)
+ * Uses authenticated user from JWT cookie
  */
 export const renderUserClasses = asyncHandler(async (req, res) => {
-  const userId = req.query.userId;
+  // Get userId from authenticated user
+  const userId = req.user?.id;
 
   if (!userId) {
     return res.send(renderAuthRequiredHTML());

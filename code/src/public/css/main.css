@@ -16,7 +16,19 @@
    ============================================================================ */
 
 :root {
-  /* Color Palette */
+  /* Brand Color Palette - Monkey School */
+  --color-primary-bg: #0E534A; /* Deep green (main background for fixed nav bar) */
+  --color-secondary-bg: #1B6A59; /* Used for hover states, headers, and sub-nav backgrounds */
+  --color-accent-1: #F2A93B; /* Highlight color for active nav items or buttons */
+  --color-accent-2: #E07A2F; /* Used for warning or emphasis (close buttons, active icons) */
+  --color-neutral: #B7C7A3; /* Light background for footer and non-primary areas */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #333333;
+  --color-text-light: #B7C7A3;
+  --color-bg-white: #ffffff;
+  --color-bg-light: #f5f5f5;
+
+  /* Legacy Color Palette (kept for backward compatibility) */
   --color-primary: #4a90e2;
   --color-primary-light: #7aa7e9;
   --color-primary-dark: #357abd;
@@ -104,6 +116,8 @@
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;
+  --z-navbar: 1040;
+  --z-submenu: 1050;
   --z-modal-backdrop: 1040;
   --z-modal: 1050;
   --z-popover: 1060;
@@ -152,7 +166,7 @@ body {
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-normal);
   color: var(--color-neutral-800);
-  background-color: var(--color-neutral-50);
+  background-color: var(--color-bg-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -235,7 +249,6 @@ a:focus {
   margin-right: auto;
   padding-left: var(--spacing-md);
   padding-right: var(--spacing-md);
-  background-color: var(--color-neutral-200);
 }
 
 @media (min-width: 640px) {
@@ -267,16 +280,24 @@ a:focus {
 }
 
 /* ============================================================================
-   HEADER
+   HEADER (Top Bar)
    ============================================================================ */
 
 .header {
-  background-color: white;
-  border-bottom: 1px solid var(--color-neutral-200);
-  box-shadow: var(--shadow-sm);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 80px; /* Start after the 80px navbar */
+  right: 0;
+  background-color: var(--color-primary-bg); /* #0E534A - same as nav bar */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-sm);
   z-index: var(--z-sticky);
+  min-height: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 var(--spacing-lg);
 }
 
 .header .container {
@@ -285,22 +306,33 @@ a:focus {
   justify-content: space-between;
   padding-top: var(--spacing-md);
   padding-bottom: var(--spacing-md);
+  background-color: transparent;
+}
+
+.header__content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 var(--spacing-lg);
+}
+
+.header__left {
+  display: none; /* Hide left section - no title */
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
 .header__title {
-  margin: 0;
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  display: none; /* Hide title - no text in header */
 }
 
 .header__link {
-  color: var(--color-neutral-900);
-  text-decoration: none;
-}
-
-.header__link:hover,
-.header__link:focus {
-  color: var(--color-primary);
+  display: none; /* Hide link - no text in header */
 }
 
 .header__nav {
@@ -320,7 +352,7 @@ a:focus {
 }
 
 .nav-list__link {
-  color: var(--color-neutral-700);
+  color: var(--color-text-primary);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -330,8 +362,155 @@ a:focus {
 
 .nav-list__link:hover,
 .nav-list__link:focus {
-  color: var(--color-primary);
+  color: var(--color-accent-1);
+  background-color: var(--color-secondary-bg);
+}
+
+/* Header Profile Dropdown */
+.header__profile {
+  position: relative;
+}
+
+.header__profile-button {
+  background: transparent;
+  border: 2px solid var(--color-accent-1);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.header__profile-button:hover,
+.header__profile-button:focus {
+  background-color: var(--color-secondary-bg);
+  border-color: var(--color-accent-2);
+}
+
+.header__profile-button--active {
+  background-color: var(--color-secondary-bg);
+  border-color: var(--color-accent-2);
+}
+
+.header__profile-icon {
+  font-size: var(--font-size-lg);
+  color: var(--color-accent-1); /* #F2A93B - accent yellow */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__profile-icon i {
+  color: var(--color-accent-1); /* #F2A93B - accent yellow */
+}
+
+.header__dropdown {
+  position: absolute;
+  top: calc(100% + var(--spacing-sm));
+  right: 0;
+  background-color: var(--color-bg-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-fast);
+  z-index: var(--z-dropdown);
+}
+
+.header__dropdown--open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.header__dropdown-item {
+  display: block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.header__dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.header__dropdown-item:hover,
+.header__dropdown-item:focus {
   background-color: var(--color-neutral-100);
+  color: var(--color-accent-2);
+}
+
+/* ============================================================================
+   AUTH SECTION
+   ============================================================================ */
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-left: var(--spacing-lg);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.user-avatar {
+  border-radius: 50%;
+  border: 2px solid var(--color-neutral-200);
+}
+
+.user-name {
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-700);
+  font-weight: var(--font-weight-medium);
+}
+
+.btn--small {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  min-height: 32px;
+  min-width: 32px;
+}
+
+/* ============================================================================
+   LOGIN SECTION
+   ============================================================================ */
+
+.login-section {
+  margin: var(--spacing-2xl) 0;
+}
+
+.login-card {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl);
+  background-color: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.login-card h3 {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-neutral-900);
+}
+
+.login-card p {
+  margin-bottom: var(--spacing-xl);
+  color: var(--color-neutral-600);
+  font-size: var(--font-size-sm);
 }
 
 /* ============================================================================
@@ -339,9 +518,13 @@ a:focus {
    ============================================================================ */
 
 .main {
-  min-height: calc(100vh - 140px); /* Adjust based on header/footer height */
-  padding-top: var(--spacing-xl);
-  padding-bottom: var(--spacing-xl);
+  position: relative;
+  margin-left: 80px; /* Offset for fixed 80px navbar */
+  margin-top: 60px; /* Offset for fixed header */
+  margin-bottom: 60px; /* Offset for fixed footer */
+  min-height: calc(100vh - 120px); /* Full height minus header (60px) and footer (60px) */
+  padding: var(--spacing-xl);
+  overflow-y: auto;
 }
 
 /* ============================================================================
@@ -349,25 +532,54 @@ a:focus {
    ============================================================================ */
 
 .footer {
-  background-color: var(--color-neutral-100);
-  border-top: 1px solid var(--color-neutral-200);
-  padding-top: var(--spacing-lg);
-  padding-bottom: var(--spacing-lg);
-  margin-top: auto;
+  position: fixed;
+  bottom: 0;
+  left: 80px; /* Start after the 80px navbar */
+  right: 0;
+  background-color: var(--color-primary-bg); /* #0E534A - dark green */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-md) var(--spacing-lg);
+  z-index: var(--z-sticky);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer--branded {
+  background-color: var(--color-primary-bg); /* #0E534A */
 }
 
 .footer .container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   gap: var(--spacing-md);
+  background-color: transparent;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.footer__content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer__text {
   margin: 0;
-  color: var(--color-neutral-600);
+  color: var(--color-text-primary); /* White text */
   font-size: var(--font-size-sm);
+}
+
+.footer__copyright {
+  margin: 0;
+  color: var(--color-text-primary); /* White text */
+  font-size: var(--font-size-sm);
+  text-align: center;
 }
 
 .footer__accessibility {
@@ -380,14 +592,14 @@ a:focus {
 }
 
 .footer__link {
-  color: var(--color-neutral-600);
+  color: var(--color-text-primary); /* White text */
   text-decoration: none;
   font-size: var(--font-size-sm);
 }
 
 .footer__link:hover,
 .footer__link:focus {
-  color: var(--color-primary);
+  color: var(--color-accent-1); /* Gold on hover */
 }
 
 /* ============================================================================
@@ -768,6 +980,69 @@ a:focus {
   color: var(--color-neutral-600);
 }
 
+.empty-state__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ============================================================================
+   NOT IMPLEMENTED / UNDER CONSTRUCTION PAGE
+   ============================================================================ */
+
+.not-implemented {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh; /* Use viewport-relative height that works within the main content area */
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  width: 100%;
+}
+
+/* Ensure not-implemented section works within main content area */
+/* The main content area already has proper margins for header, navbar, and footer */
+.main .container .not-implemented {
+  min-height: 50vh; /* Slightly smaller since it's nested within main */
+}
+
+.not-implemented__content {
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  padding: var(--spacing-3xl);
+  background-color: var(--color-bg-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin: 0 auto;
+}
+
+.not-implemented__icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-lg);
+  line-height: 1;
+}
+
+.not-implemented__title {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary-bg); /* #0E534A */
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.not-implemented__message {
+  margin-bottom: var(--spacing-xl);
+  color: var(--color-neutral-600);
+  font-size: var(--font-size-base);
+}
+
+.not-implemented__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 /* ============================================================================
    WELCOME SECTION
    ============================================================================ */
@@ -775,10 +1050,9 @@ a:focus {
 .welcome {
   text-align: center;
   padding: var(--spacing-3xl) var(--spacing-xl);
-  background-color: white;
+  background-color: var(--color-bg-white);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
-  background-color: var(--color-neutral-300);
 }
 
 .welcome__title {
@@ -845,6 +1119,22 @@ a:focus {
   align-items: center;
   justify-content: center;
   z-index: var(--z-modal);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Loading is controlled by JavaScript via inline styles */
+/* When hidden, it should have display: none, visibility: hidden, opacity: 0 */
+/* When shown, it should have display: flex, visibility: visible, opacity: 1 */
+
+/* Force hide loading when it has the hidden class */
+.loading--hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .loading__spinner {
@@ -885,18 +1175,63 @@ a:focus {
    RESPONSIVE DESIGN
    ============================================================================ */
 
+/* ============================================================================
+   RESPONSIVE DESIGN - TABLET (768px - 1023px)
+   ============================================================================ */
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .header {
+    left: 80px !important;
+  }
+
+  .main {
+    margin-left: 80px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+
+  .footer {
+    left: 80px !important;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN - MOBILE (< 768px)
+   ============================================================================ */
+
 @media (max-width: 767px) {
+  .header {
+    left: 80px !important;
+  }
+
+  .main {
+    margin-left: 80px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    padding: var(--spacing-md);
+  }
+
+  .footer {
+    left: 80px !important;
+  }
+
   .header .container {
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--spacing-md);
   }
 
   .header__nav {
-    margin-left: 0;
+    margin-left: auto;
   }
 
   .nav-list {
+    justify-content: flex-end;
+  }
+
+  .auth-section {
+    margin-left: 0;
     justify-content: center;
+    width: 100%;
   }
 
   .student-grid {

@@ -1,0 +1,291 @@
+/**
+ * Navigation Bar and Submenu Styles
+ * 
+ * Styles for the fixed left navigation bar and collapsible submenu
+ */
+
+/* ============================================================================
+   NAVIGATION BAR (Left Fixed Nav)
+   ============================================================================ */
+
+.navbar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  background-color: var(--color-primary-bg); /* #0E534A */
+  z-index: var(--z-navbar);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  /* Always visible on all devices - no slide animation */
+}
+
+.navbar__logo {
+  margin-bottom: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+}
+
+.navbar__logo-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.navbar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  width: 100%;
+  flex: 1;
+}
+
+.navbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-text-primary); /* White text */
+  border-radius: var(--border-radius-md);
+  margin: var(--spacing-xs) 0;
+  width: 60px;
+  height: 60px;
+  /* Icons only - no text labels */
+}
+
+.navbar__item:hover {
+  background-color: var(--color-secondary-bg); /* #1B6A59 */
+}
+
+.navbar__item--active {
+  color: var(--color-accent-1); /* Gold for active icons */
+  background-color: var(--color-secondary-bg); /* #1B6A59 */
+}
+
+.navbar__item--active .navbar__icon,
+.navbar__item--active .navbar__icon i {
+  color: var(--color-accent-1); /* #F2A93B - accent yellow for active */
+}
+
+.navbar__item--submenu-open {
+  background-color: var(--color-secondary-bg);
+}
+
+.navbar__icon {
+  font-size: var(--font-size-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-accent-1); /* #F2A93B - accent yellow */
+}
+
+.navbar__icon i {
+  color: var(--color-accent-1); /* #F2A93B - accent yellow */
+}
+
+/* Hide text labels - icons only */
+.navbar__text {
+  display: none;
+}
+
+.navbar__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  margin-top: auto;
+}
+
+.navbar__hamburger-line {
+  width: 24px;
+  height: 3px;
+  background-color: var(--color-accent-1);
+  border-radius: 2px;
+  transition: all var(--transition-fast);
+}
+
+/* ============================================================================
+   SUB-MENU (Collapsible Side Menu)
+   ============================================================================ */
+
+.submenu {
+  position: fixed;
+  left: 80px; /* Start after the 80px navbar */
+  top: 0;
+  bottom: 0;
+  width: 0;
+  z-index: var(--z-submenu);
+  pointer-events: none;
+  transition: width var(--transition-normal);
+  overflow: hidden;
+}
+
+.submenu--open {
+  width: 250px;
+  pointer-events: auto;
+}
+
+.submenu__overlay {
+  display: none; /* Hide overlay on desktop - submenu appears next to nav */
+}
+
+/* Only show overlay on mobile/tablet */
+@media (max-width: 1023px) {
+  .submenu__overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    pointer-events: none;
+  }
+
+  .submenu--open .submenu__overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.submenu__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  background-color: var(--color-neutral); /* #B7C7A3 - light green */
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform var(--transition-normal);
+}
+
+.submenu--open .submenu__panel {
+  transform: translateX(0);
+}
+
+.submenu__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  background-color: var(--color-neutral); /* #B7C7A3 */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.submenu__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary); /* Dark text on light background */
+}
+
+.submenu__close {
+  background: transparent;
+  border: none;
+  font-size: var(--font-size-3xl);
+  color: var(--color-accent-2); /* Orange for close button */
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast);
+  line-height: 1;
+}
+
+.submenu__close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.submenu__nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) 0;
+}
+
+.submenu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.submenu__item {
+  margin: 0;
+}
+
+.submenu__link {
+  display: block;
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--color-text-secondary); /* Dark text on light background */
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  border-left: 3px solid transparent;
+}
+
+.submenu__link:hover,
+.submenu__link:focus {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-left-color: var(--color-accent-1);
+  color: var(--color-text-secondary);
+}
+
+.submenu__item--active .submenu__link {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-left-color: var(--color-accent-1);
+  color: var(--color-accent-2); /* Orange for active */
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN - TABLET (768px - 1023px)
+   ============================================================================ */
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  /* Navbar always visible - no changes needed */
+  .navbar {
+    width: 80px;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN - MOBILE (< 768px)
+   ============================================================================ */
+
+@media (max-width: 767px) {
+  /* Navbar always visible on mobile - 80px wide, icons only */
+  .navbar {
+    width: 80px;
+    /* Always visible - no transform */
+  }
+
+  .submenu__panel {
+    width: 250px;
+  }
+}
+

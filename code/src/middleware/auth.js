@@ -1,80 +1,63 @@
 /**
  * Authentication Middleware
- * 
- * Verifies user authentication and attaches user info to request object.
- * 
- * Current implementation: Query parameter (temporary)
- * TODO: Replace with proper session/JWT authentication
+ *
+ * Validates JWT tokens and attaches user to request
  */
 
-import {
-  ApiError
-} from '../utils/api-error.js';
+import { verifyToken } from "../services/auth.service.js";
+import { getUserById } from "../services/user.service.js";
 
 /**
- * Middleware to check if user is authenticated
- * Currently checks for userId in query parameters
- * 
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
+ * Middleware to require authentication
  */
-export const requireAuth = (req, res, next) => {
+export async function requireAuth(req, res, next) {
   try {
-    // Get userId from query parameter (temporary approach)
-    // TODO: Replace with session/JWT token verification
-    const userId = req.query.userId || req.body.userId || req.params.userId;
+    const token = req.cookies?.auth_token;
 
-    if (!userId) {
-      return res.status(401).json({
-        error: 'Authentication required. Please provide userId.'
-      });
+    if (!token) {
+      return res.status(401).json({ error: "Authentication required" });
     }
 
-    // Attach userId to request for downstream middleware/controllers
-    req.userId = userId;
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+
+    const user = await getUserById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
+    // Attach user to request
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Auth middleware error:", error);
+    res.status(401).json({ error: "Authentication failed" });
+  }
+}
+
+/**
+ * Middleware to optionally attach user if token exists
+ */
+export async function optionalAuth(req, res, next) {
+  try {
+    const token = req.cookies?.auth_token;
+
+    if (token) {
+      const decoded = verifyToken(token);
+      if (decoded) {
+        const user = await getUserById(decoded.id);
+        if (user) {
+          req.user = user;
+        }
+      }
+    }
 
     next();
   } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Middleware for optional authentication
- * Attaches user info if available, but doesn't require it
- * 
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
- */
-export const optionalAuth = (req, res, next) => {
-  const userId = req.query.userId || req.body.userId || req.params.userId;
-
-  if (userId) {
-    req.userId = userId;
-  }
-
-  next();
-};
-
-/**
- * Check if authenticated user has specific role for a resource
- * This should be used after requireAuth middleware
- * 
- * @param {string[]} allowedRoles - Array of allowed roles
- * @returns {Function} Express middleware function
- */
-// eslint-disable-next-line no-unused-vars
-export const requireRole = (allowedRoles) => {
-  return (req, res, next) => {
-    if (!req.userId) {
-      throw new ApiError(401, 'Authentication required.');
-    }
-
-    // TODO: Fetch user role from database and check against allowedRoles
-    // For now, we'll pass through as role checking will be done in service layer
-
+    console.error("Auth middleware error:", error);
     next();
-  };
-};
+  }
+}
+

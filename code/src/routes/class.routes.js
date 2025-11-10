@@ -6,13 +6,14 @@ import {
     asyncHandler
 } from "../utils/async-handler.js";
 import {
-    requireAuth
+    requireAuth,
+    optionalAuth
 } from "../middleware/auth.js";
 
 const router = Router();
 
-// HTML page route for HTMX (must come before other routes)
-router.get("/my-classes", asyncHandler(classController.renderUserClasses));
+// HTML page route for HTMX (uses optionalAuth to check if user is logged in)
+router.get("/my-classes", optionalAuth, asyncHandler(classController.renderUserClasses));
 
 // JSON API route for programmatic access (requires authentication)
 router.get("/user/classes", requireAuth, asyncHandler(classController.getUserClasses));
