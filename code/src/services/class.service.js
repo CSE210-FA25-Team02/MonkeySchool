@@ -70,3 +70,30 @@ export async function deleteClass(id) {
     where: { id }
   });
 }
+
+/**
+ * TODO: show course only the user assigned to, insead of all the courses.
+ * helper function to extract all the avalible course 
+ * Get all classes with basic member count
+ */
+export async function getAllClasses() {
+  return prisma.class.findMany({
+    include: {
+      members: {
+        select: {
+          id: true,
+          role: true,
+          user: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+}

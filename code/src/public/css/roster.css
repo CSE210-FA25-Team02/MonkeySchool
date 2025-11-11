@@ -2,15 +2,15 @@
    CLASS ROSTER PAGE STYLING
    =============================== */
 
-/* Base layout */
+/* Base layout - aligned with new design system */
 .roster-page {
-    padding: 24px;
-    max-width: 1000px;
-    margin: 0 auto;
-    color: #222;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: var(--spacing-xl);
+    max-width: none;
+    margin: 0;
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
   }
   
   .roster-content {
@@ -27,18 +27,48 @@
     transition: all 0.2s ease-in-out;
   }
 
-  /* Title section */
+  /* Navigation section */
+  .roster-page__navigation {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-neutral);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+  }
+  
+  .btn-back:hover {
+    background: var(--color-secondary-bg);
+    color: var(--color-text-primary);
+    transform: translateX(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Title section - new color scheme */
   .roster-page__title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 24px;
-    color: inherit;
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-primary-bg); /* Deep green */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
   }
   
   .roster-page__count {
-    font-size: 16px;
-    font-weight: 500;
-    color: #666;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-accent-1); /* Golden yellow */
   }
   
   /* Table structure */
@@ -57,39 +87,48 @@
   }
   
   .roster-table th {
-    background: rgba(0,0,0,0.04);
-    font-weight: 600;
-    color: #222;
+    background: var(--color-neutral); /* Light green */
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
   }
   
   .roster-member:hover {
-    background-color: rgba(0,0,0,0.03);
+    background-color: rgba(183, 199, 163, 0.3); /* Light green with opacity */
+    transition: all var(--transition-fast);
   }
   
   /* Name + email */
   .roster-name {
-    font-weight: 500;
-    color: #111;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
   }
   
   .roster-email {
-    font-size: 14px;
-    color: #555;
+    font-size: var(--font-size-sm);
+    color: var(--color-neutral-600);
   }
   
-  /* Dropdown */
+  /* Dropdown - new styling */
   .roster-role select {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #fafafa;
-    color: #111;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-neutral-300);
+    background: var(--color-bg-white);
+    color: var(--color-text-secondary);
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--font-size-sm);
+    transition: all var(--transition-fast);
   }
   
   .roster-role select:hover {
-    border-color: #888;
+    border-color: var(--color-accent-1);
+    box-shadow: 0 0 0 2px rgba(242, 169, 59, 0.1);
+  }
+  
+  .roster-role select:focus {
+    border-color: var(--color-primary-bg);
+    box-shadow: 0 0 0 2px rgba(14, 83, 74, 0.1);
+    outline: none;
   }
   
   /* Section titles */
@@ -98,12 +137,15 @@
   }
   
   .roster-role-section__title {
-    font-size: 20px;
-    font-weight: 600;
-    padding-bottom: 8px;
-    margin-bottom: 16px;
-    border-bottom: 2px solid rgba(0,0,0,0.1);
-    color: inherit;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    padding-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--color-accent-1); /* Golden yellow accent */
+    color: var(--color-primary-bg); /* Deep green */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
   }
   
   /* Success/error notifications */
@@ -120,11 +162,13 @@
   }
   
   .notification--success {
-    background-color: #4caf50;
+    background-color: var(--color-accent-1); /* Golden yellow */
+    color: var(--color-text-secondary);
   }
   
   .notification--error {
-    background-color: #e53935;
+    background-color: var(--color-accent-2); /* Orange */
+    color: var(--color-text-primary);
   }
   
   @keyframes fadeInOut {

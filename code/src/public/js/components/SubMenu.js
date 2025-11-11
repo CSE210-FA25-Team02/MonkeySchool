@@ -105,16 +105,19 @@ export class SubMenu {
             <a href="${item.path}" 
                class="submenu__link" 
                data-path="${item.path}"
-               ${typeof htmx !== 'undefined' ? `
-                 hx-get="${item.path}" 
-                 hx-target="#main-content" 
-                 hx-push-url="true"
-               ` : ''}>
+               hx-get="${item.path}" 
+               hx-target="#main-content" 
+               hx-push-url="true">
               ${item.name}
             </a>
           </li>
         `;
       }).join('');
+      
+      // Tell HTMX to process the new elements
+      if (typeof htmx !== 'undefined') {
+        htmx.process(list);
+      }
     }
 
     // Show sub-menu
@@ -286,17 +289,15 @@ export class SubMenu {
     });
 
     // Close submenu when clicking on a link (after navigation)
-    const list = this.container.querySelector('.submenu__list');
-    if (list) {
-      list.addEventListener('click', (e) => {
-        if (e.target.classList.contains('submenu__link')) {
-          // Close after a short delay to allow navigation
-          setTimeout(() => {
-            this.close();
-          }, 100);
-        }
-      });
-    }
+    // Use event delegation on the container to handle dynamically created links
+    this.container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('submenu__link')) {
+        // Close after a short delay to allow navigation
+        setTimeout(() => {
+          this.close();
+        }, 100);
+      }
+    });
   }
 
   /**

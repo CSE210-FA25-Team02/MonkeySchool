@@ -140,6 +140,7 @@ export function createApp() {
     }
   });
 
+
   // Dashboard route (alias for home)
   app.get("/dashboard", (req, res) => {
     const isHtmxRequest = req.headers["hx-request"];
@@ -155,10 +156,133 @@ export function createApp() {
             A modern, accessible, and internationalized platform for managing student records.
             Built with HTMX for seamless user interactions and designed with accessibility in mind.
           </p>
+          <div class="welcome__actions">
+            <a href="/courses/list" 
+               class="btn btn--primary btn--large"
+               hx-get="/courses/list" 
+               hx-target="#main-content"
+               hx-push-url="true">
+               <i class="fas fa-graduation-cap"></i>
+               View All Courses
+            </a>
+          </div>
         </section>
       `);
     } else {
       res.sendFile(path.join(__dirname, "public", "index.html"));
+    }
+  });
+
+  // Frontend routes for HTMX pages
+  // Courses list page
+  app.get("/courses/list", async (req, res) => {
+    const isHtmxRequest = req.headers["hx-request"];
+    
+    if (isHtmxRequest) {
+      // HTMX request - return just the content for #main-content
+      // Disable caching for HTMX requests to ensure fresh content
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      res.set('Surrogate-Control', 'no-store');
+      res.set('ETag', Date.now().toString()); // Force unique ETag
+      
+      try {
+        const { showCoursesListPage } = await import('./frontend/courses.js');
+        showCoursesListPage(req, res);
+      } catch (error) {
+        console.error('Error loading courses page:', error);
+        res.status(500).send('<div class="alert alert--error"><h2>Error</h2><p>Failed to load courses page</p></div>');
+      }
+    } else {
+      // Direct navigation - serve full page with courses content embedded
+      try {
+        const fs = await import('fs');
+        const { showCoursesListPage } = await import('./frontend/courses.js');
+        
+        // Get the course content
+        let coursesContent = '';
+        const mockRes = {
+          send: (content) => { coursesContent = content; }
+        };
+        await showCoursesListPage(req, mockRes);
+        
+        // Read the base HTML file
+        const indexHtml = fs.readFileSync(path.join(__dirname, "public", "index.html"), 'utf8');
+        
+        // Replace the main-content with courses content using a robust regex
+        // Match the main element (including multiline attributes) and everything inside it
+        const mainContentRegex = /<main\s+[^>]*id="main-content"[^>]*>[\s\S]*?<\/main>/im;
+        const fullPageHtml = indexHtml.replace(
+          mainContentRegex,
+          `<main id="main-content" class="main" role="main" tabindex="-1" hx-history-elt>
+    <div class="container">
+        ${coursesContent}
+    </div>
+</main>`
+        );
+        
+        res.send(fullPageHtml);
+      } catch (error) {
+        console.error('Error loading courses page for direct navigation:', error);
+        res.sendFile(path.join(__dirname, "public", "index.html"));
+      }
+    }
+  });
+  
+  // Class roster page
+  app.get("/roster/:classId", async (req, res) => {
+    const isHtmxRequest = req.headers["hx-request"];
+    
+    if (isHtmxRequest) {
+      // HTMX request - return just the content for #main-content
+      // Disable caching for HTMX requests to ensure fresh content
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      res.set('Surrogate-Control', 'no-store');
+      res.set('ETag', Date.now().toString()); // Force unique ETag
+      
+      try {
+        const { showRosterPage } = await import('./frontend/roster.js');
+        showRosterPage(req, res);
+      } catch (error) {
+        console.error('Error loading roster page:', error);
+        res.status(500).send('<div class="alert alert--error"><h2>Error</h2><p>Failed to load roster page</p></div>');
+      }
+    } else {
+      // Direct navigation - serve full page with roster content embedded
+      try {
+        const fs = await import('fs');
+        const { showRosterPage } = await import('./frontend/roster.js');
+        
+        // Get the roster content
+        let rosterContent = '';
+        const mockRes = {
+          send: (content) => { rosterContent = content; }
+        };
+        await showRosterPage(req, mockRes);
+        
+        // Read the base HTML file
+        const indexHtml = fs.readFileSync(path.join(__dirname, "public", "index.html"), 'utf8');
+        
+        // Replace the main-content with roster content using a robust regex
+        // Match the main element (including multiline attributes) and everything inside it
+        const mainContentRegex = /<main\s+[^>]*id="main-content"[^>]*>[\s\S]*?<\/main>/im;
+        const fullPageHtml = indexHtml.replace(
+          mainContentRegex,
+          `<main id="main-content" class="main" role="main" tabindex="-1" hx-history-elt>
+    <div class="container">
+        ${rosterContent}
+    </div>
+</main>`
+        );
+        
+        res.send(fullPageHtml);
+      } catch (error) {
+        console.error('Error loading roster page for direct navigation:', error);
+        res.sendFile(path.join(__dirname, "public", "index.html"));
+      }
     }
   });
 

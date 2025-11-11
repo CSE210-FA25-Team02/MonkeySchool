@@ -84,19 +84,32 @@ export const showRosterPage = asyncHandler(async (req, res) => {
 
   const rosterPageShell = `
     <link rel="stylesheet" href="/css/roster.css">
-    <div class="roster-page" role="main" aria-labelledby="roster-title">
-      <header class="roster-page__header">
-        <div class="roster-page__title-section">
-          <h1 id="roster-title" class="roster-page__title">
-            Class Roster
-           <span class="roster-page__count">(${rosterData.meta.totalUsers} member${rosterData.meta.totalUsers !== 1 ? 's' : ''})</span>
-          </h1>
-        </div>
+    <div class="container">
+      <div class="roster-page" aria-labelledby="roster-title">
+        <header class="roster-page__header">
+          <div class="roster-page__title-section">
+            <div class="roster-page__navigation">
+              <a href="/courses/list" 
+                 class="btn-back"
+                 hx-get="/courses/list"
+                 hx-target="#main-content"
+                 hx-push-url="true">
+                <i class="fas fa-arrow-left"></i>
+                Back to Courses
+              </a>
+            </div>
+            <h1 id="roster-title" class="roster-page__title">
+              <i class="fas fa-users" style="color: var(--color-accent-1); margin-right: var(--spacing-md);"></i>
+              Class Roster
+              <span class="roster-page__count">(${rosterData.meta.totalUsers} member${rosterData.meta.totalUsers !== 1 ? 's' : ''})</span>
+            </h1>
+          </div>
+          
+        </header>
         
-      </header>
-      
-      <div id="roster-content" class="roster-content">
-        ${rosterData.data.length > 0 ? generateCardView(rosterData.data) : '<p>No members found in this class.</p>'}
+        <div id="roster-content" class="roster-content">
+          ${rosterData.data.length > 0 ? generateCardView(rosterData.data) : '<p>No members found in this class.</p>'}
+        </div>
       </div>
     </div>
   `;
