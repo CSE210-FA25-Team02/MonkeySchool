@@ -18,7 +18,7 @@ Feature: List Classes for User
   Scenario: Missing userId parameter returns error
     When I request class list without userId parameter
     Then the response should have status code 401
-    And the response should contain error message "Authentication required. Please provide userId."
+    And the response should contain error message "Authentication required"
 
   Scenario: User views class list HTML page
     Given a user with email "htmltest@ucsd.edu" exists

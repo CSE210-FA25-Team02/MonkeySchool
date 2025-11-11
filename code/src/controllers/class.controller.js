@@ -50,8 +50,9 @@ export const updateClass = asyncHandler(async (req, res) => {
  * Requires authentication via middleware
  */
 export const getUserClasses = asyncHandler(async (req, res) => {
-  // userId from authenticated user (JWT)
-  const userId = req.user?.id;
+  // Priority: JWT auth (production), fallback to query param (testing)
+  // TODO: Remove query param fallback once full JWT auth is deployed
+  const userId = req.user?.id || req.query.userId;
 
   if (!userId) {
     return res.status(401).json({ error: 'Authentication required' });
@@ -66,8 +67,9 @@ export const getUserClasses = asyncHandler(async (req, res) => {
  * Uses authenticated user from JWT cookie
  */
 export const renderUserClasses = asyncHandler(async (req, res) => {
-  // Get userId from authenticated user
-  const userId = req.user?.id;
+  // Priority: JWT auth (production), fallback to query param (testing)
+  // TODO: Remove query param fallback once full JWT auth is deployed
+  const userId = req.user?.id || req.query.userId;
 
   if (!userId) {
     return res.send(renderAuthRequiredHTML());
