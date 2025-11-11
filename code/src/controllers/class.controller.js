@@ -52,7 +52,7 @@ export const updateClass = asyncHandler(async (req, res) => {
 export const getUserClasses = asyncHandler(async (req, res) => {
   // Priority: JWT auth (production), fallback to query param (testing)
   // TODO: Remove query param fallback once full JWT auth is deployed
-  const userId = req.user ? .id || req.query.userId;
+  const userId = req.user?.id || req.query.userId;
 
   if (!userId) {
     return res.status(401).json({
@@ -71,7 +71,7 @@ export const getUserClasses = asyncHandler(async (req, res) => {
 export const renderUserClasses = asyncHandler(async (req, res) => {
   // Priority: JWT auth (production), fallback to query param (testing)
   // TODO: Remove query param fallback once full JWT auth is deployed
-  const userId = req.user ? .id || req.query.userId;
+  const userId = req.user?.id || req.query.userId;
 
   if (!userId) {
     return res.send(renderAuthRequiredHTML());
