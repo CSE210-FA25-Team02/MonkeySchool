@@ -1,31 +1,38 @@
-import {
-    Router
-} from "express";
+import { Router } from "express";
 import * as classController from "../controllers/class.controller.js";
-import {
-    asyncHandler
-} from "../utils/async-handler.js";
-import {
-    optionalAuth
-} from "../middleware/auth.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { requireAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/authorize.js";
 
-const router = Router();
-
-// HTML page route for HTMX (uses optionalAuth to check if user is logged in)
-router.get("/my-classes", optionalAuth, asyncHandler(classController.renderUserClasses));
-
-// JSON API route for programmatic access
-// Using optionalAuth to allow query param fallback for tests
-// TODO: Change back to requireAuth once full JWT testing is implemented
-router.get("/user/classes", optionalAuth, asyncHandler(classController.getUserClasses));
+const router = Router({ mergeParams: true });
 
 // Invite lookup must come before /:id
 router.get("/invite/:code", asyncHandler(classController.getClassByInviteCode));
 
 // CRUD
-router.post("/", asyncHandler(classController.createClass));
-router.get("/:id", asyncHandler(classController.getClass));
-router.put("/:id", asyncHandler(classController.updateClass));
-router.delete("/:id", asyncHandler(classController.deleteClass));
+router.post(
+  "/",
+  asyncHandler(requireAuth),
+  requireRole("class", ["PROFESSOR"]),
+  asyncHandler(classController.createClass)
+);
+router.get(
+  "/:id",
+  asyncHandler(requireAuth),
+  requireRole("class", ["PROFESSOR", "TA", "TUTOR", "STUDENT"]),
+  asyncHandler(classController.getClass)
+);
+router.put(
+  "/:id",
+  asyncHandler(requireAuth),
+  requireRole("class", ["PROFESSOR", "TA"]),
+  asyncHandler(classController.updateClass)
+);
+router.delete(
+  "/:id",
+  asyncHandler(requireAuth),
+  requireRole("class", ["PROFESSOR"]),
+  asyncHandler(classController.deleteClass)
+);
 
 export default router;

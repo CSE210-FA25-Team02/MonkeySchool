@@ -61,7 +61,7 @@ router.get("/hello", (req, res) => {
 router.use("/auth", authRoutes);
 router.use("/students", studentRoutes);
 router.use("/users", userRoutes);
-router.use("/classes", classRoutes);
-router.use("/classRoles", classRoleRoutes);
+router.use("/:quarter/classes", classRoutes);
+router.use("/:quarter/classRoles", classRoleRoutes);
 
 export default router;
