@@ -28,10 +28,10 @@ export async function isEmailAllowed(email) {
 
   // Check CSV file for external emails
   const csvPath = path.join(__dirname, "../../data/external-emails.csv");
-  
+
   return new Promise((resolve, reject) => {
     const allowedEmails = [];
-    
+
     if (!fs.existsSync(csvPath)) {
       // If CSV doesn't exist, only UCSD emails are allowed
       resolve(false);
@@ -65,7 +65,9 @@ export async function getOrCreateUser(profile) {
   // Check if email is allowed
   const isAllowed = await isEmailAllowed(email);
   if (!isAllowed) {
-    throw new Error("Email not authorized. Only UCSD emails or whitelisted external emails are allowed.");
+    throw new Error(
+      "Email not authorized. Only UCSD emails or whitelisted external emails are allowed.",
+    );
   }
 
   // Check if user exists
@@ -117,4 +119,3 @@ export function verifyToken(token) {
     return null;
   }
 }
-

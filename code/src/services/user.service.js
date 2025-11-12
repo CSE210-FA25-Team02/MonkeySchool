@@ -19,8 +19,8 @@ export async function getUserById(id) {
     include: {
       classRoles: { include: { class: true } },
       groupRoles: { include: { group: true } },
-      groupSupervises: { include: { group: true } }
-    }
+      groupSupervises: { include: { group: true } },
+    },
   });
 }
 
@@ -37,7 +37,7 @@ export async function getUserByEmail(email) {
 export async function updateUser(id, data) {
   return prisma.user.update({
     where: { id },
-    data
+    data,
   });
 }
 
@@ -47,8 +47,6 @@ export async function deleteUser(id) {
   await prisma.groupSupervisor.deleteMany({ where: { userId: id } });
 
   return prisma.user.delete({
-    where: { id }
+    where: { id },
   });
 }
-
-

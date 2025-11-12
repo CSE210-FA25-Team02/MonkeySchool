@@ -2,35 +2,38 @@
 
 import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
-import { getUpcomingQuarters, createBaseLayout } from "../utils/html-templates.js";
-import { createClassForm, displayInvite, createClassPage } from "../utils/htmx-templates/classes-templates.js";
 import {
-  asyncHandler
-} from "../utils/async-handler.js";
-import {
-  NotFoundError
-} from "../utils/api-error.js";
-import {
-  escapeHtml
+  getUpcomingQuarters,
+  createBaseLayout,
 } from "../utils/html-templates.js";
+import {
+  createClassForm,
+  displayInvite,
+  createClassPage,
+} from "../utils/htmx-templates/classes-templates.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { NotFoundError } from "../utils/api-error.js";
+import { escapeHtml } from "../utils/html-templates.js";
 
 /**
  * Create a new class
  */
 export const createClass = asyncHandler(async (req, res) => {
   const { name, quarter } = req.body;
-  
+
   // User Authentication
   const userId = req.user?.id || 1;
   if (!userId) {
-    return res.status(400).send("No user found. Authentication not implemented.");
+    return res
+      .status(400)
+      .send("No user found. Authentication not implemented.");
   }
 
   const isProf = req.user?.isProf || true;
   if (!isProf) {
     return res.status(401).send("Unauthorized to create class.");
   }
-  
+
   // Validate input
   if (!name || name.trim().length === 0) {
     return res.status(400).send("Class name is required.");
@@ -51,7 +54,11 @@ export const createClass = asyncHandler(async (req, res) => {
   // Add Professor who made call to class
   if (userId && userId !== 1) {
     try {
-      await classRoleService.upsertClassRole({userId, classId, role: "PROFESSOR"});
+      await classRoleService.upsertClassRole({
+        userId,
+        classId,
+        role: "PROFESSOR",
+      });
     } catch (err) {
       console.error("Unable to assign professor to class:", err);
       return res.status(500).send("Unable to assign professor to class.");
@@ -59,10 +66,10 @@ export const createClass = asyncHandler(async (req, res) => {
   }
 
   // Create invite URL
-  const inviteUrl = `${req.protocol}://${req.get('host')}/invite/${klass.inviteCode}`;
+  const inviteUrl = `${req.protocol}://${req.get("host")}/invite/${klass.inviteCode}`;
 
   // Check if request is HTMX
-  const isHTMX = req.headers['hx-request'];
+  const isHTMX = req.headers["hx-request"];
 
   if (isHTMX) {
     res.status(201).send(displayInvite(inviteUrl));
@@ -90,7 +97,9 @@ export const getClassByInviteCode = asyncHandler(async (req, res) => {
   // User Authentication
   const userId = req?.user?.id || 0;
   if (!userId) {
-    return res.status(400).send("No user found. Authentication not implemented.");
+    return res
+      .status(400)
+      .send("No user found. Authentication not implemented.");
   }
 
   const classId = klass.id;
@@ -98,13 +107,16 @@ export const getClassByInviteCode = asyncHandler(async (req, res) => {
   // Add Student (assumed)
   if (userId && userId !== 0) {
     try {
-      await classRoleService.upsertClassRole({userId, classId, role: "STUDENT"});
+      await classRoleService.upsertClassRole({
+        userId,
+        classId,
+        role: "STUDENT",
+      });
     } catch (err) {
       console.error("Unable to assign user to class:", err);
       return res.status(500).send("Unable to assign user to class.");
     }
   }
-
 
   res.json(klass);
 });
@@ -128,7 +140,7 @@ export const getUserClasses = asyncHandler(async (req, res) => {
 
   if (!userId) {
     return res.status(401).json({
-      error: 'Authentication required'
+      error: "Authentication required",
     });
   }
 
@@ -154,14 +166,14 @@ export const renderUserClasses = asyncHandler(async (req, res) => {
   const content = renderClassListHTML(classes);
 
   // Check if this is an HTMX request or direct browser navigation
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
 
   if (isHtmxRequest) {
     // HTMX request: return HTML fragment for dynamic content swap
     res.send(content);
   } else {
     // Direct navigation: return full HTML page with styles and layout
-    const fullPage = renderFullPage(content, 'My Classes');
+    const fullPage = renderFullPage(content, "My Classes");
     res.send(fullPage);
   }
 });
@@ -174,24 +186,25 @@ export const deleteClass = asyncHandler(async (req, res) => {
   res.status(204).send();
 });
 
-
 /**
  * Open/Close Class Create Form
  */
-export const renderCreateClassForm = asyncHandler(async (req, res)  => {
+export const renderCreateClassForm = asyncHandler(async (req, res) => {
   const upcomingQuarters = getUpcomingQuarters();
   res.status(201).send(createClassForm(upcomingQuarters));
 });
 
-export const closeCreateClassForm = asyncHandler(async (req, res)  => {
+export const closeCreateClassForm = asyncHandler(async (req, res) => {
   res.status(201).send("");
 });
 
 /**
  * Render Classes Page (NEED TO REMOVE LATER)
  */
-export const renderClassPage = asyncHandler(async (req, res) =>  {
-  res.status(201).send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
+export const renderClassPage = asyncHandler(async (req, res) => {
+  res
+    .status(201)
+    .send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
 });
 /**
  * Helper function to render class list HTML
@@ -215,19 +228,20 @@ function renderClassListHTML(classes) {
     `;
   }
 
-  const classCards = classes.map(klass => {
-    const roleClass = klass.role.toLowerCase().replace('_', '-');
-    const quarter = klass.quarter || 'Not specified';
+  const classCards = classes
+    .map((klass) => {
+      const roleClass = klass.role.toLowerCase().replace("_", "-");
+      const quarter = klass.quarter || "Not specified";
 
-    const createdDate = klass.createdAt ?
-      new Date(klass.createdAt).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }) :
-      '';
+      const createdDate = klass.createdAt
+        ? new Date(klass.createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        : "";
 
-    return `
+      return `
       <article class="class-card" role="article">
         <div class="class-card__sidebar">
           <div class="class-card__icon" aria-hidden="true"></div>
@@ -252,12 +266,16 @@ function renderClassListHTML(classes) {
                 <span class="class-card__info-label">Invite Code:</span>
                 <code class="class-card__invite-code">${escapeHtml(klass.inviteCode)}</code>
               </div>
-              ${createdDate ? `
+              ${
+                createdDate
+                  ? `
               <div class="class-card__info-item">
                 <span class="class-card__info-label">Created:</span>
                 <span class="class-card__info-value">${createdDate}</span>
               </div>
-              ` : ''}
+              `
+                  : ""
+              }
             </div>
           </div>
           
@@ -275,13 +293,14 @@ function renderClassListHTML(classes) {
         </div>
       </article>
     `;
-  }).join('');
+    })
+    .join("");
 
   return `
     <section class="class-list" role="region" aria-labelledby="classes-title">
       <div class="class-list__header">
         <h2 id="classes-title" class="class-list__title">My Classes</h2>
-        <p class="class-list__count">${classes.length} ${classes.length === 1 ? 'class' : 'classes'}</p>
+        <p class="class-list__count">${classes.length} ${classes.length === 1 ? "class" : "classes"}</p>
       </div>
       
       <div class="class-cards">
@@ -313,7 +332,7 @@ function renderAuthRequiredHTML() {
  * Helper function to render full HTML page for direct navigation
  * Wraps content in complete HTML structure with styles and layout
  */
-function renderFullPage(content, title = 'My Classes') {
+function renderFullPage(content, title = "My Classes") {
   return `
 <!DOCTYPE html>
 <html lang="en" dir="ltr">

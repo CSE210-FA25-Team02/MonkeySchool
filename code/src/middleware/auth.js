@@ -36,28 +36,3 @@ export async function requireAuth(req, res, next) {
     res.status(401).json({ error: "Authentication failed" });
   }
 }
-
-/**
- * Middleware to optionally attach user if token exists
- */
-export async function optionalAuth(req, res, next) {
-  try {
-    const token = req.cookies?.auth_token;
-
-    if (token) {
-      const decoded = verifyToken(token);
-      if (decoded) {
-        const user = await getUserById(decoded.id);
-        if (user) {
-          req.user = user;
-        }
-      }
-    }
-
-    next();
-  } catch (error) {
-    console.error("Auth middleware error:", error);
-    next();
-  }
-}
-

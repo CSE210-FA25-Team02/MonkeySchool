@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "dev": "export $(grep -v '^#' .env | xargs) && node src/server.js",
+    "dev": "export $(grep -v '^#' .env | xargs) && nodemon src/server.js",
     "start": "export $(grep -v '^#' .env | xargs) && node src/server.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
@@ -20,7 +20,7 @@
     "db:test:migrate": "sh -c 'echo \"Using test database: $DATABASE_URL\" && prisma migrate deploy'",
     "db:test:drop": "sh -c 'echo \"Dropping test database: $DATABASE_URL\" && npx prisma migrate reset --force'"
   },
-  "prisma":{
+  "prisma": {
     "seed": "node scripts/mock/db-seed.js"
   },
   "keywords": [

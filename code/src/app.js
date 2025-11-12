@@ -18,7 +18,7 @@ import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
-import { optionalAuth } from "./middleware/auth.js";
+import { requireAuth } from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,12 +46,12 @@ export function createApp() {
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],
           styleSrc: [
-            "'self'", 
+            "'self'",
             "'unsafe-inline'", // For dynamic styling
             "https://cdnjs.cloudflare.com", // For Font Awesome
           ],
           fontSrc: [
-            "'self'", 
+            "'self'",
             "https://fonts.gstatic.com",
             "https://cdnjs.cloudflare.com", // For Font Awesome fonts
           ],
@@ -123,9 +123,12 @@ export function createApp() {
   app.set("views", path.join(__dirname, "views"));
 
   // Health check (returns HTML for HTMX compatibility)
-  app.get("/", optionalAuth, (req, res) => {
+  app.get("/", requireAuth, (req, res) => {
+    // If not authenticated, redirect to /login
+    if (!req.user) {
+      return res.redirect("/login");
+    }
     const isHtmxRequest = req.headers["hx-request"];
-
     if (isHtmxRequest) {
       res.send(`
         <div class="health-status">
@@ -138,6 +141,15 @@ export function createApp() {
     } else {
       res.sendFile(path.join(__dirname, "public", "index.html"));
     }
+  });
+
+  // Serve login page
+  app.get("/login", (req, res) => {
+    // If already authenticated, redirect to home
+    if (req.user) {
+      return res.redirect("/");
+    }
+    res.sendFile(path.join(__dirname, "public", "login.html"));
   });
 
   // Dashboard route (alias for home)

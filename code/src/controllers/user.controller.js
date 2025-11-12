@@ -6,7 +6,10 @@ import {
   createErrorMessage,
   createSuccessMessage,
 } from "../utils/html-templates.js";
-import {createUserProfile, createProfileLinkField} from "../utils/components/profile-page.js"
+import {
+  createUserProfile,
+  createProfileLinkField,
+} from "../utils/components/profile-page.js";
 
 /**
  * Get user by ID

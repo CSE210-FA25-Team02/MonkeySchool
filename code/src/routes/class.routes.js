@@ -1,23 +1,25 @@
-import {
-    Router
-} from "express";
+import { Router } from "express";
 import * as classController from "../controllers/class.controller.js";
-import {
-    asyncHandler
-} from "../utils/async-handler.js";
-import {
-    optionalAuth
-} from "../middleware/auth.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
 // HTML page route for HTMX (uses optionalAuth to check if user is logged in)
-router.get("/my-classes", optionalAuth, asyncHandler(classController.renderUserClasses));
+router.get(
+  "/my-classes",
+  requireAuth,
+  asyncHandler(classController.renderUserClasses),
+);
 
 // JSON API route for programmatic access
 // Using optionalAuth to allow query param fallback for tests
 // TODO: Change back to requireAuth once full JWT testing is implemented
-router.get("/user/classes", optionalAuth, asyncHandler(classController.getUserClasses));
+router.get(
+  "/user/classes",
+  requireAuth,
+  asyncHandler(classController.getUserClasses),
+);
 
 // Invite lookup must come before /:id
 router.get("/invite/:code", asyncHandler(classController.getClassByInviteCode));

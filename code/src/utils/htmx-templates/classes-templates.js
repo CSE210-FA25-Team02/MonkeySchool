@@ -3,7 +3,7 @@
  */
 
 export function createClassForm(quarters) {
-    return `
+  return `
         <section id="modal" class="classes-modal__overlay">
             <div class="classes-modal">
                 <h2>Create New Class</h2>
@@ -16,7 +16,7 @@ export function createClassForm(quarters) {
                     <label class="classes-modal__label">
                         Quarter:
                         <select name="quarter" class="classes-modal__select" required>
-                            ${quarters.map(q => `<option value="${q}">${q}</option>`).join("")}
+                            ${quarters.map((q) => `<option value="${q}">${q}</option>`).join("")}
                         </select>
                     </label>
             
@@ -28,10 +28,10 @@ export function createClassForm(quarters) {
             </div>
         </section>
     `;
-  }  
+}
 
 export function displayInvite(inviteURL) {
-    return `
+  return `
       <section id="modal" class="classes-modal__overlay">
         <div class="modal">
           <h2>Class Created!</h2>
@@ -45,18 +45,20 @@ export function displayInvite(inviteURL) {
           </section>
         </div>
       </section>`;
-  }
+}
 
-export function createClassPage (user) {
-    const isProfessor = user?.isProf || true;
+export function createClassPage(user) {
+  const isProfessor = user?.isProf || true;
 
-    //TODO: This is temporary, please change
-    return `
+  //TODO: This is temporary, please change
+  return `
         <body>
             <h1>Your Classes</h1>
             <div id="modal-container"></div>
 
-            ${isProfessor ? `
+            ${
+              isProfessor
+                ? `
                 <button
                     hx-get="/api/classes/form"
                     hx-target="#modal-container"
@@ -65,7 +67,9 @@ export function createClassPage (user) {
                 >
                     Create New Class
                 </button>
-            ` : ""}
+            `
+                : ""
+            }
 
             <script>
                 // Listen for HTMX swaps

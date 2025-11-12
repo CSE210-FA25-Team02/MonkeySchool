@@ -406,8 +406,8 @@ export function createSuccessMessage(message) {
  * Utility functions
  */
 export function escapeHtml(text) {
-    if (text == null) return ""
-    if (typeof text !== "string") return String(text);
+  if (text == null) return "";
+  if (typeof text !== "string") return String(text);
   const map = {
     "&": "&amp;",
     "<": "&lt;",
@@ -429,30 +429,29 @@ export function formatDate(dateString, lang = "en") {
 }
 
 export function getUpcomingQuarters(count = 8) {
-    const quarters = ['WI', 'SP', 'SU', 'FA'];
-    const currDate = new Date();
-    const currYear = currDate.getFullYear();
-    const currMonth = currDate.getMonth();
+  const quarters = ["WI", "SP", "SU", "FA"];
+  const currDate = new Date();
+  const currYear = currDate.getFullYear();
+  const currMonth = currDate.getMonth();
 
-    //What is the current quarter (0 to 2 = Winter, 3 to 5 = Spring, 6 to 7 = Summer, 8 to 12 = Fall)
-    let startIndex = currMonth < 3 ? 0 : currMonth < 6 ? 1 : currMonth < 8 ? 2 : 3;
+  //What is the current quarter (0 to 2 = Winter, 3 to 5 = Spring, 6 to 7 = Summer, 8 to 12 = Fall)
+  let startIndex =
+    currMonth < 3 ? 0 : currMonth < 6 ? 1 : currMonth < 8 ? 2 : 3;
 
-    const quarterList = [];
-    let yearIndex = currYear;
-    let qIndex = startIndex;
+  const quarterList = [];
+  let yearIndex = currYear;
+  let qIndex = startIndex;
 
-    for (let i = 0; i < count; i++) {
-        const shortYear = yearIndex % 100;
-        quarterList.push(`${quarters[qIndex]}${shortYear}`);
-        qIndex++;
+  for (let i = 0; i < count; i++) {
+    const shortYear = yearIndex % 100;
+    quarterList.push(`${quarters[qIndex]}${shortYear}`);
+    qIndex++;
 
-        if (qIndex === quarters.length){ 
-            qIndex = 0;
-            yearIndex++;
-        }
-
+    if (qIndex === quarters.length) {
+      qIndex = 0;
+      yearIndex++;
     }
+  }
 
-    return quarterList;
-
+  return quarterList;
 }

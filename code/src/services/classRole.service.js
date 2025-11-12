@@ -9,13 +9,15 @@ export async function upsertClassRole({ userId, classId, role }) {
   const normalized = role.trim().toUpperCase();
 
   if (!VALID_ROLES.includes(normalized)) {
-    throw new Error(`Invalid role "${role}". Allowed roles: ${VALID_ROLES.join(", ")}`);
+    throw new Error(
+      `Invalid role "${role}". Allowed roles: ${VALID_ROLES.join(", ")}`,
+    );
   }
 
   return prisma.classRole.upsert({
     where: { user_class_unique: { userId, classId } },
     update: { role: normalized },
-    create: { userId, classId, role: normalized }
+    create: { userId, classId, role: normalized },
   });
 }
 
@@ -24,7 +26,7 @@ export async function upsertClassRole({ userId, classId, role }) {
  */
 export async function removeFromClass({ userId, classId }) {
   return prisma.classRole.delete({
-    where: { user_class_unique: { userId, classId } }
+    where: { user_class_unique: { userId, classId } },
   });
 }
 
@@ -35,6 +37,6 @@ export async function getRoster(classId) {
   return prisma.classRole.findMany({
     where: { classId },
     include: { user: true },
-    orderBy: { role: "asc" }
+    orderBy: { role: "asc" },
   });
 }

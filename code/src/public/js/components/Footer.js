@@ -1,11 +1,11 @@
 /**
  * Footer Component
- * 
+ *
  * Handles the footer with copyright information
  */
 
 export class Footer {
-  constructor(containerId = 'footer') {
+  constructor(containerId = "footer") {
     this.containerId = containerId;
     this.container = null;
   }
@@ -16,7 +16,9 @@ export class Footer {
   init() {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
-      console.error(`Footer: Container with id "${this.containerId}" not found`);
+      console.error(
+        `Footer: Container with id "${this.containerId}" not found`,
+      );
       return;
     }
 
@@ -35,7 +37,6 @@ export class Footer {
         </p>
       </div>
     `;
-    this.container.classList.add('footer--branded');
+    this.container.classList.add("footer--branded");
   }
 }
-

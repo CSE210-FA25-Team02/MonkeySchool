@@ -9,7 +9,9 @@
    COMPONENT IMPORTS
    ============================================================================ */
 
-@import './components/class-list.css';
+@import "./components/class-list.css";
+@import "./components/navbar.css";
+@import "./components/login.css";
 
 /* ============================================================================
    CSS CUSTOM PROPERTIES (CSS Variables)
@@ -17,14 +19,14 @@
 
 :root {
   /* Brand Color Palette - Monkey School */
-  --color-primary-bg: #0E534A; /* Deep green (main background for fixed nav bar) */
-  --color-secondary-bg: #1B6A59; /* Used for hover states, headers, and sub-nav backgrounds */
-  --color-accent-1: #F2A93B; /* Highlight color for active nav items or buttons */
-  --color-accent-2: #E07A2F; /* Used for warning or emphasis (close buttons, active icons) */
-  --color-neutral: #B7C7A3; /* Light background for footer and non-primary areas */
+  --color-primary-bg: #0e534a; /* Deep green (main background for fixed nav bar) */
+  --color-secondary-bg: #1b6a59; /* Used for hover states, headers, and sub-nav backgrounds */
+  --color-accent-1: #f2a93b; /* Highlight color for active nav items or buttons */
+  --color-accent-2: #e07a2f; /* Used for warning or emphasis (close buttons, active icons) */
+  --color-neutral: #b7c7a3; /* Light background for footer and non-primary areas */
   --color-text-primary: #ffffff;
   --color-text-secondary: #333333;
-  --color-text-light: #B7C7A3;
+  --color-text-light: #b7c7a3;
   --color-bg-white: #ffffff;
   --color-bg-light: #f5f5f5;
 
@@ -504,7 +506,9 @@ a:focus {
   margin-left: 80px; /* Offset for fixed 80px navbar */
   margin-top: 60px; /* Offset for fixed header */
   margin-bottom: 60px; /* Offset for fixed footer */
-  min-height: calc(100vh - 120px); /* Full height minus header (60px) and footer (60px) */
+  min-height: calc(
+    100vh - 120px
+  ); /* Full height minus header (60px) and footer (60px) */
   padding: var(--spacing-xl);
   overflow-y: auto;
 }
@@ -1104,7 +1108,9 @@ a:focus {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
 }
 
 /* Loading is controlled by JavaScript via inline styles */
@@ -1346,4 +1352,3 @@ a:focus {
     content: " (" attr(href) ")";
   }
 }
-
