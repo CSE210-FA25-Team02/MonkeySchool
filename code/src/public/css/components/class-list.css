@@ -6,11 +6,11 @@
 
 /* Amazonian Forest Color Variables */
 :root {
-  --forest-deep-teal: #0E534A;
-  --forest-jungle-green: #1B6A59;
-  --forest-mango-gold: #F2A93B;
-  --forest-papaya-orange: #E07A2F;
-  --forest-sage-mist: #B7C7A3;
+  --forest-deep-teal: #0e534a;
+  --forest-jungle-green: #1b6a59;
+  --forest-mango-gold: #f2a93b;
+  --forest-papaya-orange: #e07a2f;
+  --forest-sage-mist: #b7c7a3;
 }
 
 /* Class List Container */
@@ -65,7 +65,7 @@
 
 /* Stack of books icon for empty state */
 .class-list__empty-icon::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 60px;
   height: 12px;
@@ -73,8 +73,9 @@
   border-radius: 2px;
   left: 10px;
   bottom: 10px;
-  box-shadow: 0 -15px 0 var(--forest-sage-mist),
-              0 -30px 0 var(--forest-sage-mist);
+  box-shadow:
+    0 -15px 0 var(--forest-sage-mist),
+    0 -30px 0 var(--forest-sage-mist);
 }
 
 .class-list__empty-title {
@@ -137,7 +138,7 @@
 }
 
 .class-card__icon::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 40px;
   height: 32px;
@@ -151,7 +152,7 @@
 }
 
 .class-card__icon::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 2px;
   height: 32px;
@@ -331,7 +332,7 @@
 
 /* Lock icon for error state */
 .class-list__error-icon::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 35px;
   height: 25px;
@@ -343,7 +344,7 @@
 }
 
 .class-list__error-icon::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 25px;
   height: 20px;
@@ -367,28 +368,34 @@
   line-height: 1.6;
 }
 
+.class-list__actions {
+  display: flex;
+  justify-content: end;
+  padding: 0 0 30px 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .class-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .class-card {
     height: auto;
     min-height: 180px;
   }
-  
+
   .class-card__sidebar {
     width: 70px;
     padding: 1rem 0.5rem;
   }
-  
+
   .class-card__home-label,
   .class-card__label {
     font-size: 0.625rem;
     padding: 0.25rem 0.375rem;
   }
-  
+
   .class-card__title {
     font-size: 1.25rem;
   }
@@ -400,13 +407,12 @@
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .class-card__sidebar {
     width: 60px;
   }
-  
+
   .class-card__content {
     padding: 1rem;
   }
 }
-

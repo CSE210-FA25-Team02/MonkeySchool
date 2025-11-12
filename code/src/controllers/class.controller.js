@@ -210,9 +210,25 @@ export const renderClassPage = asyncHandler(async (req, res) => {
  * Helper function to render class list HTML
  */
 function renderClassListHTML(classes) {
+  // Always show the Create New Class button for professors (or all users for now)
+  const createButton = `
+    <div class="class-list__actions">
+      <button 
+        class="classes-modal__button classes-modal__button--primary"
+        hx-get="/classes/form"
+        hx-target="#modal-container"
+        hx-swap="beforeend"
+        type="button"
+      >
+        Create New Class
+      </button>
+      <div id="modal-container"></div>
+    </div>
+  `;
   if (!classes || classes.length === 0) {
     return `
       <section class="class-list" role="region" aria-labelledby="classes-title">
+      ${createButton}
         <div class="class-list__header">
           <h2 id="classes-title" class="class-list__title">My Classes</h2>
         </div>
@@ -298,11 +314,11 @@ function renderClassListHTML(classes) {
 
   return `
     <section class="class-list" role="region" aria-labelledby="classes-title">
-      <div class="class-list__header">
+      ${createButton}  
+    <div class="class-list__header">
         <h2 id="classes-title" class="class-list__title">My Classes</h2>
         <p class="class-list__count">${classes.length} ${classes.length === 1 ? "class" : "classes"}</p>
       </div>
-      
       <div class="class-cards">
         ${classCards}
       </div>
