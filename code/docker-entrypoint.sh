@@ -13,5 +13,5 @@ npx prisma migrate reset --force --skip-seed
 # Seed database
 npx prisma db seed
 
-# Start the server
-exec node src/server.js
+# Start the server on the specified PORT (from env or default)
+exec PORT=${PORT:-3000} node src/server.js

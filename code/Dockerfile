@@ -11,8 +11,10 @@ RUN npm install --production
 # Copy source code
 COPY . .
 
-# Expose port (from .env or default 3000)
-EXPOSE 3000
+# Expose port (from env or default 3000)
+ARG PORT=3000
+ENV PORT=${PORT}
+EXPOSE ${PORT}
 
 # Set environment variables (can be overridden by docker-compose)
 ENV NODE_ENV=production
