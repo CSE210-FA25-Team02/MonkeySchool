@@ -20,10 +20,10 @@ export const createClassRoleService = (prismaClient) => ({
    * @returns {Promise<void>}
    */
   async validateProfessorPermission(classId, requesterId) {
-    if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
-      console.log(`[DEV] Bypassing auth check for user: ${requesterId}`);
-      return; // Skip all permission checks
-    }
+    // if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
+    //   console.log(`[DEV] Bypassing auth check for user: ${requesterId}`);
+    //   return; // Skip all permission checks
+    // }
     // First check if the user exists at all
     let user = await prismaClient.user.findUnique({
       where: { id: requesterId }
@@ -32,7 +32,11 @@ export const createClassRoleService = (prismaClient) => ({
     if (!user) {
       throw new NotFoundError(`User ${requesterId} not found`);
     }
-
+    // Check if user has global professor privileges (isProf = true)
+    if (user.isProf === true) {
+      console.log(`[AUTH] User ${requesterId} has global professor access (isProf=true)`);
+      return;
+    }
     // Then check their role in this specific class
     const requesterRole = await prismaClient.classRole.findUnique({
       where: { user_class_unique: { userId: requesterId, classId } }

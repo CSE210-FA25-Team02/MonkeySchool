@@ -8,6 +8,9 @@ export const showCoursesListPage = asyncHandler(async (req, res) => {
   // Import the service to get actual data
   const { getAllClasses } = await import('../services/class.service.js');
   
+  // Get user's professor status
+  const isProf = req.user?.isProf || false;
+  
   let coursesData = [];
   
   try {
@@ -43,7 +46,7 @@ export const showCoursesListPage = asyncHandler(async (req, res) => {
       </header>
       
       <div id="courses-content" class="courses-content">
-        ${coursesData.length > 0 ? generateCoursesGrid(coursesData) : '<div class="empty-state"><h2>No courses found</h2><p>There are currently no courses available.</p></div>'}
+        ${coursesData.length > 0 ? generateCoursesGrid(coursesData, isProf) : '<div class="empty-state"><h2>No courses found</h2><p>There are currently no courses available.</p></div>'}
       </div>
     </div>
   `;
@@ -207,10 +210,23 @@ export const showCoursesListPage = asyncHandler(async (req, res) => {
         color: var(--color-primary-bg);
         margin-bottom: var(--spacing-md);
       }
+      
+      .access-restricted {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md) var(--spacing-lg);
+        background: var(--color-neutral-100);
+        border: 1px solid var(--color-neutral-300);
+        border-radius: var(--border-radius-md);
+        text-align: center;
+        flex: 1;
+      }
     </style>
   `;
   
-  function generateCoursesGrid(courses) {
+  function generateCoursesGrid(courses, isProf) {
     const courseCards = courses.map(course => `
       <article class="course-card">
         <div class="course-card__header">
@@ -253,14 +269,22 @@ export const showCoursesListPage = asyncHandler(async (req, res) => {
         </div>
         
         <div class="course-card__actions">
-          <a href="/roster/${course.id}" 
-             class="btn-roster"
-             hx-get="/roster/${course.id}"
-             hx-target="#main-content"
-             hx-push-url="true">
-            <i class="fas fa-list-ul"></i>
-            View Roster
-          </a>
+          ${isProf 
+            ? `<a href="/roster/${course.id}" 
+                 class="btn-roster"
+                 hx-get="/roster/${course.id}"
+                 hx-target="#main-content"
+                 hx-push-url="true">
+                <i class="fas fa-list-ul"></i>
+                View Roster
+              </a>`
+            : `<div class="access-restricted">
+                <i class="fas fa-lock" style="color: var(--color-neutral-400);"></i>
+                <span style="color: var(--color-neutral-500); font-size: var(--font-size-sm);">
+                  Professor access required
+                </span>
+              </div>`
+          }
         </div>
       </article>
     `).join('');
