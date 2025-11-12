@@ -12,7 +12,7 @@
 }
 
 .profile-hero {
-  background-color: var(--color-sage-mist);
+  background-color: var(--color-text-light);
   padding: var(--spacing-lg) var(--spacing-xl);
   display: flex;
   align-items: center;
@@ -35,7 +35,7 @@
 }
 
 .profile-hero__photo--default {
-  background-color: var(--color-sage-mist);
+  background-color: var(--color-text-light);
 }
 
 .profile-hero__info {
@@ -47,7 +47,7 @@
   margin: 0 0 var(--spacing-xs) 0;
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
 }
 
 .profile-hero__email {
@@ -55,7 +55,7 @@
 }
 
 .profile-hero__email-link {
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
 }
@@ -114,7 +114,7 @@
   margin: 0 0 var(--spacing-md) 0;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
 }
 
 .profile-section__text {
@@ -150,7 +150,7 @@
 }
 
 .profile-textarea:focus {
-  border-color: var(--color-deep-teal);
+  border-color: var(--color-primary-bg);
   box-shadow: 0 0 0 3px rgba(14, 83, 74, 0.1);
   outline: none;
 }
@@ -190,7 +190,7 @@
 
 .profile-field__value {
   margin: 0;
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   font-weight: var(--font-weight-medium);
@@ -207,7 +207,7 @@
     box-shadow var(--transition-fast);
   min-height: 44px;
   background-color: white;
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
   font-weight: var(--font-weight-medium);
 }
 
@@ -224,7 +224,7 @@
 }
 
 .profile-field__input:focus {
-  border-color: var(--color-deep-teal);
+  border-color: var(--color-primary-bg);
   box-shadow: 0 0 0 3px rgba(14, 83, 74, 0.1);
   outline: none;
 }
@@ -273,7 +273,7 @@
 }
 
 .profile-link-field__input:focus {
-  border-color: var(--color-deep-teal);
+  border-color: var(--color-primary-bg);
   box-shadow: 0 0 0 2px rgba(14, 83, 74, 0.12);
   outline: none;
 }
@@ -319,7 +319,7 @@
 }
 
 .profile-link-item__link {
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
   text-decoration: none;
   font-size: var(--font-size-base);
   word-break: break-all;
@@ -328,13 +328,13 @@
 .profile-link-item__link:hover,
 .profile-link-item__link:focus {
   text-decoration: underline;
-  color: var(--color-teal-medium);
+  color: var(--color-secondary-bg);
 }
 
 .btn--add-item {
-  background-color: var(--color-sage-mist);
-  border-color: var(--color-sage-mist);
-  color: var(--color-deep-teal);
+  background-color: var(--color-text-light);
+  border-color: var(--color-text-light);
+  color: var(--color-primary-bg);
   padding: var(--spacing-sm) var(--spacing-md);
   font-weight: var(--font-weight-medium);
   border-radius: var(--border-radius-md);
@@ -345,11 +345,11 @@
 .btn--add-item:hover:not(:disabled) {
   background-color: var(--color-primary-light);
   border-color: var(--color-primary-light);
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
 }
 
 .btn--add-item:focus {
-  outline: 2px solid var(--color-deep-teal);
+  outline: 2px solid var(--color-primary-bg);
   outline-offset: 2px;
 }
 
@@ -375,7 +375,7 @@
 .profile-page input,
 .profile-page textarea {
   background-color: white;
-  color: var(--color-deep-teal);
+  color: var(--color-primary-bg);
 }
 
 .profile-section__links-group {

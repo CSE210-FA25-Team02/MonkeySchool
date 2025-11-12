@@ -605,32 +605,32 @@ a:focus {
 }
 
 .btn:focus {
-  outline: 2px solid var(--color-deep-teal);
+  outline: 2px solid var(--color-primary-bg);
   outline-offset: 2px;
 }
 
 .btn--primary {
-  background-color: var(--color-deep-teal);
-  border-color: var(--color-deep-teal);
-  color: var(--color-mango-gold);
+  background-color: var(--color-primary-bg);
+  border-color: var(--color-primary-bg);
+  color: var(--color-text-primary);
 }
 
 .btn--primary:hover:not(:disabled) {
-  background-color: var(--color-teal-medium);
-  border-color: var(--color-teal-medium);
-  color: var(--color-mango-gold);
+  background-color: var(--color-secondary-bg);
+  border-color: var(--color-secondary-bg);
+  color: var(--color-text-primary);
 }
 
 .btn--secondary {
   background-color: white;
   border-color: var(--color-neutral-300);
-  color: var(--color-neutral-700);
+  color: var(--color-primary-bg);
 }
 
 .btn--secondary:hover:not(:disabled) {
   background-color: var(--color-neutral-100);
   border-color: var(--color-neutral-400);
-  color: var(--color-neutral-800);
+  color: var(--color-primary-bg);
 }
 
 .btn--danger {
