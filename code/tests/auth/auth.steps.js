@@ -57,7 +57,7 @@ defineFeature(feature, (test) => {
 
   test("Non-UCSD email in CSV is allowed", ({ given, when, then }) => {
     const csvPath = path.join(__dirname, "../../data/external-emails.csv");
-    
+
     given(/^a non-UCSD email "(.*)" in the CSV file$/, async (email) => {
       context.email = email;
       // Add email to CSV for testing
@@ -78,7 +78,7 @@ defineFeature(feature, (test) => {
 
   test("Get session returns null when not authenticated", ({ when, then }) => {
     when(/^I request the current session$/, async () => {
-      context.response = await request.get("/api/auth/session");
+      context.response = await request.get("/auth/session");
     });
 
     then(/^the response should indicate no user is logged in$/, () => {
@@ -94,14 +94,14 @@ defineFeature(feature, (test) => {
         name: "Test User",
         email: "test@ucsd.edu",
       });
-      
+
       // Simulate a logged-in session by setting a cookie
       // In a real test, you'd need to go through the OAuth flow
       // For now, we'll just test the logout endpoint
     });
 
     when(/^I logout$/, async () => {
-      context.response = await request.get("/api/auth/logout");
+      context.response = await request.get("/auth/logout");
     });
 
     then(/^I should be logged out$/, () => {
@@ -110,4 +110,3 @@ defineFeature(feature, (test) => {
     });
   });
 });
-

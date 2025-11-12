@@ -15,17 +15,17 @@ export async function requireAuth(req, res, next) {
     const token = req.cookies?.auth_token;
 
     if (!token) {
-      return res.status(401).json({ error: "Authentication required" });
+      return res.redirect("/login");
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
-      return res.status(401).json({ error: "Invalid or expired token" });
+      return res.redirect("/login");
     }
 
     const user = await getUserById(decoded.id);
     if (!user) {
-      return res.status(401).json({ error: "User not found" });
+      return res.redirect("/login");
     }
 
     // Attach user to request
@@ -33,6 +33,6 @@ export async function requireAuth(req, res, next) {
     next();
   } catch (error) {
     console.error("Auth middleware error:", error);
-    res.status(401).json({ error: "Authentication failed" });
+    res.redirect("/login");
   }
 }

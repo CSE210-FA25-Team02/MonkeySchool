@@ -15,7 +15,7 @@ import {
 } from "../utils/html-templates.js";
 
 /**
- * GET /api/students
+ * GET /students
  * Get all students with pagination - returns HTML
  */
 export async function getAllStudents(req, res) {
@@ -44,14 +44,14 @@ export async function getAllStudents(req, res) {
       // Return full page for direct navigation
       const fullPage = createBaseLayout(
         "Students - Student Management System",
-        studentsHtml,
+        studentsHtml
       );
       res.send(fullPage);
     }
   } catch (error) {
     console.error("Error loading students:", error);
     const errorHtml = createErrorMessage(
-      "Failed to load students because of a server error.",
+      "Failed to load students because of a server error."
     );
 
     if (isHtmxRequest) {
@@ -59,7 +59,7 @@ export async function getAllStudents(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Error - Student Management System",
-        errorHtml,
+        errorHtml
       );
       res.status(500).send(fullPage);
     }
@@ -67,7 +67,7 @@ export async function getAllStudents(req, res) {
 }
 
 /**
- * GET /api/students/:id
+ * GET /students/:id
  * Get a single student by ID - returns HTML
  */
 export async function getStudentById(req, res) {
@@ -82,7 +82,7 @@ export async function getStudentById(req, res) {
     } else {
       const fullPage = createBaseLayout(
         `${student.name} - Student Management System`,
-        studentHtml,
+        studentHtml
       );
       res.send(fullPage);
     }
@@ -90,7 +90,7 @@ export async function getStudentById(req, res) {
     const errorHtml = createErrorMessage(
       error.statusCode === 404
         ? "Student not found."
-        : "Failed to load student.",
+        : "Failed to load student."
     );
 
     const statusCode = error.statusCode || 500;
@@ -100,7 +100,7 @@ export async function getStudentById(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Error - Student Management System",
-        errorHtml,
+        errorHtml
       );
       res.status(statusCode).send(fullPage);
     }
@@ -108,7 +108,7 @@ export async function getStudentById(req, res) {
 }
 
 /**
- * GET /api/students/new
+ * GET /students/new
  * Show form to create a new student - returns HTML
  */
 export async function showCreateForm(req, res) {
@@ -120,14 +120,14 @@ export async function showCreateForm(req, res) {
   } else {
     const fullPage = createBaseLayout(
       "Add New Student - Student Management System",
-      formHtml,
+      formHtml
     );
     res.send(fullPage);
   }
 }
 
 /**
- * GET /api/students/:id/edit
+ * GET /students/:id/edit
  * Show form to edit a student - returns HTML
  */
 export async function showEditForm(req, res) {
@@ -142,7 +142,7 @@ export async function showEditForm(req, res) {
     } else {
       const fullPage = createBaseLayout(
         `Edit ${student.name} - Student Management System`,
-        formHtml,
+        formHtml
       );
       res.send(fullPage);
     }
@@ -150,7 +150,7 @@ export async function showEditForm(req, res) {
     const errorHtml = createErrorMessage(
       error.statusCode === 404
         ? "Student not found."
-        : "Failed to load student for editing.",
+        : "Failed to load student for editing."
     );
 
     const statusCode = error.statusCode || 500;
@@ -160,7 +160,7 @@ export async function showEditForm(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Error - Student Management System",
-        errorHtml,
+        errorHtml
       );
       res.status(statusCode).send(fullPage);
     }
@@ -168,7 +168,7 @@ export async function showEditForm(req, res) {
 }
 
 /**
- * POST /api/students
+ * POST /students
  * Create a new student - returns HTML
  */
 export async function createStudent(req, res) {
@@ -187,7 +187,7 @@ export async function createStudent(req, res) {
     };
 
     const successMessage = createSuccessMessage(
-      `Student "${student.name}" has been created successfully.`,
+      `Student "${student.name}" has been created successfully.`
     );
     const studentsHtml = createStudentList(result.students, pagination, {
       editable: true,
@@ -199,7 +199,7 @@ export async function createStudent(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Students - Student Management System",
-        combinedHtml,
+        combinedHtml
       );
       res.status(201).send(fullPage);
     }
@@ -223,7 +223,7 @@ export async function createStudent(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Add New Student - Student Management System",
-        combinedHtml,
+        combinedHtml
       );
       res.status(statusCode).send(fullPage);
     }
@@ -231,7 +231,7 @@ export async function createStudent(req, res) {
 }
 
 /**
- * PUT /api/students/:id
+ * PUT /students/:id
  * Update a student - returns HTML
  */
 export async function updateStudent(req, res) {
@@ -250,7 +250,7 @@ export async function updateStudent(req, res) {
     };
 
     const successMessage = createSuccessMessage(
-      `Student "${student.name}" has been updated successfully.`,
+      `Student "${student.name}" has been updated successfully.`
     );
     const studentsHtml = createStudentList(result.students, pagination, {
       editable: true,
@@ -262,7 +262,7 @@ export async function updateStudent(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Students - Student Management System",
-        combinedHtml,
+        combinedHtml
       );
       res.send(fullPage);
     }
@@ -283,7 +283,7 @@ export async function updateStudent(req, res) {
     let formData = req.body;
     try {
       const existingStudent = await studentService.getStudentById(
-        req.params.id,
+        req.params.id
       );
       formData = { ...existingStudent, ...req.body };
     } catch {
@@ -300,7 +300,7 @@ export async function updateStudent(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Edit Student - Student Management System",
-        combinedHtml,
+        combinedHtml
       );
       res.status(statusCode).send(fullPage);
     }
@@ -308,7 +308,7 @@ export async function updateStudent(req, res) {
 }
 
 /**
- * DELETE /api/students/:id
+ * DELETE /students/:id
  * Delete a student - returns HTML or empty response
  */
 export async function deleteStudent(req, res) {
@@ -322,13 +322,13 @@ export async function deleteStudent(req, res) {
       res.send("");
     } else {
       // For direct requests, redirect to student list
-      res.redirect("/api/students");
+      res.redirect("/students");
     }
   } catch (error) {
     const errorHtml = createErrorMessage(
       error.statusCode === 404
         ? "Student not found."
-        : "Failed to delete student.",
+        : "Failed to delete student."
     );
 
     const statusCode = error.statusCode || 500;
@@ -338,7 +338,7 @@ export async function deleteStudent(req, res) {
     } else {
       const fullPage = createBaseLayout(
         "Error - Student Management System",
-        errorHtml,
+        errorHtml
       );
       res.status(statusCode).send(fullPage);
     }

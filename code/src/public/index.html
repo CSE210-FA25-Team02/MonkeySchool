@@ -119,18 +119,18 @@
             style="display: none"
           >
             <a
-              href="/api/students"
+              href="/students"
               class="btn btn--primary btn--large"
-              hx-get="/api/students"
+              hx-get="/students"
               hx-target="#main-content"
               hx-push-url="true"
             >
               View All Students
             </a>
             <a
-              href="/api/students/new"
+              href="/students/new"
               class="btn btn--secondary btn--large"
-              hx-get="/api/students/new"
+              hx-get="/students/new"
               hx-target="#main-content"
               hx-push-url="true"
             >
@@ -196,7 +196,7 @@
       // Check authentication status and update UI
       async function checkAuth() {
         try {
-          const response = await fetch("/api/auth/session");
+          const response = await fetch("/auth/session");
           const data = await response.json();
 
           const authSection = document.getElementById("auth-section");
@@ -209,9 +209,9 @@
                         <div class="user-info">
                             ${data.user.photoUrl ? `<img src="${data.user.photoUrl}" alt="${data.user.name}" class="user-avatar" width="32" height="32">` : ""}
                             <span class="user-name">${data.user.name}</span>
-                            <a href="/api/auth/logout" 
+                            <a href="/auth/logout" 
                                class="btn btn--secondary btn--small"
-                               hx-get="/api/auth/logout"
+                               hx-get="/auth/logout"
                                hx-target="#main-content">
                                 Logout
                             </a>

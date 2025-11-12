@@ -19,54 +19,54 @@ import {
 const router = Router();
 
 /**
- * @route   GET /api/students
+ * @route   GET /students
  * @desc    Get all students with pagination (HTML response)
  * @access  Public
  */
 router.get("/", asyncHandler(studentController.getAllStudents));
 
 /**
- * @route   GET /api/students/new
+ * @route   GET /students/new
  * @desc    Show form to create a new student (HTML response)
  * @access  Public
  */
 router.get("/new", asyncHandler(studentController.showCreateForm));
 
 /**
- * @route   GET /api/students/:id
+ * @route   GET /students/:id
  * @desc    Get student by ID (HTML response)
  * @access  Public
  */
 router.get(
   "/:id",
   validate(studentIdSchema, "params"),
-  asyncHandler(studentController.getStudentById),
+  asyncHandler(studentController.getStudentById)
 );
 
 /**
- * @route   GET /api/students/:id/edit
+ * @route   GET /students/:id/edit
  * @desc    Show form to edit a student (HTML response)
  * @access  Public
  */
 router.get(
   "/:id/edit",
   validate(studentIdSchema, "params"),
-  asyncHandler(studentController.showEditForm),
+  asyncHandler(studentController.showEditForm)
 );
 
 /**
- * @route   POST /api/students
+ * @route   POST /students
  * @desc    Create a new student (HTML response)
  * @access  Public
  */
 router.post(
   "/",
   validate(createStudentSchema, "body"),
-  asyncHandler(studentController.createStudent),
+  asyncHandler(studentController.createStudent)
 );
 
 /**
- * @route   PUT /api/students/:id
+ * @route   PUT /students/:id
  * @desc    Update a student (HTML response)
  * @access  Public
  */
@@ -74,18 +74,18 @@ router.put(
   "/:id",
   validate(studentIdSchema, "params"),
   validate(updateStudentSchema, "body"),
-  asyncHandler(studentController.updateStudent),
+  asyncHandler(studentController.updateStudent)
 );
 
 /**
- * @route   DELETE /api/students/:id
+ * @route   DELETE /students/:id
  * @desc    Delete a student (HTML response or empty)
  * @access  Public
  */
 router.delete(
   "/:id",
   validate(studentIdSchema, "params"),
-  asyncHandler(studentController.deleteStudent),
+  asyncHandler(studentController.deleteStudent)
 );
 
 export default router;

@@ -49,12 +49,12 @@ export function createBaseLayout(title, content, options = {}) {
             <nav class="header__nav" role="navigation" aria-label="Main navigation">
                 <ul class="nav-list">
                     <li class="nav-list__item">
-                        <a href="/students" class="nav-list__link" hx-get="/api/students" hx-target="#main-content">
+                        <a href="/students" class="nav-list__link" hx-get="/students" hx-target="#main-content">
                             Students
                         </a>
                     </li>
                     <li class="nav-list__item">
-                        <a href="/students/new" class="nav-list__link" hx-get="/api/students/new" hx-target="#main-content">
+                        <a href="/students/new" class="nav-list__link" hx-get="/students/new" hx-target="#main-content">
                             Add Student
                         </a>
                     </li>
@@ -136,14 +136,14 @@ export function createStudentCard(student, options = {}) {
     <div class="student-card__actions" role="group" aria-label="Student actions">
         <button type="button" 
                 class="btn btn--secondary"
-                hx-get="/api/students/${student.id}/edit"
+                hx-get="/students/${student.id}/edit"
                 hx-target="#main-content"
                 aria-label="Edit ${escapeHtml(student.name)}">
             Edit
         </button>
         <button type="button" 
                 class="btn btn--danger"
-                hx-delete="/api/students/${student.id}"
+                hx-delete="/students/${student.id}"
                 hx-confirm="Are you sure you want to delete ${escapeHtml(student.name)}? This action cannot be undone."
                 hx-target="closest .student-card"
                 hx-swap="outerHTML"
@@ -162,7 +162,7 @@ export function createStudentCard(student, options = {}) {
  */
 export function createStudentForm(student = null, options = {}) {
   const {
-    action = student ? `/api/students/${student.id}` : "/api/students",
+    action = student ? `/students/${student.id}` : "/students",
     method = student ? "put" : "post",
     title = student ? "Edit Student" : "Add New Student",
   } = options;
@@ -226,7 +226,7 @@ export function createStudentForm(student = null, options = {}) {
             </button>
             <button type="button" 
                     class="btn btn--secondary"
-                    hx-get="/api/students"
+                    hx-get="/students"
                     hx-target="#main-content">
                 Cancel
             </button>
@@ -250,7 +250,7 @@ export function createStudentList(students, pagination = null, options = {}) {
     </p>
     <a href="/students/new" 
        class="btn btn--primary"
-       hx-get="/api/students/new"
+       hx-get="/students/new"
        hx-target="#main-content">
         Add Your First Student
     </a>
@@ -265,7 +265,7 @@ export function createStudentList(students, pagination = null, options = {}) {
         </h2>
         <a href="/students/new" 
            class="btn btn--primary"
-           hx-get="/api/students/new"
+           hx-get="/students/new"
            hx-target="#main-content">
             Add New Student
         </a>
@@ -302,9 +302,9 @@ export function createPagination(pagination) {
           prevPage
             ? `
         <li class="pagination__item">
-            <a href="/api/students?page=${prevPage}" 
+            <a href="/students?page=${prevPage}" 
                class="pagination__link"
-               hx-get="/api/students?page=${prevPage}"
+               hx-get="/students?page=${prevPage}"
                hx-target="#main-content"
                aria-label="Go to previous page">
                 ← Previous
@@ -329,9 +329,9 @@ export function createPagination(pagination) {
                 </span>
                 `
                     : `
-                <a href="/api/students?page=${p}" 
+                <a href="/students?page=${p}" 
                    class="pagination__link"
-                   hx-get="/api/students?page=${p}"
+                   hx-get="/students?page=${p}"
                    hx-target="#main-content"
                    aria-label="Go to page ${p}">
                     ${p}
@@ -339,7 +339,7 @@ export function createPagination(pagination) {
                 `
                 }
             </li>
-          `,
+          `
           )
           .join("")}
         
@@ -347,9 +347,9 @@ export function createPagination(pagination) {
           nextPage
             ? `
         <li class="pagination__item">
-            <a href="/api/students?page=${nextPage}" 
+            <a href="/students?page=${nextPage}" 
                class="pagination__link"
-               hx-get="/api/students?page=${nextPage}"
+               hx-get="/students?page=${nextPage}"
                hx-target="#main-content"
                aria-label="Go to next page">
                 Next →
@@ -380,7 +380,7 @@ export function createErrorMessage(message, errors = null) {
               .map(
                 (error) => `
                 <li class="alert__item">${escapeHtml(error)}</li>
-            `,
+            `
               )
               .join("")}
         </ul>

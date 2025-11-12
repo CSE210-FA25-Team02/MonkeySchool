@@ -58,7 +58,7 @@ export const aStudentWithNameAndEmail = (name, email) => {
 };
 
 export const aStudentWithNameAndEmailHasBeenCreated = async (name, email) => {
-  const res = await makeHtmxRequest("post", "/api/students", { name, email });
+  const res = await makeHtmxRequest("post", "/students", { name, email });
 
   // Parse the HTML response to extract student data
   const parsed = parseHtmlResponse(res.text);
@@ -81,34 +81,31 @@ export const aStudentWithNameAndEmailHasBeenCreated = async (name, email) => {
 export const iCreateTheStudent = async () => {
   context.response = await makeHtmxRequest(
     "post",
-    "/api/students",
+    "/students",
     context.student
   );
 };
 
 export const iGetAllStudents = async () => {
-  context.response = await makeHtmxRequest("get", "/api/students");
+  context.response = await makeHtmxRequest("get", "/students");
 };
 
 export const iGetTheStudentById = async () => {
   context.response = await makeHtmxRequest(
     "get",
-    `/api/students/${context.student.id}`
+    `/students/${context.student.id}`
   );
 };
 
 export const iGetAStudentByNonExistentId = async () => {
   const nonExistentId = createId();
-  context.response = await makeHtmxRequest(
-    "get",
-    `/api/students/${nonExistentId}`
-  );
+  context.response = await makeHtmxRequest("get", `/students/${nonExistentId}`);
 };
 
 export const iEditTheStudent = async () => {
   context.response = await makeHtmxRequest(
     "get",
-    `/api/students/${context.student.id}/edit`
+    `/students/${context.student.id}/edit`
   );
 };
 
@@ -116,7 +113,7 @@ export const iUpdateTheStudentWith = async (name, email) => {
   const updateData = { name, email };
   context.response = await makeHtmxRequest(
     "put",
-    `/api/students/${context.student.id}`,
+    `/students/${context.student.id}`,
     updateData
   );
 
@@ -127,12 +124,12 @@ export const iUpdateTheStudentWith = async (name, email) => {
 export const iDeleteTheStudent = async () => {
   context.response = await makeHtmxRequest(
     "delete",
-    `/api/students/${context.student.id}`
+    `/students/${context.student.id}`
   );
 };
 
 export const iNavigateToCreateStudentForm = async () => {
-  context.response = await makeHtmxRequest("get", "/api/students/new");
+  context.response = await makeHtmxRequest("get", "/students/new");
 };
 
 export const theStudentShouldBeCreatedSuccessfully = () => {

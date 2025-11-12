@@ -282,7 +282,7 @@ function renderClassListHTML(classes) {
           <div class="class-card__footer">
             <a href="/classes/${klass.id}" 
                class="class-card__link"
-               hx-get="/api/classes/${klass.id}"
+               hx-get="/classes/${klass.id}"
                hx-target="#main-content"
                hx-push-url="true"
                hx-indicator="#loading"

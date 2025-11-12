@@ -53,7 +53,7 @@ export function createUserProfile(user, { mode = "view" } = {}) {
         </fieldset>
         <button type="button"
                 class="btn btn--add-item"
-                hx-get="/api/users/${id}/profile/link-field?type=${type}"
+                hx-get="/users/${id}/profile/link-field?type=${type}"
                 hx-target="#${type}-links-${id}"
                 hx-swap="beforeend">
             + Add ${type === "chat" ? "Chat" : "Social"} Link
@@ -69,7 +69,7 @@ export function createUserProfile(user, { mode = "view" } = {}) {
                 <a href="${href(l)}" class="profile-link-item__link" target="_blank" rel="noopener noreferrer">
                     ${escapeHtml(l)}
                 </a>
-                </li>`,
+                </li>`
                     )
                     .join("")
                 : `<li class="profile-link-item profile-link-item--empty">—</li>`
@@ -97,12 +97,12 @@ export function createUserProfile(user, { mode = "view" } = {}) {
             Save
         </button>
         <button type="button" class="btn btn--secondary"
-                hx-get="/api/users/${id}/profile"
+                hx-get="/users/${id}/profile"
                 hx-target="#main-content"
                 hx-push-url="true">Cancel</button>`
             : `
-        <a href="/api/users/${id}/profile?mode=edit"
-            hx-get="/api/users/${id}/profile?mode=edit"
+        <a href="/users/${id}/profile?mode=edit"
+            hx-get="/users/${id}/profile?mode=edit"
             hx-target="#main-content"
             hx-push-url="true"
             class="btn btn--primary profile-hero__edit">Edit</a>`
@@ -114,7 +114,7 @@ export function createUserProfile(user, { mode = "view" } = {}) {
   const containerClose = `</section>`;
   const bodyOpen = isEdit
     ? `<form id="profile-form-${id}" class="profile-content profile-content--edit profile-content__form"
-                hx-put="/api/users/${id}"
+                hx-put="/users/${id}"
                 hx-target="#main-content"
                 hx-swap="innerHTML">`
     : `<div class="profile-content profile-content--view">`;

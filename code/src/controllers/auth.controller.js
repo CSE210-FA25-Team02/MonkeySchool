@@ -18,7 +18,7 @@ import { env } from "../config/env.js";
 export async function login(req, res) {
   // Construct redirect URI - ensure no trailing slash on base URL
   const baseUrl = env.AUTH_BASE_URL.replace(/\/$/, "");
-  const redirectUri = `${baseUrl}/api/auth/callback`;
+  const redirectUri = `${baseUrl}/auth/callback`;
 
   // Build Google OAuth URL
   const params = new URLSearchParams({
@@ -53,7 +53,7 @@ export async function callback(req, res) {
 
     // Construct redirect URI - ensure no trailing slash on base URL
     const baseUrl = env.AUTH_BASE_URL.replace(/\/$/, "");
-    const redirectUri = `${baseUrl}/api/auth/callback`;
+    const redirectUri = `${baseUrl}/auth/callback`;
 
     // Exchange code for tokens
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
@@ -86,7 +86,7 @@ export async function callback(req, res) {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
-      },
+      }
     );
 
     if (!profileResponse.ok) {

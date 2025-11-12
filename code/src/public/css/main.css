@@ -12,6 +12,8 @@
 @import "./components/class-list.css";
 @import "./components/navbar.css";
 @import "./components/login.css";
+@import "./components/classes-modal.css";
+@import "./components/profile-page.css";
 
 /* ============================================================================
    CSS CUSTOM PROPERTIES (CSS Variables)

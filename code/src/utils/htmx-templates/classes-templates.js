@@ -7,7 +7,7 @@ export function createClassForm(quarters) {
         <section id="modal" class="classes-modal__overlay">
             <div class="classes-modal">
                 <h2>Create New Class</h2>
-                <form hx-post="/api/classes/create" hx-target="#modal" hx-swap="outerHTML">
+                <form hx-post="/classes/create" hx-target="#modal" hx-swap="outerHTML">
                     <label class="classes-modal__label">
                         Class Name:
                         <input name="name" class="classes-modal__input" required>
@@ -22,7 +22,7 @@ export function createClassForm(quarters) {
             
                     <div class="classes-modal__actions">
                         <button class="classes-modal__button classes-modal__button--primary">Create</button>
-                        <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/api/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Cancel</button>
+                        <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -41,7 +41,7 @@ export function displayInvite(inviteURL) {
             <button id="copy-btn" class="classes-modal__button classes-modal__button--primary">Copy</button>
           </section>
           <section class="classes-modal__actions">
-            <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/api/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Close</button>
+            <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Close</button>
           </section>
         </div>
       </section>`;
@@ -60,7 +60,7 @@ export function createClassPage(user) {
               isProfessor
                 ? `
                 <button
-                    hx-get="/api/classes/form"
+                    hx-get="/classes/form"
                     hx-target="#modal-container"
                     hx-swap="beforeend"
                     class="classes-modal__button classes-modal__button--primary"
