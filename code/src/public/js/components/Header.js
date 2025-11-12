@@ -33,96 +33,41 @@ export class Header {
   render() {
     // Always render just the profile dropdown (no title)
     const existingProfile = this.container.querySelector(".header__profile");
+    const dropdownHTML = `
+      <div class="header__profile">
+        <button class="header__profile-button" 
+                aria-label="User profile menu" 
+                aria-expanded="false"
+                type="button">
+          <div class="header__profile-icon">
+            <i class="fas fa-user" aria-hidden="true"></i>
+          </div>
+        </button>
+        <div class="header__dropdown" role="menu" aria-label="Profile menu">
+          <a href="/users/profile" 
+             class="header__dropdown-item"
+             ${typeof htmx !== "undefined" ? `hx-get="/users/profile" hx-target="#main-content" hx-push-url="true"` : ""}>
+            View Profile
+          </a>
+          <button class="header__dropdown-item" id="logout-btn" type="button" style="width:100%;text-align:left;" hx-get="/auth/logout" hx-target="body" hx-swap="outerHTML">
+            Logout
+          </button>
+        </div>
+      </div>
+    `;
     if (!existingProfile) {
       const headerContent =
         this.container.querySelector(".header__content") || this.container;
       const headerRight = headerContent.querySelector(".header__right");
-
       if (!headerRight) {
-        // Create header structure if it doesn't exist
         headerContent.innerHTML = `
           <div class="header__left"></div>
           <div class="header__right">
-            <div class="header__profile">
-              <button class="header__profile-button" 
-                      aria-label="User profile menu" 
-                      aria-expanded="false"
-                      type="button">
-                <div class="header__profile-icon">
-                  <i class="fas fa-user" aria-hidden="true"></i>
-                </div>
-              </button>
-              <div class="header__dropdown" role="menu" aria-label="Profile menu">
-                <a href="/users/profile" 
-                   class="header__dropdown-item"
-                   ${
-                     typeof htmx !== "undefined"
-                       ? `
-                     hx-get="/users/profile" 
-                     hx-target="#main-content" 
-                     hx-push-url="true"
-                   `
-                       : ""
-                   }>
-                  View Profile
-                </a>
-                <a href="/account/edit" 
-                   class="header__dropdown-item"
-                   ${
-                     typeof htmx !== "undefined"
-                       ? `
-                     hx-get="/account/edit" 
-                     hx-target="#main-content" 
-                     hx-push-url="true"
-                   `
-                       : ""
-                   }>
-                  Edit Profile
-                </a>
-              </div>
-            </div>
+            ${dropdownHTML}
           </div>
         `;
       } else {
-        // Add profile dropdown to existing header
-        headerRight.innerHTML = `
-          <div class="header__profile">
-            <button class="header__profile-button" 
-                    aria-label="User profile menu" 
-                    aria-expanded="false"
-                    type="button">
-              <div class="header__profile-icon">👤</div>
-            </button>
-            <div class="header__dropdown" role="menu" aria-label="Profile menu">
-              <a href="/users/profile" 
-                 class="header__dropdown-item"
-                 ${
-                   typeof htmx !== "undefined"
-                     ? `
-                   hx-get="/users/profile" 
-                   hx-target="#main-content" 
-                   hx-push-url="true"
-                 `
-                     : ""
-                 }>
-                View Profile
-              </a>
-              <a href="/account/edit" 
-                 class="header__dropdown-item"
-                 ${
-                   typeof htmx !== "undefined"
-                     ? `
-                   hx-get="/account/edit" 
-                   hx-target="#main-content" 
-                   hx-push-url="true"
-                 `
-                     : ""
-                 }>
-                Edit Profile
-              </a>
-            </div>
-          </div>
-        `;
+        headerRight.innerHTML = dropdownHTML;
       }
     }
   }
@@ -131,6 +76,21 @@ export class Header {
    * Attach event listeners
    */
   attachEventListeners() {
+    // Add logout functionality
+    const logoutBtn = this.container.querySelector("#logout-btn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        // Placeholder: Replace with real logout logic (API call, clear session, redirect, etc.)
+        if (typeof htmx !== "undefined") {
+          htmx.ajax("POST", "/auth/logout", {
+            target: "body",
+            swap: "outerHTML",
+          });
+        } else {
+          window.location.href = "/auth/logout";
+        }
+      });
+    }
     const profileButton = this.container.querySelector(
       ".header__profile-button"
     );
