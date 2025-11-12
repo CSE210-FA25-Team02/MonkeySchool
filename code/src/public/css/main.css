@@ -500,6 +500,81 @@ a:focus {
 }
 
 /* ============================================================================
+   FOOTER
+   ============================================================================ */
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 80px; /* Start after the 80px navbar */
+  right: 0;
+  background-color: var(--color-primary-bg); /* #0E534A - dark green */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-md) var(--spacing-lg);
+  z-index: var(--z-sticky);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer--branded {
+  background-color: var(--color-primary-bg); /* #0E534A */
+}
+
+.footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  background-color: transparent;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.footer__content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer__text {
+  margin: 0;
+  color: var(--color-text-primary); /* White text */
+  font-size: var(--font-size-sm);
+}
+
+.footer__copyright {
+  margin: 0;
+  color: var(--color-text-primary); /* White text */
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.footer__accessibility {
+  font-style: italic;
+}
+
+.footer__links {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.footer__link {
+  color: var(--color-text-primary); /* White text */
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+}
+
+.footer__link:hover,
+.footer__link:focus {
+  color: var(--color-accent-1); /* Gold on hover */
+}
+
+/* ============================================================================
    BUTTONS
    ============================================================================ */
 
