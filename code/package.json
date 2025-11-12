@@ -21,7 +21,8 @@
     "db:test:drop": "sh -c 'echo \"Dropping test database: $DATABASE_URL\" && npx prisma migrate reset --force'"
   },
   "prisma": {
-    "seed": "node scripts/mock/db-seed.js"
+    "seed": "node scripts/mock/db-seed.js",
+    "schema": "prisma/schema/schema.prisma"
   },
   "keywords": [
     "express",
