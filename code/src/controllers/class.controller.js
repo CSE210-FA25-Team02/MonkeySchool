@@ -156,13 +156,7 @@ export const getUserClasses = asyncHandler(async (req, res) => {
  * Supports both HTMX requests (HTML fragment) and direct navigation (full page)
  */
 export const renderUserClasses = asyncHandler(async (req, res) => {
-  // Priority: JWT auth (production), fallback to query param (testing)
-  // TODO: Remove query param fallback once full JWT auth is deployed
   const userId = req.user?.id || req.query.userId;
-
-  if (!userId) {
-    return res.send(renderAuthRequiredHTML());
-  }
 
   const classes = await classService.getClassesByUserId(userId);
   const content = renderClassListHTML(classes);
@@ -175,7 +169,7 @@ export const renderUserClasses = asyncHandler(async (req, res) => {
     res.send(content);
   } else {
     // Direct navigation: return full HTML page with styles and layout
-    const fullPage = renderFullPage(content, "My Classes");
+    const fullPage = createBaseLayout("My Classes", content);
     res.send(fullPage);
   }
 });
@@ -325,89 +319,5 @@ function renderClassListHTML(classes) {
         ${classCards}
       </div>
     </section>
-  `;
-}
-
-/**
- * Helper function to render auth required message
- */
-function renderAuthRequiredHTML() {
-  return `
-    <section class="class-list" role="region">
-      <div class="class-list__error">
-        <div class="class-list__error-icon" aria-hidden="true"></div>
-        <h2 class="class-list__error-title">Authentication Required</h2>
-        <p class="class-list__error-message">
-          Please log in to view your classes.<br>
-          You need to be authenticated to access this page.
-        </p>
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Helper function to render full HTML page for direct navigation
- * Wraps content in complete HTML structure with styles and layout
- */
-function renderFullPage(content, title = "My Classes") {
-  return `
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escapeHtml(title)} - Monkey School</title>
-    
-    <!-- HTMX Library -->
-    <script src="https://unpkg.com/htmx.org@1.9.8" 
-            integrity="sha384-rgjA7mptc2ETQqXoYC3/zJvkU7K/aP44Y+z7xQuJiVnB/422P/Ak+F/AqFR7E4Wr" 
-            crossorigin="anonymous"></script>
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
-          crossorigin="anonymous" 
-          referrerpolicy="no-referrer" />
-    
-    <!-- Application Styles -->
-    <link rel="stylesheet" href="/css/navbar.css">
-    <link rel="stylesheet" href="/css/main.css">
-    
-    <!-- Application Scripts -->
-    <script type="module" src="/js/app.js" defer></script>
-</head>
-<body>
-    <!-- Skip to main content for screen readers -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    
-    <!-- Navigation Bar (Left Fixed) -->
-    <div id="navbar" class="navbar"></div>
-    
-    <!-- Sub-Menu (Collapsible Side Menu) -->
-    <div id="submenu" class="submenu"></div>
-    
-    <!-- Header (Top Bar) -->
-    <header id="header" class="header" role="banner">
-        <div class="container">
-            <div class="header__content">
-                <div class="header__left"></div>
-                <div class="header__right"></div>
-            </div>
-            <h1 class="header__title">
-                <a href="/" class="header__link">Student Management System</a>
-            </h1>
-        </div>
-    </header>
-
-    <main id="main-content" class="main" role="main" tabindex="-1">
-        <div class="container">
-            ${content}
-        </div>
-    </main>
-
-    <footer id="footer" class="footer" role="contentinfo"></footer>
-</body>
-</html>
   `;
 }

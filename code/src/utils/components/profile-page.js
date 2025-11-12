@@ -97,12 +97,12 @@ export function createUserProfile(user, { mode = "view" } = {}) {
             Save
         </button>
         <button type="button" class="btn btn--secondary"
-                hx-get="/users/${id}/profile"
+                hx-get="/users/profile"
                 hx-target="#main-content"
                 hx-push-url="true">Cancel</button>`
             : `
-        <a href="/users/${id}/profile?mode=edit"
-            hx-get="/users/${id}/profile?mode=edit"
+        <a href="/users/profile?mode=edit"
+            hx-get="/users/profile?mode=edit"
             hx-target="#main-content"
             hx-push-url="true"
             class="btn btn--primary profile-hero__edit">Edit</a>`

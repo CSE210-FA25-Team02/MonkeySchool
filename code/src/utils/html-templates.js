@@ -5,7 +5,11 @@
  */
 
 /**
- * Creates the base HTML document structure
+ * Creates a full HTML page layout
+ * @param {string} title - The page title
+ * @param {string} content - The main content HTML
+ * @param {object} options - Additional options (lang, dir, charset, viewport, description)
+ * @returns {string} - Complete HTML page as a string
  */
 export function createBaseLayout(title, content, options = {}) {
   const {
@@ -15,7 +19,6 @@ export function createBaseLayout(title, content, options = {}) {
     viewport = "width=device-width, initial-scale=1.0",
     description = "Student Management System",
   } = options;
-
   return `
 <!DOCTYPE html>
 <html lang="${lang}" dir="${dir}">
@@ -23,47 +26,60 @@ export function createBaseLayout(title, content, options = {}) {
     <meta charset="${charset}">
     <meta name="viewport" content="${viewport}">
     <meta name="description" content="${description}">
-    <title>${title}</title>
+    <title>${escapeHtml(title)} - Monkey School</title>
+    <title>${escapeHtml(title)} - Monkey School</title>
     
     <!-- HTMX Library -->
-    <script src="https://unpkg.com/htmx.org@1.9.8"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.8" 
+            integrity="sha384-rgjA7mptc2ETQqXoYC3/zJvkU7K/aP44Y+z7xQuJiVnB/422P/Ak+F/AqFR7E4Wr" 
+            crossorigin="anonymous"></script>
     
-    <!-- Custom Styles -->
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer" />
+    
+    <!-- Application Styles -->
+    <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="stylesheet" href="/css/profile-page.css">
-    <link rel="stylesheet" href="/css/classes-modal.css">
     
-    <!-- Accessibility Features -->
-    <meta name="theme-color" content="#2563eb">
-    <meta name="color-scheme" content="light dark">
+    <!-- Application Scripts -->
+    <script type="module" src="/js/app.js" defer></script>
 </head>
 <body>
     <!-- Skip to main content for screen readers -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
+    <!-- Navigation Bar (Left Fixed) -->
+    <div id="navbar" class="navbar"></div>
+    
+    <!-- Sub-Menu (Collapsible Side Menu) -->
+    <div id="submenu" class="submenu"></div>
+    
+    <!-- Header (Top Bar) -->
+    <header id="header" class="header" role="banner">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left"></div>
+                <div class="header__right"></div>
+            </div>
+            <h1 class="header__title">
+                <a href="/" class="header__link">Student Management System</a>
+            </h1>
+        </div>
+    </header>
+
     <main id="main-content" class="main" role="main" tabindex="-1">
-        ${content}
+        <div class="container">
+            ${content}
+        </div>
     </main>
 
-    <!-- Loading indicator for HTMX requests -->
-    <div id="loading" class="loading" aria-live="polite" aria-atomic="true" style="display: none;">
-        <div class="loading__spinner" role="status">
-            <span class="sr-only">Loading content, please wait...</span>
-        </div>
-    </div>
-
-    <script>
-        // Remove added profile link fields
-        document.body.addEventListener('click', (evt) => {
-            const btn = evt.target.closest('[data-action="remove-profile-link-field"]');
-            if (!btn) return;
-
-            evt.preventDefault();
-            btn.closest('.profile-link-field')?.remove();
-        });
-    </script>
+    <footer id="footer" class="footer" role="contentinfo"></footer>
 </body>
-</html>`;
+</html>
+  `;
 }
 
 /**
