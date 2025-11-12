@@ -2,11 +2,16 @@ model User {
   id            String             @id @default(cuid())
   email         String             @unique
   name          String
+  preferredName String?
+  isProf        Boolean            @default(false)
   pronunciation String?
   pronouns      String?
   phone         String?
   photoUrl      String?
   github        String?
+  bio           String?
+  socialLinks   String[]           @default([])
+  chatLinks     String[]           @default([])
   timezone      String?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
