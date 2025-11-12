@@ -10,6 +10,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "lint": "eslint src --ext .js",
     "format": "prettier --write \"src/**/*.js\"",
@@ -18,6 +19,9 @@
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand",
     "db:test:migrate": "sh -c 'echo \"Using test database: $DATABASE_URL\" && prisma migrate deploy'",
     "db:test:drop": "sh -c 'echo \"Dropping test database: $DATABASE_URL\" && npx prisma migrate reset --force'"
+  },
+  "prisma":{
+    "seed": "node scripts/mock/db-seed.js"
   },
   "keywords": [
     "express",

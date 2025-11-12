@@ -309,24 +309,6 @@ a:focus {
   background-color: transparent;
 }
 
-.header__content {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 var(--spacing-lg);
-}
-
-.header__left {
-  display: none; /* Hide left section - no title */
-}
-
-.header__right {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
 .header__title {
   display: none; /* Hide title - no text in header */
 }
@@ -623,32 +605,32 @@ a:focus {
 }
 
 .btn:focus {
-  outline: 2px solid var(--color-primary-dark);
+  outline: 2px solid var(--color-primary-bg);
   outline-offset: 2px;
 }
 
 .btn--primary {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  color: white;
+  background-color: var(--color-primary-bg);
+  border-color: var(--color-primary-bg);
+  color: var(--color-text-primary);
 }
 
 .btn--primary:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
-  color: white;
+  background-color: var(--color-secondary-bg);
+  border-color: var(--color-secondary-bg);
+  color: var(--color-text-primary);
 }
 
 .btn--secondary {
   background-color: white;
   border-color: var(--color-neutral-300);
-  color: var(--color-neutral-700);
+  color: var(--color-primary-bg);
 }
 
 .btn--secondary:hover:not(:disabled) {
   background-color: var(--color-neutral-100);
   border-color: var(--color-neutral-400);
-  color: var(--color-neutral-800);
+  color: var(--color-primary-bg);
 }
 
 .btn--danger {

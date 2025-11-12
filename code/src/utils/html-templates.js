@@ -30,6 +30,7 @@ export function createBaseLayout(title, content, options = {}) {
     
     <!-- Custom Styles -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/profile-page.css">
     <link rel="stylesheet" href="/css/classes-modal.css">
     
     <!-- Accessibility Features -->
@@ -63,9 +64,7 @@ export function createBaseLayout(title, content, options = {}) {
     </header>
 
     <main id="main-content" class="main" role="main" tabindex="-1">
-        <div class="container">
-            ${content}
-        </div>
+        ${content}
     </main>
 
     <footer class="footer" role="contentinfo">
@@ -85,6 +84,17 @@ export function createBaseLayout(title, content, options = {}) {
             <span class="sr-only">Loading content, please wait...</span>
         </div>
     </div>
+
+    <script>
+        // Remove added profile link fields
+        document.body.addEventListener('click', (evt) => {
+            const btn = evt.target.closest('[data-action="remove-profile-link-field"]');
+            if (!btn) return;
+
+            evt.preventDefault();
+            btn.closest('.profile-link-field')?.remove();
+        });
+    </script>
 </body>
 </html>`;
 }
@@ -396,8 +406,8 @@ export function createSuccessMessage(message) {
  * Utility functions
  */
 export function escapeHtml(text) {
-  if (typeof text !== "string") return text;
-
+    if (text == null) return ""
+    if (typeof text !== "string") return String(text);
   const map = {
     "&": "&amp;",
     "<": "&lt;",

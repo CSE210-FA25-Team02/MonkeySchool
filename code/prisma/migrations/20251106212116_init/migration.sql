@@ -72,15 +72,19 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "preferredName" TEXT,
     "pronunciation" TEXT,
     "pronouns" TEXT,
     "phone" TEXT,
     "photoUrl" TEXT,
     "github" TEXT,
+    "bio" TEXT,
+    "socialLinks" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "chatLinks" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "timezone" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-
+    
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
