@@ -32,10 +32,7 @@ export const navigationConfig = {
       name: "Account",
       path: "/account",
       icon: "user",
-      subMenu: [
-        { name: "View Profile", path: "/account/profile" },
-        { name: "Edit Profile", path: "/account/edit" },
-      ],
+      subMenu: [{ name: "View Profile", path: "/users/profile" }],
     },
   ],
 };

@@ -1,10 +1,13 @@
-// Class Controller - JSON API Edition
+// =============================
+//  Class Controller (JSON API)
+// =============================
 
 import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import {
   getUpcomingQuarters,
   createBaseLayout,
+  escapeHtml,
 } from "../utils/html-templates.js";
 import {
   createClassForm,
@@ -13,7 +16,6 @@ import {
 } from "../utils/htmx-templates/classes-templates.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
-import { escapeHtml } from "../utils/html-templates.js";
 
 /**
  * Create a new class

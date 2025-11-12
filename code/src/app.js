@@ -152,28 +152,6 @@ export function createApp() {
     res.sendFile(path.join(__dirname, "public", "login.html"));
   });
 
-  // Dashboard route (alias for home)
-  app.get("/dashboard", (req, res) => {
-    const isHtmxRequest = req.headers["hx-request"];
-
-    if (isHtmxRequest) {
-      // Return welcome content for dashboard
-      res.send(`
-        <section class="welcome" role="region" aria-labelledby="welcome-title">
-          <h2 id="welcome-title" class="welcome__title">
-            Welcome to Monkey School
-          </h2>
-          <p class="welcome__description">
-            A modern, accessible, and internationalized platform for managing student records.
-            Built with HTMX for seamless user interactions and designed with accessibility in mind.
-          </p>
-        </section>
-      `);
-    } else {
-      res.sendFile(path.join(__dirname, "public", "index.html"));
-    }
-  });
-
   app.use("/", routes);
 
   // Error handlers (must be last)

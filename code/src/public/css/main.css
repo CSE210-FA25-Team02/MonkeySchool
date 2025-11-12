@@ -246,22 +246,6 @@ a:focus {
    LAYOUT COMPONENTS
    ============================================================================ */
 
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--spacing-md);
-  padding-right: var(--spacing-md);
-}
-
-@media (min-width: 640px) {
-  .container {
-    padding-left: var(--spacing-lg);
-    padding-right: var(--spacing-lg);
-  }
-}
-
 /* ============================================================================
    SKIP LINK (Accessibility)
    ============================================================================ */

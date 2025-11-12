@@ -28,7 +28,9 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
   const mode = req.query.mode === "edit" ? "edit" : "view";
 
   try {
-    const user = await userService.getUserById(req.params.id);
+    const userId = req.user?.id;
+    if (!userId) throw new NotFoundError("User not authenticated");
+    const user = await userService.getUserById(userId);
     if (!user) throw new NotFoundError("User not found");
 
     const profileHtml = createUserProfile(user, { mode });
@@ -88,6 +90,7 @@ export const renderProfileLinkField = asyncHandler(async (req, res) => {
     return;
   }
 
+  // Optionally, you could check req.user here if needed for context
   const html = createProfileLinkField("", { type });
   res.send(html);
 });

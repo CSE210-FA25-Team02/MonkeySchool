@@ -18,7 +18,7 @@ export class Header {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(
-        `Header: Container with id "${this.containerId}" not found`,
+        `Header: Container with id "${this.containerId}" not found`
       );
       return;
     }
@@ -53,12 +53,12 @@ export class Header {
                 </div>
               </button>
               <div class="header__dropdown" role="menu" aria-label="Profile menu">
-                <a href="/account/profile" 
+                <a href="/users/profile" 
                    class="header__dropdown-item"
                    ${
                      typeof htmx !== "undefined"
                        ? `
-                     hx-get="/account/profile" 
+                     hx-get="/users/profile" 
                      hx-target="#main-content" 
                      hx-push-url="true"
                    `
@@ -94,12 +94,12 @@ export class Header {
               <div class="header__profile-icon">👤</div>
             </button>
             <div class="header__dropdown" role="menu" aria-label="Profile menu">
-              <a href="/account/profile" 
+              <a href="/users/profile" 
                  class="header__dropdown-item"
                  ${
                    typeof htmx !== "undefined"
                      ? `
-                   hx-get="/account/profile" 
+                   hx-get="/users/profile" 
                    hx-target="#main-content" 
                    hx-push-url="true"
                  `
@@ -132,7 +132,7 @@ export class Header {
    */
   attachEventListeners() {
     const profileButton = this.container.querySelector(
-      ".header__profile-button",
+      ".header__profile-button"
     );
     const dropdown = this.container.querySelector(".header__dropdown");
 
@@ -177,7 +177,7 @@ export class Header {
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
     const profileButton = this.container.querySelector(
-      ".header__profile-button",
+      ".header__profile-button"
     );
     const dropdown = this.container.querySelector(".header__dropdown");
 
@@ -202,7 +202,7 @@ export class Header {
 
     this.isDropdownOpen = false;
     const profileButton = this.container.querySelector(
-      ".header__profile-button",
+      ".header__profile-button"
     );
     const dropdown = this.container.querySelector(".header__dropdown");
 
