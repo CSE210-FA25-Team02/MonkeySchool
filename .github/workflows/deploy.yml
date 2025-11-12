@@ -1,0 +1,25 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - feature/cd # Change to your deployment branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH and deploy with Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: monkeyschool.indresh.me
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ~/MonkeySchool/code
+            docker compose down
+            docker compose up -d
