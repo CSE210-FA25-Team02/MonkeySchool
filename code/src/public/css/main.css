@@ -500,6 +500,22 @@ a:focus {
 }
 
 /* ============================================================================
+   MAIN CONTENT
+   ============================================================================ */
+
+.main {
+  position: relative;
+  margin-left: 80px; /* Offset for fixed 80px navbar */
+  margin-top: 60px; /* Offset for fixed header */
+  margin-bottom: 60px; /* Offset for fixed footer */
+  min-height: calc(
+    100vh - 120px
+  ); /* Full height minus header (60px) and footer (60px) */
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+}
+
+/* ============================================================================
    FOOTER
    ============================================================================ */
 
