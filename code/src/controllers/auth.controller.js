@@ -86,7 +86,7 @@ export async function callback(req, res) {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
-      }
+      },
     );
 
     if (!profileResponse.ok) {
