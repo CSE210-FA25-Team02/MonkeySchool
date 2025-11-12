@@ -24,5 +24,25 @@ services:
     depends_on:
       - postgres
 
+  app:
+    build: .
+    container_name: monkeyschool-app
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
+      CORS_ORIGIN: http://localhost:3000
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 100
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    # Do not mount local code to avoid overwriting entrypoint script
+    volumes:
+      - .:/usr/src/app
+    command: ["node", "src/server.js"]
+
 volumes:
   postgres_data:
