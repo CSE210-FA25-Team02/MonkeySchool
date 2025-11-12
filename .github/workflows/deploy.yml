@@ -20,6 +20,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd ~/MonkeySchool/code
+            bash
+            cd ~/MonkeySchool
+            git pull
+            cd ./code
+            set -a
+            source .env
+            set +a
             docker compose down
             docker compose up -d
