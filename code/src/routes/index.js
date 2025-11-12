@@ -7,7 +7,6 @@
 // code/src/routes/index.js
 
 import { Router } from "express";
-import studentRoutes from "./student.routes.js";
 import userRoutes from "./user.routes.js";
 import classRoutes from "./class.routes.js";
 import classRoleRoutes from "./classRole.routes.js";
@@ -19,7 +18,6 @@ const router = Router();
  * Mount route modules
  */
 router.use("/auth", authRoutes);
-router.use("/students", studentRoutes);
 router.use("/users", userRoutes);
 router.use("/classes", classRoutes);
 router.use("/classRoles", classRoleRoutes);
