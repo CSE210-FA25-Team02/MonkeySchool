@@ -12,11 +12,13 @@ import cors from "cors";
 import compression from "compression";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
+import { optionalAuth } from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,13 +41,28 @@ export function createApp() {
           scriptSrc: [
             "'self'",
             "'unsafe-inline'", // Required for HTMX inline event handlers
+            "'unsafe-eval'", // Required for ES6 modules in some browsers
             "https://unpkg.com", // For HTMX CDN
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],
-          styleSrc: ["'self'", "'unsafe-inline'"], // For dynamic styling
-          connectSrc: ["'self'"],
-          imgSrc: ["'self'", "data:", "blob:"],
-          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          styleSrc: [
+            "'self'", 
+            "'unsafe-inline'", // For dynamic styling
+            "https://cdnjs.cloudflare.com", // For Font Awesome
+          ],
+          fontSrc: [
+            "'self'", 
+            "https://fonts.gstatic.com",
+            "https://cdnjs.cloudflare.com", // For Font Awesome fonts
+          ],
+          connectSrc: [
+            "'self'",
+            "https://oauth2.googleapis.com",
+            "https://www.googleapis.com",
+            "https://accounts.google.com",
+          ],
+          imgSrc: ["'self'", "data:", "blob:", "https:"], // Allow Google profile images
+          formAction: ["'self'", "https://accounts.google.com"], // Allow OAuth redirects
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
@@ -84,6 +101,9 @@ export function createApp() {
   });
   app.use("/api", limiter);
 
+  // Cookie parsing
+  app.use(cookieParser());
+
   // Body parsing
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -103,7 +123,7 @@ export function createApp() {
   app.set("views", path.join(__dirname, "views"));
 
   // Health check (returns HTML for HTMX compatibility)
-  app.get("/", (req, res) => {
+  app.get("/", optionalAuth, (req, res) => {
     const isHtmxRequest = req.headers["hx-request"];
 
     if (isHtmxRequest) {
@@ -114,6 +134,28 @@ export function createApp() {
           <p>📅 Version: 1.0.0</p>
           <p>🌍 Environment: ${env.NODE_ENV}</p>
         </div>
+      `);
+    } else {
+      res.sendFile(path.join(__dirname, "public", "index.html"));
+    }
+  });
+
+  // Dashboard route (alias for home)
+  app.get("/dashboard", (req, res) => {
+    const isHtmxRequest = req.headers["hx-request"];
+
+    if (isHtmxRequest) {
+      // Return welcome content for dashboard
+      res.send(`
+        <section class="welcome" role="region" aria-labelledby="welcome-title">
+          <h2 id="welcome-title" class="welcome__title">
+            Welcome to Monkey School
+          </h2>
+          <p class="welcome__description">
+            A modern, accessible, and internationalized platform for managing student records.
+            Built with HTMX for seamless user interactions and designed with accessibility in mind.
+          </p>
+        </section>
       `);
     } else {
       res.sendFile(path.join(__dirname, "public", "index.html"));

@@ -3,6 +3,7 @@ model User {
   email         String             @unique
   name          String
   preferredName String?
+  isProf        Boolean            @default(false)
   pronunciation String?
   pronouns      String?
   phone         String?
