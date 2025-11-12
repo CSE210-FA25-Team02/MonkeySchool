@@ -69,7 +69,7 @@ export function createUserProfile(user, { mode = "view" } = {}) {
                 <a href="${href(l)}" class="profile-link-item__link" target="_blank" rel="noopener noreferrer">
                     ${escapeHtml(l)}
                 </a>
-                </li>`,
+                </li>`
                     )
                     .join("")
                 : `<li class="profile-link-item profile-link-item--empty">—</li>`
