@@ -175,7 +175,7 @@ export function createApp() {
 
   // Frontend routes for HTMX pages
   // Courses list page
-  app.get("/courses/list", optionalAuth, async (req, res) => {
+  app.get("/courses/list", limiter, optionalAuth, async (req, res) => {
     const isHtmxRequest = req.headers["hx-request"];
     
     if (isHtmxRequest) {
@@ -231,7 +231,7 @@ export function createApp() {
   });
   
   // Class roster page
-  app.get("/roster/:classId", async (req, res) => {
+  app.get("/roster/:classId", limiter, optionalAuth, async (req, res) => {
     const isHtmxRequest = req.headers["hx-request"];
     
     if (isHtmxRequest) {
