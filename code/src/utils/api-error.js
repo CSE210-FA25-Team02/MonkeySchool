@@ -134,9 +134,9 @@ export class InvalidRoleTransitionError extends BusinessLogicError {
 export class DuplicateMemberError extends ConflictError {
   constructor(userId, classId, existingRole) {
     super(
-      `User is already a member of this class with role: ${existingRole}`,
-      { userId, classId, existingRole }
+      `User is already a member of this class with role: ${existingRole}`
     );
+    this.details = { userId, classId, existingRole };
     this.name = 'DuplicateMemberError';
   }
 }
