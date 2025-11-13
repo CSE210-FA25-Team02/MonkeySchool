@@ -5,9 +5,7 @@ import {
   ForbiddenError,
   PermissionError,
   BusinessLogicError,
-  LastProfessorError,
-  SelfRemovalError,
-  DuplicateMemberError
+  LastProfessorError
 } from '../utils/api-error.js';
 
 const VALID_ROLES = ["PROFESSOR", "TA", "STUDENT", "TUTOR"];
@@ -44,9 +42,7 @@ export const createClassRoleService = (prismaClient) => ({
 
     if (!requesterRole) {
       throw new ForbiddenError(
-        'You are not a member of this class',
-        'class_membership',
-        classId
+        'You are not a member of this class'
       );
     }
 
