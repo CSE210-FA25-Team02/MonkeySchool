@@ -3,6 +3,7 @@ import { Router } from "express";
 import { createClassRoleController } from '../controllers/classRole.controller.js';
 import { createClassRoleService } from '../services/classRole.service.js';
 import { validate } from '../middleware/validate.js';
+import { optionalAuth } from '../middleware/auth.js';
   import {
     classIdSchema,
     updateRoleSchema,
@@ -11,7 +12,7 @@ import { validate } from '../middleware/validate.js';
   } from '../validators/classRole.validator.js';
 
 const router = Router();
-// router.use(authenticate);  // TODO: with authentication middleware from import { authenticate, requireProfessor } from '../middleware/auth.js';
+router.use(optionalAuth);  // Apply authentication to all routes in this router
 
 // Create service instance first
 const classRoleService = createClassRoleService(prisma);
@@ -26,14 +27,12 @@ router.get('/:classId/roster',
 
     // Assign or change role (professors only)
     router.put('/:classId/roster/:userId/assign',
-    // requireProfessor,
     validate(updateRoleSchema),
     classRoleController.updateUserRoleByClass
     );
 
     // Remove user from class (professors only)
     router.delete('/:classId/roster/:userId/remove',
-    // requireProfessor,
     validate(removeUserSchema),
     classRoleController.removeUserFromClass
     );

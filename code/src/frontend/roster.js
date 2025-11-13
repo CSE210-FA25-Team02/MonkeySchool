@@ -1,6 +1,19 @@
 import { asyncHandler } from "../utils/async-handler.js";
 
 /**
+ * Escape HTML to prevent XSS attacks
+ */
+function escapeHtml(unsafe) {
+  if (typeof unsafe !== 'string') return unsafe;
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
  * Frontend handler for class roster page
  * Uses the existing API endpoint /api/classRoles/:classId/roster
  */
@@ -45,12 +58,12 @@ export const showRosterPage = asyncHandler(async (req, res) => {
       if (roleMembers.length === 0) return '';
       
       const rows = roleMembers.map(member => {
-        const selectId = 'role-select-' + member.user.id;
-        return `<tr class="roster-member" data-user-id="${member.user.id}">
-          <td class="roster-name">${member.user.name}</td>
-          <td class="roster-email">${member.user.email}</td>
+        const selectId = 'role-select-' + escapeHtml(member.user.id);
+        return `<tr class="roster-member" data-user-id="${escapeHtml(member.user.id)}">
+          <td class="roster-name">${escapeHtml(member.user.name)}</td>
+          <td class="roster-email">${escapeHtml(member.user.email)}</td>
           <td class="roster-role">
-            <select id="${selectId}" class="role-selector" data-user-id="${member.user.id}" data-current-role="${member.role}">
+            <select id="${selectId}" class="role-selector" data-user-id="${escapeHtml(member.user.id)}" data-current-role="${escapeHtml(member.role)}">
               <option value="PROFESSOR" ${member.role === 'PROFESSOR' ? 'selected' : ''}>Professor</option>
               <option value="TA" ${member.role === 'TA' ? 'selected' : ''}>Teaching Assistant</option>
               <option value="STUDENT" ${member.role === 'STUDENT' ? 'selected' : ''}>Student</option>

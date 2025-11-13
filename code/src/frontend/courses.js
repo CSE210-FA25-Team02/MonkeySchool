@@ -1,6 +1,19 @@
 import { asyncHandler } from "../utils/async-handler.js";
 
 /**
+ * Escape HTML to prevent XSS attacks
+ */
+function escapeHtml(unsafe) {
+  if (typeof unsafe !== 'string') return unsafe;
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
  * Frontend handler for courses list page
  * Shows all available courses with buttons to navigate to rosters
  */
@@ -232,9 +245,9 @@ export const showCoursesListPage = asyncHandler(async (req, res) => {
         <div class="course-card__header">
           <h2 class="course-card__name">
             <i class="fas fa-book" style="color: var(--color-accent-1);"></i>
-            ${course.name || 'Untitled Course'}
+            ${escapeHtml(course.name) || 'Untitled Course'}
           </h2>
-          <span class="course-card__quarter">${course.quarter || 'No Quarter'}</span>
+          <span class="course-card__quarter">${escapeHtml(course.quarter) || 'No Quarter'}</span>
         </div>
         
         <div class="course-card__stats">
@@ -270,9 +283,9 @@ export const showCoursesListPage = asyncHandler(async (req, res) => {
         
         <div class="course-card__actions">
           ${isProf 
-            ? `<a href="/roster/${course.id}" 
+            ? `<a href="/roster/${escapeHtml(course.id)}" 
                  class="btn-roster"
-                 hx-get="/roster/${course.id}"
+                 hx-get="/roster/${escapeHtml(course.id)}"
                  hx-target="#main-content"
                  hx-push-url="true">
                 <i class="fas fa-list-ul"></i>

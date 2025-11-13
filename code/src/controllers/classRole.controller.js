@@ -10,7 +10,6 @@ export const createClassRoleController = (classRoleService) => ({
    */
   getRoster: asyncHandler(async (req, res) => {
     const { classId } = req.params;
-    const requesterId = req.user?.id || 'test-user-id'; // Mock for testing
 
     const roster = await classRoleService.getRoster(classId);
 
