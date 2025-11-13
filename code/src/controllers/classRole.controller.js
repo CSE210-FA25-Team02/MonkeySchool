@@ -1,4 +1,3 @@
-import * as classRoleService from "../services/classRole.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 
 

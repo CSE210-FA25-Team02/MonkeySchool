@@ -1,4 +1,3 @@
-import { prisma } from "../lib/prisma.js";
 import {
   NotFoundError,
   ValidationError,
@@ -8,7 +7,6 @@ import {
   LastProfessorError
 } from '../utils/api-error.js';
 
-const VALID_ROLES = ["PROFESSOR", "TA", "STUDENT", "TUTOR"];
 
 export const createClassRoleService = (prismaClient) => ({
   /**
