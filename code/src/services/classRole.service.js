@@ -5,9 +5,7 @@ import {
   ForbiddenError,
   PermissionError,
   BusinessLogicError,
-  LastProfessorError,
-  SelfRemovalError,
-  DuplicateMemberError
+  LastProfessorError
 } from '../utils/api-error.js';
 
 const VALID_ROLES = ["PROFESSOR", "TA", "STUDENT", "TUTOR"];
