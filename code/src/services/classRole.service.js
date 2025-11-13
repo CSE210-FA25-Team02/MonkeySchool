@@ -44,9 +44,7 @@ export const createClassRoleService = (prismaClient) => ({
 
     if (!requesterRole) {
       throw new ForbiddenError(
-        'You are not a member of this class',
-        'class_membership',
-        classId
+        'You are not a member of this class'
       );
     }
 
