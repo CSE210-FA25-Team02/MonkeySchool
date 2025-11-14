@@ -1,6 +1,15 @@
 import { asyncHandler } from "../utils/async-handler.js";
 
 /**
+ * Sanitize input to prevent XSS attacks
+ * For IDs, only allow alphanumeric characters, hyphens, and underscores
+ */
+function sanitizeId(unsafe) {
+  if (typeof unsafe !== 'string') return '';
+  return unsafe.replace(/[^a-zA-Z0-9\-_]/g, '');
+}
+
+/**
  * Escape HTML to prevent XSS attacks
  */
 function escapeHtml(unsafe) {
@@ -129,7 +138,7 @@ export const showRosterPage = asyncHandler(async (req, res) => {
   
   const scripts = `
     <script>
-      let currentClassId = '${classId}';
+      let currentClassId = '${sanitizeId(classId)}';
       
       // Wait for HTMX content to be fully loaded
       if (document.readyState === 'loading') {

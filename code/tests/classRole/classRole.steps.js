@@ -1,10 +1,11 @@
 import { loadFeature, defineFeature } from "jest-cucumber";
-  import { prisma } from "../../src/lib/prisma.js";
-  import { context } from "../steps.context.js";
-  import { request } from "../steps.config.js";
-  import { resetDatabase } from "../utils/reset-db.js";
-  import * as userService from "../../src/services/user.service.js";
-  import * as classService from "../../src/services/class.service.js";
+import { prisma } from "../../src/lib/prisma.js";
+import { context } from "../steps.context.js";
+import { request } from "../steps.config.js";
+import { resetDatabase } from "../utils/reset-db.js";
+import * as userService from "../../src/services/user.service.js";
+import * as classService from "../../src/services/class.service.js";
+import { generateToken } from "../../src/services/auth.service.js";
 
   const feature = loadFeature("./features/classRole.feature");
 
@@ -58,7 +59,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when("I request the class roster", async () => {
         context.response = await request
           .get(`/api/classRoles/${context.klass.id}/roster`)
-          .set('Authorization', `Bearer ${context.professor?.id || 'mock-token'}`);
+          .set('Authorization', `Bearer ${context.professor ? generateToken(context.professor) : 'mock-token'}`);
       });
 
       then("the response should be successful", () => {
@@ -125,7 +126,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when(/^the professor assigns "(.*)" role to the user$/, async (role) => {
         context.response = await request
           .put(`/api/classRoles/${context.klass.id}/roster/${context.user.id}/assign`)
-          .set('Authorization', `Bearer ${context.professor.id}`)
+          .set('Authorization', `Bearer ${generateToken(context.professor)}`)
           .send({ role: role.toUpperCase() });
       });
 
@@ -180,7 +181,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when(/^the professor changes the user's role to "(.*)"$/, async (newRole) => {
         context.response = await request
           .put(`/api/classRoles/${context.klass.id}/roster/${context.user.id}/assign`)
-          .set('Authorization', `Bearer ${context.professor.id}`)
+          .set('Authorization', `Bearer ${generateToken(context.professor)}`)
           .send({ role: newRole.toUpperCase() });
       });
 
@@ -228,7 +229,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when(/^the student tries to assign "(.*)" role to the other user$/, async (role) => {
         context.response = await request
           .put(`/api/classRoles/${context.klass.id}/roster/${context.targetUser.id}/assign`)
-          .set('Authorization', `Bearer ${context.user.id}`)
+          .set('Authorization', `Bearer ${generateToken(context.user)}`)
           .send({ role: role.toUpperCase() });
       });
 
@@ -273,7 +274,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when("the professor removes the student from the class", async () => {
         context.response = await request
           .delete(`/api/classRoles/${context.klass.id}/roster/${context.student.id}/remove`)
-          .set('Authorization', `Bearer ${context.professor.id}`);
+          .set('Authorization', `Bearer ${generateToken(context.professor)}`);
       });
 
       then("the removal should be successful", () => {
@@ -313,7 +314,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when("someone tries to remove the professor", async () => {
         context.response = await request
           .delete(`/api/classRoles/${context.klass.id}/roster/${context.professor.id}/remove`)
-          .set('Authorization', `Bearer ${context.professor.id}`);
+          .set('Authorization', `Bearer ${generateToken(context.professor)}`);
       });
 
       then("the request should be rejected", () => {
@@ -345,7 +346,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when("the professor tries to assign a role to a non-existent user", async () => {
         context.response = await request
           .put(`/api/classRoles/${context.klass.id}/roster/clmnon2existent3userid4/assign`)
-          .set('Authorization', `Bearer ${context.professor.id}`)
+          .set('Authorization', `Bearer ${generateToken(context.professor)}`)
           .send({ role: "STUDENT" });
       });
 
@@ -381,7 +382,7 @@ import { loadFeature, defineFeature } from "jest-cucumber";
       when(/^the professor tries to assign "(.*)" role to the user$/, async (invalidRole) => {
         context.response = await request
           .put(`/api/classRoles/${context.klass.id}/roster/${context.user.id}/assign`)
-          .set('Authorization', `Bearer ${context.professor.id}`)
+          .set('Authorization', `Bearer ${generateToken(context.professor)}`)
           .send({ role: invalidRole });
       });
 

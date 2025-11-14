@@ -1,6 +1,15 @@
 import { asyncHandler } from "../utils/async-handler.js";
 
 /**
+ * Sanitize input to prevent XSS attacks
+ * For IDs, only allow alphanumeric characters, hyphens, and underscores
+ */
+function sanitizeId(unsafe) {
+  if (typeof unsafe !== 'string') return '';
+  return unsafe.replace(/[^a-zA-Z0-9\-_]/g, '');
+}
+
+/**
  * Escape HTML to prevent XSS attacks
  */
 function escapeHtml(unsafe) {
@@ -283,9 +292,9 @@ export const showCoursesListPage = asyncHandler(async (req, res) => {
         
         <div class="course-card__actions">
           ${isProf 
-            ? `<a href="/roster/${escapeHtml(course.id)}" 
+            ? `<a href="/roster/${sanitizeId(course.id)}" 
                  class="btn-roster"
-                 hx-get="/roster/${escapeHtml(course.id)}"
+                 hx-get="/roster/${sanitizeId(course.id)}"
                  hx-target="#main-content"
                  hx-push-url="true">
                 <i class="fas fa-list-ul"></i>

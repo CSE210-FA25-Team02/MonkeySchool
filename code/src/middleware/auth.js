@@ -12,7 +12,15 @@ import { getUserById } from "../services/user.service.js";
  */
 export async function requireAuth(req, res, next) {
   try {
-    const token = req.cookies?.auth_token;
+    // Check both cookies (for web) and Authorization header (for API/tests)
+    let token = req.cookies?.auth_token;
+    
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7); // Remove 'Bearer ' prefix
+      }
+    }
 
     if (!token) {
       return res.status(401).json({ error: "Authentication required" });
@@ -42,7 +50,15 @@ export async function requireAuth(req, res, next) {
  */
 export async function optionalAuth(req, res, next) {
   try {
-    const token = req.cookies?.auth_token;
+    // Check both cookies (for web) and Authorization header (for API/tests)
+    let token = req.cookies?.auth_token;
+    
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7); // Remove 'Bearer ' prefix
+      }
+    }
 
     if (token) {
       const decoded = verifyToken(token);
