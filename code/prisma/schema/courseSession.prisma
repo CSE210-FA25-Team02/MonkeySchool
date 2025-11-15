@@ -1,0 +1,17 @@
+model CourseSession {
+  id        String    @id @default(cuid())
+  classId   String
+  name      String // e.g., "Lecture 1", "Lab Session 3"
+  date      DateTime // Date of the session
+  startTime DateTime? // Optional start time
+  endTime   DateTime? // Optional end time
+  createdAt DateTime  @default(now())
+
+  class             Class              @relation(fields: [classId], references: [id], onDelete: Cascade)
+  attendancePolls   AttendancePoll[]
+  attendanceRecords AttendanceRecord[]
+
+  @@index([classId])
+  @@index([date])
+  @@map("course_sessions")
+}

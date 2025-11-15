@@ -19,6 +19,8 @@ model User {
   classRoles      ClassRole[]
   groupRoles      GroupRole[]
   groupSupervises GroupSupervisor[] // NEW
+  attendancePolls   AttendancePoll[]   @relation("PollCreator")
+  attendanceRecords AttendanceRecord[] @relation("AttendanceRecords")
 
   @@index([name])
   @@index([email])

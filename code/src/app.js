@@ -18,7 +18,7 @@ import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
-import { optionalAuth } from "./middleware/auth.js";
+import { optionalAuth, requireAuth } from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -159,6 +159,26 @@ export function createApp() {
       `);
     } else {
       res.sendFile(path.join(__dirname, "public", "index.html"));
+    }
+  });
+
+  // Attendance page route
+  app.get("/attendance", requireAuth, async (req, res, next) => {
+    const { getAttendancePage } = await import("./controllers/attendance.controller.js");
+    // getAttendancePage is already wrapped with asyncHandler, so it handles errors
+    return getAttendancePage(req, res, next);
+  });
+
+  // Redirect /courses/attendance to /attendance for backward compatibility
+  app.get("/courses/attendance", requireAuth, async (req, res, next) => {
+    const isHtmxRequest = req.headers["hx-request"];
+    if (isHtmxRequest) {
+      // For HTMX, call the attendance page handler directly
+      const { getAttendancePage } = await import("./controllers/attendance.controller.js");
+      return getAttendancePage(req, res, next);
+    } else {
+      // For direct navigation, redirect
+      res.redirect("/attendance");
     }
   });
 

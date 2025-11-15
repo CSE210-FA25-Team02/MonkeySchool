@@ -22,6 +22,8 @@
                 htmx.config.defaultSwapDelay = 0;
                 // Set default swap style to innerHTML
                 htmx.config.defaultSwapStyle = 'innerHTML';
+                // Increase timeout to 30 seconds (30000ms) before showing timeout errors
+                htmx.config.timeout = 30000;
             }
         });
     </script>
@@ -374,13 +376,13 @@
                 }
             });
             
-            // Handle errors gracefully - show not-implemented page for 404s immediately
+            // Handle errors gracefully - show not-implemented page for 404s with delay
             document.body.addEventListener('htmx:responseError', function(evt) {
                 console.error('HTMX Error:', evt.detail);
                 isErrorResponse = true;
                 hideLoading(); // Hide loading immediately
                 
-                // For 404 errors, show the not-implemented page immediately (no delay)
+                // For 404 errors, show the not-implemented page after a delay
                 // Only if the response wasn't already handled by beforeSwap
                 // This is a fallback in case the server response wasn't properly handled
                 if (evt.detail.xhr && evt.detail.xhr.status === 404) {
@@ -393,32 +395,38 @@
                     const mainContent = document.getElementById('main-content');
                     // Only show fallback if content hasn't been updated and no not-implemented section exists
                     if (mainContent && !mainContent.querySelector('.not-implemented')) {
-                        // Show immediately without delay, with container wrapper to match layout
-                        // This matches the structure returned by the server error handler
-                        mainContent.innerHTML = `
-                            <div class="container">
-                                <section class="not-implemented" role="region" aria-labelledby="not-implemented-title">
-                                    <div class="not-implemented__content">
-                                        <h2 id="not-implemented-title" class="not-implemented__title">🚧 This page is not yet available.</h2>
-                                        <p class="not-implemented__message">
-                                            Please check back soon.
-                                        </p>
-                                        <div class="not-implemented__actions">
-                                            <a href="/dashboard" 
-                                               class="btn btn--primary"
-                                               hx-get="/dashboard"
-                                               hx-target="#main-content"
-                                               hx-push-url="true">
-                                                Go Back to Dashboard
-                                            </a>
-                                        </div>
+                        // Wait 2 seconds before showing error page to allow slow requests to complete
+                        setTimeout(() => {
+                            // Double-check that content still hasn't been updated
+                            if (mainContent && !mainContent.querySelector('.not-implemented')) {
+                                // Show with container wrapper to match layout
+                                // This matches the structure returned by the server error handler
+                                mainContent.innerHTML = `
+                                    <div class="container">
+                                        <section class="not-implemented" role="region" aria-labelledby="not-implemented-title">
+                                            <div class="not-implemented__content">
+                                                <h2 id="not-implemented-title" class="not-implemented__title">🚧 This page is not yet available.</h2>
+                                                <p class="not-implemented__message">
+                                                    Please check back soon.
+                                                </p>
+                                                <div class="not-implemented__actions">
+                                                    <a href="/dashboard" 
+                                                       class="btn btn--primary"
+                                                       hx-get="/dashboard"
+                                                       hx-target="#main-content"
+                                                       hx-push-url="true">
+                                                        Go Back to Dashboard
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </section>
                                     </div>
-                                </section>
-                            </div>
-                        `;
-                        
-                        // Hide loading again after content is set
-                        setTimeout(hideLoading, 0);
+                                `;
+                                
+                                // Hide loading again after content is set
+                                setTimeout(hideLoading, 0);
+                            }
+                        }, 2000); // 2 second delay before showing error
                     }
                 }
             });

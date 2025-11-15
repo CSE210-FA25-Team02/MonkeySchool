@@ -11,5 +11,8 @@ model Class {
   // A class contains multiple project groups
   groups     Group[]
 
+  // A class has multiple course sessions
+  sessions CourseSession[]
+
   @@map("classes")
 }

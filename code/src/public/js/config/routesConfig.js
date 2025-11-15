@@ -13,7 +13,6 @@ export const routes = {
   courses: "/courses",
   coursesList: "/courses/list",
   coursesSchedule: "/courses/schedule",
-  coursesAttendance: "/courses/attendance",
   
   // Account routes
   account: "/account",

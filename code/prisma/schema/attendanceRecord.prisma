@@ -1,0 +1,19 @@
+model AttendanceRecord {
+  id        String   @id @default(cuid())
+  studentId String // User ID of student
+  sessionId String
+  pollId    String? // Optional - can be null if poll is deleted
+  markedAt  DateTime @default(now())
+  ipAddress String? // Optional, for audit
+  userAgent String? // Optional
+
+  student User            @relation("AttendanceRecords", fields: [studentId], references: [id], onDelete: Cascade)
+  session CourseSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  poll    AttendancePoll? @relation(fields: [pollId], references: [id], onDelete: SetNull)
+
+  @@unique([studentId, sessionId], name: "student_session_unique")
+  @@index([studentId])
+  @@index([sessionId])
+  @@index([pollId])
+  @@map("attendance_records")
+}

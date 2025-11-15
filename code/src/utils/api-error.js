@@ -65,6 +65,15 @@ export class ConflictError extends ApiError {
 }
 
 /**
+ * 410 Gone (e.g., expired resource)
+ */
+export class GoneError extends ApiError {
+  constructor(message = "Resource has expired") {
+    super(message, 410);
+  }
+}
+
+/**
  * 500 Internal Server Error
  */
 export class InternalServerError extends ApiError {
