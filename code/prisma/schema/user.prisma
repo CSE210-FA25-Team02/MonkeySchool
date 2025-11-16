@@ -20,6 +20,8 @@ model User {
   groupRoles      GroupRole[]
   groupSupervises GroupSupervisor[] // NEW
 
+  activities      Activity[]       
+
   @@index([name])
   @@index([email])
   @@map("users")

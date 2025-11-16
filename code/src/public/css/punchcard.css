@@ -1,0 +1,57 @@
+/* ============================================================================
+   PUNCHCARD COMPONENTS
+   ============================================================================ */
+
+.punchcard {
+    width: 240px;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: sans-serif;
+}
+
+.punchcard__title {
+    margin-bottom: 10px;
+}
+
+.punchcard__select {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-bottom: 14px;
+}
+
+.punchcard__section {
+    margin-bottom: 10px;
+}
+
+.punchcard__section--last {
+    margin-bottom: 20px;
+}
+
+.punchcard__label {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.punchcard__value {
+    font-size: 0.9rem;
+}
+
+.punchcard__buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.punchcard__button {
+    flex: 1;
+    padding: 6px;
+    border-radius: 4px;
+    border: none;
+}
+
+.punchcard__button--disabled {
+    background: #e5e5e5;
+    cursor: not-allowed;
+}

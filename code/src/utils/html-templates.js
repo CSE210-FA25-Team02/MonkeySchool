@@ -32,6 +32,7 @@ export function createBaseLayout(title, content, options = {}) {
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/profile-page.css">
     <link rel="stylesheet" href="/css/classes-modal.css">
+    <link rel="stylesheet" href="/css/punchcard.css">
     
     <!-- Accessibility Features -->
     <meta name="theme-color" content="#2563eb">
