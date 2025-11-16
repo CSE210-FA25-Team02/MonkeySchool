@@ -89,7 +89,7 @@ export async function submitAttendance(
     // Check if already marked (using unique constraint)
     const existing = await tx.attendanceRecord.findUnique({
       where: {
-        studentId_sessionId: {
+        student_session_unique: {
           studentId,
           sessionId: poll.sessionId,
         },

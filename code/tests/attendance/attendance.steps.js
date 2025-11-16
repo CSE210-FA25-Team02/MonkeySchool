@@ -5,6 +5,7 @@ import { prisma } from "../../src/lib/prisma.js";
 import { context } from "../steps.context.js";
 import { request } from "../steps.config.js";
 import { resetDatabase } from "../utils/reset-db.js";
+import { generateToken } from "../utils/auth.test.helper.js";
 import * as classService from "../../src/services/class.service.js";
 import * as classRoleService from "../../src/services/classRole.service.js";
 import * as courseSessionService from "../../src/services/courseSession.service.js";
@@ -58,8 +59,7 @@ defineFeature(feature, (test) => {
     when(
       /^the professor creates an attendance poll for the session with duration (\d+) minutes$/,
       async (duration) => {
-        // Mock authentication by setting user in request
-        const token = "mock-token"; // In real tests, use actual JWT
+        const token = generateToken(context.professor);
         context.response = await request
           .post("/api/attendance/poll/create")
           .set("Cookie", `auth_token=${token}`)
@@ -147,7 +147,7 @@ defineFeature(feature, (test) => {
     });
 
     when("the student submits the attendance code", async () => {
-      const token = "mock-token";
+      const token = generateToken(context.student);
       context.response = await request
         .post("/api/attendance/submit")
         .set("Cookie", `auth_token=${token}`)
@@ -232,7 +232,7 @@ defineFeature(feature, (test) => {
     });
 
     when("the student submits the expired attendance code", async () => {
-      const token = "mock-token";
+      const token = generateToken(context.student);
       context.response = await request
         .post("/api/attendance/submit")
         .set("Cookie", `auth_token=${token}`)
@@ -245,7 +245,218 @@ defineFeature(feature, (test) => {
     });
   });
 
-  // Additional test scenarios would follow similar patterns...
-  // For brevity, I'll include key ones
-});
+  test("Student submits duplicate attendance", ({ given, and, when, then }) => {
+    given(/^a professor "(.*)" exists$/, async (name) => {
+      context.professor = await prisma.user.create({
+        data: {
+          email: `${name.toLowerCase().replace(" ", ".")}@example.com`,
+          name,
+          isProf: true,
+        },
+      });
+    });
 
+    and(/^a class "(.*)" exists$/, async (className) => {
+      context.klass = await classService.createClass({ name: className });
+    });
+
+    and(/^a student "(.*)" exists$/, async (studentName) => {
+      context.student = await prisma.user.create({
+        data: {
+          email: `${studentName.toLowerCase()}@example.com`,
+          name: studentName,
+          isProf: false,
+        },
+      });
+    });
+
+    and("the student is enrolled in the class", async () => {
+      await classRoleService.upsertClassRole({
+        userId: context.student.id,
+        classId: context.klass.id,
+        role: "STUDENT",
+      });
+    });
+
+    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
+      context.session = await courseSessionService.createCourseSession({
+        classId: context.klass.id,
+        name: sessionName,
+        date: new Date(),
+      });
+    });
+
+    and("an active attendance poll exists for the session", async () => {
+      context.poll = await attendancePollService.createAttendancePoll(
+        context.session.id,
+        10,
+        context.professor.id,
+      );
+    });
+
+    and("the student has already marked attendance for the session", async () => {
+      await attendanceRecordService.submitAttendance(
+        context.poll.code,
+        context.student.id,
+        "127.0.0.1",
+        "test-agent",
+      );
+    });
+
+    when("the student submits the attendance code again", async () => {
+      const token = generateToken(context.student);
+      context.response = await request
+        .post("/api/attendance/submit")
+        .set("Cookie", `auth_token=${token}`)
+        .send({ code: context.poll.code });
+    });
+
+    then(/^the submission should be rejected with "(.*)" error$/, (errorMsg) => {
+      expect(context.response.status).toBe(409); // Conflict
+      expect(context.response.body.error).toContain(errorMsg);
+    });
+  });
+
+  test("Unenrolled student cannot submit attendance", ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
+    given(/^a professor "(.*)" exists$/, async (name) => {
+      context.professor = await prisma.user.create({
+        data: {
+          email: `${name.toLowerCase().replace(" ", ".")}@example.com`,
+          name,
+          isProf: true,
+        },
+      });
+    });
+
+    and(/^a class "(.*)" exists$/, async (className) => {
+      context.klass = await classService.createClass({ name: className });
+    });
+
+    and(/^a student "(.*)" exists$/, async (studentName) => {
+      context.student = await prisma.user.create({
+        data: {
+          email: `${studentName.toLowerCase()}@example.com`,
+          name: studentName,
+          isProf: false,
+        },
+      });
+    });
+
+    and("the student is NOT enrolled in the class", () => {
+      // Do nothing
+    });
+
+    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
+      context.session = await courseSessionService.createCourseSession({
+        classId: context.klass.id,
+        name: sessionName,
+        date: new Date(),
+      });
+    });
+
+    and("an active attendance poll exists for the session", async () => {
+      context.poll = await attendancePollService.createAttendancePoll(
+        context.session.id,
+        10,
+        context.professor.id,
+      );
+    });
+
+    when("the student submits the attendance code", async () => {
+      const token = generateToken(context.student);
+      context.response = await request
+        .post("/api/attendance/submit")
+        .set("Cookie", `auth_token=${token}`)
+        .send({ code: context.poll.code });
+    });
+
+    then(/^the submission should be rejected with "(.*)" error$/, (errorMsg) => {
+      expect(context.response.status).toBe(403); // Forbidden
+      expect(context.response.body.error).toContain(errorMsg);
+    });
+  });
+
+  test("Professor views session attendance", ({ given, and, when, then }) => {
+    given(/^a professor "(.*)" exists$/, async (name) => {
+      context.professor = await prisma.user.create({
+        data: {
+          email: `${name.toLowerCase().replace(" ", ".")}@example.com`,
+          name,
+          isProf: true,
+        },
+      });
+    });
+
+    and(/^a class "(.*)" exists$/, async (className) => {
+      context.klass = await classService.createClass({ name: className });
+    });
+
+    and("multiple students are enrolled in the class", async () => {
+      context.student1 = await prisma.user.create({
+        data: { email: "student1@example.com", name: "Student 1" },
+      });
+      context.student2 = await prisma.user.create({
+        data: { email: "student2@example.com", name: "Student 2" },
+      });
+      await classRoleService.upsertClassRole({
+        userId: context.student1.id,
+        classId: context.klass.id,
+        role: "STUDENT",
+      });
+      await classRoleService.upsertClassRole({
+        userId: context.student2.id,
+        classId: context.klass.id,
+        role: "STUDENT",
+      });
+    });
+
+    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
+      context.session = await courseSessionService.createCourseSession({
+        classId: context.klass.id,
+        name: sessionName,
+        date: new Date(),
+      });
+    });
+
+    and("attendance records exist for the session", async () => {
+      context.poll = await attendancePollService.createAttendancePoll(
+        context.session.id,
+        10,
+        context.professor.id,
+      );
+      await attendanceRecordService.submitAttendance(
+        context.poll.code,
+        context.student1.id,
+        "127.0.0.1",
+        "test-agent",
+      );
+    });
+
+    when("the professor requests session attendance", async () => {
+      const token = generateToken(context.professor);
+      context.response = await request
+        .get(`/api/attendance/session/${context.session.id}`)
+        .set("Cookie", `auth_token=${token}`);
+    });
+
+    then(
+      "the professor should see a list of students who marked attendance",
+      () => {
+        expect(context.response.status).toBe(200);
+        expect(context.response.body.attendance.length).toBe(1);
+      },
+    );
+
+    and("each record should show student name, email, and timestamp", () => {
+      const record = context.response.body.attendance[0];
+      expect(record.name).toBe("Student 1");
+      expect(record.email).toBe("student1@example.com");
+      expect(record.markedAt).toBeDefined();
+    });
+  });
+});
