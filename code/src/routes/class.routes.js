@@ -9,7 +9,7 @@ const router = Router();
 router.get(
   "/my-classes",
   requireAuth,
-  asyncHandler(classController.renderUserClasses)
+  asyncHandler(classController.renderUserClasses),
 );
 
 // JSON API route for programmatic access
@@ -18,7 +18,7 @@ router.get(
 router.get(
   "/user/classes",
   requireAuth,
-  asyncHandler(classController.getUserClasses)
+  asyncHandler(classController.getUserClasses),
 );
 
 // Invite lookup must come before /:id
