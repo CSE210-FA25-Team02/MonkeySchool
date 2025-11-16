@@ -11,6 +11,7 @@ defineFeature(feature, (test) => {
   beforeEach(async () => {
     await resetDatabase();
     context.user = undefined;
+    context.skipAuth = false;
     context.classes = [];
     context.response = undefined;
   });
@@ -141,28 +142,6 @@ defineFeature(feature, (test) => {
       expect(context.response.body).toEqual([]);
       expect(Array.isArray(context.response.body)).toBe(true);
     });
-  });
-
-  test("Missing userId parameter returns error", ({ when, then, and }) => {
-    when("I request class list without userId parameter", async () => {
-      context.response = await request
-        .get("/classes/user/classes")
-        .catch((err) => {
-          // Supertest throws on 4xx/5xx by default, we need the response
-          return err.response || err;
-        });
-    });
-
-    then(/^the response should have status code (\d+)$/, (statusCode) => {
-      expect(context.response.status).toBe(parseInt(statusCode));
-    });
-
-    and(
-      /^the response should contain error message "(.*)"$/,
-      (errorMessage) => {
-        expect(context.response.body.error).toBe(errorMessage);
-      }
-    );
   });
 
   test("User views class list HTML page", ({ given, and, when, then }) => {

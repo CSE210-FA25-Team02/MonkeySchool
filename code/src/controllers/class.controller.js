@@ -24,14 +24,12 @@ export const createClass = asyncHandler(async (req, res) => {
   const { name, quarter } = req.body;
 
   // User Authentication
-  const userId = req.user?.id || 1;
+  const userId = req.user?.id;
   if (!userId) {
-    return res
-      .status(400)
-      .send("No user found. Authentication not implemented.");
+    return res.status(401).send("Authentication required");
   }
 
-  const isProf = req.user?.isProf || true;
+  const isProf = req.user?.isProf === true;
   if (!isProf) {
     return res.status(401).send("Unauthorized to create class.");
   }
@@ -97,11 +95,9 @@ export const getClassByInviteCode = asyncHandler(async (req, res) => {
   if (!klass) throw new NotFoundError("Class not found");
 
   // User Authentication
-  const userId = req?.user?.id || 0;
+  const userId = req.user?.id;
   if (!userId) {
-    return res
-      .status(400)
-      .send("No user found. Authentication not implemented.");
+    return res.status(401).send("Authentication required");
   }
 
   const classId = klass.id;
@@ -136,14 +132,10 @@ export const updateClass = asyncHandler(async (req, res) => {
  * Requires authentication via middleware
  */
 export const getUserClasses = asyncHandler(async (req, res) => {
-  // Priority: JWT auth (production), fallback to query param (testing)
-  // TODO: Remove query param fallback once full JWT auth is deployed
-  const userId = req.user?.id || req.query.userId;
-
+  // Require authentication via middleware; `req.user` must be set by auth
+  const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({
-      error: "Authentication required",
-    });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   const classes = await classService.getClassesByUserId(userId);
@@ -156,7 +148,10 @@ export const getUserClasses = asyncHandler(async (req, res) => {
  * Supports both HTMX requests (HTML fragment) and direct navigation (full page)
  */
 export const renderUserClasses = asyncHandler(async (req, res) => {
-  const userId = req.user?.id || req.query.userId;
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(401).send("Authentication required");
+  }
 
   const classes = await classService.getClassesByUserId(userId);
   const content = renderClassListHTML(classes);
