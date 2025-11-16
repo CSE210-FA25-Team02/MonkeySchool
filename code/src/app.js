@@ -66,7 +66,7 @@ export function createApp() {
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
-    }),
+    })
   );
 
   // CORS configuration for HTMX requests
@@ -83,7 +83,7 @@ export function createApp() {
         "HX-Current-URL",
         "HX-Trigger",
       ],
-    }),
+    })
   );
 
   // Rate limiting
@@ -99,7 +99,7 @@ export function createApp() {
     standardHeaders: true,
     legacyHeaders: false,
   });
-  app.use("/api", limiter);
+  app.use("/", limiter);
 
   // Cookie parsing
   app.use(cookieParser());
