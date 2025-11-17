@@ -123,3 +123,178 @@ export async function deleteClass(id) {
     }
   });
 }
+
+/**
+ * Get organized class directory with members grouped by role and groups.
+ * Following data flow: class -> classRole -> extract userIDs -> get User info
+ */
+export async function getClassDirectory(id) {
+  // Get class with all related data
+  const classData = await prisma.class.findUnique({
+    where: { id },
+    include: {
+      members: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              preferredName: true,
+              email: true,
+              pronunciation: true,
+              pronouns: true,
+              phone: true,
+              photoUrl: true,
+              github: true,
+              bio: true,
+              socialLinks: true,
+              chatLinks: true,
+              timezone: true
+            }
+          }
+        },
+        orderBy: [
+          { role: 'asc' },
+          { user: { name: 'asc' } }
+        ]
+      },
+      groups: {
+        include: {
+          members: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  preferredName: true,
+                  email: true,
+                  pronunciation: true,
+                  pronouns: true,
+                  phone: true,
+                  photoUrl: true,
+                  github: true,
+                  socialLinks: true,
+                  chatLinks: true
+                }
+              }
+            },
+            orderBy: [
+              { role: 'desc' }, // LEADER first
+              { user: { name: 'asc' } }
+            ]
+          },
+          supervisors: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  preferredName: true,
+                  email: true,
+                  photoUrl: true
+                }
+              }
+            }
+          }
+        },
+        orderBy: { name: 'asc' }
+      }
+    }
+  });
+
+  if (!classData) {
+    return null;
+  }
+
+  // Organize members by role
+  const professors = [];
+  const tas = [];
+  const tutors = [];
+  const studentsWithoutGroup = [];
+
+  classData.members.forEach(member => {
+    const userData = {
+      ...member.user,
+      role: member.role,
+      classRoleId: member.id
+    };
+
+    switch (member.role) {
+      case 'PROFESSOR':
+        professors.push(userData);
+        break;
+      case 'TA':
+        tas.push(userData);
+        break;
+      case 'TUTOR':
+        tutors.push(userData);
+        break;
+      case 'STUDENT':
+        // Check if student is in any group
+        const isInGroup = classData.groups.some(group => 
+          group.members.some(groupMember => groupMember.userId === member.userId)
+        );
+        if (!isInGroup) {
+          studentsWithoutGroup.push(userData);
+        }
+        break;
+    }
+  });
+
+  // Process groups with member details
+  const processedGroups = classData.groups.map(group => ({
+    id: group.id,
+    name: group.name,
+    logoUrl: group.logoUrl,
+    mantra: group.mantra,
+    github: group.github,
+    members: group.members.map(member => ({
+      ...member.user,
+      isLeader: member.role === 'LEADER',
+      groupRole: member.role
+    })),
+    supervisors: group.supervisors.map(supervisor => supervisor.user)
+  }));
+
+  return {
+    class: {
+      id: classData.id,
+      name: classData.name,
+      quarter: classData.quarter,
+      inviteCode: classData.inviteCode,
+      createdAt: classData.createdAt
+    },
+    professors,
+    tas,
+    tutors,
+    groups: processedGroups,
+    studentsWithoutGroup
+  };
+}
+
+/**
+ * TODO: show course only the user assigned to, insead of all the courses.
+ * helper function to extract all the avalible course 
+ * Get all classes with basic member count
+ */
+export async function getAllClasses() {
+  return prisma.class.findMany({
+    include: {
+      members: {
+        select: {
+          id: true,
+          role: true,
+          user: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+}
