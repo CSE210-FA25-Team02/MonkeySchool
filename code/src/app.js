@@ -38,6 +38,7 @@ export function createApp() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
+          workerSrc: ["'self'", "blob:"],
           scriptSrc: [
             "'self'",
             "'unsafe-inline'", // Required for HTMX inline event handlers
