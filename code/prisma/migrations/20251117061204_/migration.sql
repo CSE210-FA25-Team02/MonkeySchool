@@ -1,21 +1,8 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "CategoryRole" AS ENUM ('STUDENT', 'TA', 'ALL');
 
-  - You are about to drop the `Activity` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `ActivityCategory` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Activity" DROP CONSTRAINT "Activity_categoryId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Activity" DROP CONSTRAINT "Activity_userId_fkey";
-
--- DropTable
-DROP TABLE "Activity";
-
--- DropTable
-DROP TABLE "ActivityCategory";
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "isProf" BOOLEAN NOT NULL DEFAULT false;
 
 -- CreateTable
 CREATE TABLE "activity" (

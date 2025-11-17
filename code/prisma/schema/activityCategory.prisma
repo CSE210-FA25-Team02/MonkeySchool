@@ -1,6 +1,6 @@
 model ActivityCategory {
   id          String      @id @default(cuid())
-  name        String
+  name        String      @unique
   description String?
   role        CategoryRole?  // student/TA-specific eligibility
 

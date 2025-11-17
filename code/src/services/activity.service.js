@@ -30,9 +30,30 @@ export async function getActivityById(id) {
 export async function getActivitiesByUserId(userId) {
   return prisma.activity.findMany({
     where: { userId },
+    include: {
+      category: true
+    },
     orderBy: { startTime: "desc" },   // might reverse later
   });
 }
+
+/**
+ * Get all activity categories
+ */
+
+export async function getAllCategories() {
+  try {
+    const categories = await prisma.activityCategory.findMany({
+      orderBy: { name: "asc" },
+    });
+
+    return categories;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+}
+
 
 /**
  * Update Activity (category, time, summary, etc.)

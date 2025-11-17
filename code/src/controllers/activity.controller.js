@@ -1,7 +1,7 @@
 import * as activityService from "../services/activity.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
-import { createPunchCard } from "../utils/htmx-templates/activity-templates.js";
+import { createPunchCard,createActivityModal } from "../utils/htmx-templates/activity-templates.js";
 import {
   createBaseLayout,
   createErrorMessage,
@@ -13,8 +13,17 @@ import {
  */
 export const createActivity = asyncHandler(async (req, res) => {
     let activity;
+    const userId = req.user.id;
+
     try {
-        activity = await activityService.createActivity(req.body);
+        const activityData = {
+            ...req.body,
+            userId,
+            startTime: new Date(req.body.startTime),
+            endTime: req.body.endTime ? new Date(req.body.endTime) : null
+        };
+        console.log("Activity Data", activityData);
+        activity = await activityService.createActivity(activityData);
     } catch(err){
         console.log("Failed to create activity");
         return res.status(500).send("Failed to create activity. Try again.");
@@ -64,7 +73,7 @@ export const getActivity = asyncHandler(async (req, res) => {
  * Get Activity Punches from UserId
  */
 export const getActivitiesByUser = asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.user.id;
 
     let activities;
     try {
@@ -98,7 +107,7 @@ export const deleteActivity = asyncHandler(async (req, res) => {
  */
 
 export const getActivityDropdown = asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.user.id;
 
     const activities = await activityService.getActivitiesByUserId(userId);
 
@@ -140,7 +149,14 @@ export const getActivityDetails = asyncHandler(async (req, res) => {
     `);
 });
 
+export const renderActivityModal = asyncHandler(async (req, res) => {
+    //Get current activity categories
+    const categories = await activityService.getAllCategories();
+    res.status(201).send(createActivityModal(categories));
+});
+
 export const renderPunchCard = asyncHandler(async (req, res)  => {
-    const userId = req.params.userId
-    res.status(201).send(createPunchCard(userId));
+    const userId = req.user.id;
+    console.log("UserID:", userId);
+    res.status(201).send(createPunchCard());
 });
