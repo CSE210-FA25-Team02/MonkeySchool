@@ -9,6 +9,9 @@ import { NotFoundError, ConflictError } from "../utils/api-error.js";
 
 /**
  * Get all students with pagination
+ * @param {number} [page=1] Page number
+ * @param {number} [limit=10] Items per page
+ * @returns {Promise<Object>} Object with student list
  */
 export async function getAllStudents(page = 1, limit = 10) {
   const skip = (page - 1) * limit;
@@ -31,6 +34,9 @@ export async function getAllStudents(page = 1, limit = 10) {
 
 /**
  * Get a single student by ID
+ * @param {string} id Student ID
+ * @returns {Promise<Object>} Student object
+ * @throws {NotFoundError} If student not found
  */
 export async function getStudentById(id) {
   const student = await prisma.student.findUnique({
@@ -46,6 +52,9 @@ export async function getStudentById(id) {
 
 /**
  * Create a new student
+ * @param {Object} data Student data (name, email, etc.)
+ * @returns {Promise<Object>} Created student object
+ * @throws {ConflictError} If email already exists
  */
 export async function createStudent(data) {
   // Check if email already exists
@@ -66,6 +75,11 @@ export async function createStudent(data) {
 
 /**
  * Update a student
+ * @param {string} id Student ID
+ * @param {Object} data Update data
+ * @returns {Promise<Object>} Updated student object
+ * @throws {NotFoundError} If student not found
+ * @throws {ConflictError} If email already exists
  */
 export async function updateStudent(id, data) {
   // Verify student exists
@@ -92,6 +106,9 @@ export async function updateStudent(id, data) {
 
 /**
  * Delete a student
+ * @param {string} id Student ID
+ * @returns {Promise<void>}
+ * @throws {NotFoundError} If student not found
  */
 export async function deleteStudent(id) {
   // Verify student exists

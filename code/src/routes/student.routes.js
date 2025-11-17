@@ -19,22 +19,22 @@ import {
 const router = Router();
 
 /**
- * @route   GET /api/students
- * @desc    Get all students with pagination (HTML response)
+ * route   GET /api/students
+ * @description    Get all students with pagination (HTML response)
  * @access  Public
  */
 router.get("/", asyncHandler(studentController.getAllStudents));
 
 /**
- * @route   GET /api/students/new
- * @desc    Show form to create a new student (HTML response)
+ * route GET /api/students/new
+ * @description    Show form to create a new student (HTML response)
  * @access  Public
  */
 router.get("/new", asyncHandler(studentController.showCreateForm));
 
 /**
- * @route   GET /api/students/:id
- * @desc    Get student by ID (HTML response)
+ * route GET /api/students/:id
+ * @description    Get student by ID (HTML response)
  * @access  Public
  */
 router.get(
@@ -44,8 +44,8 @@ router.get(
 );
 
 /**
- * @route   GET /api/students/:id/edit
- * @desc    Show form to edit a student (HTML response)
+ * route   GET /api/students/:id/edit
+ * @description    Show form to edit a student (HTML response)
  * @access  Public
  */
 router.get(
@@ -55,8 +55,8 @@ router.get(
 );
 
 /**
- * @route   POST /api/students
- * @desc    Create a new student (HTML response)
+ * route   POST /api/students
+ * @description    Create a new student (HTML response)
  * @access  Public
  */
 router.post(
@@ -66,8 +66,8 @@ router.post(
 );
 
 /**
- * @route   PUT /api/students/:id
- * @desc    Update a student (HTML response)
+ * route   PUT /api/students/:id
+ * @description    Update a student (HTML response)
  * @access  Public
  */
 router.put(
@@ -78,8 +78,8 @@ router.put(
 );
 
 /**
- * @route   DELETE /api/students/:id
- * @desc    Delete a student (HTML response or empty)
+ * route   DELETE /api/students/:id
+ * @description    Delete a student (HTML response or empty)
  * @access  Public
  */
 router.delete(

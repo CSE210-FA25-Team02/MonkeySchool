@@ -193,8 +193,11 @@ export const closeCreateClassForm = asyncHandler(async (req, res)  => {
 export const renderClassPage = asyncHandler(async (req, res) =>  {
   res.status(201).send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
 });
+
 /**
  * Helper function to render class list HTML
+ * @param {Array} classes Array of classes to display
+ * @returns {string} HTML class list
  */
 function renderClassListHTML(classes) {
   if (!classes || classes.length === 0) {
@@ -293,6 +296,7 @@ function renderClassListHTML(classes) {
 
 /**
  * Helper function to render auth required message
+ * @returns {string} HTML string for auth required message
  */
 function renderAuthRequiredHTML() {
   return `
@@ -312,6 +316,9 @@ function renderAuthRequiredHTML() {
 /**
  * Helper function to render full HTML page for direct navigation
  * Wraps content in complete HTML structure with styles and layout
+ * @param {string} content Inner HTML content to wrap
+ * @param {string} [title='My Classes'] Page title
+ * @returns {string} Complete HTML page
  */
 function renderFullPage(content, title = 'My Classes') {
   return `

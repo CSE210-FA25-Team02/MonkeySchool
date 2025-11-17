@@ -1,5 +1,9 @@
 /**
  * Create User Profile Page Component
+ * @param {Object} user User containing profile information
+ * @param {Object} [options={}] Display options
+ * @param {'view'|'edit'} [options.mode='view'] Profile read/edit mode
+ * @returns {string} HTML profile page
  */
 export function createUserProfile(user, { mode = "view" } = {}) {
     if (!user) {
@@ -26,9 +30,28 @@ export function createUserProfile(user, { mode = "view" } = {}) {
     } = user;
 
     const isEdit = mode === "edit";
+    /**
+     * Escape HTML
+     * @param {string|null|undefined} v Value to escape
+     * @returns {string} Escaped HTML
+     */
     const safe = (v) => (v ? escapeHtml(v) : "—");
+    /**
+     * Normalize URL
+     * @param {string} v URL string
+     * @returns {string} URL with protocol
+     */
     const href = (v) => (v.startsWith("http") ? v : `https://${v}`);
 
+    /**
+     * Generate form field HTML (edit or view mode)
+     * @param {string} label Field label
+     * @param {string} nameAttr Input name attribute
+     * @param {string} value Field value
+     * @param {string} [type='text'] Input type
+     * @param {string} [placeholder=''] Placeholder text
+     * @returns {string} HTML for field
+     */
     const field = (label, nameAttr, value, type = "text", placeholder = "") =>
         isEdit
         ? `
@@ -45,6 +68,12 @@ export function createUserProfile(user, { mode = "view" } = {}) {
             <p class="profile-field__value profile-field__value--text">${safe(value)}</p>
         </section>`;
 
+    /**
+     * Render social/chat links section (edit or view mode)
+     * @param {Array<string>} links Array of link URLs
+     * @param {'social'|'chat'} type Link type
+     * @returns {string} HTML for links section
+     */
     const renderLinks = (links, type) =>
         isEdit
         ? `
@@ -174,6 +203,10 @@ export function createUserProfile(user, { mode = "view" } = {}) {
 
 /**
  * Create profile link text field
+ * @param {string} [link=''] Link URL value
+ * @param {Object} [options={}] Field options
+ * @param {'social'|'chat'} [options.type='social'] Link type
+ * @returns {string} HTML input field
  */
 export function createProfileLinkField(link = "", { type = "social" } = {}) {
     const placeholderLabel = type === "chat" ? "chat" : "social";
@@ -191,6 +224,8 @@ export function createProfileLinkField(link = "", { type = "social" } = {}) {
 
 /**
  * Utility functions
+ * @param {string} text Text value to clean
+ * @returns {string} Escaped HTML string
  */
 export function escapeHtml(text) {
     if (text == null) return ""

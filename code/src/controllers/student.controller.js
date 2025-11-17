@@ -17,6 +17,9 @@ import {
 /**
  * GET /api/students
  * Get all students with pagination - returns HTML
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response object
+ * @returns {Promise<void>}
  */
 export async function getAllStudents(req, res) {
   const page = parseInt(req.query.page) || 1;
@@ -69,6 +72,9 @@ export async function getAllStudents(req, res) {
 /**
  * GET /api/students/:id
  * Get a single student by ID - returns HTML
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response object
+ * @returns {Promise<void>}
  */
 export async function getStudentById(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -110,6 +116,9 @@ export async function getStudentById(req, res) {
 /**
  * GET /api/students/new
  * Show form to create a new student - returns HTML
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response object
+ * @returns {Promise<void>}
  */
 export async function showCreateForm(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -129,6 +138,9 @@ export async function showCreateForm(req, res) {
 /**
  * GET /api/students/:id/edit
  * Show form to edit a student - returns HTML
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response object
+ * @returns {Promise<void>}
  */
 export async function showEditForm(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -170,6 +182,9 @@ export async function showEditForm(req, res) {
 /**
  * POST /api/students
  * Create a new student - returns HTML
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response object
+ * @returns {Promise<void>}
  */
 export async function createStudent(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -233,6 +248,9 @@ export async function createStudent(req, res) {
 /**
  * PUT /api/students/:id
  * Update a student - returns HTML
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response object
+ * @returns {Promise<void>}
  */
 export async function updateStudent(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -310,6 +328,9 @@ export async function updateStudent(req, res) {
 /**
  * DELETE /api/students/:id
  * Delete a student - returns HTML or empty response
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response object
+ * @returns {Promise<void>}
  */
 export async function deleteStudent(req, res) {
   const isHtmxRequest = req.headers["hx-request"];

@@ -6,6 +6,15 @@
 
 /**
  * Creates the base HTML document structure
+ * @param {string} title Page title text
+ * @param {string} content HTML string to inject into the main content area
+ * @param {object} [options={}] Optional layout configuration
+ * @param {string} [options.lang='en'] Language attribute for the document
+ * @param {string} [options.dir='ltr'] Text direction for the document
+ * @param {string} [options.charset='UTF-8'] Character encoding
+ * @param {string} [options.viewport='width=device-width, initial-scale=1.0'] Viewport meta tag
+ * @param {string} [options.description='Student Management System'] Meta description
+ * @returns {string} HTML string for the full page layout
  */
 export function createBaseLayout(title, content, options = {}) {
   const {
@@ -101,6 +110,11 @@ export function createBaseLayout(title, content, options = {}) {
 
 /**
  * Creates a student card component
+ * @param {object} student Student record
+ * @param {object} [options={}] Optional display settings
+ * @param {boolean} [options.editable=false] Whether to show edit and delete controls
+ * @param {string} [options.lang='en'] Language code for date formatting
+ * @returns {string} HTML string for a student card
  */
 export function createStudentCard(student, options = {}) {
   const { editable = false, lang = "en" } = options;
@@ -159,6 +173,9 @@ export function createStudentCard(student, options = {}) {
 
 /**
  * Creates a student form component
+ * @param {Object|null} [student=null] Student object for edit mode, null for create
+ * @param {Object} [options={}] Form options
+ * @returns {string} HTML string for student form
  */
 export function createStudentForm(student = null, options = {}) {
   const {
@@ -237,6 +254,11 @@ export function createStudentForm(student = null, options = {}) {
 
 /**
  * Creates a student list component
+ * @param {Array} students List of students
+ * @param {Object|null} [pagination=null] Pagination metadata
+ * @param {Object} [options={}] Display options
+ * @param {boolean} [options.editable=true] Show edit/delete buttons
+ * @returns {string} HTML student list
  */
 export function createStudentList(students, pagination = null, options = {}) {
   const { editable = true } = options;
@@ -283,6 +305,8 @@ export function createStudentList(students, pagination = null, options = {}) {
 
 /**
  * Creates pagination component
+ * @param {Object} pagination Pagination metadata (page, pages, total)
+ * @returns {string} HTML string pagination link
  */
 export function createPagination(pagination) {
   if (pagination.pages <= 1) return "";
@@ -364,6 +388,9 @@ export function createPagination(pagination) {
 
 /**
  * Creates an error message component
+ * @param {string} message Error message
+ * @param {Array|null} [errors=null] List of error items
+ * @returns {string} HTML string for error message
  */
 export function createErrorMessage(message, errors = null) {
   return `
@@ -393,6 +420,8 @@ export function createErrorMessage(message, errors = null) {
 
 /**
  * Creates a success message component
+ * @param {string} message Success message
+ * @returns {string} HTML string for success message
  */
 export function createSuccessMessage(message) {
   return `
@@ -404,6 +433,8 @@ export function createSuccessMessage(message) {
 
 /**
  * Utility functions
+ * @param {string|null|undefined} text Input text to escape
+ * @returns {string} Escaped HTML string
  */
 export function escapeHtml(text) {
     if (text == null) return ""
@@ -419,6 +450,12 @@ export function escapeHtml(text) {
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
+/**
+ * Format date string
+ * @param {string} dateString ISO date string to format
+ * @param {string} [lang='en'] Language code for formatting rule
+ * @returns {string} Formatted date string
+ */
 export function formatDate(dateString, lang = "en") {
   const date = new Date(dateString);
   return date.toLocaleDateString(lang, {
@@ -428,6 +465,11 @@ export function formatDate(dateString, lang = "en") {
   });
 }
 
+/**
+ * Get upcoming quarters list
+ * @param {number} [count=8] Number of quarters to include
+ * @returns {Array<string>} List of upcoming quarters
+ */
 export function getUpcomingQuarters(count = 8) {
     const quarters = ['WI', 'SP', 'SU', 'FA'];
     const currDate = new Date();
