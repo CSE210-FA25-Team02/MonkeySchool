@@ -40,3 +40,7 @@ Possible areas for continued improvement include refinement of test database ini
 Conclusion
 
 The MonkeySchool project maintains a fully functional continuous integration and continuous deployment system aligned with contemporary engineering practices. The workflows demonstrate consistent execution and effective automation. The pipelines provide the necessary quality assurance structure for the project and establish a strong foundation for future enhancements.
+
+Pipline Diagram
+
+![CICD-V1](./CICD-diagram-V1.png "CICD-diagram-V1")
