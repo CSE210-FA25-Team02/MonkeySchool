@@ -40,6 +40,9 @@ jobs:
       - name: Lint
         run: cd code && npm run lint
 
+      - name: Generate JSDoc Documentation
+        run: cd code && npm run docs
+        
       - name: Test
         run: |
           cat > code/.env.test << EOF

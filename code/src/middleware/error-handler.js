@@ -19,6 +19,8 @@ import { readFile } from "fs/promises";
 
 /**
  * Handle Prisma-specific errors
+ * @param {Error} err Prisma error instance
+ * @returns {Object} Error response with statusCode and message
  */
 function handlePrismaError(err) {
   switch (err.code) {
@@ -47,6 +49,10 @@ function handlePrismaError(err) {
 
 /**
  * Global error handler middleware for HTMX
+ * @param {Error} err Error object
+ * @param {Object} req Incoming request
+ * @param {Object} res Outgoing response
+ * @returns {void}
  */
 export function errorHandler(err, req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -103,6 +109,9 @@ export function errorHandler(err, req, res) {
 
 /**
  * 404 Not Found handler for HTMX - Shows "Under Construction" page
+ * @param {Object} req - Incoming request
+ * @param {Object} res - Outcoming response
+ * @returns {Promise<void>}
  */
 export async function notFoundHandler(req, res) {
   const isHtmxRequest = req.headers["hx-request"];

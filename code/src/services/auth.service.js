@@ -19,6 +19,8 @@ const __dirname = path.dirname(__filename);
 /**
  * Check if email is allowed to login
  * First checks if it's a UCSD email, then checks CSV file
+ * @param {string} email Email address to validate
+ * @returns {Promise<boolean>} True if the email is allowed to authenticate
  */
 export async function isEmailAllowed(email) {
   // Check if it's a UCSD email
@@ -58,6 +60,9 @@ export async function isEmailAllowed(email) {
 
 /**
  * Get or create user from OAuth profile
+ * @param {Object} profile OAuth profile data (email, name, picture, etc.)
+ * @returns {Promise<Object>} The existing or newly created user record
+ * @throws {Error} If email is not permitted
  */
 export async function getOrCreateUser(profile) {
   const { email, name, picture } = profile;
@@ -95,6 +100,8 @@ export async function getOrCreateUser(profile) {
 
 /**
  * Generate JWT token for user
+ * @param {Object} user User record
+ * @returns {string} Signed JWT token
  */
 export function generateToken(user) {
   const payload = {
@@ -110,6 +117,8 @@ export function generateToken(user) {
 
 /**
  * Verify JWT token
+ * @param {string} token JWT token to verify
+ * @returns {Object|null} Decoded token payload, null otherwise
  */
 export function verifyToken(token) {
   try {

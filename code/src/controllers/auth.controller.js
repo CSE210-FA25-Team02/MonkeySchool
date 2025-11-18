@@ -14,6 +14,9 @@ import { env } from "../config/env.js";
 
 /**
  * Initiate Google OAuth login
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response used for redirection
+ * @returns {Promise<void>}
  */
 export async function login(req, res) {
   // Construct redirect URI - ensure no trailing slash on base URL
@@ -42,6 +45,9 @@ export async function login(req, res) {
 
 /**
  * Handle OAuth callback from Google
+ * @param {Object} req Incoming HTTP request containing OAuth code
+ * @param {Object} res HTTP response used for redirection
+ * @returns {Promise<void>}
  */
 export async function callback(req, res) {
   try {
@@ -124,6 +130,9 @@ export async function callback(req, res) {
 
 /**
  * Logout user
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response
+ * @returns {Promise<void>}
  */
 export async function logout(req, res) {
   res.clearCookie("auth_token");
@@ -149,6 +158,9 @@ export async function logout(req, res) {
 
 /**
  * Get current user session
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response returning user JSON
+ * @returns {Promise<void>}
  */
 export async function getSession(req, res) {
   try {

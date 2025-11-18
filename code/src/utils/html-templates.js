@@ -5,11 +5,16 @@
  */
 
 /**
- * Creates a full HTML page layout
- * @param {string} title - The page title
- * @param {string} content - The main content HTML
- * @param {object} options - Additional options (lang, dir, charset, viewport, description)
- * @returns {string} - Complete HTML page as a string
+ * Creates the base HTML document structure
+ * @param {string} title Page title text
+ * @param {string} content HTML string to inject into the main content area
+ * @param {object} [options={}] Optional layout configuration
+ * @param {string} [options.lang='en'] Language attribute for the document
+ * @param {string} [options.dir='ltr'] Text direction for the document
+ * @param {string} [options.charset='UTF-8'] Character encoding
+ * @param {string} [options.viewport='width=device-width, initial-scale=1.0'] Viewport meta tag
+ * @param {string} [options.description='Student Management System'] Meta description
+ * @returns {string} HTML string for the full page layout
  */
 export function createBaseLayout(title, content, options = {}) {
   const {
@@ -84,6 +89,9 @@ export function createBaseLayout(title, content, options = {}) {
 
 /**
  * Creates an error message component
+ * @param {string} message Error message
+ * @param {Array|null} [errors=null] List of error items
+ * @returns {string} HTML string for error message
  */
 export function createErrorMessage(message, errors = null) {
   return `
@@ -113,6 +121,8 @@ export function createErrorMessage(message, errors = null) {
 
 /**
  * Creates a success message component
+ * @param {string} message Success message
+ * @returns {string} HTML string for success message
  */
 export function createSuccessMessage(message) {
   return `
@@ -124,6 +134,8 @@ export function createSuccessMessage(message) {
 
 /**
  * Utility functions
+ * @param {string|null|undefined} text Input text to escape
+ * @returns {string} Escaped HTML string
  */
 export function escapeHtml(text) {
   if (text == null) return "";
@@ -139,6 +151,12 @@ export function escapeHtml(text) {
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
+/**
+ * Format date string
+ * @param {string} dateString ISO date string to format
+ * @param {string} [lang='en'] Language code for formatting rule
+ * @returns {string} Formatted date string
+ */
 export function formatDate(dateString, lang = "en") {
   const date = new Date(dateString);
   return date.toLocaleDateString(lang, {
@@ -148,6 +166,11 @@ export function formatDate(dateString, lang = "en") {
   });
 }
 
+/**
+ * Get upcoming quarters list
+ * @param {number} [count=8] Number of quarters to include
+ * @returns {Array<string>} List of upcoming quarters
+ */
 export function getUpcomingQuarters(count = 8) {
   const quarters = ["WI", "SP", "SU", "FA"];
   const currDate = new Date();
