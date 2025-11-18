@@ -43,6 +43,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "csv-parser": "^3.2.0",
+    "dompurify": "^3.3.0",
     "dotenv": "^16.6.1",
     "ejs": "^3.1.9",
     "express": "^4.21.2",
