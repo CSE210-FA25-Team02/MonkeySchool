@@ -4,6 +4,11 @@ const VALID_ROLES = ["PROFESSOR", "TA", "STUDENT", "TUTOR"];
 
 /**
  * Assign or update a user's role in a class.
+ * @param {Object} params Role assignment details
+ * @param {string} params.userId User ID
+ * @param {string} params.classId Class ID
+ * @param {string} params.role Role to assign (PROFESSOR, TA, STUDENT, TUTOR)
+ * @returns {Promise<Object>} ClassRole record after insert or update
  */
 export async function upsertClassRole({ userId, classId, role }) {
   const normalized = role.trim().toUpperCase();
@@ -23,6 +28,10 @@ export async function upsertClassRole({ userId, classId, role }) {
 
 /**
  * Remove a user from a class.
+ * @param {Object} params Removal details
+ * @param {string} params.userId User ID
+ * @param {string} params.classId Class ID
+ * @returns {Promise<Object>} Deleted ClassRole record
  */
 export async function removeFromClass({ userId, classId }) {
   return prisma.classRole.delete({
@@ -32,6 +41,8 @@ export async function removeFromClass({ userId, classId }) {
 
 /**
  * Get roster for a class (sorted by role).
+ * @param {string} classId Class ID
+ * @returns {Promise<Array>} Array of ClassRole objects including user data
  */
 export async function getRoster(classId) {
   return prisma.classRole.findMany({

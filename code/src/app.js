@@ -25,6 +25,7 @@ const __dirname = path.dirname(__filename);
 
 /**
  * Create and configure Express application for HTMX
+ * @returns {Function} Configured Application
  */
 export function createApp() {
   const app = express();

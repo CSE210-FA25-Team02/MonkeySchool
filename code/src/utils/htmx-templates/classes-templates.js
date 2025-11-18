@@ -1,7 +1,8 @@
 /**
  * Make form to create a new class
+ * @param {Array<string>} quarters List of quarter options
+ * @returns {string} HTML form for class creation form
  */
-
 export function createClassForm(quarters) {
   return `
         <section id="modal" class="classes-modal__overlay">
@@ -30,6 +31,11 @@ export function createClassForm(quarters) {
     `;
 }
 
+/**
+ * Display invite code in HTML modal for created class
+ * @param {string} inviteURL Invite URL to display
+ * @returns {string} HTML modal showing invite link
+ */
 export function displayInvite(inviteURL) {
   return `
       <section id="modal" class="classes-modal__overlay">
@@ -47,6 +53,11 @@ export function displayInvite(inviteURL) {
       </section>`;
 }
 
+/**
+ * Create class page component for a user
+ * @param {Object} user - User with role information
+ * @returns {string} HTML for the class dashboard page
+ */
 export function createClassPage(user) {
   const isProfessor = user?.isProf || true;
 
