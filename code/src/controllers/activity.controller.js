@@ -218,8 +218,7 @@ export const loadActivityFields = asyncHandler(async (req, res) => {
  * When creating a new activity punch, enable fields
  */
 export const refreshCategories = asyncHandler(async (req, res) => {
-  const classId = req.query.classId;
-  const categoryId = req.query.categoryId;
+    const classId = req.query.classId;
 
   if (!classId) {
     return res.send(
