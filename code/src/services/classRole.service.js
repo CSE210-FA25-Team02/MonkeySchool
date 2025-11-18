@@ -28,6 +28,24 @@ export async function removeFromClass({ userId, classId }) {
   });
 }
 
+
+/**
+ * Get class role of user
+ */
+export async function getClassRole(userId, classId) {
+  return await prisma.classRole.findUnique({
+    where: {
+      user_class_unique: { userId, classId }
+    },
+    include: {
+      user: true,
+      class: true
+    }
+  });
+}
+
+
+
 /**
  * Get roster for a class (sorted by role).
  */

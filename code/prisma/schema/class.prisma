@@ -11,5 +11,8 @@ model Class {
   // A class contains multiple project groups
   groups     Group[]
 
+  // Activity Punches made by TAs and Students
+  activities Activity[]
+
   @@map("classes")
 }

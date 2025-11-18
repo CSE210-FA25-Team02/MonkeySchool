@@ -18,7 +18,8 @@ export async function getActivityById(id) {
     where: { id },
     include: {
         user: true,
-        category: true
+        category: true,
+        class: true,
     }
   });
 }
@@ -31,9 +32,10 @@ export async function getActivitiesByUserId(userId) {
   return prisma.activity.findMany({
     where: { userId },
     include: {
-      category: true
+      category: true,
+      class: true
     },
-    orderBy: { startTime: "desc" },   // might reverse later
+    orderBy: { startTime: "desc" },  
   });
 }
 
@@ -41,11 +43,17 @@ export async function getActivitiesByUserId(userId) {
  * Get all activity categories
  */
 
-export async function getAllCategories() {
+export async function getAllCategories(userRole) {
   try {
-    const categories = await prisma.activityCategory.findMany({
-      orderBy: { name: "asc" },
-    });
+  const categories = await prisma.activityCategory.findMany({
+    where: {
+      OR: [
+        { role: userRole },
+        { role: "ALL" }
+      ]
+    },
+    orderBy: { name: "asc" },
+  });
 
     return categories;
   } catch (error) {

@@ -6,7 +6,7 @@ import {
     asyncHandler
 } from "../utils/async-handler.js";
 import {
-    optionalAuth
+    optionalAuth, requireAuth
 } from "../middleware/auth.js";
 
 const router = Router();
@@ -20,7 +20,7 @@ router.get("/my-classes", optionalAuth, asyncHandler(classController.renderUserC
 router.get("/user/classes", optionalAuth, asyncHandler(classController.getUserClasses));
 
 // Invite lookup must come before /:id
-router.get("/invite/:code", asyncHandler(classController.getClassByInviteCode));
+router.get("/invite/:code", requireAuth, asyncHandler(classController.getClassByInviteCode));
 
 // Class Create Form
 router.get("/form", asyncHandler(classController.renderCreateClassForm));
@@ -30,7 +30,7 @@ router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 router.get("/", asyncHandler(classController.renderClassPage));
 
 // CRUD
-router.post("/create", asyncHandler(classController.createClass));
+router.post("/create", requireAuth, asyncHandler(classController.createClass));
 router.get("/:id", asyncHandler(classController.getClass));
 router.put("/:id", asyncHandler(classController.updateClass));
 router.delete("/:id", asyncHandler(classController.deleteClass));

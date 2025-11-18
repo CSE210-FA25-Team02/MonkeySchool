@@ -146,11 +146,9 @@
                 </div>
                 
                 <div id="modal-container" class="modal hidden"></div>
-                <div id="punchcard-container">
-                <!-- HTMX will swap the punch card HTML here -->
-                </div>
                 <div 
                     id="punchcard-container" 
+                    class="punchcard__container"
                     hx-get="/api/activity/user/render" 
                     hx-trigger="load" 
                     hx-swap="innerHTML">

@@ -8,6 +8,13 @@
     padding: 16px;
     border-radius: 8px;
     font-family: sans-serif;
+    justify-content: center;
+    align-items: center;
+}
+
+.punchcard__container {
+    align-content: center;
+    justify-items: center;
 }
 
 .punchcard__title {

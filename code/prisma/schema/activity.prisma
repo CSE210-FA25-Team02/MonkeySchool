@@ -2,9 +2,10 @@ model Activity {
   id           String            @id @default(cuid())
   userId       String
   categoryId   String
+  classId      String
   startTime    DateTime
   endTime      DateTime?
-  durationMin  Int?              // computed at punch-out
+  durationMin  Int?              // TODO: computed at punch-out
   notes        String?
 
   createdAt    DateTime          @default(now())
@@ -12,10 +13,13 @@ model Activity {
 
   user         User              @relation(fields: [userId], references: [id])
   category     ActivityCategory  @relation(fields: [categoryId], references: [id])
+  class        Class             @relation(fields: [classId], references: [id])
+
 
   @@index([userId])
   @@index([categoryId])
   @@index([startTime])
+  @@index([classId])
 
   @@map("activity")
 }

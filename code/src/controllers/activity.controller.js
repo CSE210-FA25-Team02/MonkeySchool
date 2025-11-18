@@ -1,12 +1,9 @@
 import * as activityService from "../services/activity.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
-import { createPunchCard,createActivityModal } from "../utils/htmx-templates/activity-templates.js";
-import {
-  createBaseLayout,
-  createErrorMessage,
-  createSuccessMessage,
-} from "../utils/html-templates.js";
+import { createPunchCard, createActivityModal, createEditActivityModal, enableActivityFields } from "../utils/htmx-templates/activity-templates.js";
+import { getClassesByUserId } from "../services/class.service.js";
+import { getClassRole } from "../services/classRole.service.js"
 
 /**
  * Create Activity Punch
@@ -42,7 +39,12 @@ export const updateActivity = asyncHandler(async (req, res) => {
 
     let updatedActivity;
     try {
-        updatedActivity = await activityService.updateActivity(id, req.body);
+        const activityData = {
+            ...req.body,
+            startTime: new Date(req.body.startTime),
+            endTime: req.body.endTime ? new Date(req.body.endTime) : null
+        };
+        updatedActivity = await activityService.updateActivity(id, activityData);
     } catch(err) {
         console.log("Failed to update activity");
         return res.status(500).send("Failed to update activity. Try again.");
@@ -106,6 +108,10 @@ export const deleteActivity = asyncHandler(async (req, res) => {
  * HTMX Functions
  */
 
+/**
+ * Render activity punches that belong to users
+ */
+
 export const getActivityDropdown = asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
@@ -113,12 +119,16 @@ export const getActivityDropdown = asyncHandler(async (req, res) => {
 
     let html = activities.map(a => `
         <option value="${a.id}">
-            ${new Date(a.startTime).toLocaleDateString()} - ${a.category.name}
+            ${new Date(a.startTime).toLocaleDateString()} - ${a.class.name} - ${a.category.name}
         </option>
     `).join("");
 
     res.send(html);
 });
+
+/**
+ * Render the details of the activity punch
+ */
 
 export const getActivityDetails = asyncHandler(async (req, res) => {
     const id = req.query.punchSelect; 
@@ -149,11 +159,74 @@ export const getActivityDetails = asyncHandler(async (req, res) => {
     `);
 });
 
+/**
+ * Render the modal to make new activity punches
+ */
+
 export const renderActivityModal = asyncHandler(async (req, res) => {
-    //Get current activity categories
-    const categories = await activityService.getAllCategories();
-    res.status(201).send(createActivityModal(categories));
+    const userId = req.user.id;
+
+    const classes = await getClassesByUserId(userId);
+
+    res.status(201).send(createActivityModal(classes));
 });
+
+
+/**
+ * Render the modal to edit activity punches
+ */
+
+export const renderEditModal = asyncHandler(async (req, res) => {
+    //Get current activity categories
+    const id = req.query.punchSelect;
+    const userId = req.user.id;
+    const classes = await getClassesByUserId(userId);
+    const activity = await activityService.getActivityById(id);
+    const userRole = await getClassRole(userId, activity.class.id);
+    const categories = await activityService.getAllCategories(userRole.role);
+
+    res.status(201).send(createEditActivityModal(categories, activity, classes));
+});
+
+/**
+ * When creating a new activity punch, enable fields
+ */
+export const loadActivityFields = asyncHandler(async (req, res) => {
+    const classId = req.query.classId;
+
+    if (!classId) {
+        return res.send("<div id='activity-fields'>Error: No class selected.</div>");
+    }
+
+    const userId = req.user.id;
+    const classRole = await getClassRole(userId, classId);
+    const categories = await activityService.getAllCategories(classRole.role);
+
+    return res.status(201).send(enableActivityFields(categories));
+});
+
+/**
+ * When creating a new activity punch, enable fields
+ */
+export const refreshCategories = asyncHandler(async (req, res) => {
+    const classId = req.query.classId;
+    const categoryId  = req.query.categoryId;
+
+    if (!classId) {
+        return res.send("<div id='activity-fields'>Error: No class selected.</div>");
+    }
+
+    const userId = req.user.id;
+    const classRole = await getClassRole(userId, classId);
+    const categories = await activityService.getAllCategories(classRole.role);
+
+    return res.status(201).send(enableActivityFields(categories, categoryId));
+});
+
+
+/**
+ * Render Punch Card component on page
+ */
 
 export const renderPunchCard = asyncHandler(async (req, res)  => {
     const userId = req.user.id;
