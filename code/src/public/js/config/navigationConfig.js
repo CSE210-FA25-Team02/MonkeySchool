@@ -1,6 +1,6 @@
 /**
  * Navigation Configuration
- * 
+ *
  * Centralized configuration for all navigation items and sub-menus
  */
 
@@ -14,8 +14,8 @@ export const navigationConfig = {
         { name: "Home", path: "/" },
         { name: "Attendance", path: "/attendance" },
         { name: "People", path: "/people" },
-        { name: "Schedule", path: "/schedule" }
-      ]
+        { name: "Schedule", path: "/schedule" },
+      ],
     },
     {
       name: "Courses",
@@ -23,10 +23,11 @@ export const navigationConfig = {
       icon: "book",
       subMenu: [
         { name: "My Classes", path: "/api/classes/my-classes" },
+        { name: "My Groups", path: "/api/groups/my-groups" },
         { name: "Courses", path: "/courses/list" },
         { name: "Schedule", path: "/courses/schedule" },
-        { name: "Attendance", path: "/courses/attendance" }
-      ]
+        { name: "Attendance", path: "/courses/attendance" },
+      ],
     },
     {
       name: "Account",
@@ -34,9 +35,8 @@ export const navigationConfig = {
       icon: "user",
       subMenu: [
         { name: "View Profile", path: "/account/profile" },
-        { name: "Edit Profile", path: "/account/edit" }
-      ]
-    }
-  ]
+        { name: "Edit Profile", path: "/account/edit" },
+      ],
+    },
+  ],
 };
-
