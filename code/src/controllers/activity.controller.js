@@ -26,7 +26,7 @@ export const createActivity = asyncHandler(async (req, res) => {
     };
     console.log("Activity Data", activityData);
     activity = await activityService.createActivity(activityData);
-  } catch (err) {
+  } catch {
     console.log("Failed to create activity");
     return res.status(500).send("Failed to create activity. Try again.");
   }
@@ -50,7 +50,7 @@ export const updateActivity = asyncHandler(async (req, res) => {
       endTime: req.body.endTime ? new Date(req.body.endTime) : null,
     };
     updatedActivity = await activityService.updateActivity(id, activityData);
-  } catch (err) {
+  } catch {
     console.log("Failed to update activity");
     return res.status(500).send("Failed to update activity. Try again.");
   }
@@ -68,7 +68,7 @@ export const getActivity = asyncHandler(async (req, res) => {
   let activity;
   try {
     activity = await activityService.getActivityById(id);
-  } catch (err) {
+  } catch {
     console.log("Failed to get activity");
     return res.status(500).send("Failed to get activity. Try again.");
   }
@@ -85,7 +85,7 @@ export const getActivitiesByUser = asyncHandler(async (req, res) => {
   let activities;
   try {
     activities = await activityService.getActivitiesByUserId(userId);
-  } catch (err) {
+  } catch {
     console.log("Failed to get activities for user");
     return res.status(500).send("Failed to get activities for this user.");
   }
@@ -100,7 +100,7 @@ export const deleteActivity = asyncHandler(async (req, res) => {
   const id = req.params.id;
   try {
     await activityService.deleteActivity(id);
-  } catch (err) {
+  } catch {
     console.log("Failed to remove activity");
     return res.status(500).send("Failed to remove activity. Try again.");
   }

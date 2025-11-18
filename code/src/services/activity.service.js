@@ -5,6 +5,9 @@ import { prisma } from "../lib/prisma.js";
 
 /**
  * Create a new activity.
+ *
+ * @param {Object} data - The activity data to create.
+ * @returns {Promise<Object>} The created activity punch.
  */
 export async function createActivity(data) {
   return prisma.activity.create({ data });
@@ -12,6 +15,9 @@ export async function createActivity(data) {
 
 /**
  * Get a activity by ID, including the category and user it belongs to
+ *
+ * @param {string} id - The ID of the activity to fetch.
+ * @returns {Promise<Object|null>} The activity object or null if not found.
  */
 export async function getActivityById(id) {
   return prisma.activity.findUnique({
@@ -26,6 +32,9 @@ export async function getActivityById(id) {
 
 /**
  * Get all activities associated with userId
+ *
+ * @param {string} userId - The ID of the user whose activities should be fetched.
+ * @returns {Promise<Object[]>} A list of activity records.
  */
 
 export async function getActivitiesByUserId(userId) {
@@ -41,6 +50,9 @@ export async function getActivitiesByUserId(userId) {
 
 /**
  * Get all activity categories
+ *
+ * @param {string} userRole - The role of the user (e.g., "STUDENT", "TA").
+ * @returns {Promise<Object[]>} A list of activity categories.
  */
 
 export async function getAllCategories(userRole) {
@@ -61,6 +73,10 @@ export async function getAllCategories(userRole) {
 
 /**
  * Update Activity (category, time, summary, etc.)
+ *
+ * @param {string} id - The ID of the activity to update.
+ * @param {Object} data - The fields to update in the activity.
+ * @returns {Promise<Object>} The updated activity record.
  */
 export async function updateActivity(id, data) {
   return prisma.activity.update({
@@ -71,6 +87,9 @@ export async function updateActivity(id, data) {
 
 /**
  * Delete Activity
+ *
+ * @param {string} id - The ID of the activity to delete.
+ * @returns {Promise<Object>} The deleted activity record.
  */
 
 export async function deleteActivity(id) {

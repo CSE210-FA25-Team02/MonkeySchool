@@ -1,5 +1,7 @@
 /**
  * Create Punch Card Container Component
+ *
+ * @returns {string} HTML string for the punch card UI component.
  */
 export function createPunchCard() {
   return `
@@ -48,6 +50,14 @@ export function createPunchCard() {
     `;
 }
 
+/**
+ * Create the "New Activity" modal.
+ *
+ * @param {Object[]} classes - List of class objects available to the user.
+ * @param {string} classes[].id - Class ID.
+ * @param {string} classes[].name - Class name.
+ * @returns {string} HTML string for the new activity modal.
+ */
 export function createActivityModal(classes) {
   return `
         <div class="punchcard__modal" id="activity-modal">
@@ -96,6 +106,19 @@ export function createActivityModal(classes) {
     `;
 }
 
+/**
+ * Create the edit-activity modal populated with existing activity values.
+ *
+ * @param {Object[]} categories - List of categories for the selected class.
+ * @param {Object} activity - Activity object being edited.
+ * @param {string} activity.id - Activity ID.
+ * @param {string} activity.classId - Class ID of the activity.
+ * @param {string} activity.categoryId - Category ID of the activity.
+ * @param {string|Date} activity.startTime - Start timestamp.
+ * @param {string|Date|null} activity.endTime - End timestamp.
+ * @param {Object[]} classes - All available classes.
+ * @returns {string} HTML string for the edit modal.
+ */
 export function createEditActivityModal(categories, activity, classes) {
   return `
         <div class="punchcard__modal" id="activity-modal">
@@ -147,6 +170,14 @@ export function createEditActivityModal(categories, activity, classes) {
     `;
 }
 
+/**
+ * Enable the activity fields once a class has been selected.
+ *
+ * @param {Object[]} categories - List of category objects for the selected class.
+ * @param {string} categories[].id - Category ID.
+ * @param {string} categories[].name - Category name.
+ * @returns {string} HTML string enabling form fields.
+ */
 export function enableActivityFields(categories) {
   return `
         <div id="activity-fields">
@@ -166,6 +197,13 @@ export function enableActivityFields(categories) {
     `;
 }
 
+/**
+ * Refresh the category dropdown when the class changes.
+ *
+ * @param {Object[]} categories - List of categories available for the new class.
+ * @param {string} categoryId - ID of the category that should be selected.
+ * @returns {string} HTML string with updated category options.
+ */
 export function refreshCategories(categories, categoryId) {
   return `
     <div id="activity-fields">
@@ -186,9 +224,10 @@ export function refreshCategories(categories, categoryId) {
 }
 
 /**
+ * Convert a Date or date string into a YYYY-MM-DDTHH:mm formatted local datetime value.
  *
- * @param {*} date
- * @returns
+ * @param {Date|string} date - The date to convert.
+ * @returns {string} A formatted datetime-local value (YYYY-MM-DDTHH:mm).
  */
 function toDatetimeLocal(date) {
   const d = new Date(date);
