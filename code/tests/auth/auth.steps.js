@@ -24,6 +24,7 @@ defineFeature(feature, (test) => {
   beforeEach(async () => {
     await resetDatabase();
     context.user = undefined;
+    context.skipAuth = false;
     context.response = undefined;
   });
 
@@ -78,6 +79,8 @@ defineFeature(feature, (test) => {
 
   test("Get session returns null when not authenticated", ({ when, then }) => {
     when(/^I request the current session$/, async () => {
+      // Ensure this request is unauthenticated
+      context.skipAuth = true;
       context.response = await request.get("/auth/session");
     });
 

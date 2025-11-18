@@ -18,6 +18,12 @@ defineFeature(feature, (test) => {
 
   test("Create a new class", ({ when, then, and }) => {
     when(/^I create a class named "(.*)"$/, async (name) => {
+      // Ensure request is authenticated as a professor
+      if (!context.user) {
+        context.user = await prisma.user.create({
+          data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
+        });
+      }
       context.response = await request.post("/classes/create").send({ name });
       context.klass = context.response.body;
     });

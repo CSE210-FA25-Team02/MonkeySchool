@@ -32,7 +32,7 @@ router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 router.get("/", asyncHandler(classController.renderClassPage));
 
 // CRUD
-router.post("/create", asyncHandler(classController.createClass));
+router.post("/create", requireAuth, asyncHandler(classController.createClass));
 router.get("/:id", asyncHandler(classController.getClass));
 router.put("/:id", asyncHandler(classController.updateClass));
 router.delete("/:id", asyncHandler(classController.deleteClass));

@@ -99,7 +99,7 @@ export function createApp() {
     standardHeaders: true,
     legacyHeaders: false,
   });
-  app.use("/api", limiter);
+  app.use("/", limiter);
 
   // Cookie parsing
   app.use(cookieParser());
