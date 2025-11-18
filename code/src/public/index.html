@@ -41,7 +41,6 @@
     />
 
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="/css/navbar.css" />
     <link rel="stylesheet" href="/css/main.css" />
 
     <!-- Preconnect for performance -->
@@ -60,23 +59,74 @@
 
     <!-- Header (Top Bar) -->
     <header id="header" class="header" role="banner">
-      <div class="container">
-        <div class="header__content">
-          <div class="header__left">
-            <!-- Empty - no title text -->
-          </div>
-          <div class="header__right">
-            <!-- Profile dropdown will be added by Header component -->
-          </div>
+      <div class="container header__container">
+        <div class="header__brand">
+          <a href="/" class="header__logo" aria-label="Monkey School Home">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span class="header__brand-text">Monkey School</span>
+          </a>
         </div>
-        <h1 class="header__title">
-          <a href="/" class="header__link">Student Management System</a>
-        </h1>
         <nav class="header__nav" role="navigation" aria-label="Main navigation">
-          <div id="auth-section" class="auth-section" style="display: none">
-            <!-- User info and logout will be shown here when logged in -->
-          </div>
+          <ul class="header__nav-list">
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/classes">Classes</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
         </nav>
+        <form
+          class="header__search"
+          role="search"
+          aria-label="Site search"
+          onsubmit="return false;"
+        >
+          <input type="search" placeholder="Search..." aria-label="Search" />
+          <button type="submit" aria-label="Submit search">
+            <i class="fa fa-search"></i>
+          </button>
+        </form>
+        <div class="header__actions">
+          <button class="header__icon-btn" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+            <span class="header__badge" id="notif-badge" style="display: none"
+              >0</span
+            >
+          </button>
+          <div class="header__profile-dropdown">
+            <button
+              class="header__icon-btn header__profile-btn"
+              aria-label="User menu"
+            >
+              <img
+                src="/img/default-avatar.png"
+                alt="User Avatar"
+                class="header__avatar"
+              />
+              <span class="header__profile-name">Profile</span>
+              <i class="fa fa-caret-down"></i>
+            </button>
+            <ul class="header__dropdown-menu">
+              <li>
+                <a href="/profile"><i class="fa fa-user"></i> Profile</a>
+              </li>
+              <li>
+                <a href="/settings"><i class="fa fa-cog"></i> Settings</a>
+              </li>
+              <li>
+                <a href="/auth/logout"
+                  ><i class="fa fa-sign-out-alt"></i> Logout</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div
+            id="auth-section"
+            class="auth-section"
+            style="display: none"
+          ></div>
+        </div>
+        <button class="header__menu-toggle" aria-label="Open menu">
+          <i class="fa fa-bars"></i>
+        </button>
       </div>
     </header>
 
@@ -98,98 +148,6 @@
           <h2>Authentication Error</h2>
           <p id="error-text"></p>
         </div>
-
-        <!-- Initial content -->
-        <section class="welcome" role="region" aria-labelledby="welcome-title">
-          <h2 id="welcome-title" class="welcome__title">
-            Welcome to Monkey School
-          </h2>
-          <p class="welcome__description">
-            A modern, accessible, and internationalized platform for managing
-            student records. Built with HTMX for seamless user interactions and
-            designed with accessibility in mind.
-          </p>
-
-          <div id="login-section" class="login-section" style="display: none">
-            <div class="login-card">
-              <h3>Sign in with Google</h3>
-              <p>Please sign in with your UCSD Gmail account to continue.</p>
-              <a href="/api/auth/login" class="btn btn--primary btn--large">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 18 18"
-                  style="margin-right: 8px; vertical-align: middle"
-                >
-                  <path
-                    fill="#4285F4"
-                    d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.951H.957C.348 6.174 0 7.55 0 9s.348 2.826.957 4.049l3.007-2.342z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.951L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"
-                  />
-                </svg>
-                Sign in with Google
-              </a>
-            </div>
-          </div>
-
-          <div
-            id="welcome-actions"
-            class="welcome__actions"
-            style="display: none"
-          >
-            <a
-              href="/api/students"
-              class="btn btn--primary btn--large"
-              hx-get="/api/students"
-              hx-target="#main-content"
-              hx-push-url="true"
-            >
-              View All Students
-            </a>
-            <a
-              href="/api/students/new"
-              class="btn btn--secondary btn--large"
-              hx-get="/api/students/new"
-              hx-target="#main-content"
-              hx-push-url="true"
-            >
-              Add New Student
-            </a>
-          </div>
-
-          <div class="welcome__features">
-            <h3 class="welcome__features-title">Features</h3>
-            <ul class="features-list">
-              <li class="features-list__item">
-                <strong>Accessible:</strong> Built with screen readers and
-                keyboard navigation in mind
-              </li>
-              <li class="features-list__item">
-                <strong>International:</strong> Supports multiple languages and
-                RTL text direction
-              </li>
-              <li class="features-list__item">
-                <strong>Responsive:</strong> Works seamlessly across desktop,
-                tablet, and mobile devices
-              </li>
-              <li class="features-list__item">
-                <strong>Fast:</strong> HTMX provides smooth interactions without
-                full page reloads
-              </li>
-            </ul>
-          </div>
-        </section>
       </div>
     </main>
 
@@ -226,7 +184,7 @@
       // Check authentication status and update UI
       async function checkAuth() {
         try {
-          const response = await fetch("/api/auth/session");
+          const response = await fetch("/auth/session");
           const data = await response.json();
 
           const authSection = document.getElementById("auth-section");
@@ -239,9 +197,9 @@
                         <div class="user-info">
                             ${data.user.photoUrl ? `<img src="${data.user.photoUrl}" alt="${data.user.name}" class="user-avatar" width="32" height="32">` : ""}
                             <span class="user-name">${data.user.name}</span>
-                            <a href="/api/auth/logout" 
+                            <a href="/auth/logout" 
                                class="btn btn--secondary btn--small"
-                               hx-get="/api/auth/logout"
+                               hx-get="/auth/logout"
                                hx-target="#main-content">
                                 Logout
                             </a>

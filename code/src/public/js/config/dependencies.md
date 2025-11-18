@@ -9,6 +9,7 @@
 ## Icon Libraries (Optional)
 
 You can use one of the following for navigation icons:
+
 - FontAwesome (CDN)
 - Material Icons (CDN)
 - Heroicons (SVG sprites)
@@ -17,8 +18,8 @@ You can use one of the following for navigation icons:
 ## Backend / API
 
 - User assumed logged in (session management handled by Express)
-- Profile data fetched via `/api/profile` (to be implemented)
-- Courses data via `/api/courses` (to be implemented)
+- Profile data fetched via `/profile` (to be implemented)
+- Courses data via `/courses` (to be implemented)
 - Auth context manages session (Express sessions)
 
 ## Notes
@@ -42,4 +43,3 @@ You can use one of the following for navigation icons:
   - Desktop: ≥1024px
   - Tablet: 768px - 1023px
   - Mobile: <768px
-

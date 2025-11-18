@@ -34,11 +34,17 @@ jobs:
       - name: Install dependencies
         run: cd code && npm install
 
+      - name: Check formatting
+        run: cd code && npx prettier --check "src/**/*.js"
+
       - name: Lint
         run: cd code && npm run lint
 
+      - name: Generate JSDoc Documentation
+        run: cd code && npm run docs
+        
       - name: Test
-        run: |          
+        run: |
           cat > code/.env.test << EOF
           DATABASE_URL=postgresql://user:password@localhost:5432/dbname_test?schema=public
           GOOGLE_CLIENT_ID=test-client-id-for-ci

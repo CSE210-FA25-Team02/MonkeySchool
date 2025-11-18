@@ -4,21 +4,24 @@
  * Handles OAuth login, callback, logout, and session management
  */
 
-import { getOrCreateUser, generateToken, verifyToken } from "../services/auth.service.js";
+import {
+  getOrCreateUser,
+  generateToken,
+  verifyToken,
+} from "../services/auth.service.js";
 import { getUserById } from "../services/user.service.js";
 import { env } from "../config/env.js";
 
 /**
  * Initiate Google OAuth login
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response used for redirection
+ * @returns {Promise<void>}
  */
 export async function login(req, res) {
   // Construct redirect URI - ensure no trailing slash on base URL
   const baseUrl = env.AUTH_BASE_URL.replace(/\/$/, "");
-  const redirectUri = `${baseUrl}/api/auth/callback`;
-
-  // Log the redirect URI for debugging (remove in production)
-  console.log("🔐 OAuth Login - Redirect URI:", redirectUri);
-  console.log("🔐 OAuth Login - AUTH_BASE_URL:", env.AUTH_BASE_URL);
+  const redirectUri = `${baseUrl}/auth/callback`;
 
   // Build Google OAuth URL
   const params = new URLSearchParams({
@@ -29,15 +32,22 @@ export async function login(req, res) {
     access_type: "offline",
     prompt: "consent",
   });
-
   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 
-  // Redirect to Google OAuth
+  // If HTMX, return a script to redirect client
+  if (req.headers["hx-request"]) {
+    res.set("Content-Type", "text/html");
+    return res.send(`<script>window.location.href = '${authUrl}';</script>`);
+  }
+  // Otherwise, normal redirect
   res.redirect(authUrl);
 }
 
 /**
  * Handle OAuth callback from Google
+ * @param {Object} req Incoming HTTP request containing OAuth code
+ * @param {Object} res HTTP response used for redirection
+ * @returns {Promise<void>}
  */
 export async function callback(req, res) {
   try {
@@ -49,7 +59,7 @@ export async function callback(req, res) {
 
     // Construct redirect URI - ensure no trailing slash on base URL
     const baseUrl = env.AUTH_BASE_URL.replace(/\/$/, "");
-    const redirectUri = `${baseUrl}/api/auth/callback`;
+    const redirectUri = `${baseUrl}/auth/callback`;
 
     // Exchange code for tokens
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
@@ -82,7 +92,7 @@ export async function callback(req, res) {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
-      }
+      },
     );
 
     if (!profileResponse.ok) {
@@ -109,23 +119,26 @@ export async function callback(req, res) {
     res.redirect("/");
   } catch (error) {
     console.error("OAuth callback error:", error);
-    
+
     if (error.message.includes("not authorized")) {
       return res.redirect("/?error=email_not_authorized");
     }
-    
+
     res.redirect("/?error=login_failed");
   }
 }
 
 /**
  * Logout user
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response
+ * @returns {Promise<void>}
  */
 export async function logout(req, res) {
   res.clearCookie("auth_token");
-  
+
   const isHtmxRequest = req.headers["hx-request"];
-  
+
   if (isHtmxRequest) {
     res.send(`
       <div class="alert alert--success" role="alert">
@@ -134,7 +147,7 @@ export async function logout(req, res) {
       </div>
       <script>
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = '/login';
         }, 1000);
       </script>
     `);
@@ -145,6 +158,9 @@ export async function logout(req, res) {
 
 /**
  * Get current user session
+ * @param {Object} req Incoming HTTP request
+ * @param {Object} res HTTP response returning user JSON
+ * @returns {Promise<void>}
  */
 export async function getSession(req, res) {
   try {
@@ -172,4 +188,3 @@ export async function getSession(req, res) {
     res.json({ user: null });
   }
 }
-

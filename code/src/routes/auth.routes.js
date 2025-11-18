@@ -47,4 +47,3 @@ router.get("/fake-login", (req, res) => {
 
 
 export default router;
-
