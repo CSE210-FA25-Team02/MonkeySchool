@@ -127,6 +127,8 @@ export async function deleteClass(id) {
 /**
  * Get organized class directory with members grouped by role and groups.
  * Following data flow: class -> classRole -> extract userIDs -> get User info
+ * @param {string} id - The class ID to get the directory for
+ * @returns {Promise<Object|null>} The organized directory data or null if class not found
  */
 export async function getClassDirectory(id) {
   // Get class with all related data

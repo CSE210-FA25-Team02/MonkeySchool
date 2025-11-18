@@ -402,6 +402,8 @@ function renderFullPage(content, title = 'My Classes') {
 /**
  * Helper function to render class directory HTML content
  * Returns only the content HTML for HTMX swapping
+ * @param {Object} directory - The directory data object
+ * @returns {string} The rendered HTML content
  */
 function renderDirectoryHTML(directory) {
   const { class: classInfo, professors, tas, tutors, groups, studentsWithoutGroup } = directory;
@@ -868,6 +870,9 @@ function renderDirectoryHTML(directory) {
 
 /**
  * Helper function to render individual member cards
+ * @param {Object} member - The member data object
+ * @param {string} roleType - The role type (professor, ta, tutor, student)
+ * @returns {string} The rendered member card HTML
  */
 function renderMemberCard(member, roleType) {
   const displayName = member.preferredName || member.name;
@@ -1371,6 +1376,8 @@ function renderMemberCard(member, roleType) {
 
 /**
  * Helper function to render group cards
+ * @param {Object} group - The group data object
+ * @returns {string} The rendered group card HTML
  */
 function renderGroupCard(group) {
   // Use a data URL placeholder instead of missing file
@@ -1870,6 +1877,9 @@ function renderGroupCard(group) {
 
 /**
  * Helper function to render individual group member items
+ * @param {Object} member - The member data object
+ * @param {boolean} isLeader - Whether the member is a leader
+ * @returns {string} The rendered group member item HTML
  */
 function renderGroupMember(member, isLeader) {
   const displayName = member.preferredName || member.name;
