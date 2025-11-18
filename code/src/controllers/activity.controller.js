@@ -210,7 +210,6 @@ export const loadActivityFields = asyncHandler(async (req, res) => {
  */
 export const refreshCategories = asyncHandler(async (req, res) => {
     const classId = req.query.classId;
-    const categoryId  = req.query.categoryId;
 
     if (!classId) {
         return res.send("<div id='activity-fields'>Error: No class selected.</div>");
