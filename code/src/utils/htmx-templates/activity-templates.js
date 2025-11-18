@@ -2,7 +2,7 @@
  * Create Punch Card Container Component
  */
 export function createPunchCard() {
-    return `
+  return `
         <div class="punchcard">
 
             <h3 class="punchcard__title">Activity Punch Card</h3>
@@ -49,7 +49,7 @@ export function createPunchCard() {
 }
 
 export function createActivityModal(classes) {
-    return `
+  return `
         <div class="punchcard__modal" id="activity-modal">
             <div class="punchcard__modal-content">
                 <h2>Create New Activity</h2>
@@ -66,7 +66,7 @@ export function createActivityModal(classes) {
                     hx-swap="outerHTML"
                 >
                     <option value="">-- Select a class --</option>
-                    ${classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join("")}
+                    ${classes.map((cls) => `<option value="${cls.id}">${cls.name}</option>`).join("")}
                 </select>
 
 
@@ -97,7 +97,7 @@ export function createActivityModal(classes) {
 }
 
 export function createEditActivityModal(categories, activity, classes) {
-    return `
+  return `
         <div class="punchcard__modal" id="activity-modal">
             <div class="punchcard__modal-content">
                 <h2>Edit Activity</h2>
@@ -114,17 +114,21 @@ export function createEditActivityModal(categories, activity, classes) {
                     hx-swap="outerHTML"
                     hx-vals='{"categoryId": "${activity.categoryId}"}'
                 >
-                    ${classes.map(cls => `<option value="${cls.id}" ${cls.id === activity.classId ? "selected" : ""}>${cls.name}</option>`).join("")}
+                    ${classes.map((cls) => `<option value="${cls.id}" ${cls.id === activity.classId ? "selected" : ""}>${cls.name}</option>`).join("")}
                 </select>
 
                 <div id="activity-fields">
                     <label>Category:</label>
                     <select name="categoryId" required>
-                        ${categories.map(c => `
+                        ${categories
+                          .map(
+                            (c) => `
                         <option value="${c.id}" ${c.id === activity.categoryId ? "selected" : ""}>
                                 ${c.name}
                         </option>
-                        `).join("")}
+                        `,
+                          )
+                          .join("")}
                     </select>
                 </div>
 
@@ -144,11 +148,11 @@ export function createEditActivityModal(categories, activity, classes) {
 }
 
 export function enableActivityFields(categories) {
-    return `
+  return `
         <div id="activity-fields">
             <label>Category:</label>
             <select name="categoryId" required>
-                ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("")}
+                ${categories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("")}
             </select>
 
             <label>Punch In:</label>
@@ -163,25 +167,28 @@ export function enableActivityFields(categories) {
 }
 
 export function refreshCategories(categories, categoryId) {
-    return `
+  return `
     <div id="activity-fields">
         <label>Category:</label>
         <select name="categoryId" required>
-            ${categories.map(c => `
+            ${categories
+              .map(
+                (c) => `
             <option value="${c.id}" ${c.id === categoryId ? "selected" : ""}>
                     ${c.name}
             </option>
-            `).join("")}
+            `,
+              )
+              .join("")}
         </select>
     </div>
     `;
 }
 
-
 /**
- * 
- * @param {*} date 
- * @returns 
+ *
+ * @param {*} date
+ * @returns
  */
 function toDatetimeLocal(date) {
   const d = new Date(date);

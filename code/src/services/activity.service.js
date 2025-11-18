@@ -17,10 +17,10 @@ export async function getActivityById(id) {
   return prisma.activity.findUnique({
     where: { id },
     include: {
-        user: true,
-        category: true,
-        class: true,
-    }
+      user: true,
+      category: true,
+      class: true,
+    },
   });
 }
 
@@ -33,9 +33,9 @@ export async function getActivitiesByUserId(userId) {
     where: { userId },
     include: {
       category: true,
-      class: true
+      class: true,
     },
-    orderBy: { startTime: "desc" },  
+    orderBy: { startTime: "desc" },
   });
 }
 
@@ -45,15 +45,12 @@ export async function getActivitiesByUserId(userId) {
 
 export async function getAllCategories(userRole) {
   try {
-  const categories = await prisma.activityCategory.findMany({
-    where: {
-      OR: [
-        { role: userRole },
-        { role: "ALL" }
-      ]
-    },
-    orderBy: { name: "asc" },
-  });
+    const categories = await prisma.activityCategory.findMany({
+      where: {
+        OR: [{ role: userRole }, { role: "ALL" }],
+      },
+      orderBy: { name: "asc" },
+    });
 
     return categories;
   } catch (error) {
@@ -62,15 +59,14 @@ export async function getAllCategories(userRole) {
   }
 }
 
-
 /**
  * Update Activity (category, time, summary, etc.)
  */
 export async function updateActivity(id, data) {
-    return prisma.activity.update({
-        where: {id},
-        data
-    });
+  return prisma.activity.update({
+    where: { id },
+    data,
+  });
 }
 
 /**
@@ -79,8 +75,6 @@ export async function updateActivity(id, data) {
 
 export async function deleteActivity(id) {
   return prisma.activity.delete({
-    where: { id }
+    where: { id },
   });
 }
-
-
