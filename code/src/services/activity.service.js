@@ -36,7 +36,6 @@ export async function getActivityById(id) {
  * @param {string} userId - The ID of the user whose activities should be fetched.
  * @returns {Promise<Object[]>} A list of activity records.
  */
-
 export async function getActivitiesByUserId(userId) {
   return prisma.activity.findMany({
     where: { userId },
@@ -54,7 +53,6 @@ export async function getActivitiesByUserId(userId) {
  * @param {string} userRole - The role of the user (e.g., "STUDENT", "TA").
  * @returns {Promise<Object[]>} A list of activity categories.
  */
-
 export async function getAllCategories(userRole) {
   try {
     const categories = await prisma.activityCategory.findMany({

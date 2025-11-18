@@ -72,7 +72,7 @@ export function createActivityModal(classes) {
                     required
                     hx-get="/activity/load-fields"
                     hx-trigger="change"
-                    hx-target="#activity-fields\"
+                    hx-target="#activity-fields"
                     hx-swap="outerHTML"
                 >
                     <option value="">-- Select a class --</option>
