@@ -1,46 +1,77 @@
-MonkeySchool CI and CD Pipeline Status Report
-Introduction
+# MonkeySchool CI/CD Pipeline Status Report
 
-This document presents a formal summary of the continuous integration and continuous deployment pipeline implemented for the MonkeySchool project. The report describes the current functionality of the system, identifies components that are operational, and outlines areas that may benefit from further development. All information is based directly on the active GitHub Actions configurations and the execution logs generated from recent automated workflow runs.
+**CSE210-FA25-Team02**
 
-Continuous Integration Overview
+---
 
-The continuous integration pipeline is implemented using GitHub Actions. It is triggered automatically whenever code is pushed to the main or develop branches, as well as when pull requests targeting these branches are created. The purpose of the pipeline is to verify code correctness, enforce quality standards, and evaluate documentation and test coverage before any changes progress toward deployment.
+## Continuous Integration Overview
 
-The CI system performs a structured sequence of tasks. Dependencies are installed within an isolated environment. A PostgreSQL service container is provisioned to enable integration tests that require database connectivity. Formatting checks, linting analysis, documentation generation, and unit tests are executed in an automated manner. These steps ensure that each modification submitted to the repository is evaluated consistently and efficiently.
+The CI pipeline is triggered automatically for pushes and pull requests targeting the `main` and `develop` branches. Key tasks include:
 
-Operational Components of Continuous Integration
+- **Dependency Installation:** Runs in an isolated environment.
+- **Database Provisioning:** Uses a PostgreSQL service container for integration tests.
+- **Validation and Testing:** Executes linting, formatting checks, unit tests, and documentation generation.
+- **Code Scanning:** Uses GitHub's CodeQL to identify potential security vulnerabilities and coding errors.
 
-The formatting validation is performed using Prettier, which ensures consistent structure throughout the codebase. ESLint provides a separate layer of analysis that identifies stylistic and structural issues. Automatically generated documentation is created using JSDoc through the project’s defined scripts. The test suite is executed using Jest and incorporates Prisma based interaction with the test database. Environment variables required for the test environment are provisioned within the workflow.
+### Configuration File
 
-Coverage information is collected and posted automatically on pull requests to support reviewer evaluation. The observed runtimes from multiple executions indicate that the workflow completes in approximately one minute. The logs confirm that the PostgreSQL container initializes successfully and supports the execution of database related tests.
+- **Location:** `.github/workflows/ci.yml`
 
-Current Observations in Continuous Integration
+### Components
 
-The execution logs show attempts to access a test database that may not exist until Prisma migrations are applied. This results in temporary warnings within the workflow but does not prevent the system from completing its tasks. The CI pipeline remains fully operational and successfully performs validation, testing, and documentation generation on all submitted changes.
+- **Formatting Validation:** Enforced with Prettier.
 
-Continuous Deployment Overview
+- **Linting Analysis:** Performed using ESLint.
+  - **Configuration File:** [`code/eslint.config.js`](https://github.com/CSE210-FA25-Team02/MonkeySchool/blob/main/code/eslint.config.js)
+- **Documentation Generation:** Automated with JSDoc.
+  - **Configuration File:** [`code/jsdoc.config.json`](https://github.com/CSE210-FA25-Team02/MonkeySchool/blob/main/code/jsdoc.config.json)
+- **Testing Framework:** Jest with Prisma for database interactions.
+  - **Configuration File:** [`code/jest.config.js`](https://github.com/CSE210-FA25-Team02/MonkeySchool/blob/main/code/jest.config.js)
+- **Code Scanning with CodeQL:** Analyzes the codebase for security vulnerabilities and coding errors. This runs as a different job.
 
-The continuous deployment pipeline is also implemented using GitHub Actions. It is triggered whenever changes are pushed to the main branch. The purpose of this workflow is to ensure that all validated and approved code is deployed automatically to the production environment.
+- **Coverage Reports:** Automatically posted on pull requests to `develop`.
 
-The deployment process connects to a remote Ubuntu server through a secure SSH based action. Once connected, the workflow pulls the latest version of the repository, loads environment variables required by the application, and restarts the system using Docker Compose. This guarantees that the production environment always reflects the most recent stable revision of the project.
+### Environment Variables
 
-Operational Components of Continuous Deployment
+The following environment variables are used in the CI pipeline:
 
-The CD pipeline completes within approximately twenty seconds under normal conditions. The SSH authentication process, repository synchronization, and Docker Compose operations execute without errors. The use of containerized orchestration supports consistent behavior across development and production environments and ensures reproducible deployments. Execution logs confirm that the workflow performs all required actions successfully.
+- `DATABASE_URL`: Connection string for the test database.
+- `NODE_ENV`: Specifies the environment (e.g., `test`).
 
-Overall System Assessment
+### Observations
 
-Together, the CI and CD pipelines establish a reliable automated framework that supports consistent verification, documentation, testing, and deployment. The continuous integration system prevents unverified or unstable modifications from entering the production pipeline. The continuous deployment system ensures that approved changes become available to users without manual intervention. These two components work jointly to support the goals of project stability, maintainability, and development velocity.
+- Workflow runtime averages **51 seconds**.
+- Temporary warnings occur due to test database initialization but do not impact overall functionality.
 
-Future Considerations
+---
 
-Possible areas for continued improvement include refinement of test database initialization, expansion of test coverage, and the addition of post deployment monitoring features. These enhancements can further strengthen reliability and transparency. The current implementation nevertheless satisfies the core requirements for automated build verification and automated production deployment.
+## Continuous Deployment Overview
 
-Conclusion
+The CD pipeline is triggered for changes pushed to the `main` branch. It automates the deployment process to the production environment, ensuring the latest stable code is live.
 
-The MonkeySchool project maintains a fully functional continuous integration and continuous deployment system aligned with contemporary engineering practices. The workflows demonstrate consistent execution and effective automation. The pipelines provide the necessary quality assurance structure for the project and establish a strong foundation for future enhancements.
+### Configuration File
 
-Pipeline Diagram
+- **Location:** `.github/workflows/deploy.yml`
 
-![CICD-V1](./CICD-diagram-V1.png "CICD-diagram-V1")
+### Components
+
+- **Secure Deployment:** Uses SSH to connect to a remote Ubuntu server.
+- **Repository Synchronization:** Pulls the latest code and loads environment variables.
+- **Service Orchestration:** Restarts the system using Docker Compose.
+
+### Environment Variables
+
+The following environment variables are used in the CD pipeline:
+
+- `SSH_HOST`: The hostname or IP address of the remote server.
+- `SSH_USER`: The username for the SSH connection.
+- `SSH_PRIVATE_KEY`: The private key for secure SSH authentication.
+- `ENV_FILE`: Path to the `.env` file containing environment variables for the application.
+
+### Observations
+
+- Deployment completes in approximately **20 seconds**.
+- Logs confirm successful execution of all deployment steps.
+
+---
+
