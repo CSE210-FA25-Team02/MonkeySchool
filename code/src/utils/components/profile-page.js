@@ -113,11 +113,11 @@ export function createUserProfile(user, { mode = "view" } = {}) {
     <header class="profile-hero">
     <figure class="profile-hero__avatar">
         <img 
-        src="${avatarSrc}"
-        alt="${safe(name)}"
-        class="profile-hero__photo"
-        style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;"
-        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=120';"
+            src="${avatarSrc}"
+            alt="${safe(name)}"
+            class="profile-hero__photo"
+            style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;"
+            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=120';"
         >
     </figure>
     <div class="profile-hero__info">
