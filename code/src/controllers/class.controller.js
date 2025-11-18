@@ -197,8 +197,11 @@ export const renderClassPage = asyncHandler(async (req, res) => {
     .status(201)
     .send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
 });
+
 /**
  * Helper function to render class list HTML
+ * @param {Array} classes Array of classes to display
+ * @returns {string} HTML class list
  */
 function renderClassListHTML(classes) {
   // Always show the Create New Class button for professors (or all users for now)

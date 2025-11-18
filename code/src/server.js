@@ -31,6 +31,8 @@ const server = app.listen(env.PORT, () => {
 
 /**
  * Graceful shutdown handler
+ * @param {string} signal 
+ * @returns {Promise<void>}
  */
 async function gracefulShutdown(signal) {
   console.log(`\n${signal} received. Starting graceful shutdown...`);

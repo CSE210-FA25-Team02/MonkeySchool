@@ -12,11 +12,25 @@ import { BadRequestError } from "../utils/api-error.js";
 import { createErrorMessage } from "../utils/html-templates.js";
 
 /**
+ * Zod-style schema
+ * @typedef {object} ZodSchema
+ * @property {Function} parse Function that validates and returns parsed data
+ */
+
+/**
+ * Generic request handler function
+ * @typedef {Function} RequestHandler
+ * @param {object} req Incoming request
+ * @param {object} res Outgoing response
+ * @param {Function} next Callback to continue request lifecycle
+ */
+
+
+/**
  * Creates a validation middleware for a specific request part
- *
- * @param {import('zod').ZodSchema} schema - Zod schema to validate against
- * @param {'body' | 'query' | 'params'} type - Part of request to validate
- * @returns {import('express').RequestHandler} Express middleware
+ * @param {ZodSchema} schema Schema used to validate incoming data
+ * @param {'body'|'query'|'params'} [type='body'] Request segment to validate
+ * @returns {RequestHandler} Middleware function
  */
 export function validate(schema, type = "body") {
   return (req, res, next) => {
@@ -55,6 +69,11 @@ export function validate(schema, type = "body") {
 
 /**
  * Enhanced validation middleware with better error formatting
+ * @param {ZodSchema} schema Schema used to validate incoming data
+ * @param {'body'|'query'|'params'} [type='body'] Request segment to validate
+ * @param {object} [options={}] Additional configuration
+ * @param {boolean} [options.returnToForm=false] Add validation errors directly to request for controllers
+ * @returns {RequestHandler} Middleware function
  */
 export function validateWithErrors(schema, type = "body", options = {}) {
   const { returnToForm = false } = options;
