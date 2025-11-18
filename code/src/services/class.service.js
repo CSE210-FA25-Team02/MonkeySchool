@@ -229,7 +229,7 @@ export async function getClassDirectory(id) {
       case 'TUTOR':
         tutors.push(userData);
         break;
-      case 'STUDENT':
+      case 'STUDENT': {
         // Check if student is in any group
         const isInGroup = classData.groups.some(group => 
           group.members.some(groupMember => groupMember.userId === member.userId)
@@ -238,6 +238,7 @@ export async function getClassDirectory(id) {
           studentsWithoutGroup.push(userData);
         }
         break;
+      }
     }
   });
 
