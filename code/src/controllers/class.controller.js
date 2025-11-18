@@ -81,6 +81,17 @@ export const getClass = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get class directory data as JSON for testing
+ * Returns the raw directory data structure for API consumption
+ */
+export const getClassDirectory = asyncHandler(async (req, res) => {
+  const directory = await classService.getClassDirectory(req.params.id);
+  if (!directory) throw new NotFoundError("Class not found");
+  
+  res.json(directory);
+});
+
+/**
  * Render class directory content for HTMX content swap
  * Returns only the directory HTML content, not full page
  */
