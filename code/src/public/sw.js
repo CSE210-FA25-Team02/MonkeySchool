@@ -7,43 +7,44 @@ const API_CACHE = "api-v1";
 const CDN_CACHE = "cdn-v1";
 
 // Install — precache static files
-self.addEventListener("install", event => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(STATIC_CACHE);
 
       const manifest = await fetch("/precache-manifest.json")
-        .then(r => r.json())
+        .then((r) => r.json())
         .catch(() => []);
 
       await cache.addAll(manifest);
 
       self.skipWaiting();
-    })()
+    })(),
   );
 });
 
 // Activate — clean old caches
-self.addEventListener("activate", event => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key =>
-            key !== STATIC_CACHE &&
-            key !== API_CACHE &&
-            key !== CDN_CACHE
-          )
-          .map(key => caches.delete(key))
-      )
-    )
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (key) =>
+                key !== STATIC_CACHE && key !== API_CACHE && key !== CDN_CACHE,
+            )
+            .map((key) => caches.delete(key)),
+        ),
+      ),
   );
 
   self.clients.claim();
 });
 
 // Fetch handler
-self.addEventListener("fetch", event => {
+self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
@@ -61,7 +62,7 @@ self.addEventListener("fetch", event => {
   // 1) SPA navigation → return cached index.html
   if (req.mode === "navigate") {
     event.respondWith(
-      caches.match("/index.html").then(cached => cached || fetch(req))
+      caches.match("/index.html").then((cached) => cached || fetch(req)),
     );
     return;
   }
@@ -92,7 +93,6 @@ self.addEventListener("fetch", event => {
   // Default → network
   event.respondWith(fetch(req));
 });
-
 
 // ------------------------------------------------
 // STATIC: Cache-first
@@ -127,7 +127,7 @@ async function cacheExternal(req) {
   const cached = await cache.match(req);
 
   const fetchPromise = fetch(req)
-    .then(response => {
+    .then((response) => {
       cache.put(req, response.clone());
       return response;
     })
