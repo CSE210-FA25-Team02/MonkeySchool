@@ -10,6 +10,7 @@ import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import classRoutes from "./class.routes.js";
 import classRoleRoutes from "./classRole.routes.js";
+import groupRoutes from "./group.routes.js";
 import authRoutes from "./auth.routes.js";
 import activityRoutes from "./activity.routes.js";
 import courseSessionRoutes from "./courseSession.routes.js";
@@ -29,5 +30,6 @@ router.use("/course-sessions", courseSessionRoutes);
 router.use("/attendance", attendanceRoutes);
 router.use("/:quarter/classes", classRoutes);
 router.use("/:quarter/classRoles", classRoleRoutes);
+router.use("/groups", groupRoutes);
 
 export default router;

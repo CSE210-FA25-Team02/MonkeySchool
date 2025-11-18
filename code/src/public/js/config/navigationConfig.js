@@ -22,16 +22,21 @@ export const navigationConfig = {
       path: "/courses",
       icon: "book",
       subMenu: [
-        { name: "My Classes", path: "/classes/my-classes" },
+        { name: "My Classes", path: "/api/classes/my-classes" },
+        { name: "My Groups", path: "/api/groups/my-groups" },
         { name: "Courses", path: "/courses/list" },
         { name: "Schedule", path: "/courses/schedule" },
+        { name: "Attendance", path: "/courses/attendance" },
       ],
     },
     {
       name: "Account",
       path: "/account",
       icon: "user",
-      subMenu: [{ name: "View Profile", path: "/users/profile" }],
+      subMenu: [
+        { name: "View Profile", path: "/account/profile" },
+        { name: "Edit Profile", path: "/account/edit" },
+      ],
     },
   ],
 };
