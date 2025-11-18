@@ -105,12 +105,20 @@ export function createUserProfile(user, { mode = "view" } = {}) {
             }
         </ul>`;
 
-  const header = `
+  const avatarSrc = user.photoUrl && !user.photoUrl.includes("default") 
+    ? user.photoUrl 
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=120`;
+
+    const header = `
     <header class="profile-hero">
     <figure class="profile-hero__avatar">
-        <img src="/img/default-avatar.svg"
-            alt="${safe(name)}"
-            class="profile-hero__photo profile-hero__photo--default">
+        <img 
+        src="${avatarSrc}"
+        alt="${safe(name)}"
+        class="profile-hero__photo"
+        style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;"
+        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=120';"
+        >
     </figure>
     <div class="profile-hero__info">
         <h1 class="profile-hero__name">${safe(name)}</h1>
@@ -119,18 +127,13 @@ export function createUserProfile(user, { mode = "view" } = {}) {
         </address>
     </div>
     <nav class="profile-hero__actions" aria-label="Profile actions">
-        ${
-          isEdit
-            ? `
-        <button type="submit" form="profile-form-${id}" class="btn btn--primary profile-hero__save">
-            Save
-        </button>
-        <button type="button" class="btn btn--secondary"
-                hx-get="/users/profile"
-                hx-target="#main-content"
-                hx-push-url="true">Cancel</button>`
-            : `
-        <a href="/users/profile?mode=edit"
+        ${isEdit
+        ? `<button type="submit" form="profile-form-${id}" class="btn btn--primary profile-hero__save">Save</button>
+            <button type="button" class="btn btn--secondary"
+                    hx-get="/users/profile"
+                    hx-target="#main-content"
+                    hx-push-url="true">Cancel</button>`
+        : `<a href="/users/profile?mode=edit"
             hx-get="/users/profile?mode=edit"
             hx-target="#main-content"
             hx-push-url="true"
@@ -138,6 +141,7 @@ export function createUserProfile(user, { mode = "view" } = {}) {
         }
     </nav>
     </header>`;
+
 
   const containerOpen = `<section class="profile-content-container${isEdit ? " profile-content-container--edit" : " profile-content-container--view"}">`;
   const containerClose = `</section>`;
