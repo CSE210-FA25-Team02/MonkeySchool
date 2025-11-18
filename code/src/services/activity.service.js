@@ -89,7 +89,6 @@ export async function updateActivity(id, data) {
  * @param {string} id - The ID of the activity to delete.
  * @returns {Promise<Object>} The deleted activity record.
  */
-
 export async function deleteActivity(id) {
   return prisma.activity.delete({
     where: { id },
