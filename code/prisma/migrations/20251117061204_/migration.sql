@@ -2,7 +2,7 @@
 CREATE TYPE "CategoryRole" AS ENUM ('STUDENT', 'TA', 'ALL');
 
 -- AlterTable
-ALTER TABLE "users" ADD COLUMN     "isProf" BOOLEAN NOT NULL DEFAULT false;
+-- ALTER TABLE "users" ADD COLUMN     "isProf" BOOLEAN NOT NULL DEFAULT false;
 
 -- CreateTable
 CREATE TABLE "activity" (
