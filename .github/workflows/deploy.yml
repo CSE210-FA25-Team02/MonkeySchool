@@ -3,7 +3,8 @@ name: CD Pipeline
 on:
   push:
     branches:
-      - feature/cd # Change to your deployment branch
+      - main
+      - feature/cd # for testing purposes
 
 jobs:
   deploy:
