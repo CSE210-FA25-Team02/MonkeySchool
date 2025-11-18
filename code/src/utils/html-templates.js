@@ -108,7 +108,7 @@ export function createErrorMessage(message, errors = null) {
               .map(
                 (error) => `
                 <li class="alert__item">${escapeHtml(error)}</li>
-            `
+            `,
               )
               .join("")}
         </ul>

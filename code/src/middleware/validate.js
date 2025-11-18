@@ -25,7 +25,6 @@ import { createErrorMessage } from "../utils/html-templates.js";
  * @param {Function} next Callback to continue request lifecycle
  */
 
-
 /**
  * Creates a validation middleware for a specific request part
  * @param {ZodSchema} schema Schema used to validate incoming data

@@ -47,7 +47,7 @@ export class BadRequestError extends ApiError {
  */
 export class UnauthorizedError extends ApiError {
   /**
-   * Creates an instance of UnauthorizedError when 
+   * Creates an instance of UnauthorizedError when
    * authentication missing or invalid
    * @param {string} [message='Unauthorized'] Error message
    */
