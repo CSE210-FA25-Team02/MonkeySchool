@@ -27,7 +27,7 @@ defineFeature(feature, (test) => {
     });
 
     when(/^I assign "(.*)" to "(.*)" as "(.*)"$/, async (_, __, role) => {
-      await request.post("/api/classRoles/assign").send({
+      await request.post("/classRoles/assign").send({
         userId: context.user.id,
         classId: context.klass.id,
         role: role.toUpperCase(),
@@ -62,7 +62,7 @@ defineFeature(feature, (test) => {
     });
 
     when(/^I change the role to "(.*)"$/, async (newRole) => {
-      await request.post("/api/classRoles/assign").send({
+      await request.post("/classRoles/assign").send({
         userId: context.user.id,
         classId: context.klass.id,
         role: newRole.toUpperCase(),
@@ -97,7 +97,7 @@ defineFeature(feature, (test) => {
     });
 
     when(/^I remove the user from the class$/, async () => {
-      await request.post("/api/classRoles/remove").send({
+      await request.post("/classRoles/remove").send({
         userId: context.user.id,
         classId: context.klass.id,
       });

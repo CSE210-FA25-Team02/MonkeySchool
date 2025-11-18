@@ -47,9 +47,9 @@ docker ps
 
 You should see:
 
-| Service | Purpose |
-|--------|---------|
-| postgres | PostgreSQL database |
+| Service  | Purpose              |
+| -------- | -------------------- |
+| postgres | PostgreSQL database  |
 | pgadmin  | Browser DB dashboard |
 
 ---
@@ -72,18 +72,18 @@ node scripts/mock/db-seed.js
 
 This will insert:
 
-| Entity | Count | Notes |
-|-------|-------|-------|
-| **1 Professor** | `Prof. Powell` | Assigned role: `PROFESSOR` |
-| **1 Class** | `CSE 210 (FA25)` | Auto inviteCode generated |
-| **14 Users** | `user1@ucsd.edu` → `user14@ucsd.edu` | All have pronouns `they/them` |
-| **2 TAs** | Users 1–2 | ClassRole: `TA` |
-| **2 Tutors** | Users 3–4 | ClassRole: `TUTOR` |
-| **10 Students** | Users 5–14 | ClassRole: `STUDENT` |
-| **2 Groups** | `Team Alpha`, `Team Beta` | Belong to CSE 210 |
-| **Group Leaders** | 1 per group | Assigned via `GroupRole` |
-| **Group Members** | Remaining students auto-balanced | Alternating assignment |
-| **Group Supervisors** | Each TA supervises one group | Stored in `GroupSupervisor` |
+| Entity                | Count                                | Notes                         |
+| --------------------- | ------------------------------------ | ----------------------------- |
+| **1 Professor**       | `Prof. Powell`                       | Assigned role: `PROFESSOR`    |
+| **1 Class**           | `CSE 210 (FA25)`                     | Auto inviteCode generated     |
+| **14 Users**          | `user1@ucsd.edu` → `user14@ucsd.edu` | All have pronouns `they/them` |
+| **2 TAs**             | Users 1–2                            | ClassRole: `TA`               |
+| **2 Tutors**          | Users 3–4                            | ClassRole: `TUTOR`            |
+| **10 Students**       | Users 5–14                           | ClassRole: `STUDENT`          |
+| **2 Groups**          | `Team Alpha`, `Team Beta`            | Belong to CSE 210             |
+| **Group Leaders**     | 1 per group                          | Assigned via `GroupRole`      |
+| **Group Members**     | Remaining students auto-balanced     | Alternating assignment        |
+| **Group Supervisors** | Each TA supervises one group         | Stored in `GroupSupervisor`   |
 
 Example result summary printed in terminal:
 
@@ -106,17 +106,17 @@ http://localhost:5050
 
 Login:
 
-| Field | Value |
-|-------|------|
-| Email | admin@admin.com |
-| Password | admin |
+| Field    | Value           |
+| -------- | --------------- |
+| Email    | admin@admin.com |
+| Password | admin           |
 
 Add DB connection:
 
-| Setting | Value |
-|--------|-------|
-| Host | postgres |
-| Username | user |
+| Setting  | Value    |
+| -------- | -------- |
+| Host     | postgres |
+| Username | user     |
 | Password | password |
 
 Now you can browse tables and run queries.
@@ -173,38 +173,37 @@ http://localhost:3000
 
 ### Class
 
-| Method | Endpoint | Description |
-|-------|----------|-------------|
-| POST | /api/classes | Create class (inviteCode auto) |
-| GET | /api/classes/:id | Class info + members + groups |
-| GET | /api/classes/invite/:code | Fetch class by invite code |
-| PUT | /api/classes/:id | Update class name/quarter |
-| DELETE | /api/classes/:id | Delete class |
+| Method | Endpoint              | Description                    |
+| ------ | --------------------- | ------------------------------ |
+| POST   | /classes              | Create class (inviteCode auto) |
+| GET    | /classes/:id          | Class info + members + groups  |
+| GET    | /classes/invite/:code | Fetch class by invite code     |
+| PUT    | /classes/:id          | Update class name/quarter      |
+| DELETE | /classes/:id          | Delete class                   |
 
 ### ClassRole (User ↔ Class Membership)
 
-| Method | Endpoint | Description |
-|-------|----------|-------------|
-| POST | /api/classRoles/assign | Add or update class role |
-| POST | /api/classRoles/remove | Remove membership |
-| GET | /api/classRoles/:classId/roster | Return full roster |
+| Method | Endpoint                    | Description              |
+| ------ | --------------------------- | ------------------------ |
+| POST   | /classRoles/assign          | Add or update class role |
+| POST   | /classRoles/remove          | Remove membership        |
+| GET    | /classRoles/:classId/roster | Return full roster       |
 
 ### User
 
-| Method | Endpoint | Description |
-|-------|----------|-------------|
-| GET | /api/users/:id | Get user + class/group membership |
-| POST | /api/users | Create user |
-| PUT | /api/users/:id | Update user profile |
-| DELETE | /api/users/:id | Delete (cascades member records) |
+| Method | Endpoint   | Description                       |
+| ------ | ---------- | --------------------------------- |
+| GET    | /users/:id | Get user + class/group membership |
+| POST   | /users     | Create user                       |
+| PUT    | /users/:id | Update user profile               |
+| DELETE | /users/:id | Delete (cascades member records)  |
 
 ---
 
 ## 8) Service Layer Behaviors
 
-| File | Responsibility |
-|------|---------------|
-| class.service.js | createClass() generates **8-char friendly invite code**, getClassById(), getClassByInviteCode(), updateClass(), deleteClass() |
-| classRole.service.js | Validates roles (PROFESSOR / TA / TUTOR / STUDENT), ensures uniqueness, upserts, removes |
-| user.service.js | CRUD with relationship includes; delete cascades via FK `onDelete: Cascade` |
-
+| File                 | Responsibility                                                                                                                |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| class.service.js     | createClass() generates **8-char friendly invite code**, getClassById(), getClassByInviteCode(), updateClass(), deleteClass() |
+| classRole.service.js | Validates roles (PROFESSOR / TA / TUTOR / STUDENT), ensures uniqueness, upserts, removes                                      |
+| user.service.js      | CRUD with relationship includes; delete cascades via FK `onDelete: Cascade`                                                   |

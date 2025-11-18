@@ -1,37 +1,60 @@
 /**
  * Create User Profile Page Component
+ * @param {Object} user User containing profile information
+ * @param {Object} [options={}] Display options
+ * @param {'view'|'edit'} [options.mode='view'] Profile read/edit mode
+ * @returns {string} HTML profile page
  */
 export function createUserProfile(user, { mode = "view" } = {}) {
-    if (!user) {
-        return `
+  if (!user) {
+    return `
     <section class="profile-page profile-page--empty">
     <article class="profile-field">
         <h2 class="profile-field__label">User profile unavailable</h2>
         <p class="profile-field__value">User not found.</p>
     </article>
     </section>`;
-    }
+  }
 
-    const {
-        id,
-        name = "Unnamed User",
-        email = "",
-        preferredName = "",
-        pronunciation = "",
-        pronouns = "",
-        phone = "",
-        bio = "",
-        socialLinks = [],
-        chatLinks = [],
-    } = user;
+  const {
+    id,
+    name = "Unnamed User",
+    email = "",
+    preferredName = "",
+    pronunciation = "",
+    pronouns = "",
+    phone = "",
+    bio = "",
+    socialLinks = [],
+    chatLinks = [],
+  } = user;
 
-    const isEdit = mode === "edit";
-    const safe = (v) => (v ? escapeHtml(v) : "—");
-    const href = (v) => (v.startsWith("http") ? v : `https://${v}`);
+  const isEdit = mode === "edit";
+  /**
+   * Escape HTML
+   * @param {string|null|undefined} v Value to escape
+   * @returns {string} Escaped HTML
+   */
+  const safe = (v) => (v ? escapeHtml(v) : "—");
+  /**
+   * Normalize URL
+   * @param {string} v URL string
+   * @returns {string} URL with protocol
+   */
+  const href = (v) => (v.startsWith("http") ? v : `https://${v}`);
 
-    const field = (label, nameAttr, value, type = "text", placeholder = "") =>
-        isEdit
-        ? `
+  /**
+   * Generate form field HTML (edit or view mode)
+   * @param {string} label Field label
+   * @param {string} nameAttr Input name attribute
+   * @param {string} value Field value
+   * @param {string} [type='text'] Input type
+   * @param {string} [placeholder=''] Placeholder text
+   * @returns {string} HTML for field
+   */
+  const field = (label, nameAttr, value, type = "text", placeholder = "") =>
+    isEdit
+      ? `
         <fieldset class="profile-field">
             <label class="profile-field__label" for="${nameAttr}-${id}">${label}</label>
             <input id="${nameAttr}-${id}" name="${nameAttr}" type="${type}"
@@ -39,44 +62,50 @@ export function createUserProfile(user, { mode = "view" } = {}) {
                 placeholder="${placeholder}"
                 class="profile-field__input">
         </fieldset>`
-        : `
+      : `
         <section class="profile-field">
             <h3 class="profile-field__label">${label}</h3>
             <p class="profile-field__value profile-field__value--text">${safe(value)}</p>
         </section>`;
 
-    const renderLinks = (links, type) =>
-        isEdit
-        ? `
+  /**
+   * Render social/chat links section (edit or view mode)
+   * @param {Array<string>} links Array of link URLs
+   * @param {'social'|'chat'} type Link type
+   * @returns {string} HTML for links section
+   */
+  const renderLinks = (links, type) =>
+    isEdit
+      ? `
         <fieldset id="${type}-links-${id}" class="profile-link-fields">
             ${(links || [""]).map((l) => createProfileLinkField(l, { type })).join("")}
         </fieldset>
         <button type="button"
                 class="btn btn--add-item"
-                hx-get="/api/users/${id}/profile/link-field?type=${type}"
+                hx-get="/users/${id}/profile/link-field?type=${type}"
                 hx-target="#${type}-links-${id}"
                 hx-swap="beforeend">
             + Add ${type === "chat" ? "Chat" : "Social"} Link
         </button>`
-        : `
+      : `
         <ul class="profile-link-list">
             ${
-            links.length
+              links.length
                 ? links
                     .map(
-                    (l) => `
+                      (l) => `
                 <li class="profile-link-item">
                 <a href="${href(l)}" class="profile-link-item__link" target="_blank" rel="noopener noreferrer">
                     ${escapeHtml(l)}
                 </a>
-                </li>`
+                </li>`,
                     )
                     .join("")
                 : `<li class="profile-link-item profile-link-item--empty">—</li>`
             }
         </ul>`;
 
-    const header = `
+  const header = `
     <header class="profile-hero">
     <figure class="profile-hero__avatar">
         <img src="/img/default-avatar.svg"
@@ -91,18 +120,18 @@ export function createUserProfile(user, { mode = "view" } = {}) {
     </div>
     <nav class="profile-hero__actions" aria-label="Profile actions">
         ${
-        isEdit
+          isEdit
             ? `
         <button type="submit" form="profile-form-${id}" class="btn btn--primary profile-hero__save">
             Save
         </button>
         <button type="button" class="btn btn--secondary"
-                hx-get="/api/users/${id}/profile"
+                hx-get="/users/profile"
                 hx-target="#main-content"
                 hx-push-url="true">Cancel</button>`
             : `
-        <a href="/api/users/${id}/profile?mode=edit"
-            hx-get="/api/users/${id}/profile?mode=edit"
+        <a href="/users/profile?mode=edit"
+            hx-get="/users/profile?mode=edit"
             hx-target="#main-content"
             hx-push-url="true"
             class="btn btn--primary profile-hero__edit">Edit</a>`
@@ -110,17 +139,17 @@ export function createUserProfile(user, { mode = "view" } = {}) {
     </nav>
     </header>`;
 
-    const containerOpen = `<section class="profile-content-container${isEdit ? " profile-content-container--edit" : " profile-content-container--view"}">`;
-    const containerClose = `</section>`;
-    const bodyOpen = isEdit
-        ? `<form id="profile-form-${id}" class="profile-content profile-content--edit profile-content__form"
-                hx-put="/api/users/${id}"
+  const containerOpen = `<section class="profile-content-container${isEdit ? " profile-content-container--edit" : " profile-content-container--view"}">`;
+  const containerClose = `</section>`;
+  const bodyOpen = isEdit
+    ? `<form id="profile-form-${id}" class="profile-content profile-content--edit profile-content__form"
+                hx-put="/users/${id}"
                 hx-target="#main-content"
                 hx-swap="innerHTML">`
-        : `<div class="profile-content profile-content--view">`;
-    const bodyClose = isEdit ? `</form>` : `</div>`;
+    : `<div class="profile-content profile-content--view">`;
+  const bodyClose = isEdit ? `</form>` : `</div>`;
 
-    return `
+  return `
     <section class="profile-page" id="user-${id}">
     ${header}
     ${containerOpen}
@@ -130,14 +159,14 @@ export function createUserProfile(user, { mode = "view" } = {}) {
             <h2 class="profile-section__title">About Me</h2>
         </header>
         ${
-            isEdit
+          isEdit
             ? `<textarea name="bio" class="profile-textarea" rows="3" maxlength="800"
                         placeholder="Add a short introduction about yourself.">${escapeHtml(bio)}</textarea>`
             : `<p class="profile-section__text">${
                 bio
-                    ? escapeHtml(bio)
-                    : '<span class="profile-section__placeholder">Add a short introduction about yourself.</span>'
-                }</p>`
+                  ? escapeHtml(bio)
+                  : '<span class="profile-section__placeholder">Add a short introduction about yourself.</span>'
+              }</p>`
         }
         </article>
 
@@ -174,10 +203,14 @@ export function createUserProfile(user, { mode = "view" } = {}) {
 
 /**
  * Create profile link text field
+ * @param {string} [link=''] Link URL value
+ * @param {Object} [options={}] Field options
+ * @param {'social'|'chat'} [options.type='social'] Link type
+ * @returns {string} HTML input field
  */
 export function createProfileLinkField(link = "", { type = "social" } = {}) {
-    const placeholderLabel = type === "chat" ? "chat" : "social";
-    return `
+  const placeholderLabel = type === "chat" ? "chat" : "social";
+  return `
     <fieldset class="profile-link-field">
     <input type="text" name="${type}Links[]" value="${escapeHtml(link)}"
             class="profile-link-field__input"
@@ -191,10 +224,12 @@ export function createProfileLinkField(link = "", { type = "social" } = {}) {
 
 /**
  * Utility functions
+ * @param {string} text Text value to clean
+ * @returns {string} Escaped HTML string
  */
 export function escapeHtml(text) {
-    if (text == null) return ""
-    if (typeof text !== "string") return String(text);
+  if (text == null) return "";
+  if (typeof text !== "string") return String(text);
   const map = {
     "&": "&amp;",
     "<": "&lt;",

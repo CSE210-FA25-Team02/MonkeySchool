@@ -1,13 +1,7 @@
 // code/scripts/mock/db-seed.js
-import {
-  prisma
-} from "../../src/lib/prisma.js";
-import {
-  createUsers
-} from "./seed-data/class-list-users.js";
-import {
-  createClasses
-} from "./seed-data/class-list-classes.js";
+import { prisma } from "../../src/lib/prisma.js";
+import { createUsers } from "./seed-data/class-list-users.js";
+import { createClasses } from "./seed-data/class-list-classes.js";
 import {
   assignProfessors,
   assignUserRoles,
@@ -20,10 +14,7 @@ async function main() {
   console.log("Seeding database with multiple classes...");
 
   // Create users (professors and students)
-  const {
-    professors,
-    users
-  } = await createUsers();
+  const { professors, users } = await createUsers();
 
   // Create classes
   const classes = await createClasses();
@@ -54,7 +45,9 @@ async function main() {
   console.log(`   - ${professors[0].email}: Professor in 4 classes`);
 
   console.log("\nTest URL:");
-  console.log(`   http://localhost:3000/api/classes/my-classes?userId=${users[0].id}`);
+  console.log(
+    `   http://localhost:3000/classes/my-classes?userId=${users[0].id}`
+  );
 }
 
 main()

@@ -23,4 +23,3 @@ router.get("/logout", asyncHandler(authController.logout));
 router.get("/session", asyncHandler(authController.getSession));
 
 export default router;
-

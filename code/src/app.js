@@ -18,13 +18,14 @@ import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
-import { optionalAuth } from "./middleware/auth.js";
+import { requireAuth } from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
  * Create and configure Express application for HTMX
+ * @returns {Function} Configured Application
  */
 export function createApp() {
   const app = express();
@@ -46,12 +47,12 @@ export function createApp() {
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],
           styleSrc: [
-            "'self'", 
+            "'self'",
             "'unsafe-inline'", // For dynamic styling
             "https://cdnjs.cloudflare.com", // For Font Awesome
           ],
           fontSrc: [
-            "'self'", 
+            "'self'",
             "https://fonts.gstatic.com",
             "https://cdnjs.cloudflare.com", // For Font Awesome fonts
           ],
@@ -99,7 +100,7 @@ export function createApp() {
     standardHeaders: true,
     legacyHeaders: false,
   });
-  app.use("/api", limiter);
+  app.use("/", limiter);
 
   // Cookie parsing
   app.use(cookieParser());
@@ -123,9 +124,12 @@ export function createApp() {
   app.set("views", path.join(__dirname, "views"));
 
   // Health check (returns HTML for HTMX compatibility)
-  app.get("/", optionalAuth, (req, res) => {
+  app.get("/", requireAuth, (req, res) => {
+    // If not authenticated, redirect to /login
+    if (!req.user) {
+      return res.redirect("/login");
+    }
     const isHtmxRequest = req.headers["hx-request"];
-
     if (isHtmxRequest) {
       res.send(`
         <div class="health-status">
@@ -140,30 +144,16 @@ export function createApp() {
     }
   });
 
-  // Dashboard route (alias for home)
-  app.get("/dashboard", (req, res) => {
-    const isHtmxRequest = req.headers["hx-request"];
-
-    if (isHtmxRequest) {
-      // Return welcome content for dashboard
-      res.send(`
-        <section class="welcome" role="region" aria-labelledby="welcome-title">
-          <h2 id="welcome-title" class="welcome__title">
-            Welcome to Monkey School
-          </h2>
-          <p class="welcome__description">
-            A modern, accessible, and internationalized platform for managing student records.
-            Built with HTMX for seamless user interactions and designed with accessibility in mind.
-          </p>
-        </section>
-      `);
-    } else {
-      res.sendFile(path.join(__dirname, "public", "index.html"));
+  // Serve login page
+  app.get("/login", (req, res) => {
+    // If already authenticated, redirect to home
+    if (req.user) {
+      return res.redirect("/");
     }
+    res.sendFile(path.join(__dirname, "public", "login.html"));
   });
 
-  // API routes
-  app.use("/api", routes);
+  app.use("/", routes);
 
   // Error handlers (must be last)
   app.use(notFoundHandler);

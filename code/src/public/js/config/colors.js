@@ -1,37 +1,37 @@
 /**
  * Color Palette Configuration
- * 
+ *
  * Brand colors for Monkey School application
  */
 
 export const colors = {
   // Primary background - Deep green (main background for fixed nav bar)
   primaryBg: "#0E534A",
-  
+
   // Secondary background - Used for hover states, headers, and sub-nav backgrounds
   secondaryBg: "#1B6A59",
-  
+
   // Accent 1 - Highlight color for active nav items or buttons
   accent1: "#F2A93B",
-  
+
   // Accent 2 - Used for warning or emphasis (close buttons, active icons)
   accent2: "#E07A2F",
-  
+
   // Neutral - Light background for footer and non-primary areas
   neutral: "#B7C7A3",
-  
+
   // Additional colors for text and UI elements
   text: {
     primary: "#ffffff",
     secondary: "#333333",
-    light: "#B7C7A3"
+    light: "#B7C7A3",
   },
-  
+
   // Background colors
   background: {
     white: "#ffffff",
-    light: "#f5f5f5"
-  }
+    light: "#f5f5f5",
+  },
 };
 
 /**
@@ -54,4 +54,3 @@ export function generateColorCSS() {
     }
   `;
 }
-

@@ -18,7 +18,13 @@ defineFeature(feature, (test) => {
 
   test("Create a new class", ({ when, then, and }) => {
     when(/^I create a class named "(.*)"$/, async (name) => {
-      context.response = await request.post("/api/classes/create").send({ name });
+      // Ensure request is authenticated as a professor
+      if (!context.user) {
+        context.user = await prisma.user.create({
+          data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
+        });
+      }
+      context.response = await request.post("/classes/create").send({ name });
       context.klass = context.response.body;
     });
 
@@ -39,7 +45,7 @@ defineFeature(feature, (test) => {
     });
 
     when(/^I rename the class "(.*)" to "(.*)"$/, async (_, newName) => {
-      await request.put(`/api/classes/${context.klass.id}`).send({ name: newName });
+      await request.put(`/classes/${context.klass.id}`).send({ name: newName });
     });
 
     then(/^a class named "(.*)" should exist$/, async (newName) => {
@@ -54,7 +60,7 @@ defineFeature(feature, (test) => {
     });
 
     when(/^I delete the class "(.*)"$/, async () => {
-      await request.delete(`/api/classes/${context.klass.id}`);
+      await request.delete(`/classes/${context.klass.id}`);
     });
 
     then(/^no class named "(.*)" should exist$/, async (name) => {

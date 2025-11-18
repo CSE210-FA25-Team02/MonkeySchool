@@ -6,7 +6,11 @@ import { asyncHandler } from "../utils/async-handler.js";
  */
 export const assignRole = asyncHandler(async (req, res) => {
   const { userId, classId, role } = req.body;
-  const result = await classRoleService.upsertClassRole({ userId, classId, role });
+  const result = await classRoleService.upsertClassRole({
+    userId,
+    classId,
+    role,
+  });
   res.json(result);
 });
 
