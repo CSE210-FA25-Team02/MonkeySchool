@@ -75,3 +75,6 @@ The following environment variables are used in the CD pipeline:
 
 ---
 
+## Flow Diagram
+
+![CI/CD Pipeline Diagram](./CICD-diagram-V1.png)
