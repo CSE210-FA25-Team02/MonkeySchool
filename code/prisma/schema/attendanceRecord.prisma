@@ -4,8 +4,6 @@ model AttendanceRecord {
   sessionId String
   pollId    String? // Optional - can be null if poll is deleted
   markedAt  DateTime @default(now())
-  ipAddress String? // Optional, for audit
-  userAgent String? // Optional
 
   student User            @relation("AttendanceRecords", fields: [studentId], references: [id], onDelete: Cascade)
   session CourseSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)

@@ -190,16 +190,12 @@ describe("AttendanceRecord Service", () => {
     const record = await attendanceRecordService.submitAttendance(
       poll.code,
       student.id,
-      "127.0.0.1",
-      "Test Agent",
     );
 
     expect(record).toBeDefined();
     expect(record.studentId).toBe(student.id);
     expect(record.sessionId).toBe(session.id);
     expect(record.pollId).toBe(poll.id);
-    expect(record.ipAddress).toBe("127.0.0.1");
-    expect(record.userAgent).toBe("Test Agent");
   });
 
   it("should reject duplicate submission", async () => {
@@ -207,8 +203,6 @@ describe("AttendanceRecord Service", () => {
     await attendanceRecordService.submitAttendance(
       poll.code,
       student.id,
-      null,
-      null,
     );
 
     // Second submission should fail
@@ -216,8 +210,6 @@ describe("AttendanceRecord Service", () => {
       attendanceRecordService.submitAttendance(
         poll.code,
         student.id,
-        null,
-        null,
       ),
     ).rejects.toThrow("Already marked");
   });
@@ -227,8 +219,6 @@ describe("AttendanceRecord Service", () => {
       attendanceRecordService.submitAttendance(
         "99999999",
         student.id,
-        null,
-        null,
       ),
     ).rejects.toThrow();
   });
@@ -247,8 +237,6 @@ describe("AttendanceRecord Service", () => {
       attendanceRecordService.submitAttendance(
         poll.code,
         unenrolledStudent.id,
-        null,
-        null,
       ),
     ).rejects.toThrow("Not enrolled");
   });
@@ -258,8 +246,6 @@ describe("AttendanceRecord Service", () => {
     await attendanceRecordService.submitAttendance(
       poll.code,
       student.id,
-      null,
-      null,
     );
 
     const attendance = await attendanceRecordService.getSessionAttendance(
@@ -275,8 +261,6 @@ describe("AttendanceRecord Service", () => {
     await attendanceRecordService.submitAttendance(
       poll.code,
       student.id,
-      null,
-      null,
     );
 
     const history = await attendanceRecordService.getStudentAttendance(

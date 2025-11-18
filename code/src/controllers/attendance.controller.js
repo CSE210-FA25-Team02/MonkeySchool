@@ -128,18 +128,11 @@ export const submitAttendance = asyncHandler(async (req, res) => {
 
   const { code } = validation.data;
 
-  // Get IP and user agent for audit
-  const ipAddress =
-    req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-  const userAgent = req.headers["user-agent"];
-
   try {
     // Submit attendance (atomic operation)
     const record = await attendanceRecordService.submitAttendance(
       code,
       userId,
-      ipAddress,
-      userAgent,
     );
 
     const isHtmxRequest = req.headers["hx-request"];
@@ -321,11 +314,27 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
     return res.status(401).json({ error: "Authentication required" });
   }
 
-  const attendance = await attendanceRecordService.getStudentAttendance(userId);
-  res.json({
-    studentId: userId,
-    attendance,
-  });
+  const isHtmxRequest = req.headers["hx-request"];
+  
+  if (isHtmxRequest) {
+    // For HTMX requests, return grouped data with collapsible UI
+    const { displayStudentAttendanceGrouped } = await import(
+      "../utils/htmx-templates/attendance-templates.js"
+    );
+    const groupedAttendance = await attendanceRecordService.getStudentAttendanceGroupedByCourse(userId);
+    const html = displayStudentAttendanceGrouped({
+      studentId: userId,
+      courses: groupedAttendance,
+    });
+    res.send(html);
+  } else {
+    // For JSON API requests, return flat list (backward compatibility)
+    const attendance = await attendanceRecordService.getStudentAttendance(userId);
+    res.json({
+      studentId: userId,
+      attendance,
+    });
+  }
 });
 
 /**
@@ -554,12 +563,15 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
     }
   } else {
     // For students: show code input form and attendance history
-    const attendanceData = await attendanceRecordService.getStudentAttendance(
+    const { displayStudentAttendanceGrouped } = await import(
+      "../utils/htmx-templates/attendance-templates.js"
+    );
+    const groupedAttendance = await attendanceRecordService.getStudentAttendanceGroupedByCourse(
       userId,
     );
-    const attendanceHistoryHtml = displayStudentAttendance({
+    const attendanceHistoryHtml = displayStudentAttendanceGrouped({
       studentId: userId,
-      attendance: attendanceData,
+      courses: groupedAttendance,
     });
     const codeInputHtml = createAttendanceCodeInput();
 

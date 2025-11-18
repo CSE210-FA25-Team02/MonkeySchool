@@ -30,8 +30,6 @@ async function isStudentEnrolled(studentId, classId) {
  * This is an atomic operation that handles all validation and creates the record
  * @param {string} code - 8-digit attendance code
  * @param {string} studentId - User ID of student
- * @param {string} ipAddress - Optional IP address for audit
- * @param {string} userAgent - Optional user agent for audit
  * @returns {Promise<Object>} Created attendance record
  * @throws {NotFoundError} If poll not found or expired
  * @throws {ForbiddenError} If student not enrolled
@@ -40,8 +38,6 @@ async function isStudentEnrolled(studentId, classId) {
 export async function submitAttendance(
   code,
   studentId,
-  ipAddress = null,
-  userAgent = null,
 ) {
   // Use transaction to ensure atomicity
   return prisma.$transaction(async (tx) => {
@@ -106,8 +102,6 @@ export async function submitAttendance(
         studentId,
         sessionId: poll.sessionId,
         pollId: poll.id,
-        ipAddress,
-        userAgent,
       },
       include: {
         session: {
@@ -252,6 +246,7 @@ export async function getCourseAttendanceSummary(courseId) {
 
 /**
  * Get attendance history for a student
+ * Returns flat list of records (for backward compatibility)
  */
 export async function getStudentAttendance(studentId) {
   const records = await prisma.attendanceRecord.findMany({
@@ -292,5 +287,69 @@ export async function getStudentAttendance(studentId) {
     markedAt: record.markedAt,
     pollCode: record.poll?.code,
   }));
+}
+
+/**
+ * Get attendance history for a student grouped by course
+ * Returns course-wise grouped data for detailed view
+ */
+export async function getStudentAttendanceGroupedByCourse(studentId) {
+  const records = await prisma.attendanceRecord.findMany({
+    where: {
+      studentId,
+    },
+    include: {
+      session: {
+        include: {
+          class: {
+            select: {
+              id: true,
+              name: true,
+              quarter: true,
+            },
+          },
+        },
+      },
+      poll: {
+        select: {
+          id: true,
+          code: true,
+        },
+      },
+    },
+    orderBy: {
+      markedAt: "desc",
+    },
+  });
+
+  // Group by course
+  const courseMap = new Map();
+  
+  records.forEach((record) => {
+    const courseId = record.session.classId;
+    const courseName = record.session.class.name;
+    
+    if (!courseMap.has(courseId)) {
+      courseMap.set(courseId, {
+        courseId,
+        courseName,
+        attendances: [],
+      });
+    }
+    
+    courseMap.get(courseId).attendances.push({
+      timestamp: record.markedAt,
+      date: record.session.date,
+      sessionName: record.session.name,
+      status: "present",
+      markedAt: record.markedAt,
+      pollCode: record.poll?.code,
+    });
+  });
+
+  // Convert to array and sort by course name
+  return Array.from(courseMap.values()).sort((a, b) => 
+    a.courseName.localeCompare(b.courseName)
+  );
 }
 

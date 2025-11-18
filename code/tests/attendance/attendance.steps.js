@@ -298,8 +298,6 @@ defineFeature(feature, (test) => {
       await attendanceRecordService.submitAttendance(
         context.poll.code,
         context.student.id,
-        "127.0.0.1",
-        "test-agent",
       );
     });
 

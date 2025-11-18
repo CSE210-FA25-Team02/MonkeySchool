@@ -380,6 +380,12 @@
   gap: 1rem;
 }
 
+.attendance-history__courses {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .attendance-history__record {
   background: white;
   padding: 1.5rem;
@@ -424,6 +430,123 @@
 .attendance-history__time {
   font-size: 0.875rem;
   color: #666;
+}
+
+/* Course-Wise Attendance (Collapsible) */
+.attendance-course-item {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid var(--forest-sage-mist, #B7C7A3);
+}
+
+.attendance-course-item__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: var(--forest-sage-mist, #B7C7A3);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--forest-deep-teal, #0E534A);
+}
+
+.attendance-course-item__header:hover {
+  background: #a0b08f;
+}
+
+.attendance-course-item__header:focus {
+  outline: 2px solid var(--forest-jungle-green, #1B6A59);
+  outline-offset: -2px;
+}
+
+.attendance-course-item__name {
+  flex: 1;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.attendance-course-item__count {
+  margin: 0 1rem;
+  font-size: 0.875rem;
+  color: var(--forest-deep-teal, #0E534A);
+  font-weight: 500;
+}
+
+.attendance-course-item__icon {
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+  color: var(--forest-deep-teal, #0E534A);
+}
+
+.attendance-course-item__content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 1.5rem;
+}
+
+.attendance-course-item__content--expanded {
+  max-height: 2000px;
+  padding: 1.5rem;
+}
+
+.attendance-course-table__container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.attendance-course-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 4px;
+}
+
+.attendance-course-table__header {
+  background: var(--forest-deep-teal, #0E534A);
+  color: white;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.attendance-course-table__row {
+  border-bottom: 1px solid var(--forest-sage-mist, #B7C7A3);
+}
+
+.attendance-course-table__row:last-child {
+  border-bottom: none;
+}
+
+.attendance-course-table__row:hover {
+  background: #f5f5f5;
+}
+
+.attendance-course-table__cell {
+  padding: 0.75rem 1rem;
+  color: var(--forest-deep-teal, #0E534A);
+  font-size: 0.875rem;
+}
+
+.attendance-course-table__status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.attendance-course-table__status--present {
+  background: #d4edda;
+  color: #155724;
 }
 
 /* Start Attendance Button */
@@ -474,6 +597,36 @@
 
   .attendance-history__record {
     padding: 1rem;
+  }
+
+  .attendance-course-item__header {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .attendance-course-item__name {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .attendance-course-item__count {
+    font-size: 0.75rem;
+    margin: 0 0.5rem;
+  }
+
+  .attendance-course-item__content--expanded {
+    padding: 1rem;
+  }
+
+  .attendance-course-table__container {
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .attendance-course-table__header,
+  .attendance-course-table__cell {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
   }
 }
 

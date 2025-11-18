@@ -40,8 +40,6 @@ Records student attendance submissions.
 - `sessionId`: Reference to the course session
 - `pollId`: Reference to the poll (optional, can be null if poll deleted)
 - `markedAt`: Timestamp when attendance was marked
-- `ipAddress`: Optional IP address for audit
-- `userAgent`: Optional user agent for audit
 
 **Unique Constraint**: `(studentId, sessionId)` - ensures one attendance record per student per session.
 
@@ -290,7 +288,6 @@ Attendance codes are generated using cryptographically secure random number gene
 4. **Expiration**: Server-side timestamp validation (no client manipulation)
 5. **Unique Constraints**: Database-level prevention of duplicate submissions
 6. **Enrollment Verification**: Students must be enrolled in the course
-7. **Audit Trail**: IP address and user agent logging (optional)
 
 ## Frontend Integration
 

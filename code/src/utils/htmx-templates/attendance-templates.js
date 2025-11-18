@@ -140,6 +140,7 @@ export function createAttendanceCodeInput() {
         hx-target="#attendance-result"
         hx-swap="innerHTML"
         hx-headers='{"Content-Type": "application/json"}'
+        onsubmit="this.querySelector('#attendance-code').value = '';"
       >
         <label for="attendance-code" class="attendance-input__label">
           Enter Attendance Code:
@@ -185,6 +186,36 @@ export function displayAttendanceResult(result) {
           Marked at: ${new Date(result.markedAt).toLocaleString()}
         </p>
       </div>
+      <script>
+        // Auto-refresh attendance list after successful submission
+        (function() {
+          setTimeout(() => {
+            // Close any modals
+            const modal = document.getElementById('attendance-modal');
+            if (modal) {
+              modal.remove();
+            }
+            
+            // Refresh attendance history section using HTMX
+            const historySection = document.getElementById('attendance-history-section');
+            if (historySection && typeof htmx !== 'undefined') {
+              htmx.ajax('GET', '/api/attendance/student/me', {
+                target: '#attendance-history-section',
+                swap: 'outerHTML'
+              });
+            } else if (typeof htmx !== 'undefined') {
+              // If section doesn't exist yet, refresh the whole page content
+              htmx.ajax('GET', '/attendance', {
+                target: '#main-content',
+                swap: 'outerHTML'
+              });
+            } else {
+              // Fallback: reload the page if HTMX is not available
+              window.location.reload();
+            }
+          }, 1000);
+        })();
+      </script>
     `;
   } else {
     return `
@@ -335,6 +366,102 @@ export function displayStudentAttendance(data) {
         ${records}
       </div>
     </section>
+  `;
+}
+
+/**
+ * Display student's personal attendance history grouped by course (collapsible)
+ */
+export function displayStudentAttendanceGrouped(data) {
+  const { studentId, courses } = data;
+  
+  if (!courses || courses.length === 0) {
+    return `
+      <section class="attendance-history" role="region" aria-labelledby="attendance-history-title" id="attendance-history-section">
+        <h2 id="attendance-history-title" class="attendance-history__title">My Attendance</h2>
+        <p class="attendance-history__empty">No attendance records yet.</p>
+      </section>
+    `;
+  }
+
+  const courseItems = courses.map((course, index) => {
+    const courseId = `course-${course.courseId}`;
+    const isExpanded = index === 0 ? "true" : "false"; // First course expanded by default
+    
+    const attendanceRows = course.attendances.map((attendance) => `
+      <tr class="attendance-course-table__row">
+        <td class="attendance-course-table__cell">${new Date(attendance.timestamp).toLocaleString()}</td>
+        <td class="attendance-course-table__cell">${escapeHtml(attendance.sessionName)}</td>
+        <td class="attendance-course-table__cell">
+          <span class="attendance-course-table__status attendance-course-table__status--present">${escapeHtml(attendance.status)}</span>
+        </td>
+      </tr>
+    `).join("");
+
+    return `
+      <div class="attendance-course-item">
+        <button 
+          class="attendance-course-item__header"
+          type="button"
+          aria-expanded="${isExpanded}"
+          aria-controls="${courseId}-content"
+          onclick="toggleCourseAttendance(this)"
+        >
+          <span class="attendance-course-item__name">${escapeHtml(course.courseName)}</span>
+          <span class="attendance-course-item__count">${course.attendances.length} session${course.attendances.length !== 1 ? 's' : ''}</span>
+          <span class="attendance-course-item__icon" aria-hidden="true">▼</span>
+        </button>
+        <div 
+          class="attendance-course-item__content ${isExpanded ? 'attendance-course-item__content--expanded' : ''}"
+          id="${courseId}-content"
+          aria-hidden="${isExpanded ? 'false' : 'true'}"
+        >
+          <div class="attendance-course-table__container">
+            <table class="attendance-course-table" role="table">
+              <thead>
+                <tr>
+                  <th class="attendance-course-table__header">Date / Time</th>
+                  <th class="attendance-course-table__header">Session Name</th>
+                  <th class="attendance-course-table__header">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${attendanceRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <section class="attendance-history" role="region" aria-labelledby="attendance-history-title" id="attendance-history-section">
+      <h2 id="attendance-history-title" class="attendance-history__title">My Attendance</h2>
+      <div class="attendance-history__courses">
+        ${courseItems}
+      </div>
+    </section>
+    <script>
+      function toggleCourseAttendance(button) {
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        const contentId = button.getAttribute('aria-controls');
+        const content = document.getElementById(contentId);
+        const icon = button.querySelector('.attendance-course-item__icon');
+        
+        if (isExpanded) {
+          button.setAttribute('aria-expanded', 'false');
+          content.setAttribute('aria-hidden', 'true');
+          content.classList.remove('attendance-course-item__content--expanded');
+          icon.textContent = '▶';
+        } else {
+          button.setAttribute('aria-expanded', 'true');
+          content.setAttribute('aria-hidden', 'false');
+          content.classList.add('attendance-course-item__content--expanded');
+          icon.textContent = '▼';
+        }
+      }
+    </script>
   `;
 }
 

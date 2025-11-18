@@ -33,8 +33,6 @@ CREATE TABLE "attendance_records" (
     "sessionId" TEXT NOT NULL,
     "pollId" TEXT,
     "markedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ipAddress" TEXT,
-    "userAgent" TEXT,
 
     CONSTRAINT "attendance_records_pkey" PRIMARY KEY ("id")
 );

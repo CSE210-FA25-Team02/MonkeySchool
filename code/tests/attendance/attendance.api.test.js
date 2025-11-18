@@ -279,8 +279,6 @@ describe("Attendance API", () => {
       await attendanceRecordService.submitAttendance(
         poll.code,
         student.id,
-        null,
-        null,
       );
 
       const response = await request
@@ -305,8 +303,6 @@ describe("Attendance API", () => {
       await attendanceRecordService.submitAttendance(
         poll.code,
         student.id,
-        null,
-        null,
       );
 
       const response = await request
