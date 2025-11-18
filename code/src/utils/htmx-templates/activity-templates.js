@@ -11,7 +11,7 @@ export function createPunchCard() {
             <select id="punch-select"
                     name="punchSelect"
                     class="punchcard__select"
-                    hx-get="/api/activity/user/dropdown"
+                    hx-get="/activity/user/dropdown"
                     hx-trigger="load"
                     hx-target="#punch-select"
                     hx-swap="innerHTML"
@@ -20,7 +20,7 @@ export function createPunchCard() {
 
             <!-- Details section updates when selection changes -->
             <div id="punch-details"
-                hx-get="/api/activity/details"
+                hx-get="/activity/details"
                 hx-trigger="loadDetails"
                 hx-include="#punch-select"
                 hx-target="#punch-details"
@@ -30,7 +30,7 @@ export function createPunchCard() {
             <div class="punchcard__buttons">
                 <button 
                     class="punchcard__button punchcard__button"
-                    hx-get="/api/activity/edit-modal" 
+                    hx-get="/activity/edit-modal" 
                     hx-target="#modal-container"
                     hx-swap="innerHTML"
                     hx-include="#punch-select">
@@ -38,7 +38,7 @@ export function createPunchCard() {
                 </button>
                 <button 
                     class="punchcard__button"
-                    hx-get="/api/activity/new-modal" 
+                    hx-get="/activity/new-modal" 
                     hx-target="#modal-container"
                     hx-swap="innerHTML">
                     New
@@ -53,14 +53,14 @@ export function createActivityModal(classes) {
         <div class="punchcard__modal" id="activity-modal">
             <div class="punchcard__modal-content">
                 <h2>Create New Activity</h2>
-                <form hx-post="/api/activity" hx-target="#punch-details" hx-swap="innerHTML">
+                <form hx-post="/activity" hx-target="#punch-details" hx-swap="innerHTML">
                 
                 <label>Class:</label>
                 <select 
                     name="classId" 
                     id="class-select"
                     required
-                    hx-get="/api/activity/load-fields"
+                    hx-get="/activity/load-fields"
                     hx-trigger="change"
                     hx-target="#activity-fields\"
                     hx-swap="outerHTML"
@@ -86,7 +86,7 @@ export function createActivityModal(classes) {
                 </div>
 
                 <button type="button"
-                    hx-get="/api/classes/close-form"
+                    hx-get="/classes/close-form"
                     hx-target="#activity-modal"
                     hx-swap="outerHTML"
                 >Cancel</button>
@@ -101,14 +101,14 @@ export function createEditActivityModal(categories, activity, classes) {
         <div class="punchcard__modal" id="activity-modal">
             <div class="punchcard__modal-content">
                 <h2>Edit Activity</h2>
-                <form hx-put="/api/activity/${activity.id}" hx-target="#punch-details" hx-swap="innerHTML">
+                <form hx-put="/activity/${activity.id}" hx-target="#punch-details" hx-swap="innerHTML">
                 
                 <label>Class:</label>
                 <select 
                     name="classId" 
                     id="class-select"
                     required
-                    hx-get="/api/activity/refresh-categories"
+                    hx-get="/activity/refresh-categories"
                     hx-trigger="change"
                     hx-target="#activity-fields"
                     hx-swap="outerHTML"
@@ -136,7 +136,7 @@ export function createEditActivityModal(categories, activity, classes) {
 
                 
                 <button type="submit">Save</button>
-                <button type="button" hx-get="/api/classes/close-form" hx-target="#activity-modal" hx-swap="outerHTML"">Cancel</button>
+                <button type="button" hx-get="/classes/close-form" hx-target="#activity-modal" hx-swap="outerHTML"">Cancel</button>
                 </form>
             </div>
         </div>

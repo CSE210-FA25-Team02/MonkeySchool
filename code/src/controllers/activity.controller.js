@@ -220,7 +220,7 @@ export const refreshCategories = asyncHandler(async (req, res) => {
     const classRole = await getClassRole(userId, classId);
     const categories = await activityService.getAllCategories(classRole.role);
 
-    return res.status(201).send(enableActivityFields(categories, categoryId));
+    return res.status(201).send(enableActivityFields(categories));
 });
 
 

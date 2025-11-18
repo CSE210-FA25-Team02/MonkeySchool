@@ -196,6 +196,17 @@ export function createUserProfile(user, { mode = "view" } = {}) {
             </section>
         </div>
         </section>
+
+        <hr class="profile-divider">
+
+        <div id="modal-container" class="modal hidden"></div>
+                <div 
+                    id="punchcard-container" 
+                    class="punchcard__container"
+                    hx-get="/activity/user/render" 
+                    hx-trigger="load" 
+                    hx-swap="innerHTML">
+        </div>
     ${bodyClose}
     ${containerClose}
     </section>`;
