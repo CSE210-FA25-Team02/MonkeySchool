@@ -17,16 +17,16 @@ export default defineConfig([
             FunctionDeclaration: true,
             ClassDeclaration: true,
             MethodDefinition: true,
-            ArrowFunctionExpression: true
-          }
-        }
+            ArrowFunctionExpression: true,
+          },
+        },
       ],
       "jsdoc/require-description": "error",
       "jsdoc/require-param": "error",
       "jsdoc/require-returns": "error",
       "jsdoc/check-param-names": "off",
-      "jsdoc/check-tag-names": "error"
-    }
+      "jsdoc/check-tag-names": "error",
+    },
   },
   {
     files: ["src/public/js/**/*.js"],
@@ -34,13 +34,13 @@ export default defineConfig([
       globals: {
         window: "readonly",
         document: "readonly",
-        htmx: "readonly"
-      }
+        htmx: "readonly",
+      },
     },
     rules: {
       "jsdoc/require-jsdoc": "off",
       "jsdoc/require-param": "off",
-      "jsdoc/require-returns": "off"
-    }
-  }
+      "jsdoc/require-returns": "off",
+    },
+  },
 ]);

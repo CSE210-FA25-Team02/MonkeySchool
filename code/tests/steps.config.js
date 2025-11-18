@@ -26,6 +26,11 @@ try {
   // ignore errors creating default user in test init
 }
 
+/**
+ * Add an auth cookie to the given supertest request when a test user is available.
+ * @param {import('supertest').Test} req - The supertest request to modify.
+ * @returns {import('supertest').Test} The potentially modified request with auth cookie set.
+ */
 function withAuth(req) {
   try {
     // If test explicitly requests no auth, skip adding cookie
@@ -43,9 +48,38 @@ function withAuth(req) {
 }
 
 export const request = {
+  /**
+   * Send a GET request with optional auth cookie.
+   * @param {string} path
+   * @returns {import('supertest').Test}
+   */
   get: (path) => withAuth(baseRequest.get(path)),
+
+  /**
+   * Send a POST request with optional auth cookie.
+   * @param {string} path
+   * @returns {import('supertest').Test}
+   */
   post: (path) => withAuth(baseRequest.post(path)),
+
+  /**
+   * Send a PUT request with optional auth cookie.
+   * @param {string} path
+   * @returns {import('supertest').Test}
+   */
   put: (path) => withAuth(baseRequest.put(path)),
+
+  /**
+   * Send a DELETE request with optional auth cookie.
+   * @param {string} path
+   * @returns {import('supertest').Test}
+   */
   delete: (path) => withAuth(baseRequest.delete(path)),
+
+  /**
+   * Send a PATCH request with optional auth cookie.
+   * @param {string} path
+   * @returns {import('supertest').Test}
+   */
   patch: (path) => withAuth(baseRequest.patch(path)),
 };
