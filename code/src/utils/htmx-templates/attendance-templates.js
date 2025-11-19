@@ -728,29 +728,75 @@ export function displaySessionRecordsPage(data) {
 
 /**
  * Display course-wise attendance records page
+ * Pivoted table: students as rows, sessions as columns
  */
 export function displayCourseRecordsPage(data) {
-  const { courseId, courseName, sessions, records } = data;
+  const { courseId, courseName, sessions, students } = data;
 
-  if (!records || records.length === 0) {
+  if (!sessions || sessions.length === 0) {
     return `
       <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
         <h2 id="attendance-table-title" class="attendance-table__title">Course Attendance Records</h2>
         <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
-        <p class="attendance-table__empty">No attendance records yet.</p>
+        <p class="attendance-table__empty">No sessions yet.</p>
       </section>
     `;
   }
 
-  const rows = records.map((record) => {
-    const sessionDate = new Date(record.sessionDate).toLocaleDateString();
+  if (!students || students.length === 0) {
+    return `
+      <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
+        <h2 id="attendance-table-title" class="attendance-table__title">Course Attendance Records</h2>
+        <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
+        <p class="attendance-table__empty">No enrolled students yet.</p>
+      </section>
+    `;
+  }
+
+  // Build session header columns
+  const sessionHeaders = sessions.map((session) => `
+    <th class="attendance-table__header">${escapeHtml(session.name)}</th>
+  `).join("");
+
+  // Build student rows with attendance status for each session
+  const studentRows = students.map((student) => {
+    // Calculate attendance percentage
+    const totalSessions = sessions.length;
+    let attendedSessions = 0;
+    
+    // Build cells for each session and count attendance
+    const sessionCells = sessions.map((session) => {
+      const attendance = student.sessionAttendance[session.id];
+      if (attendance && attendance.present) {
+        attendedSessions++;
+        return `
+          <td class="attendance-table__cell attendance-table__cell--present">
+            ✓
+          </td>
+        `;
+      } else {
+        return `
+          <td class="attendance-table__cell attendance-table__cell--absent">
+            —
+          </td>
+        `;
+      }
+    }).join("");
+
+    // Calculate percentage
+    const attendancePercentage = totalSessions > 0 
+      ? Math.round((attendedSessions / totalSessions) * 100)
+      : 0;
+
     return `
       <tr class="attendance-table__row">
-        <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
-        <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
-        <td class="attendance-table__cell">${escapeHtml(record.sessionName)}</td>
-        <td class="attendance-table__cell">${sessionDate}</td>
-        <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
+        <td class="attendance-table__cell attendance-table__cell--student-name">
+          ${escapeHtml(student.name)}
+        </td>
+        ${sessionCells}
+        <td class="attendance-table__cell attendance-table__cell--percentage">
+          ${attendancePercentage}%
+        </td>
       </tr>
     `;
   }).join("");
@@ -764,14 +810,12 @@ export function displayCourseRecordsPage(data) {
           <thead>
             <tr>
               <th class="attendance-table__header">Student Name</th>
-              <th class="attendance-table__header">Email</th>
-              <th class="attendance-table__header">Session Name</th>
-              <th class="attendance-table__header">Session Date</th>
-              <th class="attendance-table__header">Marked At</th>
+              ${sessionHeaders}
+              <th class="attendance-table__header">Total %</th>
             </tr>
           </thead>
           <tbody>
-            ${rows}
+            ${studentRows}
           </tbody>
         </table>
       </div>

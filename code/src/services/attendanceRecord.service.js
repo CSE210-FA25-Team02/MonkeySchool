@@ -291,6 +291,7 @@ export async function getStudentAttendance(studentId) {
 
 /**
  * Get all attendance records for a course (across all sessions)
+ * Returns data structured for pivoted table display (students as rows, sessions as columns)
  */
 export async function getCourseAttendanceRecords(courseId) {
   // Get all sessions for the course
@@ -305,7 +306,31 @@ export async function getCourseAttendanceRecords(courseId) {
       startTime: true,
     },
     orderBy: {
-      date: "desc",
+      date: "asc", // Order by date ascending for chronological display
+    },
+  });
+
+  // Get all enrolled students for the course
+  const enrolledStudents = await prisma.classRole.findMany({
+    where: {
+      classId: courseId,
+      role: {
+        in: ["STUDENT", "TA", "TUTOR"],
+      },
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      user: {
+        name: "asc",
+      },
     },
   });
 
@@ -334,16 +359,46 @@ export async function getCourseAttendanceRecords(courseId) {
         },
       },
     },
-    orderBy: [
-      { session: { date: "desc" } },
-      { markedAt: "asc" },
-    ],
+  });
+
+  // Create a map of student attendance by session
+  // Structure: studentId -> sessionId -> attendance record
+  const attendanceMap = new Map();
+  records.forEach((record) => {
+    if (!attendanceMap.has(record.studentId)) {
+      attendanceMap.set(record.studentId, new Map());
+    }
+    attendanceMap.get(record.studentId).set(record.sessionId, {
+      markedAt: record.markedAt,
+      present: true,
+    });
+  });
+
+  // Build student data with attendance status for each session
+  const students = enrolledStudents.map((enrollment) => {
+    const studentId = enrollment.userId;
+    const studentAttendance = attendanceMap.get(studentId) || new Map();
+    
+    // Create session attendance map
+    const sessionAttendance = {};
+    sessions.forEach((session) => {
+      const record = studentAttendance.get(session.id);
+      sessionAttendance[session.id] = record || null;
+    });
+
+    return {
+      studentId,
+      name: enrollment.user.name,
+      email: enrollment.user.email,
+      sessionAttendance,
+    };
   });
 
   return {
     courseId,
     sessions,
-    records,
+    students,
+    records, // Keep for backward compatibility if needed
   };
 }
 

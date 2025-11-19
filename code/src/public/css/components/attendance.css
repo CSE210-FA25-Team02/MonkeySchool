@@ -236,6 +236,8 @@
 .attendance-table {
   margin: 2rem 0;
   padding-top: 4rem; /* Add top padding to prevent heading cut off behind navbar */
+  padding-bottom: 5rem; /* Add bottom padding to prevent table cropping */
+  margin-bottom: 3rem; /* Additional bottom margin for spacing */
 }
 
 .attendance-table__title {
@@ -319,6 +321,30 @@
 
 .attendance-table__cell:last-child {
   border-right: none;
+}
+
+.attendance-table__cell--student-name {
+  font-weight: 600;
+  background: #f9f9f9;
+}
+
+.attendance-table__cell--present {
+  text-align: center;
+  color: #155724;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.attendance-table__cell--absent {
+  text-align: center;
+  color: #999;
+}
+
+.attendance-table__cell--percentage {
+  text-align: center;
+  font-weight: 600;
+  color: var(--forest-deep-teal, #0E534A);
+  background: #f9f9f9;
 }
 
 .attendance-table__export {

@@ -293,15 +293,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
     courseId: klass.id,
     courseName: klass.name,
     sessions: data.sessions,
-    records: data.records.map((r) => ({
-      studentId: r.student.id,
-      name: r.student.name,
-      email: r.student.email,
-      sessionId: r.session.id,
-      sessionName: r.session.name,
-      sessionDate: r.session.date,
-      markedAt: r.markedAt,
-    })),
+    students: data.students,
   });
 
   if (isHtmxRequest) {
