@@ -17,43 +17,41 @@ export const createCourseSession = asyncHandler(async (req, res) => {
     return res.status(401).json({ error: "Authentication required" });
   }
 
-  // Handle form data - convert date/time strings to Date objects
+  // Handle form data - combine date and time strings into Date objects
   let body = req.body;
-  if (body.date) {
-    // If date is a string, parse it
-    if (typeof body.date === 'string') {
-      body.date = new Date(body.date);
-    }
+  
+  // Combine date and startTime if both are provided and startTime is not empty
+  if (body.date && body.startTime && typeof body.startTime === 'string' && body.startTime.trim() !== '') {
+    const dateStr = typeof body.date === 'string' ? body.date : body.date.toISOString().split('T')[0];
+    body.startTime = `${dateStr}T${body.startTime}`;
+  } else if (body.startTime === '' || (typeof body.startTime === 'string' && body.startTime.trim() === '')) {
+    // Remove empty startTime so it's treated as undefined/optional
+    delete body.startTime;
   }
-  if (body.startTime && typeof body.startTime === 'string') {
-    // Combine date and time if both are provided
-    if (body.date) {
-      const dateStr = typeof body.date === 'string' ? body.date : body.date.toISOString().split('T')[0];
-      body.startTime = new Date(`${dateStr}T${body.startTime}`);
-    } else {
-      body.startTime = new Date(body.startTime);
-    }
-  }
-  if (body.endTime && typeof body.endTime === 'string') {
-    // Combine date and time if both are provided
-    if (body.date) {
-      const dateStr = typeof body.date === 'string' ? body.date : body.date.toISOString().split('T')[0];
-      body.endTime = new Date(`${dateStr}T${body.endTime}`);
-    } else {
-      body.endTime = new Date(body.endTime);
-    }
+  
+  // Combine date and endTime if both are provided and endTime is not empty
+  if (body.date && body.endTime && typeof body.endTime === 'string' && body.endTime.trim() !== '') {
+    const dateStr = typeof body.date === 'string' ? body.date : body.date.toISOString().split('T')[0];
+    body.endTime = `${dateStr}T${body.endTime}`;
+  } else if (body.endTime === '' || (typeof body.endTime === 'string' && body.endTime.trim() === '')) {
+    // Remove empty endTime so it's treated as undefined/optional
+    delete body.endTime;
   }
 
-  // Validate input
+  // Validate input (Zod will coerce strings to dates)
   const validation = createCourseSessionSchema.safeParse(body);
   if (!validation.success) {
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
-      // Return error message for HTMX
+      // Return error message for HTMX - show in modal
+      const errorDetails = validation.error.flatten().fieldErrors;
+      const errorMessages = Object.entries(errorDetails)
+        .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
+        .join("; ");
       return res.status(400).send(`
-        <div class="alert alert--error">
+        <div class="alert alert--error" style="margin: 1rem 0; padding: 1rem;">
           <h3>Validation Error</h3>
-          <p>${JSON.stringify(validation.error.flatten().fieldErrors)}</p>
+          <p>${errorMessages || "Please check your input and try again."}</p>
         </div>
       `);
     }
@@ -89,8 +87,9 @@ export const createCourseSession = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
-    // Redirect back to attendance page to show the new session
-    res.redirect("/attendance");
+    // For HTMX, redirect to attendance page to show the new session
+    // HTMX will handle the redirect and update the page
+    res.status(201).header("HX-Redirect", "/attendance").send("");
   } else {
     res.status(201).json(session);
   }

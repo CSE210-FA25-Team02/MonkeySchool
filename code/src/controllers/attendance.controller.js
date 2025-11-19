@@ -18,7 +18,6 @@ import {
 import {
   createStartAttendanceModal,
   displayAttendanceCode,
-  closeAttendanceModal,
 } from "../utils/htmx-templates/attendance-templates.js";
 import { env } from "../config/env.js";
 import { escapeHtml } from "../utils/html-templates.js";
@@ -77,12 +76,9 @@ export const createPoll = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
-    // Return HTMX response with code display
-    const codeHtml = displayAttendanceCode({
-      code: poll.code,
-      expiresAt: poll.expiresAt,
-    });
-    res.status(201).send(codeHtml);
+    // Close modal and refresh attendance page to show new code
+    // Use HX-Redirect to navigate to attendance page (HTMX will handle it)
+    res.status(201).header("HX-Redirect", "/attendance").send("");
   } else {
     res.status(201).json({
       pollId: poll.id,
@@ -182,6 +178,156 @@ export const submitAttendance = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get session-wise attendance records page
+ * Path: /course/session/records
+ * Auth: professor (must teach the class) or admin
+ */
+export const getSessionRecordsPage = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const { sessionId } = req.params;
+
+  // Get session
+  const session = await courseSessionService.getCourseSessionById(sessionId);
+  if (!session) {
+    throw new NotFoundError("Session not found");
+  }
+
+  // Check authorization
+  const klass = await classService.getClassById(session.classId);
+  const isProfessor = klass.members.some(
+    (member) => member.userId === userId && member.role === "PROFESSOR",
+  );
+  const isAdmin = req.user?.isProf;
+  if (!isProfessor && !isAdmin) {
+    throw new ForbiddenError("Only professors can view session attendance");
+  }
+
+  // Get attendance records
+  const attendance = await attendanceRecordService.getSessionAttendance(
+    sessionId,
+  );
+
+  const isHtmxRequest = req.headers["hx-request"];
+  
+  const { displaySessionRecordsPage } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
+  const html = displaySessionRecordsPage({
+    sessionId,
+    sessionName: session.name,
+    courseName: klass.name,
+    courseId: klass.id,
+    attendance: attendance.map((a) => ({
+      studentId: a.student.id,
+      name: a.student.name,
+      email: a.student.email,
+      markedAt: a.markedAt,
+    })),
+  });
+
+  if (isHtmxRequest) {
+    res.send(html);
+  } else {
+    // For direct navigation, inject the content into index.html with full layout
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const indexPath = path.join(__dirname, "..", "public", "index.html");
+    const fs = await import("fs");
+    const indexContent = await fs.promises.readFile(indexPath, "utf8");
+    
+    // Replace main content with our HTML
+    const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
+    const updatedHtml = indexContent.replace(
+      mainTagRegex,
+      (match, openingTag, oldContent, closingTag) => {
+        return `${openingTag}${html}${closingTag}`;
+      }
+    );
+    
+    res.send(updatedHtml);
+  }
+});
+
+/**
+ * Get course-wise attendance records page
+ * Path: /course/records
+ * Auth: professor (must teach the class) or admin
+ */
+export const getCourseRecordsPage = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const { courseId } = req.params;
+
+  // Check authorization
+  const klass = await classService.getClassById(courseId);
+  if (!klass) {
+    throw new NotFoundError("Course not found");
+  }
+
+  const isProfessor = klass.members.some(
+    (member) => member.userId === userId && member.role === "PROFESSOR",
+  );
+  const isAdmin = req.user?.isProf;
+  if (!isProfessor && !isAdmin) {
+    throw new ForbiddenError("Only professors can view course attendance");
+  }
+
+  // Get attendance records for all sessions in the course
+  const data = await attendanceRecordService.getCourseAttendanceRecords(
+    courseId,
+  );
+
+  const isHtmxRequest = req.headers["hx-request"];
+  
+  const { displayCourseRecordsPage } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
+  const html = displayCourseRecordsPage({
+    courseId: klass.id,
+    courseName: klass.name,
+    sessions: data.sessions,
+    records: data.records.map((r) => ({
+      studentId: r.student.id,
+      name: r.student.name,
+      email: r.student.email,
+      sessionId: r.session.id,
+      sessionName: r.session.name,
+      sessionDate: r.session.date,
+      markedAt: r.markedAt,
+    })),
+  });
+
+  if (isHtmxRequest) {
+    res.send(html);
+  } else {
+    // For direct navigation, inject the content into index.html with full layout
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const indexPath = path.join(__dirname, "..", "public", "index.html");
+    const fs = await import("fs");
+    const indexContent = await fs.promises.readFile(indexPath, "utf8");
+    
+    // Replace main content with our HTML
+    const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
+    const updatedHtml = indexContent.replace(
+      mainTagRegex,
+      (match, openingTag, oldContent, closingTag) => {
+        return `${openingTag}${html}${closingTag}`;
+      }
+    );
+    
+    res.send(updatedHtml);
+  }
+});
+
+/**
  * Get attendance records for a session
  * Auth: professor (must teach the class) or admin
  */
@@ -222,6 +368,7 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
     );
     const data = {
       sessionId,
+      sessionName: session.name,
       polls: polls.map((p) => ({
         pollId: p.id,
         code: p.code,
@@ -352,64 +499,83 @@ export const getAttendancePollForm = asyncHandler(async (req, res) => {
 });
 
 /**
- * Close attendance modal (HTMX)
- */
-export const closeAttendanceModalHandler = asyncHandler(async (req, res) => {
-  res.send(closeAttendanceModal());
-});
-
-/**
- * Close/deactivate a poll early
+ * Get code status for a session (HTMX polling)
  * Auth: professor (must teach the class)
  */
-export const closePoll = asyncHandler(async (req, res) => {
+export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
     return res.status(401).json({ error: "Authentication required" });
   }
 
-  const { pollId } = req.params;
+  const { sessionId } = req.params;
 
-  // Get poll to find session - we need to get it via session service
-  // First, get all polls for sessions and find the one we need
-  // Actually, let's add a method to get poll by ID in the service
-  // For now, let's get the session from the poll's sessionId
-  // We'll need to modify the service or do a direct query here
-  // Let me use a simpler approach - get session from pollId via a join
-  const { prisma } = await import("../lib/prisma.js");
-  const poll = await prisma.attendancePoll.findUnique({
-    where: { id: pollId },
-    include: {
-      session: {
-        include: {
-          class: true,
-        },
-      },
-    },
-  });
-
-  if (!poll) {
-    throw new NotFoundError("Poll not found");
+  // Get session
+  const session = await courseSessionService.getCourseSessionById(sessionId);
+  if (!session) {
+    throw new NotFoundError("Session not found");
   }
 
   // Check authorization
-  const klass = await classService.getClassById(poll.session.classId);
+  const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
     (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
-    throw new ForbiddenError("Only professors can close polls");
+    throw new ForbiddenError("Only professors can view code status");
   }
 
-  await attendancePollService.deactivatePoll(pollId);
+  // Get latest poll
+  const polls = await attendancePollService.getPollsBySessionId(sessionId);
+  const latestPoll = polls.length > 0 ? polls[0] : null;
 
-  const isHtmxRequest = req.headers["hx-request"];
-  if (isHtmxRequest) {
-    // Redirect back to attendance page to refresh the view
-    res.redirect("/attendance");
-  } else {
-    res.status(200).json({ success: true, message: "Poll closed" });
+  const { getCodeStatusFragment } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
+  const html = getCodeStatusFragment(latestPoll);
+  res.send(html);
+});
+
+/**
+ * Toggle course pane (for collapsible course sections)
+ * Auth: professor
+ */
+export const toggleCoursePane = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) {
+    return res.status(401).json({ error: "Authentication required" });
   }
+
+  const { courseId } = req.params;
+  const { expanded } = req.query; // "true" or "false"
+
+  // Check authorization
+  const klass = await classService.getClassById(courseId);
+  if (!klass) {
+    throw new NotFoundError("Course not found");
+  }
+
+  const isProfessor = klass.members.some(
+    (member) => member.userId === userId && member.role === "PROFESSOR",
+  );
+  if (!isProfessor) {
+    throw new ForbiddenError("Only professors can view course attendance");
+  }
+
+  // Get sessions for the class
+  const sessions = await courseSessionService.getSessionsByClassId(courseId);
+  const wasExpanded = expanded === "true" || expanded === true;
+  const isExpanded = !wasExpanded; // Toggle the state
+
+  const { displayCourseItem } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
+  const html = displayCourseItem({
+    course: klass,
+    sessions,
+    isExpanded,
+  });
+  res.send(html);
 });
 
 /**
@@ -432,15 +598,14 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
   // Import templates
   const {
     createAttendanceCodeInput,
-    displayStudentAttendance,
-    createStartAttendanceButton,
-    createSessionButton,
+    displayStudentAttendanceGrouped,
+    displayProfessorAttendancePage,
   } = await import("../utils/htmx-templates/attendance-templates.js");
 
   let html = "";
 
   if (isProfessor) {
-    // For professors: show their classes with sessions where they can start polls
+    // For professors: show their classes with sessions in a table format
     if (professorClasses.length === 0) {
       html = `
         <div class="container">
@@ -451,7 +616,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
         </div>
       `;
     } else {
-      // Get sessions for each class
+      // Get sessions for each class with polls
       const classesWithSessions = await Promise.all(
         professorClasses.map(async (klass) => {
           const sessions = await courseSessionService.getSessionsByClassId(
@@ -461,111 +626,12 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
         }),
       );
 
-      const classesHtml = classesWithSessions
-        .map((klass) => {
-          const sessionsHtml = klass.sessions
-            .map((session) => {
-              const hasActivePoll = session.attendancePolls.length > 0;
-              const activePoll = session.attendancePolls[0];
-              const sessionDate = new Date(session.date).toLocaleDateString();
-              const startTime = session.startTime
-                ? new Date(session.startTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : "";
-
-              return `
-                <div class="attendance-session-item">
-                  <div class="attendance-session-item__info">
-                    <h4 class="attendance-session-item__name">${escapeHtml(
-                      session.name,
-                    )}</h4>
-                    <p class="attendance-session-item__date">${sessionDate}${startTime ? ` at ${startTime}` : ""}</p>
-                    ${hasActivePoll ? `
-                      <p class="attendance-session-item__status">
-                        <strong>Active Code:</strong> ${escapeHtml(activePoll.code)}
-                        <br>
-                        <small>Expires: ${new Date(activePoll.expiresAt).toLocaleString()}</small>
-                      </p>
-                    ` : ""}
-                    <p class="attendance-session-item__count">
-                      ${session._count.attendanceRecords} attendance record(s)
-                    </p>
-                  </div>
-                  <div class="attendance-session-item__actions">
-                    ${!hasActivePoll ? createStartAttendanceButton(session.id) : `
-                      <button 
-                        class="btn btn--secondary"
-                        hx-patch="/api/attendance/poll/${activePoll.id}/close"
-                        hx-target="#main-content"
-                        hx-swap="outerHTML"
-                      >
-                        Close Poll
-                      </button>
-                    `}
-                    <a 
-                      href="/api/attendance/session/${session.id}"
-                      class="btn btn--primary"
-                      hx-get="/api/attendance/session/${session.id}"
-                      hx-target="#main-content"
-                      hx-push-url="true"
-                    >
-                      View Records
-                    </a>
-                  </div>
-                </div>
-              `;
-            })
-            .join("");
-
-          return `
-            <div class="attendance-class-section">
-              <h3 class="attendance-class-section__title">${escapeHtml(klass.name)}</h3>
-              ${klass.sessions.length === 0 ? `
-                <div class="attendance-class-section__empty">
-                  <p>No sessions yet. Create a session to start taking attendance.</p>
-                  ${createSessionButton(klass.id)}
-                </div>
-              ` : `
-                <div class="attendance-sessions">
-                  ${sessionsHtml}
-                </div>
-              `}
-              <div class="attendance-class-section__actions">
-                ${klass.sessions.length > 0 ? createSessionButton(klass.id) : ""}
-                <a 
-                  href="/api/attendance/course/${klass.id}/summary"
-                  class="btn btn--primary"
-                  hx-get="/api/attendance/course/${klass.id}/summary"
-                  hx-target="#main-content"
-                  hx-push-url="true"
-                >
-                  View Attendance Summary
-                </a>
-              </div>
-            </div>
-          `;
-        })
-        .join("");
-
-      html = `
-        <div class="container">
-          <section class="attendance-page" role="region" aria-labelledby="attendance-page-title">
-            <h2 id="attendance-page-title" class="attendance-page__title">Attendance</h2>
-            <div class="attendance-classes">
-              ${classesHtml}
-            </div>
-            <div id="attendance-modal-container"></div>
-          </section>
-        </div>
-      `;
+      html = displayProfessorAttendancePage({
+        classes: classesWithSessions,
+      });
     }
   } else {
     // For students: show code input form and attendance history
-    const { displayStudentAttendanceGrouped } = await import(
-      "../utils/htmx-templates/attendance-templates.js"
-    );
     const groupedAttendance = await attendanceRecordService.getStudentAttendanceGroupedByCourse(
       userId,
     );

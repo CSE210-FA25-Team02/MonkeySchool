@@ -290,6 +290,64 @@ export async function getStudentAttendance(studentId) {
 }
 
 /**
+ * Get all attendance records for a course (across all sessions)
+ */
+export async function getCourseAttendanceRecords(courseId) {
+  // Get all sessions for the course
+  const sessions = await prisma.courseSession.findMany({
+    where: {
+      classId: courseId,
+    },
+    select: {
+      id: true,
+      name: true,
+      date: true,
+      startTime: true,
+    },
+    orderBy: {
+      date: "desc",
+    },
+  });
+
+  // Get all attendance records for all sessions in this course
+  const sessionIds = sessions.map((s) => s.id);
+  const records = await prisma.attendanceRecord.findMany({
+    where: {
+      sessionId: {
+        in: sessionIds,
+      },
+    },
+    include: {
+      student: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      session: {
+        select: {
+          id: true,
+          name: true,
+          date: true,
+          startTime: true,
+        },
+      },
+    },
+    orderBy: [
+      { session: { date: "desc" } },
+      { markedAt: "asc" },
+    ],
+  });
+
+  return {
+    courseId,
+    sessions,
+    records,
+  };
+}
+
+/**
  * Get attendance history for a student grouped by course
  * Returns course-wise grouped data for detailed view
  */

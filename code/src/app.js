@@ -169,6 +169,18 @@ export function createApp() {
     return getAttendancePage(req, res, next);
   });
 
+  // Session-wise attendance records page (professor only)
+  app.get("/attendance/course/session/:sessionId/records", requireAuth, async (req, res, next) => {
+    const { getSessionRecordsPage } = await import("./controllers/attendance.controller.js");
+    return getSessionRecordsPage(req, res, next);
+  });
+
+  // Course-wise attendance records page (professor only)
+  app.get("/attendance/course/:courseId/records", requireAuth, async (req, res, next) => {
+    const { getCourseRecordsPage } = await import("./controllers/attendance.controller.js");
+    return getCourseRecordsPage(req, res, next);
+  });
+
   // Redirect /courses/attendance to /attendance for backward compatibility
   app.get("/courses/attendance", requireAuth, async (req, res, next) => {
     const isHtmxRequest = req.headers["hx-request"];

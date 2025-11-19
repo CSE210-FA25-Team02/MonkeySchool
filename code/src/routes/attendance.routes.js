@@ -27,12 +27,6 @@ router.get(
   asyncHandler(attendanceController.getAttendancePollForm),
 );
 
-// Close attendance modal (HTMX)
-router.get(
-  "/close-modal",
-  asyncHandler(attendanceController.closeAttendanceModalHandler),
-);
-
 // Create an attendance poll (professor only)
 router.post(
   "/poll/create",
@@ -46,7 +40,10 @@ router.post(
   asyncHandler(attendanceController.submitAttendance),
 );
 
-// Get attendance records for a session (professor only)
+// Note: Course and session records pages are now handled in app.js as page routes
+// They are no longer API routes
+
+// Get attendance records for a session (professor only) - legacy endpoint
 router.get(
   "/session/:sessionId",
   asyncHandler(attendanceController.getSessionAttendance),
@@ -64,10 +61,16 @@ router.get(
   asyncHandler(attendanceController.getStudentAttendance),
 );
 
-// Close/deactivate a poll early (professor only)
-router.patch(
-  "/poll/:pollId/close",
-  asyncHandler(attendanceController.closePoll),
+// Get code status for a session (HTMX polling)
+router.get(
+  "/session/:sessionId/code-status",
+  asyncHandler(attendanceController.getSessionCodeStatus),
+);
+
+// Toggle course pane (for collapsible course sections)
+router.get(
+  "/course/:courseId/toggle",
+  asyncHandler(attendanceController.toggleCoursePane),
 );
 
 export default router;

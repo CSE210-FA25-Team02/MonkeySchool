@@ -38,9 +38,7 @@ export function createStartAttendanceModal(sessionId, defaultDuration = 10) {
             <button 
               type="button" 
               class="attendance-modal__button attendance-modal__button--secondary" 
-              hx-get="/api/attendance/close-modal" 
-              hx-target="#attendance-modal" 
-              hx-swap="outerHTML"
+              onclick="document.getElementById('attendance-modal')?.remove()"
             >
               Cancel
             </button>
@@ -82,9 +80,7 @@ export function displayAttendanceCode(poll) {
           <button 
             type="button" 
             class="attendance-modal__button attendance-modal__button--secondary" 
-            hx-get="/api/attendance/close-modal" 
-            hx-target="#attendance-modal" 
-            hx-swap="outerHTML"
+            onclick="document.getElementById('attendance-modal')?.remove()"
           >
             Close
           </button>
@@ -232,12 +228,27 @@ export function displayAttendanceResult(result) {
  * Display session attendance table (for professors)
  */
 export function displaySessionAttendance(data) {
-  const { sessionId, polls, attendance } = data;
+  const { sessionId, sessionName, polls, attendance } = data;
   
+  const backButton = `
+    <div class="attendance-table__header-actions">
+      <button 
+        class="btn btn--secondary"
+        hx-get="/attendance"
+        hx-target="#main-content"
+        hx-swap="outerHTML"
+        hx-push-url="true"
+      >
+        ← Back to Attendance
+      </button>
+    </div>
+  `;
+
   if (!attendance || attendance.length === 0) {
     return `
       <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-        <h2 id="attendance-table-title" class="attendance-table__title">Session Attendance</h2>
+        ${backButton}
+        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
         <p class="attendance-table__empty">No attendance records yet.</p>
       </section>
     `;
@@ -248,13 +259,13 @@ export function displaySessionAttendance(data) {
       <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
       <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
       <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
-      <td class="attendance-table__cell">${record.pollCode || "N/A"}</td>
     </tr>
   `).join("");
 
   return `
     <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-      <h2 id="attendance-table-title" class="attendance-table__title">Session Attendance</h2>
+      ${backButton}
+      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
       <div class="attendance-table__container">
         <table class="attendance-table__table" role="table">
           <thead>
@@ -262,7 +273,6 @@ export function displaySessionAttendance(data) {
               <th class="attendance-table__header">Student Name</th>
               <th class="attendance-table__header">Email</th>
               <th class="attendance-table__header">Marked At</th>
-              <th class="attendance-table__header">Poll Code</th>
             </tr>
           </thead>
           <tbody>
@@ -270,13 +280,6 @@ export function displaySessionAttendance(data) {
           </tbody>
         </table>
       </div>
-      <button 
-        class="attendance-table__export"
-        hx-get="/api/attendance/session/${sessionId}/export"
-        hx-target="body"
-      >
-        Export CSV
-      </button>
     </section>
   `;
 }
@@ -483,13 +486,6 @@ export function createStartAttendanceButton(sessionId) {
 }
 
 /**
- * Close modal (empty response)
- */
-export function closeAttendanceModal() {
-  return "";
-}
-
-/**
  * Create a modal form to create a new course session
  */
 export function createSessionForm(classId) {
@@ -499,11 +495,26 @@ export function createSessionForm(classId) {
     <section id="session-modal" class="attendance-modal__overlay">
       <div class="attendance-modal">
         <h2>Create New Session</h2>
+        <div id="session-modal-error" class="alert alert--error" style="display: none; margin-bottom: 1rem;"></div>
         <form 
           hx-post="/api/course-sessions" 
-          hx-target="#main-content" 
+          hx-target="#main-content"
           hx-swap="outerHTML"
           hx-push-url="true"
+          hx-on::before-swap="
+            if(event.detail.xhr.status === 400) {
+              event.detail.shouldSwap = false;
+              const errorDiv = document.getElementById('session-modal-error');
+              if(errorDiv) {
+                errorDiv.innerHTML = event.detail.xhr.responseText;
+                errorDiv.style.display = 'block';
+              }
+              return false;
+            }
+            if(event.detail.xhr.status === 201) {
+              document.getElementById('session-modal')?.remove();
+            }
+          "
         >
           <input type="hidden" name="classId" value="${classId}">
           
@@ -554,9 +565,7 @@ export function createSessionForm(classId) {
             <button 
               type="button" 
               class="attendance-modal__button attendance-modal__button--secondary" 
-              hx-get="/api/attendance/close-modal" 
-              hx-target="#session-modal" 
-              hx-swap="outerHTML"
+              onclick="document.getElementById('session-modal')?.remove()"
             >
               Cancel
             </button>
@@ -581,6 +590,322 @@ export function createSessionButton(classId) {
     >
       Create Session
     </button>
+  `;
+}
+
+/**
+ * Check if a poll is expired
+ */
+function isPollExpired(poll) {
+  if (!poll || !poll.expiresAt) {
+    return true;
+  }
+  const now = new Date();
+  const expiresAt = new Date(poll.expiresAt);
+  return now >= expiresAt;
+}
+
+/**
+ * Get code status (active/expired)
+ */
+function getCodeStatus(poll) {
+  if (!poll) {
+    return { status: "none", text: "—" };
+  }
+  if (isPollExpired(poll)) {
+    return { status: "expired", text: "Expired" };
+  }
+  return { status: "active", text: "Active" };
+}
+
+/**
+ * Format time for display
+ */
+function formatSessionTime(session) {
+  const date = new Date(session.date);
+  const dateStr = date.toLocaleDateString();
+  
+  if (session.startTime) {
+    const time = new Date(session.startTime);
+    const timeStr = time.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${dateStr} at ${timeStr}`;
+  }
+  return dateStr;
+}
+
+/**
+ * Display professor attendance page with course-based organization
+ */
+export function displayProfessorAttendancePage(data) {
+  const { classes } = data;
+  
+  const coursePanes = classes.map((klass, courseIndex) => {
+    const isExpanded = courseIndex === 0;
+    return displayCourseItem({
+      course: klass,
+      sessions: klass.sessions,
+      isExpanded,
+    });
+  }).join("");
+  
+  return `
+    <div class="container">
+      <section class="attendance-page" role="region" aria-labelledby="attendance-page-title">
+        <div class="attendance-page__header">
+          <h2 id="attendance-page-title" class="attendance-page__title">Attendance</h2>
+        </div>
+        <div class="attendance-courses">
+          ${coursePanes}
+        </div>
+        <div id="attendance-modal-container"></div>
+      </section>
+    </div>
+  `;
+}
+
+/**
+ * Get code status fragment for HTMX polling
+ */
+export function getCodeStatusFragment(poll) {
+  const codeStatus = getCodeStatus(poll);
+  if (!poll) {
+    return `<span class="attendance-code-status">—</span>`;
+  }
+  return `
+    <span class="attendance-code-status attendance-code-status--${codeStatus.status}">
+      ${escapeHtml(codeStatus.text)}
+    </span>
+  `;
+}
+
+/**
+ * Display session-wise attendance records page
+ */
+export function displaySessionRecordsPage(data) {
+  const { sessionId, sessionName, courseName, courseId, attendance } = data;
+
+  if (!attendance || attendance.length === 0) {
+    return `
+      <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
+        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
+        <p class="attendance-table__empty">No attendance records yet.</p>
+      </section>
+    `;
+  }
+
+  const rows = attendance.map((record) => `
+    <tr class="attendance-table__row">
+      <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
+      <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
+      <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
+    </tr>
+  `).join("");
+
+  return `
+    <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
+      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
+      <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
+      <div class="attendance-table__container">
+        <table class="attendance-table__table" role="table">
+          <thead>
+            <tr>
+              <th class="attendance-table__header">Student Name</th>
+              <th class="attendance-table__header">Email</th>
+              <th class="attendance-table__header">Marked At</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+/**
+ * Display course-wise attendance records page
+ */
+export function displayCourseRecordsPage(data) {
+  const { courseId, courseName, sessions, records } = data;
+
+  if (!records || records.length === 0) {
+    return `
+      <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
+        <h2 id="attendance-table-title" class="attendance-table__title">Course Attendance Records</h2>
+        <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
+        <p class="attendance-table__empty">No attendance records yet.</p>
+      </section>
+    `;
+  }
+
+  const rows = records.map((record) => {
+    const sessionDate = new Date(record.sessionDate).toLocaleDateString();
+    return `
+      <tr class="attendance-table__row">
+        <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
+        <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
+        <td class="attendance-table__cell">${escapeHtml(record.sessionName)}</td>
+        <td class="attendance-table__cell">${sessionDate}</td>
+        <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
+      <h2 id="attendance-table-title" class="attendance-table__title">Course Attendance Records</h2>
+      <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
+      <div class="attendance-table__container">
+        <table class="attendance-table__table" role="table">
+          <thead>
+            <tr>
+              <th class="attendance-table__header">Student Name</th>
+              <th class="attendance-table__header">Email</th>
+              <th class="attendance-table__header">Session Name</th>
+              <th class="attendance-table__header">Session Date</th>
+              <th class="attendance-table__header">Marked At</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+/**
+ * Display course item (for toggling - includes button and content)
+ */
+export function displayCourseItem(data) {
+  const { course, sessions, isExpanded } = data;
+  const courseId = `course-${course.id}`;
+  
+  // Build table rows for sessions
+  const sessionRows = sessions.map((session) => {
+    const latestPoll = session.attendancePolls && session.attendancePolls.length > 0 
+      ? session.attendancePolls[0] 
+      : null;
+    const codeStatus = getCodeStatus(latestPoll);
+    const hasCode = latestPoll !== null;
+    
+    // Determine action button
+    let actionButton;
+    if (hasCode) {
+      actionButton = `
+        <button 
+          class="btn btn--primary btn--small"
+          hx-get="/attendance/course/session/${session.id}/records"
+          hx-target="#main-content"
+          hx-swap="outerHTML"
+          hx-push-url="true"
+        >
+          View Records
+        </button>
+      `;
+    } else {
+      actionButton = `
+        <button 
+          class="btn btn--primary btn--small"
+          hx-get="/api/attendance/poll/form?sessionId=${session.id}"
+          hx-target="#attendance-modal-container"
+          hx-swap="beforeend"
+        >
+          Generate Code
+        </button>
+      `;
+    }
+    
+      // Code status cell (no auto-refresh)
+      const statusCell = hasCode ? `
+        <td class="attendance-sessions-table__cell">
+          <span class="attendance-code-status attendance-code-status--${codeStatus.status}">
+            ${escapeHtml(codeStatus.text)}
+          </span>
+        </td>
+      ` : `
+        <td class="attendance-sessions-table__cell">—</td>
+      `;
+    
+    return `
+      <tr class="attendance-sessions-table__row">
+        <td class="attendance-sessions-table__cell">${escapeHtml(session.name)}</td>
+        <td class="attendance-sessions-table__cell">${formatSessionTime(session)}</td>
+        <td class="attendance-sessions-table__cell">
+          ${hasCode ? escapeHtml(latestPoll.code) : "—"}
+        </td>
+        ${statusCell}
+        <td class="attendance-sessions-table__cell attendance-sessions-table__cell--actions">
+          ${actionButton}
+        </td>
+      </tr>
+    `;
+  }).join("");
+  
+  const sessionsTable = sessions.length > 0 ? `
+    <div class="attendance-sessions-table__container">
+      <table class="attendance-sessions-table" role="table">
+        <thead>
+          <tr>
+            <th class="attendance-sessions-table__header">Session Name</th>
+            <th class="attendance-sessions-table__header">Time</th>
+            <th class="attendance-sessions-table__header">Attendance Code</th>
+            <th class="attendance-sessions-table__header">Code Status</th>
+            <th class="attendance-sessions-table__header">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sessionRows}
+        </tbody>
+      </table>
+    </div>
+  ` : `
+    <div class="attendance-course-item__empty">
+      <p>No sessions yet. Create a session to start taking attendance.</p>
+    </div>
+  `;
+  
+  return `
+    <div class="attendance-course-item" id="course-item-${course.id}">
+      <button 
+        class="attendance-course-item__header"
+        type="button"
+        aria-expanded="${isExpanded ? "true" : "false"}"
+        aria-controls="${courseId}-content"
+        hx-get="/api/attendance/course/${course.id}/toggle?expanded=${isExpanded ? "true" : "false"}"
+        hx-target="#course-item-${course.id}"
+        hx-swap="outerHTML"
+      >
+        <span class="attendance-course-item__name">${escapeHtml(course.name)}</span>
+        <span class="attendance-course-item__count">${sessions.length} session${sessions.length !== 1 ? 's' : ''}</span>
+        <span class="attendance-course-item__icon" aria-hidden="true">${isExpanded ? "▼" : "▶"}</span>
+      </button>
+      <div 
+        class="attendance-course-item__content ${isExpanded ? "attendance-course-item__content--expanded" : ""}"
+        id="${courseId}-content"
+        aria-hidden="${!isExpanded ? "true" : "false"}"
+      >
+        ${sessionsTable}
+        <div class="attendance-course-item__actions">
+          ${createSessionButton(course.id)}
+        <button 
+          class="btn btn--secondary"
+          hx-get="/attendance/course/${course.id}/records"
+          hx-target="#main-content"
+          hx-swap="outerHTML"
+          hx-push-url="true"
+          aria-label="View attendance for all sessions in this course"
+        >
+          View Attendance
+        </button>
+        </div>
+      </div>
+    </div>
   `;
 }
 

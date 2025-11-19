@@ -235,12 +235,22 @@
 /* Attendance Table (Professor View) */
 .attendance-table {
   margin: 2rem 0;
+  padding-top: 4rem; /* Add top padding to prevent heading cut off behind navbar */
 }
 
 .attendance-table__title {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1rem 0;
   color: var(--forest-deep-teal, #0E534A);
   font-size: 1.75rem;
+  text-align: center; /* Center-align the heading for better visual balance */
+}
+
+.attendance-table__subtitle {
+  margin: 0 0 1.5rem 0;
+  color: var(--forest-jungle-green, #1B6A59);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center; /* Center-align the subtitle for consistency */
 }
 
 .attendance-table__empty {
@@ -252,6 +262,13 @@
 .attendance-table__container {
   overflow-x: auto;
   margin-bottom: 1rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.attendance-table__header-actions {
+  margin-bottom: 1.5rem;
 }
 
 .attendance-table__table {
@@ -261,14 +278,17 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--forest-sage-mist, #B7C7A3);
 }
 
 .attendance-table__header {
   background: var(--forest-deep-teal, #0E534A);
   color: white;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
   text-align: left;
   font-weight: 600;
+  border: 1px solid var(--forest-deep-teal, #0E534A);
+  border-bottom: 2px solid var(--forest-deep-teal, #0E534A);
 }
 
 .attendance-table__row {
@@ -283,9 +303,22 @@
   background: #f5f5f5;
 }
 
+.attendance-table__row:nth-child(even) {
+  background: #fafafa;
+}
+
+.attendance-table__row:nth-child(even):hover {
+  background: #f5f5f5;
+}
+
 .attendance-table__cell {
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.5rem;
   color: var(--forest-deep-teal, #0E534A);
+  border-right: 1px solid var(--forest-sage-mist, #B7C7A3);
+}
+
+.attendance-table__cell:last-child {
+  border-right: none;
 }
 
 .attendance-table__export {
@@ -497,6 +530,14 @@
   padding: 1.5rem;
 }
 
+.attendance-course-item__actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
 .attendance-course-table__container {
   overflow-x: auto;
   margin-top: 1rem;
@@ -547,6 +588,93 @@
 .attendance-course-table__status--present {
   background: #d4edda;
   color: #155724;
+}
+
+/* Attendance Sessions Table (Professor View - Main Page) */
+.attendance-sessions-table__container {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.attendance-sessions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid var(--forest-sage-mist, #B7C7A3);
+  border-radius: 4px;
+  table-layout: fixed;
+}
+
+.attendance-sessions-table__header {
+  background: var(--forest-deep-teal, #0E534A);
+  color: white;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-weight: 600;
+  border-right: 1px solid var(--forest-deep-teal, #0E534A);
+  border-bottom: 2px solid var(--forest-deep-teal, #0E534A);
+}
+
+.attendance-sessions-table__header:last-child {
+  border-right: none;
+}
+
+.attendance-sessions-table__row {
+  border-bottom: 1px solid var(--forest-sage-mist, #B7C7A3);
+}
+
+.attendance-sessions-table__row:last-child {
+  border-bottom: none;
+}
+
+.attendance-sessions-table__row:hover {
+  background: #f5f5f5;
+}
+
+.attendance-sessions-table__row:nth-child(even) {
+  background: #fafafa;
+}
+
+.attendance-sessions-table__row:nth-child(even):hover {
+  background: #f5f5f5;
+}
+
+.attendance-sessions-table__cell {
+  padding: 1rem 1.5rem;
+  color: var(--forest-deep-teal, #0E534A);
+  border-right: 1px solid var(--forest-sage-mist, #B7C7A3);
+  word-wrap: break-word;
+}
+
+.attendance-sessions-table__cell:last-child {
+  border-right: none;
+}
+
+.attendance-sessions-table__cell--actions {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.attendance-code-status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.attendance-code-status--active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.attendance-code-status--expired {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.attendance-code-status--none {
+  color: #666;
 }
 
 /* Start Attendance Button */
