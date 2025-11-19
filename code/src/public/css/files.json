@@ -1,8 +1,9 @@
 [
-  "/css/classes-modal.css",
   "/css/components/class-list.css",
+  "/css/components/classes-modal.css",
+  "/css/components/login.css",
+  "/css/components/navbar.css",
+  "/css/components/profile-page.css",
   "/css/files.json",
-  "/css/main.css",
-  "/css/navbar.css",
-  "/css/profile-page.css"
+  "/css/main.css"
 ]
