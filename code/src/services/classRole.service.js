@@ -40,6 +40,25 @@ export async function removeFromClass({ userId, classId }) {
 }
 
 /**
+ * Get class role of user
+ *
+ * @param {string} userId - The ID of the user whose class role is being retrieved.
+ * @param {string} classId - The ID of the class for which the user's role is being fetched.
+ * @returns {Promise<Object|null>} The class role record, or null if it does not exist.
+ */
+export async function getClassRole(userId, classId) {
+  return await prisma.classRole.findUnique({
+    where: {
+      user_class_unique: { userId, classId },
+    },
+    include: {
+      user: true,
+      class: true,
+    },
+  });
+}
+
+/**
  * Get roster for a class (sorted by role).
  * @param {string} classId Class ID
  * @returns {Promise<Array>} Array of ClassRole objects including user data

@@ -22,7 +22,11 @@ router.get(
 );
 
 // Invite lookup must come before /:id
-router.get("/invite/:code", asyncHandler(classController.getClassByInviteCode));
+router.get(
+  "/invite/:code",
+  requireAuth,
+  asyncHandler(classController.getClassByInviteCode),
+);
 
 // Class Create Form
 router.get("/form", asyncHandler(classController.renderCreateClassForm));

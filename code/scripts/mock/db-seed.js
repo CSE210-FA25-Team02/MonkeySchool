@@ -8,6 +8,8 @@ import {
   createGroupsAndRoles,
 } from "./seed-data/class-list-class-roles.js";
 
+import {createDefaultCategories} from "./seed-data/activity-list.js";
+
 async function main() {
   console.log("Seeding database with multiple classes...");
 
@@ -25,6 +27,9 @@ async function main() {
 
   // Create groups and assign group roles
   await createGroupsAndRoles(users, classes);
+
+  // Create default activity categories
+  await createDefaultCategories();
 
   // Summary
   console.log("\nSeed complete!");
