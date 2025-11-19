@@ -105,11 +105,12 @@ export function createUserProfile(user, { mode = "view" } = {}) {
             }
         </ul>`;
 
-  const avatarSrc = user.photoUrl && !user.photoUrl.includes("default") 
-    ? user.photoUrl 
-    : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=120`;
+  const avatarSrc =
+    user.photoUrl && !user.photoUrl.includes("default")
+      ? user.photoUrl
+      : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=120`;
 
-    const header = `
+  const header = `
     <header class="profile-hero">
     <figure class="profile-hero__avatar">
         <img 
@@ -127,13 +128,14 @@ export function createUserProfile(user, { mode = "view" } = {}) {
         </address>
     </div>
     <nav class="profile-hero__actions" aria-label="Profile actions">
-        ${isEdit
-        ? `<button type="submit" form="profile-form-${id}" class="btn btn--primary profile-hero__save">Save</button>
+        ${
+          isEdit
+            ? `<button type="submit" form="profile-form-${id}" class="btn btn--primary profile-hero__save">Save</button>
             <button type="button" class="btn btn--secondary"
                     hx-get="/users/profile"
                     hx-target="#main-content"
                     hx-push-url="true">Cancel</button>`
-        : `<a href="/users/profile?mode=edit"
+            : `<a href="/users/profile?mode=edit"
             hx-get="/users/profile?mode=edit"
             hx-target="#main-content"
             hx-push-url="true"
@@ -141,7 +143,6 @@ export function createUserProfile(user, { mode = "view" } = {}) {
         }
     </nav>
     </header>`;
-
 
   const containerOpen = `<section class="profile-content-container${isEdit ? " profile-content-container--edit" : " profile-content-container--view"}">`;
   const containerClose = `</section>`;
