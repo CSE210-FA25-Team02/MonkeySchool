@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "lint": "eslint src --ext .js",
+    "lint": "eslint .",
     "docs": "jsdoc -c jsdoc.config.json",
     "docs:preview": "npm run docs && npx serve docs/jsdoc",
     "format": "prettier --write \"src/**/*.js\"",
