@@ -35,7 +35,7 @@ defineFeature(feature, (test) => {
           .set("Cookie", `auth_token=${token}`)
           .send({ name, quarter });
         context.klass = context.response.body;
-      },
+      }
     );
 
     then(
@@ -43,7 +43,7 @@ defineFeature(feature, (test) => {
       async (name, quarter) => {
         const klass = await prisma.class.findFirst({ where: { name } });
         expect(klass).not.toBeNull();
-      },
+      }
     );
 
     and("the class should have an auto-generated invite code", () => {
@@ -74,7 +74,7 @@ defineFeature(feature, (test) => {
           .put(`/classes/${context.klass.id}/${quarter}`)
           .set("Cookie", `auth_token=${token}`)
           .send({ name: newName });
-      },
+      }
     );
 
     then(/^a class named "(.*)" should exist$/, async (newName) => {
@@ -105,7 +105,7 @@ defineFeature(feature, (test) => {
           .put(`/classes/${context.klass.id}/${quarter}`)
           .set("Cookie", `auth_token=${token}`)
           .send({ name: newName });
-      },
+      }
     );
 
     then(/^a class named "(.*)" should exist$/, async (newName) => {
@@ -140,7 +140,7 @@ defineFeature(feature, (test) => {
           .put(`/classes/${context.klass.id}/${quarter}`)
           .set("Cookie", `auth_token=${token}`)
           .send({ name: newName });
-      },
+      }
     );
 
     then(/^the request should be forbidden$/, async () => {
@@ -304,7 +304,7 @@ defineFeature(feature, (test) => {
     then(/^I should be added to the class called "(.*)"$/, async (name) => {
       expect(context.response.status).toBe(200);
       expect(context.response.text).toContain(
-        `<h2 style="margin-bottom: 8px;">Welcome to ${name}!</h2>`,
+        `<h2 style="margin-bottom: 8px;">Welcome to ${name}!</h2>`
       );
     });
   });
@@ -332,13 +332,13 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/invite/${inviteCode}`)
           .set("Cookie", `auth_token=${token}`);
-      },
+      }
     );
 
     then(/^I should recieve an invalid invite$/, async () => {
       expect(context.response.status).toBe(404);
       expect(context.response.text).toContain(
-        '<h2 style="margin-bottom: 8px;">Invalid Invite Code</h2>',
+        '<h2 style="margin-bottom: 8px;">Invalid Invite Code</h2>'
       );
     });
   });
@@ -393,7 +393,7 @@ defineFeature(feature, (test) => {
         });
         context.classes = context.classes || [];
         context.classes.push(klass);
-      },
+      }
     );
 
     and(
@@ -408,7 +408,7 @@ defineFeature(feature, (test) => {
           },
         });
         context.classes.push(klass);
-      },
+      }
     );
 
     when(/^I request the classes for "(.*)"$/, async (name) => {
@@ -425,7 +425,7 @@ defineFeature(feature, (test) => {
         const classNames = context.response.body.map((c) => c.name);
         expect(classNames).toContain(className1);
         expect(classNames).toContain(className2);
-      },
+      }
     );
   });
 
@@ -481,7 +481,7 @@ defineFeature(feature, (test) => {
           },
           include: { members: true },
         });
-      },
+      }
     );
 
     when(/^I request the directory for the class$/, async () => {
@@ -560,8 +560,9 @@ defineFeature(feature, (test) => {
         expect(html).toContain(klass.name);
       });
 
-      // Should include the "Create / Join Class" button
-      expect(html).toContain("Create / Join Class");
+      // Should include the "Join Class" button (for students) or "Create Class" (for professors)
+      // Since the test user is a student (isProf: false), check for "Join Class"
+      expect(html).toContain("Join Class");
     });
   });
 
@@ -621,7 +622,7 @@ defineFeature(feature, (test) => {
         context.user = await prisma.user.create({
           data: { email, name, isProf: false },
         });
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -638,7 +639,7 @@ defineFeature(feature, (test) => {
             role,
           },
         });
-      },
+      }
     );
 
     when(/^I request the class page for "(.*)"$/, async (className) => {
@@ -673,7 +674,7 @@ defineFeature(feature, (test) => {
         context.user = await prisma.user.create({
           data: { email, name, isProf: true },
         });
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -690,7 +691,7 @@ defineFeature(feature, (test) => {
             role,
           },
         });
-      },
+      }
     );
 
     when(/^I request the class page for "(.*)"$/, async (className) => {

@@ -19,7 +19,7 @@
     "test": "export $(grep -v '^#' .env.test | xargs) && npm run test:e2e",
     "test:e2e": "npm-run-all -s db:test:migrate test:coverage db:test:drop",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand",
-     "test:perf:rail": "playwright test tests/performance/rail.spec.js",
+    "test:perf:rail": "playwright test tests/performance/rail.spec.js",
     "test:perf:stress": "node tests/performance/stress.js",
     "db:test:migrate": "sh -c 'echo \"Using test database: $DATABASE_URL\" && prisma migrate deploy'",
     "db:test:drop": "sh -c 'echo \"Dropping test database: $DATABASE_URL\" && npx prisma migrate reset --force'"
