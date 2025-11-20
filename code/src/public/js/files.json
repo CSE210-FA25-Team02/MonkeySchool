@@ -1,0 +1,12 @@
+[
+  "/js/app.js",
+  "/js/components/Footer.js",
+  "/js/components/Header.js",
+  "/js/components/NavBar.js",
+  "/js/components/SubMenu.js",
+  "/js/config/colors.js",
+  "/js/config/dependencies.md",
+  "/js/config/navigationConfig.js",
+  "/js/config/routesConfig.js",
+  "/js/files.json"
+]
