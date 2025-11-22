@@ -163,14 +163,11 @@ export async function getClassDirectory(id) {
               bio: true,
               socialLinks: true,
               chatLinks: true,
-              timezone: true
-            }
-          }
+              timezone: true,
+            },
+          },
         },
-        orderBy: [
-          { role: 'asc' },
-          { user: { name: 'asc' } }
-        ]
+        orderBy: [{ role: "asc" }, { user: { name: "asc" } }],
       },
       groups: {
         include: {
@@ -188,14 +185,14 @@ export async function getClassDirectory(id) {
                   photoUrl: true,
                   github: true,
                   socialLinks: true,
-                  chatLinks: true
-                }
-              }
+                  chatLinks: true,
+                },
+              },
             },
             orderBy: [
-              { role: 'desc' }, // LEADER first
-              { user: { name: 'asc' } }
-            ]
+              { role: "desc" }, // LEADER first
+              { user: { name: "asc" } },
+            ],
           },
           supervisors: {
             include: {
@@ -205,15 +202,15 @@ export async function getClassDirectory(id) {
                   name: true,
                   preferredName: true,
                   email: true,
-                  photoUrl: true
-                }
-              }
-            }
-          }
+                  photoUrl: true,
+                },
+              },
+            },
+          },
         },
-        orderBy: { name: 'asc' }
-      }
-    }
+        orderBy: { name: "asc" },
+      },
+    },
   });
 
   if (!classData) {
@@ -226,27 +223,29 @@ export async function getClassDirectory(id) {
   const tutors = [];
   const studentsWithoutGroup = [];
 
-  classData.members.forEach(member => {
+  classData.members.forEach((member) => {
     const userData = {
       ...member.user,
       role: member.role,
-      classRoleId: member.id
+      classRoleId: member.id,
     };
 
     switch (member.role) {
-      case 'PROFESSOR':
+      case "PROFESSOR":
         professors.push(userData);
         break;
-      case 'TA':
+      case "TA":
         tas.push(userData);
         break;
-      case 'TUTOR':
+      case "TUTOR":
         tutors.push(userData);
         break;
-      case 'STUDENT': {
+      case "STUDENT": {
         // Check if student is in any group
-        const isInGroup = classData.groups.some(group => 
-          group.members.some(groupMember => groupMember.userId === member.userId)
+        const isInGroup = classData.groups.some((group) =>
+          group.members.some(
+            (groupMember) => groupMember.userId === member.userId,
+          ),
         );
         if (!isInGroup) {
           studentsWithoutGroup.push(userData);
@@ -257,18 +256,18 @@ export async function getClassDirectory(id) {
   });
 
   // Process groups with member details
-  const processedGroups = classData.groups.map(group => ({
+  const processedGroups = classData.groups.map((group) => ({
     id: group.id,
     name: group.name,
     logoUrl: group.logoUrl,
     mantra: group.mantra,
     github: group.github,
-    members: group.members.map(member => ({
+    members: group.members.map((member) => ({
       ...member.user,
-      isLeader: member.role === 'LEADER',
-      groupRole: member.role
+      isLeader: member.role === "LEADER",
+      groupRole: member.role,
     })),
-    supervisors: group.supervisors.map(supervisor => supervisor.user)
+    supervisors: group.supervisors.map((supervisor) => supervisor.user),
   }));
 
   return {
@@ -277,19 +276,19 @@ export async function getClassDirectory(id) {
       name: classData.name,
       quarter: classData.quarter,
       inviteCode: classData.inviteCode,
-      createdAt: classData.createdAt
+      createdAt: classData.createdAt,
     },
     professors,
     tas,
     tutors,
     groups: processedGroups,
-    studentsWithoutGroup
+    studentsWithoutGroup,
   };
 }
 
 /**
  * TODO: show course only the user assigned to, insead of all the courses.
- * helper function to extract all the avalible course 
+ * helper function to extract all the avalible course
  * Get all classes with basic member count
  */
 export async function getAllClasses() {
@@ -302,14 +301,14 @@ export async function getAllClasses() {
           user: {
             select: {
               id: true,
-              name: true
-            }
-          }
-        }
-      }
+              name: true,
+            },
+          },
+        },
+      },
     },
     orderBy: {
-      createdAt: 'desc'
-    }
+      createdAt: "desc",
+    },
   });
 }

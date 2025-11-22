@@ -38,8 +38,14 @@ router.get("/", asyncHandler(classController.renderClassPage));
 // CRUD
 router.post("/create", requireAuth, asyncHandler(classController.createClass));
 router.get("/:id", asyncHandler(classController.getClass));
-router.get("/:id/directory/json", asyncHandler(classController.getClassDirectory)); // For testing and preview
-router.get("/:id/directory", asyncHandler(classController.renderClassDirectory));
+router.get(
+  "/:id/directory/json",
+  asyncHandler(classController.getClassDirectory),
+); // For testing and preview
+router.get(
+  "/:id/directory",
+  asyncHandler(classController.renderClassDirectory),
+);
 router.put("/:id", asyncHandler(classController.updateClass));
 router.delete("/:id", asyncHandler(classController.deleteClass));
 

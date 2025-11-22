@@ -94,7 +94,7 @@ export const getClass = asyncHandler(async (req, res) => {
 export const getClassDirectory = asyncHandler(async (req, res) => {
   const directory = await classService.getClassDirectory(req.params.id);
   if (!directory) throw new NotFoundError("Class not found");
-  
+
   res.json(directory);
 });
 
@@ -105,7 +105,7 @@ export const getClassDirectory = asyncHandler(async (req, res) => {
 export const renderClassDirectory = asyncHandler(async (req, res) => {
   const directory = await classService.getClassDirectory(req.params.id);
   if (!directory) throw new NotFoundError("Class not found");
-  
+
   // Render directory HTML content for HTMX swap
   const content = renderDirectoryHTML(directory);
   res.send(content);
@@ -367,7 +367,7 @@ function renderAuthRequiredHTML() {
  * Helper function to render full HTML page for direct navigation
  * Wraps content in complete HTML structure with styles and layout
  */
-function renderFullPage(content, title = 'My Classes') {
+function renderFullPage(content, title = "My Classes") {
   return `
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -436,14 +436,27 @@ function renderFullPage(content, title = 'My Classes') {
  * @returns {string} The rendered HTML content
  */
 function renderDirectoryHTML(directory) {
-  const { class: classInfo, professors, tas, tutors, groups, studentsWithoutGroup } = directory;
+  const {
+    class: classInfo,
+    professors,
+    tas,
+    tutors,
+    groups,
+    studentsWithoutGroup,
+  } = directory;
 
   // Calculate total members for summary
-  const totalMembers = professors.length + tas.length + tutors.length + 
-    groups.reduce((sum, group) => sum + group.members.length, 0) + studentsWithoutGroup.length;
+  const totalMembers =
+    professors.length +
+    tas.length +
+    tutors.length +
+    groups.reduce((sum, group) => sum + group.members.length, 0) +
+    studentsWithoutGroup.length;
 
   // Render professors section
-  const professorsHTML = professors.length > 0 ? `
+  const professorsHTML =
+    professors.length > 0
+      ? `
     <section class="directory-section directory-section--professors" aria-labelledby="professors-title">
       <div class="section-header">
         <div class="section-header__main">
@@ -452,19 +465,22 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="professors-title" class="section-title">Professors</h3>
-            <p class="section-count">${professors.length} ${professors.length === 1 ? 'professor' : 'professors'}</p>
+            <p class="section-count">${professors.length} ${professors.length === 1 ? "professor" : "professors"}</p>
           </div>
         </div>
         <div class="section-badge section-badge--professors">${professors.length}</div>
       </div>
       <div class="members-grid members-grid--professors">
-        ${professors.map(prof => renderMemberCard(prof, 'professor')).join('')}
+        ${professors.map((prof) => renderMemberCard(prof, "professor")).join("")}
       </div>
     </section>
-  ` : '';
+  `
+      : "";
 
   // Render TAs section
-  const tasHTML = tas.length > 0 ? `
+  const tasHTML =
+    tas.length > 0
+      ? `
     <section class="directory-section directory-section--tas" aria-labelledby="tas-title">
       <div class="section-header">
         <div class="section-header__main">
@@ -473,19 +489,22 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="tas-title" class="section-title">Teaching Assistants</h3>
-            <p class="section-count">${tas.length} ${tas.length === 1 ? 'TA' : 'TAs'}</p>
+            <p class="section-count">${tas.length} ${tas.length === 1 ? "TA" : "TAs"}</p>
           </div>
         </div>
         <div class="section-badge section-badge--tas">${tas.length}</div>
       </div>
       <div class="members-grid members-grid--tas">
-        ${tas.map(ta => renderMemberCard(ta, 'ta')).join('')}
+        ${tas.map((ta) => renderMemberCard(ta, "ta")).join("")}
       </div>
     </section>
-  ` : '';
+  `
+      : "";
 
   // Render Tutors section
-  const tutorsHTML = tutors.length > 0 ? `
+  const tutorsHTML =
+    tutors.length > 0
+      ? `
     <section class="directory-section directory-section--tutors" aria-labelledby="tutors-title">
       <div class="section-header">
         <div class="section-header__main">
@@ -494,19 +513,22 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="tutors-title" class="section-title">Tutors</h3>
-            <p class="section-count">${tutors.length} ${tutors.length === 1 ? 'tutor' : 'tutors'}</p>
+            <p class="section-count">${tutors.length} ${tutors.length === 1 ? "tutor" : "tutors"}</p>
           </div>
         </div>
         <div class="section-badge section-badge--tutors">${tutors.length}</div>
       </div>
       <div class="members-grid members-grid--tutors">
-        ${tutors.map(tutor => renderMemberCard(tutor, 'tutor')).join('')}
+        ${tutors.map((tutor) => renderMemberCard(tutor, "tutor")).join("")}
       </div>
     </section>
-  ` : '';
+  `
+      : "";
 
   // Render Groups section
-  const groupsHTML = groups.length > 0 ? `
+  const groupsHTML =
+    groups.length > 0
+      ? `
     <section class="directory-section directory-section--groups" aria-labelledby="groups-title">
       <div class="section-header">
         <div class="section-header__main">
@@ -515,19 +537,22 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="groups-title" class="section-title">Project Groups</h3>
-            <p class="section-count">${groups.length} ${groups.length === 1 ? 'group' : 'groups'}</p>
+            <p class="section-count">${groups.length} ${groups.length === 1 ? "group" : "groups"}</p>
           </div>
         </div>
         <div class="section-badge section-badge--groups">${groups.length}</div>
       </div>
       <div class="groups-container">
-        ${groups.map(group => renderGroupCard(group)).join('')}
+        ${groups.map((group) => renderGroupCard(group)).join("")}
       </div>
     </section>
-  ` : '';
+  `
+      : "";
 
   // Render students without group
-  const ungroupedHTML = studentsWithoutGroup.length > 0 ? `
+  const ungroupedHTML =
+    studentsWithoutGroup.length > 0
+      ? `
     <section class="directory-section directory-section--ungrouped" aria-labelledby="ungrouped-title">
       <div class="section-header">
         <div class="section-header__main">
@@ -536,19 +561,22 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="ungrouped-title" class="section-title">Students Not in Groups</h3>
-            <p class="section-count">${studentsWithoutGroup.length} ${studentsWithoutGroup.length === 1 ? 'student' : 'students'}</p>
+            <p class="section-count">${studentsWithoutGroup.length} ${studentsWithoutGroup.length === 1 ? "student" : "students"}</p>
           </div>
         </div>
         <div class="section-badge section-badge--ungrouped">${studentsWithoutGroup.length}</div>
       </div>
       <div class="members-grid members-grid--ungrouped">
-        ${studentsWithoutGroup.map(student => renderMemberCard(student, 'student')).join('')}
+        ${studentsWithoutGroup.map((student) => renderMemberCard(student, "student")).join("")}
       </div>
     </section>
-  ` : '';
+  `
+      : "";
 
   // Empty state when no members exist
-  const emptyStateHTML = totalMembers === 0 ? `
+  const emptyStateHTML =
+    totalMembers === 0
+      ? `
     <div class="directory-empty">
       <div class="directory-empty__icon" aria-hidden="true">
         <i class="fas fa-users-slash"></i>
@@ -558,7 +586,8 @@ function renderDirectoryHTML(directory) {
         This class directory is empty. Members will appear here once they join the class.
       </p>
     </div>
-  ` : '';
+  `
+      : "";
 
   return `
     <div class="class-directory">
@@ -568,14 +597,18 @@ function renderDirectoryHTML(directory) {
           <div class="directory-meta">
             <span class="directory-quarter">
               <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-              ${escapeHtml(classInfo.quarter || 'No quarter specified')}
+              ${escapeHtml(classInfo.quarter || "No quarter specified")}
             </span>
-            ${totalMembers > 0 ? `
+            ${
+              totalMembers > 0
+                ? `
             <span class="directory-total">
               <i class="fas fa-users" aria-hidden="true"></i>
-              ${totalMembers} total ${totalMembers === 1 ? 'member' : 'members'}
+              ${totalMembers} total ${totalMembers === 1 ? "member" : "members"}
             </span>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         </div>
       </div>
@@ -599,9 +632,10 @@ function renderDirectoryHTML(directory) {
 function renderMemberCard(member, roleType) {
   const displayName = member.preferredName || member.name;
   // Use a data URL placeholder instead of missing file
-  const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+';
+  const defaultAvatar =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+";
   const photoUrl = member.photoUrl || defaultAvatar;
-  
+
   // Build contact links with proper icons and styling
   const contactLinks = [];
   if (member.email) {
@@ -641,26 +675,32 @@ function renderMemberCard(member, roleType) {
   }
 
   // Build optional info sections
-  const pronunciationHTML = member.pronunciation ? `
+  const pronunciationHTML = member.pronunciation
+    ? `
     <div class="member-detail member-pronunciation">
       <i class="fas fa-volume-up" aria-hidden="true"></i>
       <span class="member-pronunciation-text">${escapeHtml(member.pronunciation)}</span>
     </div>
-  ` : '';
+  `
+    : "";
 
-  const pronounsHTML = member.pronouns ? `
+  const pronounsHTML = member.pronouns
+    ? `
     <div class="member-detail member-pronouns">
       <i class="fas fa-id-badge" aria-hidden="true"></i>
       <span class="member-pronouns-text">${escapeHtml(member.pronouns)}</span>
     </div>
-  ` : '';
+  `
+    : "";
 
-  const bioHTML = member.bio ? `
+  const bioHTML = member.bio
+    ? `
     <div class="member-bio-container">
       <p class="member-bio">${escapeHtml(member.bio)}</p>
     </div>
-  ` : '';
-  
+  `
+    : "";
+
   return `
     <article class="member-card member-card--${roleType}" 
              role="article" 
@@ -690,17 +730,21 @@ function renderMemberCard(member, roleType) {
           
           ${bioHTML}
           
-          ${contactLinks.length > 0 ? `
+          ${
+            contactLinks.length > 0
+              ? `
             <div class="member-contacts">
               <div class="contacts-label">
                 <i class="fas fa-address-card" aria-hidden="true"></i>
                 Contact
               </div>
               <div class="contact-links">
-                ${contactLinks.join('')}
+                ${contactLinks.join("")}
               </div>
             </div>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
       </div>
     </article>
@@ -714,49 +758,60 @@ function renderMemberCard(member, roleType) {
  */
 function renderGroupCard(group) {
   // Use a data URL placeholder instead of missing file
-  const defaultGroupLogo = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzhCNUNGNiIvPgo8cGF0aCBkPSJNMjAgMTJjLTQuNDE4IDAtOCAzLjU4Mi04IDhzMy41ODIgOCA4IDggOC0zLjU4MiA4LTgtMy41ODItOC04LTh6bS0yIDZ2NGgydi00aDJ2NGgyVjE4aDJ2NGgyVjE4aDAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8L3N2Zz4=';
+  const defaultGroupLogo =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzhCNUNGNiIvPgo8cGF0aCBkPSJNMjAgMTJjLTQuNDE4IDAtOCAzLjU4Mi04IDhzMy41ODIgOCA4IDggOC0zLjU4MiA4LTgtMy41ODItOC04LTh6bS0yIDZ2NGgydi00aDJ2NGgyVjE4aDJ2NGgyVjE4aDAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8L3N2Zz4=";
   const logoUrl = group.logoUrl || defaultGroupLogo;
-  
+
   // Separate leaders and regular members
-  const leaders = group.members.filter(member => member.isLeader);
-  const regularMembers = group.members.filter(member => !member.isLeader);
+  const leaders = group.members.filter((member) => member.isLeader);
+  const regularMembers = group.members.filter((member) => !member.isLeader);
   const totalMembers = group.members.length;
 
   // Build member avatars for the group header
-  const memberAvatars = group.members.slice(0, 4).map((member, index) => {
-    const displayName = member.preferredName || member.name;
-    const photoUrl = member.photoUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+';
-    
-    return `
-      <div class="group-avatar-item ${member.isLeader ? 'group-avatar--leader' : ''}" 
+  const memberAvatars = group.members
+    .slice(0, 4)
+    .map((member, index) => {
+      const displayName = member.preferredName || member.name;
+      const photoUrl =
+        member.photoUrl ||
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+";
+
+      return `
+      <div class="group-avatar-item ${member.isLeader ? "group-avatar--leader" : ""}" 
            style="z-index: ${4 - index};"
-           title="${escapeHtml(displayName)}${member.isLeader ? ' (Leader)' : ''}">
+           title="${escapeHtml(displayName)}${member.isLeader ? " (Leader)" : ""}">
         <img src="${escapeHtml(photoUrl)}" 
              alt="${escapeHtml(displayName)}" 
              class="group-member-avatar"
              onerror="this.src='/images/default-avatar.png'">
-        ${member.isLeader ? '<div class="leader-indicator"><i class="fas fa-crown"></i></div>' : ''}
+        ${member.isLeader ? '<div class="leader-indicator"><i class="fas fa-crown"></i></div>' : ""}
       </div>
     `;
-  }).join('');
+    })
+    .join("");
 
   const remainingCount = totalMembers > 4 ? totalMembers - 4 : 0;
 
   // Build detailed member list
-  const leadersHTML = leaders.length > 0 ? `
+  const leadersHTML =
+    leaders.length > 0
+      ? `
     <div class="group-members-section">
       <div class="members-section-header">
         <i class="fas fa-crown" aria-hidden="true"></i>
-        <span class="members-section-title">${leaders.length === 1 ? 'Leader' : 'Leaders'}</span>
+        <span class="members-section-title">${leaders.length === 1 ? "Leader" : "Leaders"}</span>
         <span class="members-section-count">${leaders.length}</span>
       </div>
       <div class="members-section-list">
-        ${leaders.map(member => renderGroupMember(member, true)).join('')}
+        ${leaders.map((member) => renderGroupMember(member, true)).join("")}
       </div>
     </div>
-  ` : '';
+  `
+      : "";
 
-  const membersHTML = regularMembers.length > 0 ? `
+  const membersHTML =
+    regularMembers.length > 0
+      ? `
     <div class="group-members-section">
       <div class="members-section-header">
         <i class="fas fa-users" aria-hidden="true"></i>
@@ -764,10 +819,11 @@ function renderGroupCard(group) {
         <span class="members-section-count">${regularMembers.length}</span>
       </div>
       <div class="members-section-list">
-        ${regularMembers.map(member => renderGroupMember(member, false)).join('')}
+        ${regularMembers.map((member) => renderGroupMember(member, false)).join("")}
       </div>
     </div>
-  ` : '';
+  `
+      : "";
 
   return `
     <article class="group-card" 
@@ -790,14 +846,20 @@ function renderGroupCard(group) {
           <div class="group-info">
             <h4 class="group-name">${escapeHtml(group.name)}</h4>
             
-            ${group.mantra ? `
+            ${
+              group.mantra
+                ? `
               <div class="group-mantra-container">
                 <i class="fas fa-quote-left" aria-hidden="true"></i>
                 <p class="group-mantra">${escapeHtml(group.mantra)}</p>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
             
-            ${group.github ? `
+            ${
+              group.github
+                ? `
               <div class="group-links">
                 <a href="https://github.com/${escapeHtml(group.github)}" 
                    class="group-link group-link--github" 
@@ -810,18 +872,24 @@ function renderGroupCard(group) {
                   <i class="fas fa-external-link-alt" aria-hidden="true"></i>
                 </a>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         </div>
         
         <div class="group-members-preview">
           <div class="group-avatars">
             ${memberAvatars}
-            ${remainingCount > 0 ? `
-              <div class="group-avatar-more" title="and ${remainingCount} more ${remainingCount === 1 ? 'member' : 'members'}">
+            ${
+              remainingCount > 0
+                ? `
+              <div class="group-avatar-more" title="and ${remainingCount} more ${remainingCount === 1 ? "member" : "members"}">
                 <span>+${remainingCount}</span>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         </div>
         
@@ -842,8 +910,10 @@ function renderGroupCard(group) {
  */
 function renderGroupMember(member, isLeader) {
   const displayName = member.preferredName || member.name;
-  const photoUrl = member.photoUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+';
-  
+  const photoUrl =
+    member.photoUrl ||
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+";
+
   // Build contact links for group members
   const contactLinks = [];
   if (member.email) {
@@ -870,32 +940,44 @@ function renderGroupMember(member, isLeader) {
   }
 
   return `
-    <div class="group-member-item ${isLeader ? 'group-member-item--leader' : ''}">
+    <div class="group-member-item ${isLeader ? "group-member-item--leader" : ""}">
       <div class="group-member-info">
         <div class="group-member-avatar-container">
           <img src="${escapeHtml(photoUrl)}" 
                alt="${escapeHtml(displayName)}" 
                class="group-member-item-avatar"
                onerror="this.src='/images/default-avatar.png'">
-          ${isLeader ? `
+          ${
+            isLeader
+              ? `
             <div class="group-member-leader-badge">
               <i class="fas fa-crown" aria-hidden="true"></i>
             </div>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
         <div class="group-member-details">
           <span class="group-member-name">${escapeHtml(displayName)}</span>
-          ${member.pronouns ? `
+          ${
+            member.pronouns
+              ? `
             <span class="group-member-pronouns">${escapeHtml(member.pronouns)}</span>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
       </div>
       
-      ${contactLinks.length > 0 ? `
+      ${
+        contactLinks.length > 0
+          ? `
         <div class="group-member-contacts">
-          ${contactLinks.join('')}
+          ${contactLinks.join("")}
         </div>
-      ` : ''}
+      `
+          : ""
+      }
     </div>
   `;
 }

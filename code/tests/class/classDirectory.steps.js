@@ -93,7 +93,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
@@ -124,7 +124,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
@@ -155,7 +155,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
@@ -207,7 +207,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
@@ -242,7 +242,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
@@ -305,7 +305,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
@@ -343,7 +343,7 @@ defineFeature(feature, (test) => {
   test("Get directory for non-existent class", ({ when, then, and }) => {
     when(/^I request the directory for "(.*)"$/, async () => {
       // Use a non-existent class ID
-      context.response = await request.get(`/api/classes/99999/directory/json`);
+      context.response = await request.get(`/classes/99999/directory/json`);
     });
 
     then("the directory should not be found", () => {
@@ -379,7 +379,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
@@ -434,7 +434,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-      context.response = await request.get(`/api/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 
