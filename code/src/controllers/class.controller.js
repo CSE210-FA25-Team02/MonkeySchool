@@ -347,7 +347,9 @@ function renderClassListHTML(classes) {
 
 /**
  * Helper function to render auth required message
+ * @returns {string} HTML string for authentication required message
  */
+// eslint-disable-next-line no-unused-vars
 function renderAuthRequiredHTML() {
   return `
     <section class="class-list" role="region">
@@ -366,7 +368,11 @@ function renderAuthRequiredHTML() {
 /**
  * Helper function to render full HTML page for direct navigation
  * Wraps content in complete HTML structure with styles and layout
+ * @param {string} content - HTML content to render inside the page
+ * @param {string} title - Page title
+ * @returns {string} Complete HTML page structure
  */
+// eslint-disable-next-line no-unused-vars
 function renderFullPage(content, title = "My Classes") {
   return `
 <!DOCTYPE html>

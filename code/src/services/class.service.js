@@ -290,6 +290,7 @@ export async function getClassDirectory(id) {
  * TODO: show course only the user assigned to, insead of all the courses.
  * helper function to extract all the avalible course
  * Get all classes with basic member count
+ * @returns {Promise<Array>} Array of all classes with member counts
  */
 export async function getAllClasses() {
   return prisma.class.findMany({
