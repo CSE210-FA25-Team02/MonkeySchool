@@ -316,11 +316,8 @@ function renderClassListHTML(classes) {
           <div class="class-card__footer">
             <a href="/classes/${klass.id}/directory" 
                class="class-card__link"
-<<<<<<< HEAD
-               hx-get="/api/classes/${klass.id}/directory"
-=======
+               hx-get="/classes/${klass.id}/directory"
                hx-get="/classes/${klass.id}"
->>>>>>> origin/develop
                hx-target="#main-content"
                hx-push-url="true"
                hx-indicator="#loading"
@@ -347,7 +344,6 @@ function renderClassListHTML(classes) {
     </section>
   `;
 }
-<<<<<<< HEAD
 
 /**
  * Helper function to render auth required message
@@ -2144,5 +2140,3 @@ function renderGroupMember(member, isLeader) {
     </style>
   `;
 }
-=======
->>>>>>> origin/develop
