@@ -38,10 +38,7 @@ async function isStudentEnrolled(studentId, classId) {
  * @throws {ForbiddenError} If student not enrolled
  * @throws {ConflictError} If already marked attendance
  */
-export async function submitAttendance(
-  code,
-  studentId,
-) {
+export async function submitAttendance(code, studentId) {
   // Use transaction to ensure atomicity
   return prisma.$transaction(async (tx) => {
     // Find active poll by code
@@ -77,10 +74,7 @@ export async function submitAttendance(
     }
 
     // Check if student is enrolled in the class
-    const enrolled = await isStudentEnrolled(
-      studentId,
-      poll.session.classId,
-    );
+    const enrolled = await isStudentEnrolled(studentId, poll.session.classId);
     if (!enrolled) {
       throw new ForbiddenError("Not enrolled in course");
     }
@@ -389,7 +383,7 @@ export async function getCourseAttendanceRecords(courseId) {
   const students = enrolledStudents.map((enrollment) => {
     const studentId = enrollment.userId;
     const studentAttendance = attendanceMap.get(studentId) || new Map();
-    
+
     // Create session attendance map
     const sessionAttendance = {};
     sessions.forEach((session) => {
@@ -450,11 +444,11 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
 
   // Group by course
   const courseMap = new Map();
-  
+
   records.forEach((record) => {
     const courseId = record.session.classId;
     const courseName = record.session.class.name;
-    
+
     if (!courseMap.has(courseId)) {
       courseMap.set(courseId, {
         courseId,
@@ -462,7 +456,7 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
         attendances: [],
       });
     }
-    
+
     courseMap.get(courseId).attendances.push({
       timestamp: record.markedAt,
       date: record.session.date,
@@ -474,7 +468,7 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
   });
 
   // Convert to array and sort by course name
-  return Array.from(courseMap.values()).sort((a, b) => 
-    a.courseName.localeCompare(b.courseName)
+  return Array.from(courseMap.values()).sort((a, b) =>
+    a.courseName.localeCompare(b.courseName),
   );
 }

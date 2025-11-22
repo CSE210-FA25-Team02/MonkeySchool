@@ -6,17 +6,12 @@ import * as attendanceRecordService from "../services/attendanceRecord.service.j
 import * as courseSessionService from "../services/courseSession.service.js";
 import * as classService from "../services/class.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
-import {
-  NotFoundError,
-  ForbiddenError,
-} from "../utils/api-error.js";
+import { NotFoundError, ForbiddenError } from "../utils/api-error.js";
 import {
   createPollSchema,
   submitAttendanceSchema,
 } from "../validators/attendance.validator.js";
-import {
-  createStartAttendanceModal,
-} from "../utils/htmx-templates/attendance-templates.js";
+import { createStartAttendanceModal } from "../utils/htmx-templates/attendance-templates.js";
 import { env } from "../config/env.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -123,10 +118,7 @@ export const submitAttendance = asyncHandler(async (req, res) => {
 
   try {
     // Submit attendance (atomic operation)
-    const record = await attendanceRecordService.submitAttendance(
-      code,
-      userId,
-    );
+    const record = await attendanceRecordService.submitAttendance(code, userId);
 
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
@@ -204,12 +196,11 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   }
 
   // Get attendance records
-  const attendance = await attendanceRecordService.getSessionAttendance(
-    sessionId,
-  );
+  const attendance =
+    await attendanceRecordService.getSessionAttendance(sessionId);
 
   const isHtmxRequest = req.headers["hx-request"];
-  
+
   const { displaySessionRecordsPage } = await import(
     "../utils/htmx-templates/attendance-templates.js"
   );
@@ -235,16 +226,16 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
     const indexPath = path.join(__dirname, "..", "public", "index.html");
     const fs = await import("fs");
     const indexContent = await fs.promises.readFile(indexPath, "utf8");
-    
+
     // Replace main content with our HTML
     const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
     const updatedHtml = indexContent.replace(
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      }
+      },
     );
-    
+
     res.send(updatedHtml);
   }
 });
@@ -277,12 +268,11 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
   }
 
   // Get attendance records for all sessions in the course
-  const data = await attendanceRecordService.getCourseAttendanceRecords(
-    courseId,
-  );
+  const data =
+    await attendanceRecordService.getCourseAttendanceRecords(courseId);
 
   const isHtmxRequest = req.headers["hx-request"];
-  
+
   const { displayCourseRecordsPage } = await import(
     "../utils/htmx-templates/attendance-templates.js"
   );
@@ -302,16 +292,16 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
     const indexPath = path.join(__dirname, "..", "public", "index.html");
     const fs = await import("fs");
     const indexContent = await fs.promises.readFile(indexPath, "utf8");
-    
+
     // Replace main content with our HTML
     const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
     const updatedHtml = indexContent.replace(
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      }
+      },
     );
-    
+
     res.send(updatedHtml);
   }
 });
@@ -346,9 +336,8 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
 
   // Get polls and attendance
   const polls = await attendancePollService.getPollsBySessionId(sessionId);
-  const attendance = await attendanceRecordService.getSessionAttendance(
-    sessionId,
-  );
+  const attendance =
+    await attendanceRecordService.getSessionAttendance(sessionId);
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
@@ -424,9 +413,8 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
     throw new ForbiddenError("Only professors can view course attendance");
   }
 
-  const summary = await attendanceRecordService.getCourseAttendanceSummary(
-    courseId,
-  );
+  const summary =
+    await attendanceRecordService.getCourseAttendanceSummary(courseId);
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
@@ -451,13 +439,14 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
   }
 
   const isHtmxRequest = req.headers["hx-request"];
-  
+
   if (isHtmxRequest) {
     // For HTMX requests, return grouped data with collapsible UI
     const { displayStudentAttendanceGrouped } = await import(
       "../utils/htmx-templates/attendance-templates.js"
     );
-    const groupedAttendance = await attendanceRecordService.getStudentAttendanceGroupedByCourse(userId);
+    const groupedAttendance =
+      await attendanceRecordService.getStudentAttendanceGroupedByCourse(userId);
     const html = displayStudentAttendanceGrouped({
       studentId: userId,
       courses: groupedAttendance,
@@ -465,7 +454,8 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
     res.send(html);
   } else {
     // For JSON API requests, return flat list (backward compatibility)
-    const attendance = await attendanceRecordService.getStudentAttendance(userId);
+    const attendance =
+      await attendanceRecordService.getStudentAttendance(userId);
     res.json({
       studentId: userId,
       attendance,
@@ -621,9 +611,8 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
     }
   } else {
     // For students: show code input form and attendance history
-    const groupedAttendance = await attendanceRecordService.getStudentAttendanceGroupedByCourse(
-      userId,
-    );
+    const groupedAttendance =
+      await attendanceRecordService.getStudentAttendanceGroupedByCourse(userId);
     const attendanceHistoryHtml = displayStudentAttendanceGrouped({
       studentId: userId,
       courses: groupedAttendance,
@@ -654,7 +643,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
     const indexPath = path.join(__dirname, "..", "public", "index.html");
     const fs = await import("fs");
     const indexContent = await fs.promises.readFile(indexPath, "utf8");
-    
+
     // Inject the content directly into the main tag
     // This ensures the content is available immediately on page load
     const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
@@ -662,9 +651,9 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      }
+      },
     );
-    
+
     res.send(updatedHtml);
   }
 });

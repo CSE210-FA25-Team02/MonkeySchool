@@ -32,7 +32,10 @@ export async function createAttendancePoll(
   createdBy,
 ) {
   // Use provided duration or default from config (ensure it's a number)
-  const duration = durationMinutes != null ? Number(durationMinutes) : Number(env.ATTENDANCE_DEFAULT_DURATION);
+  const duration =
+    durationMinutes != null
+      ? Number(durationMinutes)
+      : Number(env.ATTENDANCE_DEFAULT_DURATION);
 
   // Calculate expiration time
   const expiresAt = new Date();

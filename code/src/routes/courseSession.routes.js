@@ -12,14 +12,14 @@ const router = Router();
 router.use(requireAuth);
 
 // Create a new course session
-router.post(
-  "/",
-  asyncHandler(courseSessionController.createCourseSession),
-);
+router.post("/", asyncHandler(courseSessionController.createCourseSession));
 
 // GET /course-sessions is not supported - return 404
 router.get("/", (req, res) => {
-  res.status(404).json({ error: "Not found. Use /course-sessions/class/:classId to get sessions for a class." });
+  res.status(404).json({
+    error:
+      "Not found. Use /course-sessions/class/:classId to get sessions for a class.",
+  });
 });
 
 // Get all sessions for a class
@@ -35,10 +35,7 @@ router.get(
 );
 
 // Get session creation form (HTMX)
-router.get(
-  "/form",
-  asyncHandler(courseSessionController.getSessionForm),
-);
+router.get("/form", asyncHandler(courseSessionController.getSessionForm));
 
 // Get a specific session
 router.get("/:id", asyncHandler(courseSessionController.getCourseSession));

@@ -28,10 +28,7 @@ router.get(
 );
 
 // Create an attendance poll (professor only)
-router.post(
-  "/poll/create",
-  asyncHandler(attendanceController.createPoll),
-);
+router.post("/poll/create", asyncHandler(attendanceController.createPoll));
 
 // Submit attendance using a code (student only)
 router.post(

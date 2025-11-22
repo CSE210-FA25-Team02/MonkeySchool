@@ -21,14 +21,14 @@ export const createCourseSession = asyncHandler(async (req, res) => {
   // CRITICAL: Zod's z.coerce.date() expects strings/numbers, NOT Date objects
   // Empty strings should be removed (undefined) so .optional() works correctly
   let body = { ...req.body };
-  
+
   // Convert date to string if it's a Date object
   let dateStr = null;
   if (body.date) {
     if (body.date instanceof Date) {
-      dateStr = body.date.toISOString().split('T')[0];
+      dateStr = body.date.toISOString().split("T")[0];
       body.date = dateStr;
-    } else if (typeof body.date === 'string' && body.date.trim()) {
+    } else if (typeof body.date === "string" && body.date.trim()) {
       dateStr = body.date.trim();
       body.date = dateStr;
     } else {
@@ -36,16 +36,16 @@ export const createCourseSession = asyncHandler(async (req, res) => {
       body.date = dateStr;
     }
   }
-  
+
   // Handle startTime - remove if empty, convert Date objects to ISO strings, combine with date if needed
   if (body.startTime) {
     // If it's an empty string, remove it so .optional() handles it correctly
-    if (typeof body.startTime === 'string' && !body.startTime.trim()) {
+    if (typeof body.startTime === "string" && !body.startTime.trim()) {
       delete body.startTime;
     } else if (body.startTime instanceof Date) {
       // Already a Date object - convert to ISO string
       body.startTime = body.startTime.toISOString();
-    } else if (typeof body.startTime === 'string' && body.startTime.trim()) {
+    } else if (typeof body.startTime === "string" && body.startTime.trim()) {
       const timeStr = body.startTime.trim();
       // Check if it's just a time (HH:MM) and needs date combination
       if (dateStr && timeStr.match(/^\d{2}:\d{2}$/)) {
@@ -58,20 +58,20 @@ export const createCourseSession = asyncHandler(async (req, res) => {
       // Convert to string if not empty
       body.startTime = String(body.startTime);
     }
-  } else if (body.startTime === '') {
+  } else if (body.startTime === "") {
     // Explicitly handle empty string
     delete body.startTime;
   }
-  
+
   // Handle endTime - remove if empty, convert Date objects to ISO strings, combine with date if needed
   if (body.endTime) {
     // If it's an empty string, remove it so .optional() handles it correctly
-    if (typeof body.endTime === 'string' && !body.endTime.trim()) {
+    if (typeof body.endTime === "string" && !body.endTime.trim()) {
       delete body.endTime;
     } else if (body.endTime instanceof Date) {
       // Already a Date object - convert to ISO string
       body.endTime = body.endTime.toISOString();
-    } else if (typeof body.endTime === 'string' && body.endTime.trim()) {
+    } else if (typeof body.endTime === "string" && body.endTime.trim()) {
       const timeStr = body.endTime.trim();
       // Check if it's just a time (HH:MM) and needs date combination
       if (dateStr && timeStr.match(/^\d{2}:\d{2}$/)) {
@@ -84,7 +84,7 @@ export const createCourseSession = asyncHandler(async (req, res) => {
       // Convert to string if not empty
       body.endTime = String(body.endTime);
     }
-  } else if (body.endTime === '') {
+  } else if (body.endTime === "") {
     // Explicitly handle empty string
     delete body.endTime;
   }

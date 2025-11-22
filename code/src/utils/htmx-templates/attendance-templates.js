@@ -74,7 +74,7 @@ export function displayAttendanceCode(poll) {
   const expiresAt = new Date(poll.expiresAt);
   const now = new Date();
   const secondsRemaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
-  
+
   return `
     <section id="attendance-modal" class="attendance-modal__overlay">
       <div class="attendance-modal attendance-modal--code">
@@ -252,7 +252,7 @@ export function displayAttendanceResult(result) {
  */
 export function displaySessionAttendance(data) {
   const { sessionName, attendance } = data;
-  
+
   const backButton = `
     <div class="attendance-table__header-actions">
       <button 
@@ -277,13 +277,17 @@ export function displaySessionAttendance(data) {
     `;
   }
 
-  const rows = attendance.map((record) => `
+  const rows = attendance
+    .map(
+      (record) => `
     <tr class="attendance-table__row">
       <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
       <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
       <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
     </tr>
-  `).join("");
+  `,
+    )
+    .join("");
 
   return `
     <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
@@ -314,21 +318,28 @@ export function displaySessionAttendance(data) {
  */
 export function displayCourseAttendanceSummary(summary) {
   const { sessions, students } = summary;
-  
+
   // Build session headers
-  const sessionHeaders = sessions.map((s) => `
+  const sessionHeaders = sessions
+    .map(
+      (s) => `
     <th class="attendance-summary__header">${escapeHtml(s.name)}</th>
-  `).join("");
+  `,
+    )
+    .join("");
 
   // Build student rows
-  const studentRows = students.map((student) => {
-    const sessionCells = sessions.map((session) => {
-      const record = student.sessions[session.id];
-      const status = record?.present ? "✓" : "—";
-      return `<td class="attendance-summary__cell">${status}</td>`;
-    }).join("");
-    
-    return `
+  const studentRows = students
+    .map((student) => {
+      const sessionCells = sessions
+        .map((session) => {
+          const record = student.sessions[session.id];
+          const status = record?.present ? "✓" : "—";
+          return `<td class="attendance-summary__cell">${status}</td>`;
+        })
+        .join("");
+
+      return `
       <tr class="attendance-summary__row">
         <td class="attendance-summary__cell">${escapeHtml(student.name)}</td>
         <td class="attendance-summary__cell">${escapeHtml(student.email)}</td>
@@ -338,7 +349,8 @@ export function displayCourseAttendanceSummary(summary) {
         </td>
       </tr>
     `;
-  }).join("");
+    })
+    .join("");
 
   return `
     <section class="attendance-summary" role="region" aria-labelledby="attendance-summary-title">
@@ -369,7 +381,7 @@ export function displayCourseAttendanceSummary(summary) {
  */
 export function displayStudentAttendance(data) {
   const { attendance } = data;
-  
+
   if (!attendance || attendance.length === 0) {
     return `
       <section class="attendance-history" role="region" aria-labelledby="attendance-history-title">
@@ -379,7 +391,9 @@ export function displayStudentAttendance(data) {
     `;
   }
 
-  const records = attendance.map((record) => `
+  const records = attendance
+    .map(
+      (record) => `
     <div class="attendance-history__record">
       <div class="attendance-history__course">${escapeHtml(record.courseName)}</div>
       <div class="attendance-history__session">${escapeHtml(record.sessionName)}</div>
@@ -387,7 +401,9 @@ export function displayStudentAttendance(data) {
       <div class="attendance-history__status attendance-history__status--present">Present</div>
       <div class="attendance-history__time">Marked at: ${new Date(record.markedAt).toLocaleString()}</div>
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 
   return `
     <section class="attendance-history" role="region" aria-labelledby="attendance-history-title">
@@ -406,7 +422,7 @@ export function displayStudentAttendance(data) {
  */
 export function displayStudentAttendanceGrouped(data) {
   const { courses } = data;
-  
+
   if (!courses || courses.length === 0) {
     return `
       <section class="attendance-history" role="region" aria-labelledby="attendance-history-title" id="attendance-history-section">
@@ -416,11 +432,14 @@ export function displayStudentAttendanceGrouped(data) {
     `;
   }
 
-  const courseItems = courses.map((course, index) => {
-    const courseId = `course-${course.courseId}`;
-    const isExpanded = index === 0 ? "true" : "false"; // First course expanded by default
-    
-    const attendanceRows = course.attendances.map((attendance) => `
+  const courseItems = courses
+    .map((course, index) => {
+      const courseId = `course-${course.courseId}`;
+      const isExpanded = index === 0 ? "true" : "false"; // First course expanded by default
+
+      const attendanceRows = course.attendances
+        .map(
+          (attendance) => `
       <tr class="attendance-course-table__row">
         <td class="attendance-course-table__cell">${new Date(attendance.timestamp).toLocaleString()}</td>
         <td class="attendance-course-table__cell">${escapeHtml(attendance.sessionName)}</td>
@@ -428,9 +447,11 @@ export function displayStudentAttendanceGrouped(data) {
           <span class="attendance-course-table__status attendance-course-table__status--present">${escapeHtml(attendance.status)}</span>
         </td>
       </tr>
-    `).join("");
+    `,
+        )
+        .join("");
 
-    return `
+      return `
       <div class="attendance-course-item">
         <button 
           class="attendance-course-item__header"
@@ -440,13 +461,13 @@ export function displayStudentAttendanceGrouped(data) {
           onclick="toggleCourseAttendance(this)"
         >
           <span class="attendance-course-item__name">${escapeHtml(course.courseName)}</span>
-          <span class="attendance-course-item__count">${course.attendances.length} session${course.attendances.length !== 1 ? 's' : ''}</span>
+          <span class="attendance-course-item__count">${course.attendances.length} session${course.attendances.length !== 1 ? "s" : ""}</span>
           <span class="attendance-course-item__icon" aria-hidden="true">▼</span>
         </button>
         <div 
-          class="attendance-course-item__content ${isExpanded ? 'attendance-course-item__content--expanded' : ''}"
+          class="attendance-course-item__content ${isExpanded ? "attendance-course-item__content--expanded" : ""}"
           id="${courseId}-content"
-          aria-hidden="${isExpanded ? 'false' : 'true'}"
+          aria-hidden="${isExpanded ? "false" : "true"}"
         >
           <div class="attendance-course-table__container">
             <table class="attendance-course-table" role="table">
@@ -465,7 +486,8 @@ export function displayStudentAttendanceGrouped(data) {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   return `
     <section class="attendance-history" role="region" aria-labelledby="attendance-history-title" id="attendance-history-section">
@@ -522,8 +544,8 @@ export function createStartAttendanceButton(sessionId) {
  * @returns {string} HTML string for the session creation form
  */
 export function createSessionForm(classId) {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-  
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+
   return `
     <section id="session-modal" class="attendance-modal__overlay">
       <div class="attendance-modal">
@@ -718,7 +740,7 @@ function getCodeStatus(poll) {
 function formatSessionTime(session) {
   const date = new Date(session.date);
   const dateStr = date.toLocaleDateString();
-  
+
   if (session.startTime) {
     const time = new Date(session.startTime);
     const timeStr = time.toLocaleTimeString([], {
@@ -737,16 +759,18 @@ function formatSessionTime(session) {
  */
 export function displayProfessorAttendancePage(data) {
   const { classes } = data;
-  
-  const coursePanes = classes.map((klass, courseIndex) => {
-    const isExpanded = courseIndex === 0;
-    return displayCourseItem({
-      course: klass,
-      sessions: klass.sessions,
-      isExpanded,
-    });
-  }).join("");
-  
+
+  const coursePanes = classes
+    .map((klass, courseIndex) => {
+      const isExpanded = courseIndex === 0;
+      return displayCourseItem({
+        course: klass,
+        sessions: klass.sessions,
+        isExpanded,
+      });
+    })
+    .join("");
+
   return `
     <div class="container">
       <section class="attendance-page" role="region" aria-labelledby="attendance-page-title">
@@ -796,13 +820,17 @@ export function displaySessionRecordsPage(data) {
     `;
   }
 
-  const rows = attendance.map((record) => `
+  const rows = attendance
+    .map(
+      (record) => `
     <tr class="attendance-table__row">
       <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
       <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
       <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
     </tr>
-  `).join("");
+  `,
+    )
+    .join("");
 
   return `
     <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
@@ -856,41 +884,49 @@ export function displayCourseRecordsPage(data) {
   }
 
   // Build session header columns
-  const sessionHeaders = sessions.map((session) => `
+  const sessionHeaders = sessions
+    .map(
+      (session) => `
     <th class="attendance-table__header">${escapeHtml(session.name)}</th>
-  `).join("");
+  `,
+    )
+    .join("");
 
   // Build student rows with attendance status for each session
-  const studentRows = students.map((student) => {
-    // Calculate attendance percentage
-    const totalSessions = sessions.length;
-    let attendedSessions = 0;
-    
-    // Build cells for each session and count attendance
-    const sessionCells = sessions.map((session) => {
-      const attendance = student.sessionAttendance[session.id];
-      if (attendance && attendance.present) {
-        attendedSessions++;
-        return `
+  const studentRows = students
+    .map((student) => {
+      // Calculate attendance percentage
+      const totalSessions = sessions.length;
+      let attendedSessions = 0;
+
+      // Build cells for each session and count attendance
+      const sessionCells = sessions
+        .map((session) => {
+          const attendance = student.sessionAttendance[session.id];
+          if (attendance && attendance.present) {
+            attendedSessions++;
+            return `
           <td class="attendance-table__cell attendance-table__cell--present">
             ✓
           </td>
         `;
-      } else {
-        return `
+          } else {
+            return `
           <td class="attendance-table__cell attendance-table__cell--absent">
             —
           </td>
         `;
-      }
-    }).join("");
+          }
+        })
+        .join("");
 
-    // Calculate percentage
-    const attendancePercentage = totalSessions > 0 
-      ? Math.round((attendedSessions / totalSessions) * 100)
-      : 0;
+      // Calculate percentage
+      const attendancePercentage =
+        totalSessions > 0
+          ? Math.round((attendedSessions / totalSessions) * 100)
+          : 0;
 
-    return `
+      return `
       <tr class="attendance-table__row">
         <td class="attendance-table__cell attendance-table__cell--student-name">
           ${escapeHtml(student.name)}
@@ -901,7 +937,8 @@ export function displayCourseRecordsPage(data) {
         </td>
       </tr>
     `;
-  }).join("");
+    })
+    .join("");
 
   return `
     <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
@@ -933,19 +970,21 @@ export function displayCourseRecordsPage(data) {
 export function displayCourseItem(data) {
   const { course, sessions, isExpanded } = data;
   const courseId = `course-${course.id}`;
-  
+
   // Build table rows for sessions
-  const sessionRows = sessions.map((session) => {
-    const latestPoll = session.attendancePolls && session.attendancePolls.length > 0 
-      ? session.attendancePolls[0] 
-      : null;
-    const codeStatus = getCodeStatus(latestPoll);
-    const hasCode = latestPoll !== null;
-    
-    // Determine action button
-    let actionButton;
-    if (hasCode) {
-      actionButton = `
+  const sessionRows = sessions
+    .map((session) => {
+      const latestPoll =
+        session.attendancePolls && session.attendancePolls.length > 0
+          ? session.attendancePolls[0]
+          : null;
+      const codeStatus = getCodeStatus(latestPoll);
+      const hasCode = latestPoll !== null;
+
+      // Determine action button
+      let actionButton;
+      if (hasCode) {
+        actionButton = `
         <button 
           class="btn btn--primary btn--small"
           hx-get="/attendance/course/session/${session.id}/records"
@@ -956,8 +995,8 @@ export function displayCourseItem(data) {
           View Records
         </button>
       `;
-    } else {
-      actionButton = `
+      } else {
+        actionButton = `
         <button 
           class="btn btn--primary btn--small"
           hx-get="/attendance/poll/form?sessionId=${session.id}"
@@ -967,20 +1006,22 @@ export function displayCourseItem(data) {
           Generate Code
         </button>
       `;
-    }
-    
+      }
+
       // Code status cell (no auto-refresh)
-      const statusCell = hasCode ? `
+      const statusCell = hasCode
+        ? `
         <td class="attendance-sessions-table__cell">
           <span class="attendance-code-status attendance-code-status--${codeStatus.status}">
             ${escapeHtml(codeStatus.text)}
           </span>
         </td>
-      ` : `
+      `
+        : `
         <td class="attendance-sessions-table__cell">—</td>
       `;
-    
-    return `
+
+      return `
       <tr class="attendance-sessions-table__row">
         <td class="attendance-sessions-table__cell">${escapeHtml(session.name)}</td>
         <td class="attendance-sessions-table__cell">${formatSessionTime(session)}</td>
@@ -993,9 +1034,12 @@ export function displayCourseItem(data) {
         </td>
       </tr>
     `;
-  }).join("");
-  
-  const sessionsTable = sessions.length > 0 ? `
+    })
+    .join("");
+
+  const sessionsTable =
+    sessions.length > 0
+      ? `
     <div class="attendance-sessions-table__container">
       <table class="attendance-sessions-table" role="table">
         <thead>
@@ -1012,12 +1056,13 @@ export function displayCourseItem(data) {
         </tbody>
       </table>
     </div>
-  ` : `
+  `
+      : `
     <div class="attendance-course-item__empty">
       <p>No sessions yet. Create a session to start taking attendance.</p>
     </div>
   `;
-  
+
   return `
     <div class="attendance-course-item" id="course-item-${course.id}">
       <button 
@@ -1030,7 +1075,7 @@ export function displayCourseItem(data) {
         hx-swap="outerHTML"
       >
         <span class="attendance-course-item__name">${escapeHtml(course.name)}</span>
-        <span class="attendance-course-item__count">${sessions.length} session${sessions.length !== 1 ? 's' : ''}</span>
+        <span class="attendance-course-item__count">${sessions.length} session${sessions.length !== 1 ? "s" : ""}</span>
         <span class="attendance-course-item__icon" aria-hidden="true">${isExpanded ? "▼" : "▶"}</span>
       </button>
       <div 
