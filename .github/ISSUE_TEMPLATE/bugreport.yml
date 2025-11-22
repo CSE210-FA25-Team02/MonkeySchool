@@ -1,0 +1,90 @@
+name: "🐛 Bug Report"
+description: "Report a bug with expected vs actual behavior"
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: "📝 Summary"
+      description: "Short description of the bug."
+      placeholder: "Feature not working correctly in X module"
+      value: "A bug has been observed that affects expected behavior."
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: "❗ What happened?"
+      description: "Describe what went wrong."
+      placeholder: "When I try to..., it instead..."
+      value: |
+        The feature is not functioning as expected under certain conditions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "🤔 Expected Behavior"
+      description: "What should have happened instead?"
+      placeholder: "It should..."
+      value: "The system should behave consistently and follow the defined specifications."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "🧪 Steps to Reproduce"
+      description: "How can we reproduce the issue?"
+      placeholder: |
+        1. Go to page X
+        2. Click on Y
+        3. Observe incorrect result
+      value: |
+        1. Go to the affected page/module  
+        2. Perform the action that triggers the issue  
+        3. Observe the incorrect behavior  
+    validations:
+      required: true
+
+  - type: textarea
+    id: media
+    attributes:
+      label: "📸 Screenshots / Videos"
+      description: "Attach or link any visual evidence."
+      placeholder: "Drag and drop screenshots or screen recordings here."
+      value: "_No media attached yet._"
+
+  - type: input
+    id: environment
+    attributes:
+      label: "🧭 Environment"
+      description: "Provide details about where the bug occurred."
+      placeholder: "Browser, OS, device, commit hash"
+      value: "Platform: Web | Browser: Chrome (latest) | Device: Laptop | OS: macOS"
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "🔥 Severity"
+      options:
+        - 🟥 Critical
+        - 🟧 High
+        - 🟨 Medium
+        - 🟩 Low
+      description: "How severe is the bug?"
+      default: 2  # Pre-filled as Medium
+    validations:
+      required: true
+
+  - type: textarea
+    id: related
+    attributes:
+      label: "📂 Related Issues or Logs"
+      placeholder: "Paste logs or link related issues"
+      value: "_No related issues linked._"

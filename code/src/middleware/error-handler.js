@@ -19,6 +19,8 @@ import { readFile } from "fs/promises";
 
 /**
  * Handle Prisma-specific errors
+ * @param {Error} err Prisma error instance
+ * @returns {Object} Error response with statusCode and message
  */
 function handlePrismaError(err) {
   switch (err.code) {
@@ -47,6 +49,10 @@ function handlePrismaError(err) {
 
 /**
  * Global error handler middleware for HTMX
+ * @param {Error} err Error object
+ * @param {Object} req Incoming request
+ * @param {Object} res Outgoing response
+ * @returns {void}
  */
 export function errorHandler(err, req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -103,6 +109,9 @@ export function errorHandler(err, req, res) {
 
 /**
  * 404 Not Found handler for HTMX - Shows "Under Construction" page
+ * @param {Object} req - Incoming request
+ * @param {Object} res - Outcoming response
+ * @returns {Promise<void>}
  */
 export async function notFoundHandler(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
@@ -122,11 +131,15 @@ export async function notFoundHandler(req, res) {
             <div class="not-implemented__actions">
                 <a href="/dashboard" 
                    class="btn btn--primary"
-                   ${isHtmxRequest ? `
+                   ${
+                     isHtmxRequest
+                       ? `
                      hx-get="/dashboard"
                      hx-target="#main-content"
                      hx-push-url="true"
-                   ` : ''}>
+                   `
+                       : ""
+                   }>
                     Go Back to Dashboard
                 </a>
             </div>
@@ -143,11 +156,12 @@ export async function notFoundHandler(req, res) {
     try {
       const indexHtmlPath = path.join(__dirname, "..", "public", "index.html");
       const html = await readFile(indexHtmlPath, "utf8");
-      
+
       // Replace the main content with the not-implemented message
       // Find the main-content section and replace everything inside it
       // The main tag structure: <main id="main-content" ...> ... </main>
-      const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
+      const mainTagRegex =
+        /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
       const updatedHtml = html.replace(
         mainTagRegex,
         (match, openingTag, oldContent, closingTag) => {
@@ -155,7 +169,7 @@ export async function notFoundHandler(req, res) {
           return `${openingTag}
         ${errorHtml}
     ${closingTag}`;
-        }
+        },
       );
       res.status(404).send(updatedHtml);
     } catch (err) {
@@ -163,7 +177,12 @@ export async function notFoundHandler(req, res) {
       // Fallback: serve index.html as-is and let client-side handle it
       // Or use a simpler approach - just serve index.html and the URL will trigger client-side 404 handling
       try {
-        const indexHtmlPath = path.join(__dirname, "..", "public", "index.html");
+        const indexHtmlPath = path.join(
+          __dirname,
+          "..",
+          "public",
+          "index.html",
+        );
         const html = await readFile(indexHtmlPath, "utf8");
         res.status(404).send(html);
       } catch (fallbackErr) {

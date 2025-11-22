@@ -6,7 +6,10 @@ import {
   createErrorMessage,
   createSuccessMessage,
 } from "../utils/html-templates.js";
-import {createUserProfile, createProfileLinkField} from "../utils/components/profile-page.js"
+import {
+  createUserProfile,
+  createProfileLinkField,
+} from "../utils/components/profile-page.js";
 
 /**
  * Get user by ID
@@ -25,7 +28,9 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
   const mode = req.query.mode === "edit" ? "edit" : "view";
 
   try {
-    const user = await userService.getUserById(req.params.id);
+    const userId = req.user?.id;
+    if (!userId) throw new NotFoundError("User not authenticated");
+    const user = await userService.getUserById(userId);
     if (!user) throw new NotFoundError("User not found");
 
     const profileHtml = createUserProfile(user, { mode });
@@ -67,7 +72,7 @@ export const updateUser = asyncHandler(async (req, res) => {
     const html =
       createSuccessMessage("Profile updated successfully.") +
       createUserProfile(updatedUser, { mode: "view" });
-    res.set("HX-Push", `/api/users/${updatedUser.id}/profile`);
+    res.set("HX-Push", `/users/profile`);
     res.send(html);
   } else {
     res.json(updatedUser);
@@ -85,6 +90,7 @@ export const renderProfileLinkField = asyncHandler(async (req, res) => {
     return;
   }
 
+  // Optionally, you could check req.user here if needed for context
   const html = createProfileLinkField("", { type });
   res.send(html);
 });

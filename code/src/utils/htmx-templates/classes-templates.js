@@ -1,13 +1,14 @@
 /**
  * Make form to create a new class
+ * @param {Array<string>} quarters List of quarter options
+ * @returns {string} HTML form for class creation form
  */
-
 export function createClassForm(quarters) {
-    return `
+  return `
         <section id="modal" class="classes-modal__overlay">
             <div class="classes-modal">
                 <h2>Create New Class</h2>
-                <form hx-post="/api/classes/create" hx-target="#modal" hx-swap="outerHTML">
+                <form hx-post="/classes/create" hx-target="#modal" hx-swap="outerHTML">
                     <label class="classes-modal__label">
                         Class Name:
                         <input name="name" class="classes-modal__input" required>
@@ -16,22 +17,27 @@ export function createClassForm(quarters) {
                     <label class="classes-modal__label">
                         Quarter:
                         <select name="quarter" class="classes-modal__select" required>
-                            ${quarters.map(q => `<option value="${q}">${q}</option>`).join("")}
+                            ${quarters.map((q) => `<option value="${q}">${q}</option>`).join("")}
                         </select>
                     </label>
             
                     <div class="classes-modal__actions">
                         <button class="classes-modal__button classes-modal__button--primary">Create</button>
-                        <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/api/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Cancel</button>
+                        <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Cancel</button>
                     </div>
                 </form>
             </div>
         </section>
     `;
-  }  
+}
 
+/**
+ * Display invite code in HTML modal for created class
+ * @param {string} inviteURL Invite URL to display
+ * @returns {string} HTML modal showing invite link
+ */
 export function displayInvite(inviteURL) {
-    return `
+  return `
       <section id="modal" class="classes-modal__overlay">
         <div class="modal">
           <h2>Class Created!</h2>
@@ -41,31 +47,40 @@ export function displayInvite(inviteURL) {
             <button id="copy-btn" class="classes-modal__button classes-modal__button--primary">Copy</button>
           </section>
           <section class="classes-modal__actions">
-            <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/api/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Close</button>
+            <button type="button" class="classes-modal__button classes-modal__button--secondary" hx-get="/classes/close-form" hx-target="#modal" hx-swap="outerHTML">Close</button>
           </section>
         </div>
       </section>`;
-  }
+}
 
-export function createClassPage (user) {
-    const isProfessor = user?.isProf || true;
+/**
+ * Create class page component for a user
+ * @param {Object} user - User with role information
+ * @returns {string} HTML for the class dashboard page
+ */
+export function createClassPage(user) {
+  const isProfessor = user?.isProf || true;
 
-    //TODO: This is temporary, please change
-    return `
+  //TODO: This is temporary, please change
+  return `
         <body>
             <h1>Your Classes</h1>
             <div id="modal-container"></div>
 
-            ${isProfessor ? `
+            ${
+              isProfessor
+                ? `
                 <button
-                    hx-get="/api/classes/form"
+                    hx-get="/classes/form"
                     hx-target="#modal-container"
                     hx-swap="beforeend"
                     class="classes-modal__button classes-modal__button--primary"
                 >
                     Create New Class
                 </button>
-            ` : ""}
+            `
+                : ""
+            }
 
             <script>
                 // Listen for HTMX swaps
