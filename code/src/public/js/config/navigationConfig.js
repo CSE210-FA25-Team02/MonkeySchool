@@ -24,9 +24,8 @@ export const navigationConfig = {
       subMenu: [
         { name: "My Classes", path: "/classes/my-classes" },
         { name: "Courses", path: "/courses/list" },
-        { name: "Schedule", path: "/courses/schedule" },
-        { name: "Attendance", path: "/courses/attendance" },
-      ],
+        { name: "Schedule", path: "/courses/schedule" }
+      ]
     },
     {
       name: "Account",

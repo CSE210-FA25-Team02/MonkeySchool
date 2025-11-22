@@ -14,5 +14,8 @@ model Class {
   // Activity Punches made by TAs and Students
   activities Activity[]
 
+  // A class has multiple course sessions
+  sessions CourseSession[]
+
   @@map("classes")
 }

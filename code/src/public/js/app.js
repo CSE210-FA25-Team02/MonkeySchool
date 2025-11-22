@@ -58,4 +58,39 @@ if (typeof htmx !== "undefined") {
   });
 }
 
+// Load content for the current route on initial page load
+// This handles direct navigation to routes like /attendance
+if (typeof htmx !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    const path = window.location.pathname;
+    const mainContent = document.getElementById("main-content");
+    
+    // Skip loading content for root and login pages
+    if (path === "/" || path === "/login" || !mainContent) {
+      return;
+    }
+    
+    // Check if main content has meaningful, route-specific content
+    // (not just error messages or empty containers)
+    const innerText = (mainContent.innerText || mainContent.textContent || "").trim();
+    const hasRouteContent = innerText.length > 50 && // Has substantial content
+                           !mainContent.querySelector('.not-implemented') && // Not error page
+                           (mainContent.querySelector('.attendance-page') || // Has attendance content
+                            mainContent.querySelector('section') || // Has any section
+                            innerText.length > 100); // Or just has lots of text
+    
+    // If main content doesn't have route-specific content, load it via HTMX
+    if (!hasRouteContent) {
+      // Small delay to ensure HTMX and all components are fully initialized
+      setTimeout(() => {
+        htmx.ajax("GET", path, {
+          target: "#main-content",
+          swap: "innerHTML",
+          headers: { "HX-Request": "true" }
+        });
+      }, 200);
+    }
+  });
+}
+
 export { initApp };
