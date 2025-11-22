@@ -29,7 +29,7 @@ export function requireRole(resourceType, allowedRoles) {
       const role = roles.find(
         (r) =>
           r[`${resourceType}Id`] === resourceId &&
-          r[resourceType].quarter === quarter,
+          r[resourceType].quarter === quarter
       );
 
       if (!role) {
