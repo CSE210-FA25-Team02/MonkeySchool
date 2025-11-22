@@ -1,0 +1,20 @@
+model AttendancePoll {
+  id              String   @id @default(cuid())
+  sessionId       String
+  createdBy       String // User ID of professor who created the poll
+  code            String   @unique // 8-digit unique code
+  expiresAt       DateTime // When the poll expires
+  durationMinutes Int // Duration in minutes
+  active          Boolean  @default(true) // Convenience flag
+  createdAt       DateTime @default(now())
+  metadata        Json? // Optional custom data
+
+  session CourseSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  creator User               @relation("PollCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  records AttendanceRecord[]
+
+  @@index([sessionId])
+  @@index([expiresAt])
+  @@index([code])
+  @@map("attendance_polls")
+}

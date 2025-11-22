@@ -115,3 +115,17 @@ export class InternalServerError extends ApiError {
     super(message, 500, false);
   }
 }
+
+/**
+ * 410 Gone (e.g., expired resource)
+ * @class GoneError
+ */
+export class GoneError extends ApiError {
+  /**
+   * Create a GoneError
+   * @param {string} [message="Resource has expired"] - Error message
+   */
+  constructor(message = "Resource has expired") {
+    super(message, 410);
+  }
+}

@@ -15,6 +15,7 @@
 @import "./components/classes-modal.css";
 @import "./components/profile-page.css";
 @import './punchcard.css';
+@import './components/attendance.css';
 
 /* ============================================================================
    CSS CUSTOM PROPERTIES (CSS Variables)
