@@ -5,6 +5,13 @@ import { prisma } from "../lib/prisma.js";
 
 /**
  * Create a new course session
+ * @param {Object} root0 - Session data object
+ * @param {string} root0.classId - ID of the class
+ * @param {string} root0.name - Name of the session
+ * @param {Date} root0.date - Date of the session
+ * @param {string} [root0.startTime] - Start time of the session
+ * @param {string} [root0.endTime] - End time of the session
+ * @returns {Promise<Object>} Created course session
  */
 export async function createCourseSession({
   classId,
@@ -29,6 +36,8 @@ export async function createCourseSession({
 
 /**
  * Get a course session by ID
+ * @param {string} id - ID of the course session
+ * @returns {Promise<Object|null>} Course session or null if not found
  */
 export async function getCourseSessionById(id) {
   return prisma.courseSession.findUnique({
@@ -51,6 +60,8 @@ export async function getCourseSessionById(id) {
 
 /**
  * Get all sessions for a class
+ * @param {string} classId - ID of the class
+ * @returns {Promise<Array>} Array of course sessions
  */
 export async function getSessionsByClassId(classId) {
   return prisma.courseSession.findMany({
@@ -80,6 +91,9 @@ export async function getSessionsByClassId(classId) {
 
 /**
  * Get sessions for a class on a specific date (for "Today's sessions")
+ * @param {string} classId - ID of the class
+ * @param {Date} date - Date to filter sessions
+ * @returns {Promise<Array>} Array of course sessions for the date
  */
 export async function getSessionsByClassIdAndDate(classId, date) {
   const startOfDay = new Date(date);
@@ -118,6 +132,9 @@ export async function getSessionsByClassIdAndDate(classId, date) {
 
 /**
  * Update a course session
+ * @param {string} id - ID of the course session
+ * @param {Object} data - Data to update
+ * @returns {Promise<Object>} Updated course session
  */
 export async function updateCourseSession(id, data) {
   return prisma.courseSession.update({
@@ -133,6 +150,8 @@ export async function updateCourseSession(id, data) {
 
 /**
  * Delete a course session
+ * @param {string} id - ID of the course session
+ * @returns {Promise<Object>} Deleted course session
  */
 export async function deleteCourseSession(id) {
   return prisma.courseSession.delete({

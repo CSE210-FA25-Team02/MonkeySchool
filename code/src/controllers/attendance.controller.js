@@ -9,7 +9,6 @@ import { asyncHandler } from "../utils/async-handler.js";
 import {
   NotFoundError,
   ForbiddenError,
-  BadRequestError,
 } from "../utils/api-error.js";
 import {
   createPollSchema,
@@ -17,10 +16,8 @@ import {
 } from "../validators/attendance.validator.js";
 import {
   createStartAttendanceModal,
-  displayAttendanceCode,
 } from "../utils/htmx-templates/attendance-templates.js";
 import { env } from "../config/env.js";
-import { escapeHtml } from "../utils/html-templates.js";
 import path from "path";
 import { fileURLToPath } from "url";
 

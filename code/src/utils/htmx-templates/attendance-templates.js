@@ -7,6 +7,9 @@ import { escapeHtml } from "../html-templates.js";
 
 /**
  * Create a modal form to start attendance for a session
+ * @param {string} sessionId - ID of the course session
+ * @param {number} [defaultDuration=10] - Default duration in minutes
+ * @returns {string} HTML string for the modal form
  */
 export function createStartAttendanceModal(sessionId, defaultDuration = 10) {
   return `
@@ -64,6 +67,8 @@ export function createStartAttendanceModal(sessionId, defaultDuration = 10) {
 
 /**
  * Display the generated attendance code with timer
+ * @param {Object} poll - Attendance poll object
+ * @returns {string} HTML string for the attendance code display
  */
 export function displayAttendanceCode(poll) {
   const expiresAt = new Date(poll.expiresAt);
@@ -138,6 +143,7 @@ export function displayAttendanceCode(poll) {
 
 /**
  * Student code input component
+ * @returns {string} HTML string for the attendance code input form
  */
 export function createAttendanceCodeInput() {
   return `
@@ -183,6 +189,8 @@ export function createAttendanceCodeInput() {
 
 /**
  * Display attendance submission result
+ * @param {Object} result - Result object with success/error status
+ * @returns {string} HTML string for the result display
  */
 export function displayAttendanceResult(result) {
   if (result.success) {
@@ -239,9 +247,11 @@ export function displayAttendanceResult(result) {
 
 /**
  * Display session attendance table (for professors)
+ * @param {Object} data - Session attendance data
+ * @returns {string} HTML string for the session attendance table
  */
 export function displaySessionAttendance(data) {
-  const { sessionId, sessionName, polls, attendance } = data;
+  const { sessionName, attendance } = data;
   
   const backButton = `
     <div class="attendance-table__header-actions">
@@ -299,9 +309,11 @@ export function displaySessionAttendance(data) {
 
 /**
  * Display course attendance summary (for professors)
+ * @param {Object} summary - Course attendance summary data
+ * @returns {string} HTML string for the course attendance summary table
  */
 export function displayCourseAttendanceSummary(summary) {
-  const { courseId, sessions, students } = summary;
+  const { sessions, students } = summary;
   
   // Build session headers
   const sessionHeaders = sessions.map((s) => `
@@ -352,9 +364,11 @@ export function displayCourseAttendanceSummary(summary) {
 
 /**
  * Display student's personal attendance history
+ * @param {Object} data - Student attendance data
+ * @returns {string} HTML string for the student attendance history
  */
 export function displayStudentAttendance(data) {
-  const { studentId, attendance } = data;
+  const { attendance } = data;
   
   if (!attendance || attendance.length === 0) {
     return `
@@ -387,9 +401,11 @@ export function displayStudentAttendance(data) {
 
 /**
  * Display student's personal attendance history grouped by course (collapsible)
+ * @param {Object} data - Student attendance data grouped by course
+ * @returns {string} HTML string for the grouped attendance history
  */
 export function displayStudentAttendanceGrouped(data) {
-  const { studentId, courses } = data;
+  const { courses } = data;
   
   if (!courses || courses.length === 0) {
     return `
@@ -483,6 +499,8 @@ export function displayStudentAttendanceGrouped(data) {
 
 /**
  * Start Attendance button component
+ * @param {string} sessionId - ID of the course session
+ * @returns {string} HTML string for the start attendance button
  */
 export function createStartAttendanceButton(sessionId) {
   return `
@@ -500,6 +518,8 @@ export function createStartAttendanceButton(sessionId) {
 
 /**
  * Create a modal form to create a new course session
+ * @param {string} classId - ID of the class
+ * @returns {string} HTML string for the session creation form
  */
 export function createSessionForm(classId) {
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
@@ -644,6 +664,8 @@ export function createSessionForm(classId) {
 
 /**
  * Create button to open session creation form
+ * @param {string} classId - ID of the class
+ * @returns {string} HTML string for the session creation button
  */
 export function createSessionButton(classId) {
   return `
@@ -661,6 +683,8 @@ export function createSessionButton(classId) {
 
 /**
  * Check if a poll is expired
+ * @param {Object|null} poll - Poll object to check
+ * @returns {boolean} True if poll is expired or null
  */
 function isPollExpired(poll) {
   if (!poll || !poll.expiresAt) {
@@ -673,6 +697,8 @@ function isPollExpired(poll) {
 
 /**
  * Get code status (active/expired)
+ * @param {Object|null} poll - Poll object to check
+ * @returns {Object} Status object with status and text
  */
 function getCodeStatus(poll) {
   if (!poll) {
@@ -686,6 +712,8 @@ function getCodeStatus(poll) {
 
 /**
  * Format time for display
+ * @param {Object} session - Session object with date and startTime
+ * @returns {string} Formatted time string
  */
 function formatSessionTime(session) {
   const date = new Date(session.date);
@@ -704,6 +732,8 @@ function formatSessionTime(session) {
 
 /**
  * Display professor attendance page with course-based organization
+ * @param {Object} data - Professor attendance page data
+ * @returns {string} HTML string for the professor attendance page
  */
 export function displayProfessorAttendancePage(data) {
   const { classes } = data;
@@ -734,6 +764,8 @@ export function displayProfessorAttendancePage(data) {
 
 /**
  * Get code status fragment for HTMX polling
+ * @param {Object|null} poll - Attendance poll object or null
+ * @returns {string} HTML string for the code status fragment
  */
 export function getCodeStatusFragment(poll) {
   const codeStatus = getCodeStatus(poll);
@@ -749,9 +781,11 @@ export function getCodeStatusFragment(poll) {
 
 /**
  * Display session-wise attendance records page
+ * @param {Object} data - Session records page data
+ * @returns {string} HTML string for the session records page
  */
 export function displaySessionRecordsPage(data) {
-  const { sessionId, sessionName, courseName, courseId, attendance } = data;
+  const { sessionName, courseName, attendance } = data;
 
   if (!attendance || attendance.length === 0) {
     return `
@@ -795,9 +829,11 @@ export function displaySessionRecordsPage(data) {
 /**
  * Display course-wise attendance records page
  * Pivoted table: students as rows, sessions as columns
+ * @param {Object} data - Course records page data
+ * @returns {string} HTML string for the course records page
  */
 export function displayCourseRecordsPage(data) {
-  const { courseId, courseName, sessions, students } = data;
+  const { courseName, sessions, students } = data;
 
   if (!sessions || sessions.length === 0) {
     return `
@@ -891,6 +927,8 @@ export function displayCourseRecordsPage(data) {
 
 /**
  * Display course item (for toggling - includes button and content)
+ * @param {Object} data - Course item data
+ * @returns {string} HTML string for the course item
  */
 export function displayCourseItem(data) {
   const { course, sessions, isExpanded } = data;

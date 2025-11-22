@@ -11,6 +11,9 @@ import {
 
 /**
  * Check if a student is enrolled in a class
+ * @param {string} studentId - User ID of the student
+ * @param {string} classId - ID of the class
+ * @returns {Promise<boolean>} True if student is enrolled, false otherwise
  */
 async function isStudentEnrolled(studentId, classId) {
   const enrollment = await prisma.classRole.findFirst({
@@ -119,6 +122,8 @@ export async function submitAttendance(
 
 /**
  * Get all attendance records for a session
+ * @param {string} sessionId - ID of the course session
+ * @returns {Promise<Array>} Array of attendance records for the session
  */
 export async function getSessionAttendance(sessionId) {
   return prisma.attendanceRecord.findMany({
@@ -149,6 +154,8 @@ export async function getSessionAttendance(sessionId) {
 
 /**
  * Get attendance summary for a course (all sessions)
+ * @param {string} courseId - ID of the course
+ * @returns {Promise<Object>} Attendance summary with sessions and students
  */
 export async function getCourseAttendanceSummary(courseId) {
   // Get all sessions for the course
@@ -247,6 +254,8 @@ export async function getCourseAttendanceSummary(courseId) {
 /**
  * Get attendance history for a student
  * Returns flat list of records (for backward compatibility)
+ * @param {string} studentId - User ID of the student
+ * @returns {Promise<Array>} Array of attendance records
  */
 export async function getStudentAttendance(studentId) {
   const records = await prisma.attendanceRecord.findMany({
@@ -292,6 +301,8 @@ export async function getStudentAttendance(studentId) {
 /**
  * Get all attendance records for a course (across all sessions)
  * Returns data structured for pivoted table display (students as rows, sessions as columns)
+ * @param {string} courseId - ID of the course
+ * @returns {Promise<Object>} Course attendance records in pivoted format
  */
 export async function getCourseAttendanceRecords(courseId) {
   // Get all sessions for the course
@@ -405,6 +416,8 @@ export async function getCourseAttendanceRecords(courseId) {
 /**
  * Get attendance history for a student grouped by course
  * Returns course-wise grouped data for detailed view
+ * @param {string} studentId - User ID of the student
+ * @returns {Promise<Array>} Array of courses with attendance records
  */
 export async function getStudentAttendanceGroupedByCourse(studentId) {
   const records = await prisma.attendanceRecord.findMany({

@@ -7,6 +7,8 @@ import { env } from "../config/env.js";
 
 /**
  * Check if a code is unique (not already in use by an active poll)
+ * @param {string} code - 8-digit attendance code
+ * @returns {Promise<boolean>} True if code is unique, false otherwise
  */
 async function isCodeUnique(code) {
   const existing = await prisma.attendancePoll.findUnique({
@@ -94,6 +96,8 @@ export async function findActivePollByCode(code) {
 
 /**
  * Get all polls for a session
+ * @param {string} sessionId - ID of the course session
+ * @returns {Promise<Array>} Array of polls for the session
  */
 export async function getPollsBySessionId(sessionId) {
   return prisma.attendancePoll.findMany({
@@ -122,6 +126,8 @@ export async function getPollsBySessionId(sessionId) {
 
 /**
  * Deactivate a poll (close it early)
+ * @param {string} pollId - ID of the poll to deactivate
+ * @returns {Promise<Object>} Updated poll with active set to false
  */
 export async function deactivatePoll(pollId) {
   return prisma.attendancePoll.update({
@@ -136,6 +142,8 @@ export async function deactivatePoll(pollId) {
 
 /**
  * Check if a poll is expired (server-side validation)
+ * @param {Object|null} poll - Poll object to check
+ * @returns {boolean} True if poll is expired or null, false otherwise
  */
 export function isPollExpired(poll) {
   if (!poll) {
