@@ -1,0 +1,395 @@
+/*
+ * Member Card Styles
+ * Extracted from class.controller.js renderMemberCard() function
+ * Contains styles for individual member cards with role-specific themes
+ */
+
+/* ===== BASE MEMBER CARD STYLES ===== */
+.member-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.member-card:hover,
+.member-card:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+}
+
+.member-card:focus {
+  border-color: var(--color-primary);
+}
+
+.member-card__inner {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== CARD HEADER ===== */
+.member-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.member-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.member-status {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.member-role-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== CARD BODY ===== */
+.member-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.member-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.2;
+}
+
+.member-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.member-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+}
+
+.member-detail i {
+  width: 16px;
+  font-size: 0.75rem;
+  color: var(--color-neutral-500);
+}
+
+.member-bio-container {
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.member-bio {
+  font-size: 0.875rem;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== CONTACT SECTION ===== */
+.member-contacts {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.contacts-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-neutral-600);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.contact-links {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-neutral-100);
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.contact-link:hover,
+.contact-link:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contact-link i {
+  font-size: 0.875rem;
+}
+
+.contact-label {
+  font-weight: 500;
+}
+
+/* ===== ROLE-SPECIFIC THEMES ===== */
+
+/* Professor - Blue Theme */
+.member-card--professor:hover {
+  border-color: #3b82f6;
+}
+.member-card--professor .member-status {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.member-card--professor .member-role-badge {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.member-card--professor .contact-link--email {
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.member-card--professor .contact-link--email:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.member-card--professor .contact-link--phone {
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.member-card--professor .contact-link--phone:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.member-card--professor .contact-link--github {
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.member-card--professor .contact-link--github:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* TA - Red Theme */
+.member-card--ta:hover {
+  border-color: #ef4444;
+}
+.member-card--ta .member-status {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+.member-card--ta .member-role-badge {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+.member-card--ta .contact-link--email {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+.member-card--ta .contact-link--email:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.member-card--ta .contact-link--phone {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+.member-card--ta .contact-link--phone:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.member-card--ta .contact-link--github {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+.member-card--ta .contact-link--github:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Tutor - Green Theme */
+.member-card--tutor:hover {
+  border-color: #10b981;
+}
+.member-card--tutor .member-status {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.member-card--tutor .member-role-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.member-card--tutor .contact-link--email {
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+.member-card--tutor .contact-link--email:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.member-card--tutor .contact-link--phone {
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+.member-card--tutor .contact-link--phone:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.member-card--tutor .contact-link--github {
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+.member-card--tutor .contact-link--github:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Student - Orange Theme */
+.member-card--student:hover {
+  border-color: #f59e0b;
+}
+.member-card--student .member-status {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.member-card--student .member-role-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.member-card--student .contact-link--email {
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.member-card--student .contact-link--email:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.member-card--student .contact-link--phone {
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.member-card--student .contact-link--phone:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.member-card--student .contact-link--github {
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.member-card--student .contact-link--github:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 480px) {
+  .member-card__inner {
+    padding: 1rem;
+  }
+
+  .member-card__header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .avatar-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .member-name {
+    font-size: 1.125rem;
+    text-align: center;
+  }
+
+  .contact-links {
+    justify-content: center;
+  }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+  .member-card,
+  .contact-link {
+    transition: none;
+  }
+  
+  .member-card:hover,
+  .member-card:focus {
+    transform: none;
+  }
+  
+  .contact-link:hover,
+  .contact-link:focus {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .member-card {
+    border: 2px solid currentColor;
+  }
+  
+  .contact-link {
+    border: 2px solid currentColor;
+  }
+}

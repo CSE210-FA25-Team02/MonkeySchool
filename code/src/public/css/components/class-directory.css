@@ -1,0 +1,313 @@
+/*
+ * Class Directory Styles
+ * Extracted from class.controller.js renderDirectoryHTML() function
+ * Contains styles for class directory layout, sections, and role themes
+ */
+
+/* ===== MAIN DIRECTORY LAYOUT ===== */
+.class-directory {
+  padding: 2rem 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.directory-header {
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+
+.directory-header__main {
+  text-align: center;
+}
+
+.directory-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary-bg);
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.directory-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  color: var(--color-neutral-600);
+}
+
+.directory-quarter,
+.directory-total {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.directory-quarter i,
+.directory-total i {
+  color: var(--color-primary-bg);
+}
+
+/* ===== EMPTY STATE ===== */
+.directory-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  margin: 0 1rem;
+}
+
+.directory-empty__icon {
+  font-size: 4rem;
+  color: var(--color-neutral-400);
+  margin-bottom: 1.5rem;
+}
+
+.directory-empty__title {
+  font-size: 1.5rem;
+  color: var(--color-neutral-700);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.directory-empty__message {
+  color: var(--color-neutral-600);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ===== SECTION STYLING ===== */
+.directory-section {
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  background: white;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.section-header__main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.section-info h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.section-count {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+  font-weight: 500;
+}
+
+.section-badge {
+  min-width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* ===== ROLE THEMES ===== */
+
+/* Professor Theme - Blue */
+.directory-section--professors .section-header::before {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.section-icon--professors {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+.directory-section--professors .section-title {
+  color: #1d4ed8;
+}
+.section-badge--professors {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+/* TA Theme - Red */
+.directory-section--tas .section-header::before {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+.section-icon--tas {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+.directory-section--tas .section-title {
+  color: #dc2626;
+}
+.section-badge--tas {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Tutor Theme - Green */
+.directory-section--tutors .section-header::before {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.section-icon--tutors {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.directory-section--tutors .section-title {
+  color: #059669;
+}
+.section-badge--tutors {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* Groups Theme - Purple */
+.directory-section--groups .section-header::before {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+.section-icon--groups {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+.directory-section--groups .section-title {
+  color: #7c3aed;
+}
+.section-badge--groups {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+/* Ungrouped Theme - Orange */
+.directory-section--ungrouped .section-header::before {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.section-icon--ungrouped {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.directory-section--ungrouped .section-title {
+  color: #d97706;
+}
+.section-badge--ungrouped {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+/* ===== GRID LAYOUTS ===== */
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.groups-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .directory-title {
+    font-size: 2rem;
+  }
+
+  .directory-meta {
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .section-header__main {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .section-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .section-badge {
+    min-width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .members-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .groups-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .class-directory {
+    padding: 1rem 0;
+  }
+
+  .directory-header {
+    margin-bottom: 2rem;
+  }
+
+  .directory-title {
+    font-size: 1.75rem;
+  }
+
+  .directory-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .section-header {
+    margin: 0 -0.5rem 1.5rem;
+  }
+
+  .directory-section {
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+  }
+}
