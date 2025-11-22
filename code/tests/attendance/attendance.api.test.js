@@ -459,7 +459,7 @@ describe("Attendance API", () => {
 
   describe("GET /attendance/session/:sessionId/code-status", () => {
     it("should return code status for professor", async () => {
-      const poll = await attendancePollService.createAttendancePoll(
+      await attendancePollService.createAttendancePoll(
         session.id,
         10,
         professor.id,
