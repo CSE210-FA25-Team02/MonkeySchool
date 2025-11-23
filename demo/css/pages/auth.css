@@ -1,0 +1,132 @@
+/* =========================================
+   Authentication Page Styles
+   ========================================= */
+.auth-container {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Left Brand Side */
+.auth-brand {
+  background: var(--color-brand-deep);
+  color: white;
+  padding: var(--space-12);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-brand::before {
+  /* Abstract Leaf Pattern Overlay */
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 60%),
+              radial-gradient(circle at 80% 20%, rgba(242, 169, 59, 0.05) 0%, transparent 40%);
+  z-index: 0;
+}
+
+.brand-content {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-logo-large {
+  font-size: 48px;
+  margin-bottom: var(--space-6);
+  color: var(--color-accent-gold);
+}
+
+.brand-heading {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-4);
+  line-height: 1.2;
+}
+
+.brand-text {
+  font-size: var(--text-lg);
+  opacity: 0.8;
+  max-width: 400px;
+}
+
+/* Right Form Side */
+.auth-form-wrapper {
+  background: var(--color-bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.auth-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-2);
+  color: var(--color-text-main);
+}
+
+.auth-subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-8);
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3);
+  background: white;
+  border: 1px solid var(--color-bg-canvas);
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-main);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-fast);
+  margin-bottom: var(--space-6);
+}
+
+.btn-google:hover {
+  background: var(--color-bg-canvas);
+  border-color: var(--color-brand-medium);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: var(--space-6) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-bg-canvas);
+}
+
+.divider::before { margin-right: var(--space-4); }
+.divider::after { margin-left: var(--space-4); }
+

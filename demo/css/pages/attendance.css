@@ -1,0 +1,213 @@
+/* =========================================
+   Attendance Live Page Styles
+   ========================================= */
+
+/* Split Layout for Demo Purpose (In real app, role based) */
+.attendance-demo-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+  height: 100%;
+}
+
+.demo-column {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--color-text-muted);
+  color: white;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: bold;
+  border-bottom-right-radius: var(--radius-md);
+  z-index: 10;
+}
+
+/* =========================================
+   Professor View (The Big Screen)
+   ========================================= */
+.prof-view {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: radial-gradient(circle at center, #ffffff 0%, #f8f9fa 100%);
+}
+
+.poll-status-badge {
+  background: #DEF7EC;
+  color: #03543F;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-weight: bold;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pulsing-dot {
+  width: 8px;
+  height: 8px;
+  background: #10B981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.big-code-display {
+  font-family: var(--font-mono);
+  font-size: 64px;
+  letter-spacing: 8px;
+  font-weight: 700;
+  color: var(--color-brand-deep);
+  margin-bottom: var(--space-8);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.timer-ring {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: var(--space-8);
+}
+
+/* SVG Timer Circle would go here */
+.timer-circle {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--text-3xl);
+  font-weight: bold;
+  color: var(--color-text-main);
+}
+
+.live-stats {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-num {
+  font-size: var(--text-2xl);
+  font-weight: bold;
+  color: var(--color-brand-deep);
+}
+
+.stat-desc {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+/* =========================================
+   Student View (The Input)
+   ========================================= */
+.student-view {
+  justify-content: center;
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.input-instruction {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.code-input-group {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.digit-input {
+  width: 48px;
+  height: 56px;
+  border: 2px solid var(--color-bg-canvas);
+  border-radius: var(--radius-md);
+  font-size: var(--text-xl);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: bold;
+  color: var(--color-text-main);
+  transition: all var(--transition-fast);
+}
+
+.digit-input:focus {
+  outline: none;
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 0 4px rgba(242, 169, 59, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn-submit-code {
+  background: var(--color-brand-deep);
+  color: white;
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: bold;
+  font-size: var(--text-lg);
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-submit-code:hover {
+  background: var(--color-brand-medium);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+}
+
+/* Success State Animation Container */
+.success-state {
+  display: none; /* Hidden by default */
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: #DEF7EC;
+  color: #10B981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin: 0 auto var(--space-4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
