@@ -194,7 +194,6 @@ export async function getEventById(id) {
           email: true,
         },
       },
-      availabilities: true,
     },
   });
 }
@@ -281,11 +280,6 @@ export async function getEventsByClassId(classId) {
         },
       },
       group: true,
-      _count: {
-        select: {
-          availabilities: true,
-        },
-      },
     },
     orderBy: {
       startTime: "asc",
@@ -311,11 +305,6 @@ export async function getEventsByGroupId(groupId) {
         },
       },
       class: true,
-      _count: {
-        select: {
-          availabilities: true,
-        },
-      },
     },
     orderBy: {
       startTime: "asc",

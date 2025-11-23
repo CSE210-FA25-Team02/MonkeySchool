@@ -27,24 +27,24 @@ defineFeature(feature, (test) => {
   function parseTableToObject(table) {
     const eventData = {};
     let titleFromColumn = null;
-    
+
     for (const row of table) {
       const fieldName = row.title; // Gets 'description', 'type', etc.
-      const columnHeaders = Object.keys(row).filter(key => key !== 'title');
+      const columnHeaders = Object.keys(row).filter((key) => key !== "title");
       const fieldValue = row[columnHeaders[0]]; // Gets the actual value
       eventData[fieldName] = fieldValue;
-      
+
       // Extract title from the column header (first time only)
       if (!titleFromColumn && columnHeaders.length > 0) {
         titleFromColumn = columnHeaders[0];
       }
     }
-    
+
     // Add the title from the column header
     if (titleFromColumn) {
       eventData.title = titleFromColumn;
     }
-    
+
     return eventData;
   }
 
@@ -74,7 +74,7 @@ defineFeature(feature, (test) => {
   async function createTestClassRole(userName, className, role) {
     const user = context.users[userName];
     const testClass = context.classes[className];
-    
+
     return await prisma.classRole.create({
       data: {
         userId: user.id,
@@ -87,7 +87,7 @@ defineFeature(feature, (test) => {
   async function createTestGroupRole(userName, groupName, role) {
     const user = context.users[userName];
     const group = context.groups[groupName];
-    
+
     return await prisma.groupRole.create({
       data: {
         userId: user.id,
@@ -128,10 +128,7 @@ defineFeature(feature, (test) => {
 
     given(/^the following group exists:$/, async (table) => {
       for (const row of table) {
-        const group = await createTestGroup(
-          { name: row.name },
-          row.class
-        );
+        const group = await createTestGroup({ name: row.name }, row.class);
         context.groups[row.name] = group;
       }
     });
@@ -146,7 +143,7 @@ defineFeature(feature, (test) => {
       const user = context.users["Alice"];
       const eventData = parseTableToObject(table);
       const testClass = context.classes["CSE 210"];
-      
+
       try {
         const event = await eventService.createEvent({
           title: eventData.title,
@@ -167,6 +164,12 @@ defineFeature(feature, (test) => {
     });
 
     then("the event should be created successfully", () => {
+      if (context.lastError) {
+        console.log(
+          "Event creation error:",
+          context.lastError.message || context.lastError,
+        );
+      }
       expect(context.lastEvent).not.toBeNull();
       expect(context.lastEvent).toHaveProperty("id");
       expect(context.lastError).toBeNull();
@@ -213,10 +216,7 @@ defineFeature(feature, (test) => {
 
     given(/^the following group exists:$/, async (table) => {
       for (const row of table) {
-        const group = await createTestGroup(
-          { name: row.name },
-          row.class
-        );
+        const group = await createTestGroup({ name: row.name }, row.class);
         context.groups[row.name] = group;
       }
     });
@@ -231,7 +231,7 @@ defineFeature(feature, (test) => {
       const user = context.users["Charlie"];
       const eventData = parseTableToObject(table);
       const testClass = context.classes["CSE 210"];
-      
+
       try {
         const event = await eventService.createEvent({
           title: eventData.title,
@@ -252,6 +252,12 @@ defineFeature(feature, (test) => {
     });
 
     then("the event should be created successfully", () => {
+      if (context.lastError) {
+        console.log(
+          "Event creation error:",
+          context.lastError.message || context.lastError,
+        );
+      }
       expect(context.lastEvent).not.toBeNull();
       expect(context.lastEvent).toHaveProperty("id");
       expect(context.lastError).toBeNull();
@@ -298,10 +304,7 @@ defineFeature(feature, (test) => {
 
     given(/^the following group exists:$/, async (table) => {
       for (const row of table) {
-        const group = await createTestGroup(
-          { name: row.name },
-          row.class
-        );
+        const group = await createTestGroup({ name: row.name }, row.class);
         context.groups[row.name] = group;
       }
     });
@@ -316,7 +319,7 @@ defineFeature(feature, (test) => {
       const user = context.users["Bob"];
       const eventData = parseTableToObject(table);
       const testClass = context.classes["CSE 210"];
-      
+
       try {
         const event = await eventService.createEvent({
           title: eventData.title,
@@ -378,10 +381,7 @@ defineFeature(feature, (test) => {
 
     given(/^the following group exists:$/, async (table) => {
       for (const row of table) {
-        const group = await createTestGroup(
-          { name: row.name },
-          row.class
-        );
+        const group = await createTestGroup({ name: row.name }, row.class);
         context.groups[row.name] = group;
       }
     });
@@ -397,7 +397,7 @@ defineFeature(feature, (test) => {
       const eventData = parseTableToObject(table);
       const testClass = context.classes["CSE 210"];
       const group = context.groups["Team Alpha"];
-      
+
       try {
         const event = await eventService.createEvent({
           title: eventData.title,
@@ -419,6 +419,12 @@ defineFeature(feature, (test) => {
     });
 
     then("the event should be created successfully", () => {
+      if (context.lastError) {
+        console.log(
+          "Event creation error:",
+          context.lastError.message || context.lastError,
+        );
+      }
       expect(context.lastEvent).not.toBeNull();
       expect(context.lastEvent).toHaveProperty("id");
       expect(context.lastError).toBeNull();
@@ -428,10 +434,13 @@ defineFeature(feature, (test) => {
       expect(context.lastEvent.type).toBe(expectedType);
     });
 
-    then(/^the event should be associated with group "([^"]*)"$/, (groupName) => {
-      const expectedGroup = context.groups[groupName];
-      expect(context.lastEvent.groupId).toBe(expectedGroup.id);
-    });
+    then(
+      /^the event should be associated with group "([^"]*)"$/,
+      (groupName) => {
+        const expectedGroup = context.groups[groupName];
+        expect(context.lastEvent.groupId).toBe(expectedGroup.id);
+      },
+    );
   });
 
   test("Student creates general event", ({ given, when, then }) => {
@@ -465,10 +474,7 @@ defineFeature(feature, (test) => {
 
     given(/^the following group exists:$/, async (table) => {
       for (const row of table) {
-        const group = await createTestGroup(
-          { name: row.name },
-          row.class
-        );
+        const group = await createTestGroup({ name: row.name }, row.class);
         context.groups[row.name] = group;
       }
     });
@@ -483,7 +489,7 @@ defineFeature(feature, (test) => {
       const user = context.users["Bob"];
       const eventData = parseTableToObject(table);
       const testClass = context.classes["CSE 210"];
-      
+
       try {
         const event = await eventService.createEvent({
           title: eventData.title,
@@ -504,6 +510,12 @@ defineFeature(feature, (test) => {
     });
 
     then("the event should be created successfully", () => {
+      if (context.lastError) {
+        console.log(
+          "Event creation error:",
+          context.lastError.message || context.lastError,
+        );
+      }
       expect(context.lastEvent).not.toBeNull();
       expect(context.lastEvent).toHaveProperty("id");
       expect(context.lastError).toBeNull();
@@ -545,10 +557,7 @@ defineFeature(feature, (test) => {
 
     and(/^the following group exists:$/, async (table) => {
       for (const row of table) {
-        const group = await createTestGroup(
-          { name: row.name },
-          row.class
-        );
+        const group = await createTestGroup({ name: row.name }, row.class);
         context.groups[row.name] = group;
       }
     });
@@ -559,11 +568,17 @@ defineFeature(feature, (test) => {
       }
     });
 
-    when(/^I check Bob's event permissions for class "([^"]*)"$/, async (className) => {
-      const user = context.users["Bob"];
-      const testClass = context.classes[className];
-      context.lastPermissions = await eventService.getUserEventPermissions(user.id, testClass.id);
-    });
+    when(
+      /^I check Bob's event permissions for class "([^"]*)"$/,
+      async (className) => {
+        const user = context.users["Bob"];
+        const testClass = context.classes[className];
+        context.lastPermissions = await eventService.getUserEventPermissions(
+          user.id,
+          testClass.id,
+        );
+      },
+    );
 
     then(/^Bob should be able to create "([^"]*)" events$/, (eventType) => {
       expect(context.lastPermissions[eventType]).toBe(true);
