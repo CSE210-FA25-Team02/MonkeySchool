@@ -10,6 +10,7 @@ model Group {
 
   members     GroupRole[]
   supervisors GroupSupervisor[] // NEW
+  events Event[] // Events created for this group
 
   @@map("groups")
 }

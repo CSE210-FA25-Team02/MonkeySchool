@@ -17,5 +17,8 @@ model Class {
   // A class has multiple course sessions
   sessions CourseSession[]
 
+  // Events created for this class
+  events Event[]
+
   @@map("classes")
 }
