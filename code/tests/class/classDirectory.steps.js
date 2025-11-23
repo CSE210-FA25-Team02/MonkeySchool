@@ -93,7 +93,7 @@ defineFeature(feature, (test) => {
 
     when(/^I request the directory for "(.*)"$/, async (className) => {
       const classData = await prisma.class.findFirst({ where: { name: className } });
-co      context.response = await request.get(`/classes/${classData.id}/directory/json`);
+      context.response = await request.get(`/classes/${classData.id}/directory/json`);
       context.directory = context.response.body;
     });
 

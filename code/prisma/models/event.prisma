@@ -1,0 +1,40 @@
+enum EventType {
+  COURSE_LECTURE
+  COURSE_OFFICE_HOUR
+  COURSE_DISCUSSION
+  GROUP_MEETING
+  OTHER
+  @@map("event_types")
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  type        EventType @default(OTHER)
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  isRecurring Boolean   @default(false)
+  recurrencePattern String? // e.g., "weekly", "daily", etc.
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  classId String?
+  groupId String?
+  userId  String
+
+  class Class? @relation(fields: [classId], references: [id], onDelete: Cascade)
+  group Group? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User   @relation("EventCreator", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Availability tracking - TODO: Add when Availability model is created
+  // availabilities Availability[]
+
+  @@index([classId])
+  @@index([groupId])
+  @@index([userId])
+  @@index([startTime])
+  @@map("events")
+}

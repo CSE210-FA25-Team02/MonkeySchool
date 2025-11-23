@@ -23,6 +23,8 @@ model User {
   activities      Activity[]   
   attendancePolls   AttendancePoll[]   @relation("PollCreator")
   attendanceRecords AttendanceRecord[] @relation("AttendanceRecords")    
+  
+  events Event[] @relation("EventCreator") // Events created by this user
 
   @@index([name])
   @@index([email])
