@@ -11,7 +11,12 @@ import { prisma } from "../lib/prisma.js";
  * @param {string} groupId - Group ID for context (optional)
  * @returns {Promise<boolean>} True if user has permission
  */
-async function canUserCreateEventType(userId, eventType, classId, groupId = null) {
+async function canUserCreateEventType(
+  userId,
+  eventType,
+  classId,
+  groupId = null,
+) {
   // Get user's role in the class
   const classRole = await prisma.classRole.findFirst({
     where: {
@@ -50,7 +55,11 @@ async function canUserCreateEventType(userId, eventType, classId, groupId = null
   }
 
   // Check course-related event permissions
-  if (["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(eventType)) {
+  if (
+    ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(
+      eventType,
+    )
+  ) {
     return ["PROFESSOR", "TA"].includes(classRole.role);
   }
 
@@ -93,7 +102,11 @@ async function canUserModifyEvent(userId, eventId) {
 
     // Professors and TAs can modify course-related events
     if (classRole && ["PROFESSOR", "TA"].includes(classRole.role)) {
-      if (["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(event.type)) {
+      if (
+        ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(
+          event.type,
+        )
+      ) {
         return true;
       }
     }
@@ -136,11 +149,13 @@ export async function createEvent(eventData) {
     eventData.userId,
     eventData.type,
     eventData.classId,
-    eventData.groupId
+    eventData.groupId,
   );
 
   if (!hasPermission) {
-    throw new Error(`User does not have permission to create ${eventData.type} events`);
+    throw new Error(
+      `User does not have permission to create ${eventData.type} events`,
+    );
   }
 
   return prisma.event.create({
@@ -316,13 +331,13 @@ export async function getEventsByGroupId(groupId) {
  */
 export async function getClassEventsWithPermissions(classId, userId) {
   const events = await getEventsByClassId(classId);
-  
+
   // Add permission flags for each event
   const eventsWithPermissions = await Promise.all(
     events.map(async (event) => {
       const canEdit = await canUserModifyEvent(userId, event.id);
       const canDelete = await canUserModifyEvent(userId, event.id);
-      
+
       return {
         ...event,
         permissions: {
@@ -331,7 +346,7 @@ export async function getClassEventsWithPermissions(classId, userId) {
           isCreator: event.userId === userId,
         },
       };
-    })
+    }),
   );
 
   return eventsWithPermissions;
@@ -345,10 +360,20 @@ export async function getClassEventsWithPermissions(classId, userId) {
  */
 export async function getUserEventPermissions(userId, classId) {
   const permissions = {};
-  const eventTypes = ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER"];
-  
+  const eventTypes = [
+    "COURSE_LECTURE",
+    "COURSE_OFFICE_HOUR",
+    "COURSE_DISCUSSION",
+    "GROUP_MEETING",
+    "OTHER",
+  ];
+
   for (const eventType of eventTypes) {
-    permissions[eventType] = await canUserCreateEventType(userId, eventType, classId);
+    permissions[eventType] = await canUserCreateEventType(
+      userId,
+      eventType,
+      classId,
+    );
   }
 
   return permissions;
