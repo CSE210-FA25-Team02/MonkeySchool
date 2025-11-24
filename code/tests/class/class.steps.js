@@ -6,6 +6,7 @@ import { context } from "../steps.context.js";
 import { request } from "../steps.config.js";
 import { resetDatabase } from "../utils/reset-db.js";
 import * as classService from "../../src/services/class.service.js";
+import { generateToken } from "../utils/auth.test.helper.js";
 
 const feature = loadFeature("./features/class.feature");
 
@@ -14,17 +15,20 @@ defineFeature(feature, (test) => {
     await resetDatabase();
     context.klass = undefined;
     context.response = undefined;
+    context.user = undefined;
   });
 
   test("Create a new class", ({ when, then, and }) => {
     when(/^I create a class named "(.*)"$/, async (name) => {
       // Ensure request is authenticated as a professor
-      if (!context.user) {
-        context.user = await prisma.user.create({
-          data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
-        });
-      }
-      context.response = await request.post("/classes/create").send({ name });
+      context.user = await prisma.user.create({
+        data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
+      });
+      const token = generateToken(context.user);
+      context.response = await request
+        .post("/classes/create")
+        .set("Cookie", `auth_token=${token}`)
+        .send({ name });
       context.klass = context.response.body;
     });
 
@@ -41,11 +45,19 @@ defineFeature(feature, (test) => {
 
   test("Update class name", ({ given, when, then }) => {
     given(/^a class named "(.*)" exists$/, async (name) => {
+      // Create a user for authentication
+      context.user = await prisma.user.create({
+        data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
+      });
       context.klass = await classService.createClass({ name });
     });
 
     when(/^I rename the class "(.*)" to "(.*)"$/, async (_, newName) => {
-      await request.put(`/classes/${context.klass.id}`).send({ name: newName });
+      const token = generateToken(context.user);
+      await request
+        .put(`/classes/${context.klass.id}`)
+        .set("Cookie", `auth_token=${token}`)
+        .send({ name: newName });
     });
 
     then(/^a class named "(.*)" should exist$/, async (newName) => {
@@ -56,11 +68,18 @@ defineFeature(feature, (test) => {
 
   test("Delete a class", ({ given, when, then }) => {
     given(/^a class named "(.*)" exists$/, async (name) => {
+      // Create a user for authentication
+      context.user = await prisma.user.create({
+        data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
+      });
       context.klass = await classService.createClass({ name });
     });
 
     when(/^I delete the class "(.*)"$/, async () => {
-      await request.delete(`/classes/${context.klass.id}`);
+      const token = generateToken(context.user);
+      await request
+        .delete(`/classes/${context.klass.id}`)
+        .set("Cookie", `auth_token=${token}`);
     });
 
     then(/^no class named "(.*)" should exist$/, async (name) => {

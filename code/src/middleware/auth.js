@@ -20,16 +20,38 @@ export async function requireAuth(req, res, next) {
     const token = req.cookies?.auth_token;
 
     if (!token) {
+      // Check if this is an API request (has quarter param or Accept: application/json)
+      const isApiRequest =
+        req.params.quarter ||
+        req.path.startsWith("/api") ||
+        req.get("Accept")?.includes("application/json");
+      if (isApiRequest) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
       return res.redirect("/login");
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
+      const isApiRequest =
+        req.params.quarter ||
+        req.path.startsWith("/api") ||
+        req.get("Accept")?.includes("application/json");
+      if (isApiRequest) {
+        return res.status(401).json({ error: "Invalid token" });
+      }
       return res.redirect("/login");
     }
 
     const user = await getUserById(decoded.id);
     if (!user) {
+      const isApiRequest =
+        req.params.quarter ||
+        req.path.startsWith("/api") ||
+        req.get("Accept")?.includes("application/json");
+      if (isApiRequest) {
+        return res.status(401).json({ error: "User not found" });
+      }
       return res.redirect("/login");
     }
 
@@ -38,6 +60,13 @@ export async function requireAuth(req, res, next) {
     next();
   } catch (error) {
     console.error("Auth middleware error:", error);
+    const isApiRequest =
+      req.params.quarter ||
+      req.path.startsWith("/api") ||
+      req.get("Accept")?.includes("application/json");
+    if (isApiRequest) {
+      return res.status(500).json({ error: "Authentication error" });
+    }
     res.redirect("/login");
   }
 }

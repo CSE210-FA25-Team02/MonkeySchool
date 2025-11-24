@@ -27,5 +27,7 @@ router.use("/classRoles", classRoleRoutes);
 router.use("/activity", activityRoutes);
 router.use("/course-sessions", courseSessionRoutes);
 router.use("/attendance", attendanceRoutes);
+router.use("/:quarter/classes", classRoutes);
+router.use("/:quarter/classRoles", classRoleRoutes);
 
 export default router;
