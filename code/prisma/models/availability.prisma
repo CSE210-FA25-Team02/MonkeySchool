@@ -1,0 +1,19 @@
+model Availability {
+  id          String  @id @default(uuid())
+  dayOfWeek   Int     // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime   String  // Format: "HH:MM" (e.g., "08:00", "14:30")
+  endTime     String  // Format: "HH:MM" (e.g., "12:00", "23:30")
+  isAvailable Boolean @default(true) // true = available, false = unavailable
+  
+  userId String
+  user   User   @relation("UserAvailability", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ensure no overlapping time ranges for same user on same day
+  @@unique([userId, dayOfWeek, startTime, endTime])
+  @@index([userId, dayOfWeek])
+  @@index([dayOfWeek, startTime])
+  @@map("availabilities")
+}
