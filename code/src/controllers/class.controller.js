@@ -84,7 +84,7 @@ export const createClass = asyncHandler(async (req, res) => {
 export const getClass = asyncHandler(async (req, res) => {
   const klass = await classService.getClassById(req.params.id);
   if (!klass) throw new NotFoundError("Class not found");
-  res.json(klass);
+  res.status(200).json(klass);
 });
 
 /**
@@ -140,7 +140,7 @@ export const getClassByInviteCode = asyncHandler(async (req, res) => {
     }
   }
 
-  res.json(klass);
+  res.status(200).json(klass);
 });
 
 /**
@@ -163,7 +163,7 @@ export const getUserClasses = asyncHandler(async (req, res) => {
   }
 
   const classes = await classService.getClassesByUserId(userId);
-  res.json(classes);
+  res.status(200).json(classes);
 });
 
 /**
@@ -205,6 +205,11 @@ export const deleteClass = asyncHandler(async (req, res) => {
  * Open/Close Class Create Form
  */
 export const renderCreateClassForm = asyncHandler(async (req, res) => {
+  const isProf = req.user?.isProf === true;
+  if (!isProf) {
+    return res.status(401).send("Unauthorized to create class.");
+  }
+  
   const upcomingQuarters = getUpcomingQuarters();
   res.status(201).send(createClassForm(upcomingQuarters));
 });
