@@ -19,6 +19,7 @@
 @import "./components/group-cards.css";
 @import './punchcard.css';
 @import './components/attendance.css';
+@import './components/journal.css';
 
 /* ============================================================================
    CSS CUSTOM PROPERTIES (CSS Variables)

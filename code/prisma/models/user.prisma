@@ -25,7 +25,7 @@ model User {
   attendanceRecords AttendanceRecord[] @relation("AttendanceRecords")    
   
   events Event[] @relation("EventCreator") // Events created by this user
-
+  journalEntries JournalEntry[]
   @@index([name])
   @@index([email])
   @@map("users")

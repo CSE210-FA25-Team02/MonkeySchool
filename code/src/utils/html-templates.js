@@ -48,7 +48,7 @@ export function createBaseLayout(title, content, options = {}) {
     <!-- Application Styles -->
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" href="/css/main.css">
-    
+    <link rel="stylesheet" href="/css/components/journal.css">
     <!-- Application Scripts -->
     <script type="module" src="/js/app.js" defer></script>
 </head>

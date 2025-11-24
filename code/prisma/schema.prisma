@@ -6,3 +6,272 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Activity {
+  id           String            @id @default(cuid())
+  userId       String
+  categoryId   String
+  classId      String
+  startTime    DateTime
+  endTime      DateTime?
+  durationMin  Int?              // TODO: computed at punch-out
+  notes        String?
+
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  user         User              @relation(fields: [userId], references: [id])
+  category     ActivityCategory  @relation(fields: [categoryId], references: [id])
+  class        Class             @relation(fields: [classId], references: [id])
+
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([startTime])
+  @@index([classId])
+
+  @@map("activity")
+}
+model ActivityCategory {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  role        CategoryRole?  // student/TA-specific eligibility
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  activities  Activity[]
+
+  @@map("activity_category")
+}
+
+enum CategoryRole {
+  STUDENT
+  TA
+  ALL
+}
+model AttendancePoll {
+  id              String   @id @default(cuid())
+  sessionId       String
+  createdBy       String // User ID of professor who created the poll
+  code            String   @unique // 8-digit unique code
+  expiresAt       DateTime // When the poll expires
+  durationMinutes Int // Duration in minutes
+  active          Boolean  @default(true) // Convenience flag
+  createdAt       DateTime @default(now())
+  metadata        Json? // Optional custom data
+
+  session CourseSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  creator User               @relation("PollCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  records AttendanceRecord[]
+
+  @@index([sessionId])
+  @@index([expiresAt])
+  @@index([code])
+  @@map("attendance_polls")
+}model AttendanceRecord {
+  id        String   @id @default(cuid())
+  studentId String // User ID of student
+  sessionId String
+  pollId    String? // Optional - can be null if poll is deleted
+  markedAt  DateTime @default(now())
+
+  student User            @relation("AttendanceRecords", fields: [studentId], references: [id], onDelete: Cascade)
+  session CourseSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  poll    AttendancePoll? @relation(fields: [pollId], references: [id], onDelete: SetNull)
+
+  @@unique([studentId, sessionId], name: "student_session_unique")
+  @@index([studentId])
+  @@index([sessionId])
+  @@index([pollId])
+  @@map("attendance_records")
+}model Class {
+  id         String       @id @default(cuid())
+  name       String       // e.g., "CSE 210 - Fall 2025"
+  inviteCode String       @unique @default(uuid()) // Used to join the class
+  quarter    String?      // Optional: FA25 / WI26 / SP26, etc.
+  createdAt  DateTime     @default(now())
+
+  // A class has many users enrolled
+  members    ClassRole[]
+
+  // A class contains multiple project groups
+  groups     Group[]
+
+  // Activity Punches made by TAs and Students
+  activities Activity[]
+
+  // A class has multiple course sessions
+  sessions CourseSession[]
+
+  // Events created for this class
+  events Event[]
+
+  @@map("classes")
+}
+enum ClassRoleType {
+  PROFESSOR
+  TA
+  TUTOR
+  STUDENT
+}
+
+model ClassRole {
+  id      String        @id @default(cuid())
+  role    ClassRoleType
+
+  userId  String
+  classId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId], name: "user_class_unique")
+  @@map("class_roles")
+}
+model CourseSession {
+  id        String    @id @default(cuid())
+  classId   String
+  name      String // e.g., "Lecture 1", "Lab Session 3"
+  date      DateTime // Date of the session
+  startTime DateTime? // Optional start time
+  endTime   DateTime? // Optional end time
+  createdAt DateTime  @default(now())
+
+  class             Class              @relation(fields: [classId], references: [id], onDelete: Cascade)
+  attendancePolls   AttendancePoll[]
+  attendanceRecords AttendanceRecord[]
+
+  @@index([classId])
+  @@index([date])
+  @@map("course_sessions")
+}enum EventType {
+  COURSE_LECTURE
+  COURSE_OFFICE_HOUR
+  COURSE_DISCUSSION
+  GROUP_MEETING
+  OTHER
+  @@map("event_types")
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  type        EventType @default(OTHER)
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  isRecurring Boolean   @default(false)
+  recurrencePattern String? // e.g., "weekly", "daily", etc.
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  classId String?
+  groupId String?
+  userId  String
+
+  class Class? @relation(fields: [classId], references: [id], onDelete: Cascade)
+  group Group? @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User   @relation("EventCreator", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Availability tracking - TODO: Add when Availability model is created
+  // availabilities Availability[]
+
+  @@index([classId])
+  @@index([groupId])
+  @@index([userId])
+  @@index([startTime])
+  @@map("events")
+}model Group {
+  id      String    @id @default(cuid())
+  name    String
+  logoUrl String?
+  mantra  String?
+  github  String?
+
+  classId String
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  members     GroupRole[]
+  supervisors GroupSupervisor[] // NEW
+  events Event[] // Events created for this group
+
+  @@map("groups")
+}
+enum GroupRoleType {
+  LEADER
+  MEMBER
+}
+
+model GroupRole {
+  id      String        @id @default(cuid())
+  role    GroupRoleType @default(MEMBER)
+
+  userId  String
+  groupId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId], name: "user_group_unique")
+  @@map("group_roles")
+}
+model GroupSupervisor {
+  id      String   @id @default(cuid())
+  userId  String
+  groupId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId], name: "user_group_supervisor_unique")
+  @@map("group_supervisors")
+}
+model JournalEntry {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  title     String?
+  workLog   String
+  reflection String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("journal_entries")
+}
+model User {
+  id            String             @id @default(cuid())
+  email         String             @unique
+  name          String
+  preferredName String?
+  isProf        Boolean            @default(false)
+  pronunciation String?
+  pronouns      String?
+  phone         String?
+  photoUrl      String?
+  github        String?
+  bio           String?
+  socialLinks   String[]           @default([])
+  chatLinks     String[]           @default([])
+  timezone      String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  classRoles      ClassRole[]
+  groupRoles      GroupRole[]
+  groupSupervises GroupSupervisor[] // NEW
+
+  activities      Activity[]
+  attendancePolls   AttendancePoll[]   @relation("PollCreator")
+  attendanceRecords AttendanceRecord[] @relation("AttendanceRecords")
+
+  events Event[] @relation("EventCreator") // Events created by this user
+  journalEntries JournalEntry[] // NEW
+
+  @@index([name])
+  @@index([email])
+  @@map("users")
+}
