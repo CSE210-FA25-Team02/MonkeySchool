@@ -1,0 +1,406 @@
+# ADR-012: Accessibility (a11y) and Internationalization (i18n) Strategy for Monkey School Frontend
+
+**Status:** Proposed  
+**Date:** 2025-11-24  
+**Authors:** Monkey School Frontend Team  
+**Version:** 1.0  
+
+---
+
+## Context
+Monkey School is used by a diverse set of UCSD students, including:
+
+- Students registered with the Office for Students with Disabilities (OSD)
+- International students
+- ESL students who rely heavily on Chrome/Safari auto-translation
+- Mentors and instructors who review submissions
+
+The current frontend is primarily static HTML with HTMX-based partial updates.  
+However, accessibility and translation behavior are inconsistent across pages.  
+Some components lack ARIA labels, keyboard navigation has gaps, and layouts break during auto-translation.  
+
+The team needs a unified, long-term strategy to ensure:
+
+- Full accessibility (WCAG 2.1 AA)  
+- Robust compatibility with browser auto-translation  
+- Future readiness for multi-language support  
+- Consistency across server-rendered and HTMX-swapped content  
+
+This ADR formalizes the implementation approach and sets enforceable guidelines.
+
+---
+
+## Decision
+Adopt a unified Accessibility + Internationalization Architecture across all frontend codebases with the following requirements:
+
+1. **Use semantic HTML structure and ARIA attributes consistently.**  
+2. **Ensure full keyboard navigability for all interactive elements.**  
+3. **Maintain WCAG AA color contrast and clear focus states.**  
+4. **Provide screen-reader support with ARIA live regions and descriptive labels.**  
+5. **Write auto-translation-safe markup and avoid fragmenting strings across components.**  
+6. **Design components that tolerate text expansion and RTL languages.**  
+7. **Implement HTMX-specific accessibility behaviors**, including focus restoration and update announcements.  
+8. **Adopt testing guidelines using Lighthouse, axe-core, and manual screen-reader testing.**
+
+All new components must follow this pattern. Existing components will be migrated progressively.
+
+---
+
+## Alternatives Considered
+
+| Alternative | Pros | Cons |
+|------------|------|------|
+| **Do nothing (status quo)** | No engineering overhead; easiest in short term | Fails accessibility requirements; breaks for ESL students; violates educational equity goals |
+| **Full redesign using React/Next.js with built-in i18n** | Strong i18n infrastructure; large component ecosystem | Requires rewriting large parts of the app; conflicts with HTMX architecture |
+| **Minimal patching (fix only severe issues)** | Quick fixes with minimal effort | Not systematic; regression risk; poor long-term guarantees |
+| **Adopt structured a11y + i18n strategy (chosen)** | Works with existing HTMX architecture; scalable; WCAG-aligned; supports ESL students | Requires training + consistent engineering discipline |
+
+---
+
+## Consequences
+
+### Positive
+- Application becomes fully accessible to students registered with OSD.
+- Browser auto-translation (Chinese, Spanish, Arabic, etc.) no longer breaks layout.
+- Improves usability for ESL students and international students.
+- Consistent ARIA and keyboard patterns reduce long-term maintenance complexity.
+- HTMX pages become predictable, stable, and screen-reader-friendly.
+- Better compliance posture for UCSD and academic accessibility standards.
+
+### Negative
+- Requires upfront engineering effort to retrofit existing components.
+- Needs additional developer training on a11y and i18n best practices.
+- Screen-reader and translation testing adds steps to the QA process.
+- Some design components may require refactoring to allow text resizing or RTL support.
+
+### System Impact
+- UI architecture will shift toward a semantic, keyboard-accessible, translation-ready design.  
+- Shared components (header, sidebar, forms, modals, chat interface) become the “source of truth” for accessible UI patterns.  
+- HTMX event handlers must incorporate focus management and aria-live announcements.  
+- Future features will follow the guidelines established by this ADR.
+
+---
+
+## Related Decisions
+- ADR-009: Component Standardization & Reusability  
+- ADR-005: HTMX Rendering Strategy  
+- ADR-003: Frontend Layout Architecture  
+
+---
+
+## References
+- WCAG 2.1 AA: https://www.w3.org/TR/WCAG21/  
+- WAI-ARIA Authoring Practices: https://www.w3.org/WAI/ARIA/apg/  
+- Axe-core Accessibility Testing: https://www.deque.com/axe/  
+- Chrome Translation Behavior: https://developer.chrome.com/docs/web-platform/translation  
+- Issue: "Accessibility & i18n enhancement request"  
+
+ 
+---
+
+# Tech Implementation for Accessibility (a11y) & Internationalization (i18n)
+
+## 1. Keyboard Navigation Support
+
+### Goals
+- Every interactive element must be accessible using Tab / Shift+Tab.
+- HTMX page swaps must restore focus.
+
+### Implementation Strategy
+
+#### 1. Add semantic focusable elements
+Ensure correct semantic tags:
+- Use `<button>` instead of clickable `<div>`
+- Use `<a>` for navigation links
+- Add `tabindex="0"` for custom components
+
+Example:
+```html
+<button class="btn btn--primary" aria-label="Submit form">Submit</button>
+```
+
+#### 2. Implement global focus styling
+Add a universal focus outline in `src/public/css/main.css`:
+
+```css
+:focus {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+```
+
+#### 3. HTMX: Restore focus after swap
+In `src/public/js/app.js`, add:
+
+```js
+document.body.addEventListener("htmx:afterSwap", (evt) => {
+  const main = document.getElementById("main-content");
+  if (!main) return;
+
+  const header = main.querySelector("h1, h2, h3, [role='heading']");
+  if (header) header.setAttribute("tabindex", "-1");
+
+  setTimeout(() => header?.focus(), 20);
+});
+```
+
+#### 4. Add skip link
+Add near top of `<body>` in `index.html`:
+
+```html
+<a href="#main-content" class="skip-link">Skip to main content</a>
+```
+
+CSS:
+
+```css
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  padding: 8px 12px;
+  background: #000;
+  color: #fff;
+  z-index: 1000;
+}
+.skip-link:focus {
+  top: 0;
+}
+```
+
+---
+
+## 2. WCAG 2.1 AA-Compliant Color Contrast
+
+### Goals
+- All text + UI meet AA contrast ratios in every state.
+
+### Implementation Strategy
+
+#### 1. Central color system via CSS variables
+Define color tokens in `src/public/css/main.css`:
+
+```css
+:root {
+  --color-bg: #ffffff;
+  --color-bg-elevated: #f5f7f8;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-accent: #0e534a;
+  --color-accent-hover: #0b4139;
+  --color-border: #d1d5db;
+  --color-error: #b91c1c;
+  --color-focus: #1d4ed8;
+}
+```
+
+#### 2. Use tokens across everything
+Refactor components:
+
+```css
+.btn--primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+.btn--primary:hover {
+  background: var(--color-accent-hover);
+}
+```
+
+#### 3. Validate contrast via CLI tool (optional)
+```bash
+npx axe http://localhost:3000
+```
+
+---
+
+## 3. ARIA Labels, Roles & Screen Reader Support
+
+### Goals
+- Screen readers must correctly interpret navigation, forms, dialogs, chats, dropdowns, and HTMX updates.
+
+### Implementation Strategy
+
+#### 1. Proper landmark roles
+Use consistent structure:
+
+```html
+<header role="banner">
+<nav role="navigation">
+<main role="main" id="main-content">
+<footer role="contentinfo">
+```
+
+#### 2. Descriptive ARIA labels
+```html
+<button aria-label="Open class details">
+```
+
+#### 3. HTMX live updates announce changes
+Add aria-live region in layout:
+
+```html
+<div aria-live="polite" aria-atomic="true" class="sr-only" id="aria-updates"></div>
+```
+
+And update via JS:
+
+```js
+document.body.addEventListener("htmx:afterSwap", () => {
+  const aria = document.getElementById("aria-updates");
+  aria.textContent = "Page content updated";
+});
+```
+
+#### 4. Form elements must always have labels
+```html
+<label for="email">Email</label>
+<input id="email" name="email">
+```
+
+---
+
+## 4. Auto-Translation Safety (Chrome / Edge / Safari)
+
+### Goals
+- Browser auto-translation must not break layout.
+- Text should be simple and declarative.
+
+### Implementation Strategy
+
+#### 1. Avoid splitting text across multiple inline elements
+Bad:
+```html
+<span>Submit </span><span>Assignment</span>
+```
+
+Good:
+```html
+<span>Submit Assignment</span>
+```
+
+#### 2. Avoid text embedded inside icons/components
+Bad:
+```html
+<i class="fa-star">Important</i>
+```
+
+Good:
+```html
+<i class="fa-star"></i>
+<span>Important</span>
+```
+
+#### 3. Ensure labels & placeholders are translation-safe
+```html
+<input placeholder="Search classes">
+```
+
+#### 4. Provide flexible layout for longer translated strings
+Use:
+
+```css
+.header__brand-text {
+  white-space: normal;
+}
+```
+
+#### 5. Never enforce fixed width on text elements
+Avoid:
+
+```css
+.width-fixed { width: 200px; }
+```
+
+---
+
+## 5. RTL (Right-to-Left) Compatibility
+
+### Goals
+- Ensure the UI remains usable under languages like Arabic.
+
+### Implementation Strategy
+
+#### 1. Add global `[dir]` selectors
+```css
+[dir="rtl"] .header__nav {
+  direction: rtl;
+}
+```
+
+#### 2. Replace directional CSS (left/right) with logical equivalents
+Bad:
+```css
+margin-left: 8px;
+```
+Good:
+```css
+margin-inline-start: 8px;
+```
+
+#### 3. Add `dir="auto"` to dynamic content
+```html
+<p dir="auto">{{message}}</p>
+```
+
+---
+
+## 6. Robustness of HTMX-Swapped Content
+
+### Goals
+- HTMX updates must preserve accessibility rules.
+
+### Implementation Strategy
+
+#### 1. Focus restoration (as above)
+#### 2. Add ARIA announcements (as above)
+#### 3. Ensure server-rendered partials also include ARIA roles
+Example template in `/utils/htmx-templates`:
+
+```js
+return \`
+<section role="region" aria-labelledby="title">
+  <h2 id="title">${title}</h2>
+  ${content}
+</section>\`
+```
+
+---
+
+## 7. Testing Requirements
+
+### 1. Lighthouse CI
+Run:
+```bash
+npm install -g lighthouse
+lighthouse http://localhost:3000 --view
+```
+
+### 2. axe-core automation
+```bash
+npx axe http://localhost:3000
+```
+
+### 3. Screen reader testing
+- macOS: VoiceOver (`Cmd + F5`)
+- Windows: NVDA
+- ChromeVox for Chrome OS
+
+---
+
+## 8. Folder Integration
+
+### Files to modify/include
+- `src/public/css/main.css`  
+- `src/public/css/**/*.css`  
+- `src/public/index.html`  
+- `src/public/login.html`  
+- `src/public/js/app.js`  
+- `src/utils/htmx-templates/*.js`  
+
+---
+
+## Summary
+
+This tech implementation document provides the concrete, immediate steps necessary to make the Monkey School frontend fully accessible and fully translation-safe, within the constraints of the HTMX + static HTML stack. All future components must follow these patterns.
+
