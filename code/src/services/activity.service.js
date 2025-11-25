@@ -19,7 +19,6 @@ export async function createActivity(data) {
  * @param {Object} data - The category data to create
  * @returns {Promise<Object>} The created category
  */
-
 export async function createActivityCategory(data) {
   return prisma.activityCategory.create({ data });
 }
