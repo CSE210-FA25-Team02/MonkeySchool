@@ -5,7 +5,6 @@ import { prisma } from "../../src/lib/prisma.js";
 import { context } from "../steps.context.js";
 import { request } from "../steps.config.js";
 import { resetDatabase } from "../utils/reset-db.js";
-import * as classService from "../../src/services/class.service.js";
 import { generateToken } from "../utils/auth.test.helper.js";
 
 const feature = loadFeature("./features/classCreateForm.feature");

@@ -14,6 +14,17 @@ export async function createActivity(data) {
 }
 
 /**
+ * Create a new activity category
+ * 
+ * @param {Object} data - The category data to create
+ * @returns {Promise<Object>} The created category
+ */
+
+export async function createActivityCategory(data) {
+  return prisma.activityCategory.create({ data });
+}
+
+/**
  * Get a activity by ID, including the category and user it belongs to
  *
  * @param {string} id - The ID of the activity to fetch.

@@ -96,7 +96,7 @@ export function createActivityModal(classes) {
                 </div>
 
                 <button type="button"
-                    hx-get="/classes/close-form"
+                    hx-get="/activity/close-form"
                     hx-target="#activity-modal"
                     hx-swap="outerHTML"
                 >Cancel</button>
@@ -163,7 +163,7 @@ export function createEditActivityModal(categories, activity, classes) {
 
                 
                 <button type="submit">Save</button>
-                <button type="button" hx-get="/classes/close-form" hx-target="#activity-modal" hx-swap="outerHTML"">Cancel</button>
+                <button type="button" hx-get="/activity/close-form" hx-target="#activity-modal" hx-swap="outerHTML"">Cancel</button>
                 </form>
             </div>
         </div>
