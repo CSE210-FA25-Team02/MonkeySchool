@@ -22,9 +22,6 @@ router.get(
 );
 router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 
-// Classes Page (Test Page, Unused)
-router.get("/", asyncHandler(classController.renderClassPage));
-
 // JSON API route for programmatic access
 // Using optionalAuth to allow query param fallback for tests
 // TODO: Change back to requireAuth once full JWT testing is implemented

@@ -12,7 +12,6 @@ import {
 import {
   createClassForm,
   displayInvite,
-  createClassPage,
 } from "../utils/htmx-templates/classes-templates.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
@@ -216,15 +215,6 @@ export const renderCreateClassForm = asyncHandler(async (req, res) => {
 
 export const closeCreateClassForm = asyncHandler(async (req, res) => {
   res.status(201).send("");
-});
-
-/**
- * Render Classes Page (NEED TO REMOVE LATER)
- */
-export const renderClassPage = asyncHandler(async (req, res) => {
-  res
-    .status(201)
-    .send(createBaseLayout(`Your Classes`, createClassPage(req.user)));
 });
 
 /**
