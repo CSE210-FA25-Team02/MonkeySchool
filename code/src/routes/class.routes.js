@@ -15,7 +15,11 @@ router.get(
 );
 
 // Class Create Form
-router.get("/form", requireAuth, asyncHandler(classController.renderCreateClassForm));
+router.get(
+  "/form",
+  requireAuth,
+  asyncHandler(classController.renderCreateClassForm),
+);
 router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 
 // Classes Page (Test Page, Unused)

@@ -205,14 +205,17 @@ export function createUserProfile(user, { mode = "view" } = {}) {
         <hr class="profile-divider">
 
         
-        ${!isEdit ? `
+        ${
+          !isEdit
+            ? `
           <section 
               id="punchcard-container" 
               class="punchcard__container"
               hx-get="/activity/user/render" 
               hx-trigger="load" 
               hx-swap="innerHTML">
-          </section>` : ''
+          </section>`
+            : ""
         }
     ${bodyClose}
     ${containerClose}

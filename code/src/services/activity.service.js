@@ -15,7 +15,7 @@ export async function createActivity(data) {
 
 /**
  * Create a new activity category
- * 
+ *
  * @param {Object} data - The category data to create
  * @returns {Promise<Object>} The created category
  */

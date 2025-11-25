@@ -40,9 +40,21 @@ router.get(
 
 // CRUD
 router.post("/", requireAuth, asyncHandler(activityController.createActivity));
-router.get("/user", requireAuth, asyncHandler(activityController.getActivitiesByUser));
+router.get(
+  "/user",
+  requireAuth,
+  asyncHandler(activityController.getActivitiesByUser),
+);
 router.get("/:id", requireAuth, asyncHandler(activityController.getActivity));
-router.put("/:id", requireAuth, asyncHandler(activityController.updateActivity));
-router.delete("/:id", requireAuth, asyncHandler(activityController.deleteActivity));
+router.put(
+  "/:id",
+  requireAuth,
+  asyncHandler(activityController.updateActivity),
+);
+router.delete(
+  "/:id",
+  requireAuth,
+  asyncHandler(activityController.deleteActivity),
+);
 
 export default router;

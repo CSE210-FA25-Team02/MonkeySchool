@@ -209,7 +209,7 @@ export const renderCreateClassForm = asyncHandler(async (req, res) => {
   if (!isProf) {
     return res.status(401).send("Unauthorized to create class.");
   }
-  
+
   const upcomingQuarters = getUpcomingQuarters();
   res.status(201).send(createClassForm(upcomingQuarters));
 });
