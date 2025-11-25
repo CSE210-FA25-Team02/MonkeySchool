@@ -196,28 +196,9 @@ export const renderEditModal = asyncHandler(async (req, res) => {
 });
 
 /**
- * When creating a new activity punch, enable fields
+ * When creating a new activity punch or editing, enable fields
  */
 export const loadActivityFields = asyncHandler(async (req, res) => {
-  const classId = req.query.classId;
-
-  if (!classId) {
-    return res.send(
-      "<div id='activity-fields'>Error: No class selected.</div>",
-    );
-  }
-
-  const userId = req.user.id;
-  const classRole = await getClassRole(userId, classId);
-  const categories = await activityService.getAllCategories(classRole.role);
-
-  return res.status(201).send(enableActivityFields(categories));
-});
-
-/**
- * When creating a new activity punch, enable fields
- */
-export const refreshCategories = asyncHandler(async (req, res) => {
   const classId = req.query.classId;
 
   if (!classId) {

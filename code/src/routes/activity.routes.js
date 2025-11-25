@@ -37,11 +37,6 @@ router.get(
   requireAuth,
   asyncHandler(activityController.loadActivityFields),
 );
-router.get(
-  "/refresh-categories",
-  requireAuth,
-  asyncHandler(activityController.refreshCategories),
-);
 
 // CRUD
 router.post("/", requireAuth, asyncHandler(activityController.createActivity));

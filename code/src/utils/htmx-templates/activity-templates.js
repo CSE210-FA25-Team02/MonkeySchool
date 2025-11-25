@@ -5,10 +5,9 @@
  */
 export function createPunchCard() {
   return `
-        <div class="punchcard">
+        <section class="punchcard">
 
             <h3 class="punchcard__title">Activity Punch Card</h3>
-
             <!-- HTMX loads dropdown options on component load -->
             <select id="punch-select"
                     name="punchSelect"
@@ -17,7 +16,7 @@ export function createPunchCard() {
                     hx-trigger="load"
                     hx-target="#punch-select"
                     hx-swap="innerHTML"
-                    hx-on:change="htmx.trigger('#punch-details', 'loadDetails')" >
+                    hx-on:change="htmx.trigger('#punch-details', 'loadDetails')">
             </select>
 
             <!-- Details section updates when selection changes -->
@@ -46,7 +45,15 @@ export function createPunchCard() {
                     New
                 </button>
             </div>
-        </div>
+        </section>
+
+        <script>
+            document.body.addEventListener("htmx:afterSwap", (e) => {
+                if (e.target.id === "punch-select") {
+                    htmx.trigger("#punch-details", "loadDetails");
+                }
+            });
+        </script>
     `;
 }
 
@@ -63,7 +70,11 @@ export function createActivityModal(classes) {
         <div class="punchcard__modal" id="activity-modal">
             <div class="punchcard__modal-content">
                 <h2>Create New Activity</h2>
-                <form hx-post="/activity" hx-target="#punch-details" hx-swap="innerHTML">
+                <form 
+                    hx-post="/activity" 
+                    hx-trigger="submit" 
+                    hx-swap="none"
+                >
                 
                 <label>Class:</label>
                 <select 
@@ -131,11 +142,10 @@ export function createEditActivityModal(categories, activity, classes) {
                     name="classId" 
                     id="class-select"
                     required
-                    hx-get="/activity/refresh-categories"
+                    hx-get="/activity/load-fields"
                     hx-trigger="change"
                     hx-target="#activity-fields"
                     hx-swap="outerHTML"
-                    hx-vals='{"categoryId": "${activity.categoryId}"}'
                 >
                     ${classes.map((cls) => `<option value="${cls.id}" ${cls.id === activity.classId ? "selected" : ""}>${cls.name}</option>`).join("")}
                 </select>
