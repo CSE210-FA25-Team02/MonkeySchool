@@ -32,7 +32,7 @@ export const createActivity = asyncHandler(async (req, res) => {
   }
 
   if (!activity) throw new NotFoundError("Activity");
-  res.json(activity);
+  res.status(201).json(activity);
 });
 
 /**
@@ -56,7 +56,7 @@ export const updateActivity = asyncHandler(async (req, res) => {
   }
 
   if (!updatedActivity) throw new NotFoundError("Activity");
-  res.json(updatedActivity);
+  res.status(201).json(updatedActivity);
 });
 
 /**
@@ -73,7 +73,7 @@ export const getActivity = asyncHandler(async (req, res) => {
     return res.status(500).send("Failed to get activity. Try again.");
   }
   if (!activity) throw new NotFoundError("Activity");
-  res.json(activity);
+  res.status(200).json(activity);
 });
 
 /**
@@ -90,7 +90,7 @@ export const getActivitiesByUser = asyncHandler(async (req, res) => {
     return res.status(500).send("Failed to get activities for this user.");
   }
 
-  res.json(activities);
+  res.status(200).json(activities);
 });
 
 /**
@@ -131,7 +131,7 @@ export const getActivityDropdown = asyncHandler(async (req, res) => {
     )
     .join("");
 
-  res.send(html);
+  res.status(201).send(html);
 });
 
 /**
@@ -147,7 +147,7 @@ export const getActivityDetails = asyncHandler(async (req, res) => {
   const start = new Date(activity.startTime);
   const end = activity.endTime ? new Date(activity.endTime) : null;
 
-  return res.send(`
+  return res.status(201).send(`
         <div class="punchcard__section">
             <strong class="punchcard__label">Category</strong>
             <div class="punchcard__value">${activity.category.name}</div>
@@ -196,28 +196,9 @@ export const renderEditModal = asyncHandler(async (req, res) => {
 });
 
 /**
- * When creating a new activity punch, enable fields
+ * When creating a new activity punch or editing, enable fields
  */
 export const loadActivityFields = asyncHandler(async (req, res) => {
-  const classId = req.query.classId;
-
-  if (!classId) {
-    return res.send(
-      "<div id='activity-fields'>Error: No class selected.</div>",
-    );
-  }
-
-  const userId = req.user.id;
-  const classRole = await getClassRole(userId, classId);
-  const categories = await activityService.getAllCategories(classRole.role);
-
-  return res.status(201).send(enableActivityFields(categories));
-});
-
-/**
- * When creating a new activity punch, enable fields
- */
-export const refreshCategories = asyncHandler(async (req, res) => {
   const classId = req.query.classId;
 
   if (!classId) {
@@ -241,4 +222,11 @@ export const renderPunchCard = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   console.log("UserID:", userId);
   res.status(201).send(createPunchCard());
+});
+
+/**
+ * Close Activity Punch Form
+ */
+export const closeActivityPunchForm = asyncHandler(async (req, res) => {
+  res.status(201).send("");
 });

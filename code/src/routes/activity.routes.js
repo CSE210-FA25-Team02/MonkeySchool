@@ -28,21 +28,33 @@ router.get(
   asyncHandler(activityController.renderEditModal),
 );
 router.get(
+  "/close-form",
+  requireAuth,
+  asyncHandler(activityController.closeActivityPunchForm),
+);
+router.get(
   "/load-fields",
   requireAuth,
   asyncHandler(activityController.loadActivityFields),
 );
-router.get(
-  "/refresh-categories",
-  requireAuth,
-  asyncHandler(activityController.refreshCategories),
-);
 
 // CRUD
 router.post("/", requireAuth, asyncHandler(activityController.createActivity));
-router.get("/user/", asyncHandler(activityController.getActivitiesByUser));
-router.get("/:id", asyncHandler(activityController.getActivity));
-router.put("/:id", asyncHandler(activityController.updateActivity));
-router.delete("/:id", asyncHandler(activityController.deleteActivity));
+router.get(
+  "/user",
+  requireAuth,
+  asyncHandler(activityController.getActivitiesByUser),
+);
+router.get("/:id", requireAuth, asyncHandler(activityController.getActivity));
+router.put(
+  "/:id",
+  requireAuth,
+  asyncHandler(activityController.updateActivity),
+);
+router.delete(
+  "/:id",
+  requireAuth,
+  asyncHandler(activityController.deleteActivity),
+);
 
 export default router;
