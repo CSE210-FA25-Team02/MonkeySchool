@@ -2,19 +2,19 @@
 //  Class Controller (JSON API)
 // =============================
 
-import * as classService from "../services/class.service.js";
-import * as classRoleService from "../services/classRole.service.js";
+import * as classService from '../services/class.service.js';
+import * as classRoleService from '../services/classRole.service.js';
 import {
   getUpcomingQuarters,
   createBaseLayout,
   escapeHtml,
-} from "../utils/html-templates.js";
+} from '../utils/html-templates.js';
 import {
   createClassForm,
   displayInvite,
-} from "../utils/htmx-templates/classes-templates.js";
-import { asyncHandler } from "../utils/async-handler.js";
-import { NotFoundError } from "../utils/api-error.js";
+} from '../utils/htmx-templates/classes-templates.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { NotFoundError } from '../utils/api-error.js';
 
 /**
  * Create a new class
@@ -25,17 +25,17 @@ export const createClass = asyncHandler(async (req, res) => {
   // User Authentication
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).send("Authentication required");
+    return res.status(401).send('Authentication required');
   }
 
   const isProf = req.user?.isProf === true;
   if (!isProf) {
-    return res.status(401).send("Unauthorized to create class.");
+    return res.status(401).send('Unauthorized to create class.');
   }
 
   // Validate input
   if (!name || name.trim().length === 0) {
-    return res.status(400).send("Class name is required.");
+    return res.status(400).send('Class name is required.');
   }
 
   // Create class
@@ -43,8 +43,8 @@ export const createClass = asyncHandler(async (req, res) => {
   try {
     klass = await classService.createClass({ name, quarter });
   } catch (err) {
-    console.error("Error creating class:", err);
-    return res.status(500).send("Failed to create class. Try again.");
+    console.error('Error creating class:', err);
+    return res.status(500).send('Failed to create class. Try again.');
   }
 
   // Get Class by invite code
@@ -56,19 +56,19 @@ export const createClass = asyncHandler(async (req, res) => {
       await classRoleService.upsertClassRole({
         userId,
         classId,
-        role: "PROFESSOR",
+        role: 'PROFESSOR',
       });
     } catch (err) {
-      console.error("Unable to assign professor to class:", err);
-      return res.status(500).send("Unable to assign professor to class.");
+      console.error('Unable to assign professor to class:', err);
+      return res.status(500).send('Unable to assign professor to class.');
     }
   }
 
   // Create invite URL
-  const inviteUrl = `${req.protocol}://${req.get("host")}/invite/${klass.inviteCode}`;
+  const inviteUrl = `${req.protocol}://${req.get('host')}/invite/${klass.inviteCode}`;
 
   // Check if request is HTMX
-  const isHTMX = req.headers["hx-request"];
+  const isHTMX = req.headers['hx-request'];
 
   if (isHTMX) {
     res.status(201).send(displayInvite(inviteUrl));
@@ -82,7 +82,7 @@ export const createClass = asyncHandler(async (req, res) => {
  */
 export const getClass = asyncHandler(async (req, res) => {
   const klass = await classService.getClassById(req.params.id);
-  if (!klass) throw new NotFoundError("Class not found");
+  if (!klass) throw new NotFoundError('Class not found');
   res.status(200).json(klass);
 });
 
@@ -92,7 +92,7 @@ export const getClass = asyncHandler(async (req, res) => {
  */
 export const getClassDirectory = asyncHandler(async (req, res) => {
   const directory = await classService.getClassDirectory(req.params.id);
-  if (!directory) throw new NotFoundError("Class not found");
+  if (!directory) throw new NotFoundError('Class not found');
 
   res.json(directory);
 });
@@ -103,7 +103,7 @@ export const getClassDirectory = asyncHandler(async (req, res) => {
  */
 export const renderClassDirectory = asyncHandler(async (req, res) => {
   const directory = await classService.getClassDirectory(req.params.id);
-  if (!directory) throw new NotFoundError("Class not found");
+  if (!directory) throw new NotFoundError('Class not found');
 
   // Render directory HTML content for HTMX swap
   const content = renderDirectoryHTML(directory);
@@ -115,12 +115,12 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
  */
 export const getClassByInviteCode = asyncHandler(async (req, res) => {
   const klass = await classService.getClassByInviteCode(req.params.code);
-  if (!klass) throw new NotFoundError("Class not found");
+  if (!klass) throw new NotFoundError('Class not found');
 
   // User Authentication
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).send("Authentication required");
+    return res.status(401).send('Authentication required');
   }
 
   const classId = klass.id;
@@ -131,11 +131,11 @@ export const getClassByInviteCode = asyncHandler(async (req, res) => {
       await classRoleService.upsertClassRole({
         userId,
         classId,
-        role: "STUDENT",
+        role: 'STUDENT',
       });
     } catch (err) {
-      console.error("Unable to assign user to class:", err);
-      return res.status(500).send("Unable to assign user to class.");
+      console.error('Unable to assign user to class:', err);
+      return res.status(500).send('Unable to assign user to class.');
     }
   }
 
@@ -158,7 +158,7 @@ export const getUserClasses = asyncHandler(async (req, res) => {
   // Require authentication via middleware; `req.user` must be set by auth
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: "Authentication required" });
+    return res.status(401).json({ error: 'Authentication required' });
   }
 
   const classes = await classService.getClassesByUserId(userId);
@@ -173,21 +173,21 @@ export const getUserClasses = asyncHandler(async (req, res) => {
 export const renderUserClasses = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).send("Authentication required");
+    return res.status(401).send('Authentication required');
   }
 
   const classes = await classService.getClassesByUserId(userId);
   const content = renderClassListHTML(classes);
 
   // Check if this is an HTMX request or direct browser navigation
-  const isHtmxRequest = req.headers["hx-request"];
+  const isHtmxRequest = req.headers['hx-request'];
 
   if (isHtmxRequest) {
     // HTMX request: return HTML fragment for dynamic content swap
     res.send(content);
   } else {
     // Direct navigation: return full HTML page with styles and layout
-    const fullPage = createBaseLayout("My Classes", content);
+    const fullPage = createBaseLayout('My Classes', content);
     res.send(fullPage);
   }
 });
@@ -206,7 +206,7 @@ export const deleteClass = asyncHandler(async (req, res) => {
 export const renderCreateClassForm = asyncHandler(async (req, res) => {
   const isProf = req.user?.isProf === true;
   if (!isProf) {
-    return res.status(401).send("Unauthorized to create class.");
+    return res.status(401).send('Unauthorized to create class.');
   }
 
   const upcomingQuarters = getUpcomingQuarters();
@@ -214,7 +214,7 @@ export const renderCreateClassForm = asyncHandler(async (req, res) => {
 });
 
 export const closeCreateClassForm = asyncHandler(async (req, res) => {
-  res.status(201).send("");
+  res.status(201).send('');
 });
 
 /**
@@ -259,16 +259,16 @@ function renderClassListHTML(classes) {
 
   const classCards = classes
     .map((klass) => {
-      const roleClass = klass.role.toLowerCase().replace("_", "-");
-      const quarter = klass.quarter || "Not specified";
+      const roleClass = klass.role.toLowerCase().replace('_', '-');
+      const quarter = klass.quarter || 'Not specified';
 
       const createdDate = klass.createdAt
-        ? new Date(klass.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
+        ? new Date(klass.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
           })
-        : "";
+        : '';
 
       return `
       <article class="class-card" role="article">
@@ -303,7 +303,7 @@ function renderClassListHTML(classes) {
                 <span class="class-card__info-value">${createdDate}</span>
               </div>
               `
-                  : ""
+                  : ''
               }
             </div>
           </div>
@@ -324,14 +324,14 @@ function renderClassListHTML(classes) {
       </article>
     `;
     })
-    .join("");
+    .join('');
 
   return `
     <section class="class-list" role="region" aria-labelledby="classes-title">
       ${createButton}  
     <div class="class-list__header">
         <h2 id="classes-title" class="class-list__title">My Classes</h2>
-        <p class="class-list__count">${classes.length} ${classes.length === 1 ? "class" : "classes"}</p>
+        <p class="class-list__count">${classes.length} ${classes.length === 1 ? 'class' : 'classes'}</p>
       </div>
       <div class="class-cards">
         ${classCards}
@@ -368,7 +368,7 @@ function renderAuthRequiredHTML() {
  * @returns {string} Complete HTML page structure
  */
 // eslint-disable-next-line no-unused-vars
-function renderFullPage(content, title = "My Classes") {
+function renderFullPage(content, title = 'My Classes') {
   return `
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -466,17 +466,17 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="professors-title" class="section-title">Professors</h3>
-            <p class="section-count">${professors.length} ${professors.length === 1 ? "professor" : "professors"}</p>
+            <p class="section-count">${professors.length} ${professors.length === 1 ? 'professor' : 'professors'}</p>
           </div>
         </div>
         <div class="section-badge section-badge--professors">${professors.length}</div>
       </div>
       <div class="members-grid members-grid--professors">
-        ${professors.map((prof) => renderMemberCard(prof, "professor")).join("")}
+        ${professors.map((prof) => renderMemberCard(prof, 'professor')).join('')}
       </div>
     </section>
   `
-      : "";
+      : '';
 
   // Render TAs section
   const tasHTML =
@@ -490,17 +490,17 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="tas-title" class="section-title">Teaching Assistants</h3>
-            <p class="section-count">${tas.length} ${tas.length === 1 ? "TA" : "TAs"}</p>
+            <p class="section-count">${tas.length} ${tas.length === 1 ? 'TA' : 'TAs'}</p>
           </div>
         </div>
         <div class="section-badge section-badge--tas">${tas.length}</div>
       </div>
       <div class="members-grid members-grid--tas">
-        ${tas.map((ta) => renderMemberCard(ta, "ta")).join("")}
+        ${tas.map((ta) => renderMemberCard(ta, 'ta')).join('')}
       </div>
     </section>
   `
-      : "";
+      : '';
 
   // Render Tutors section
   const tutorsHTML =
@@ -514,17 +514,17 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="tutors-title" class="section-title">Tutors</h3>
-            <p class="section-count">${tutors.length} ${tutors.length === 1 ? "tutor" : "tutors"}</p>
+            <p class="section-count">${tutors.length} ${tutors.length === 1 ? 'tutor' : 'tutors'}</p>
           </div>
         </div>
         <div class="section-badge section-badge--tutors">${tutors.length}</div>
       </div>
       <div class="members-grid members-grid--tutors">
-        ${tutors.map((tutor) => renderMemberCard(tutor, "tutor")).join("")}
+        ${tutors.map((tutor) => renderMemberCard(tutor, 'tutor')).join('')}
       </div>
     </section>
   `
-      : "";
+      : '';
 
   // Render Groups section
   const groupsHTML =
@@ -538,17 +538,17 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="groups-title" class="section-title">Project Groups</h3>
-            <p class="section-count">${groups.length} ${groups.length === 1 ? "group" : "groups"}</p>
+            <p class="section-count">${groups.length} ${groups.length === 1 ? 'group' : 'groups'}</p>
           </div>
         </div>
         <div class="section-badge section-badge--groups">${groups.length}</div>
       </div>
       <div class="groups-container">
-        ${groups.map((group) => renderGroupCard(group)).join("")}
+        ${groups.map((group) => renderGroupCard(group)).join('')}
       </div>
     </section>
   `
-      : "";
+      : '';
 
   // Render students without group
   const ungroupedHTML =
@@ -562,17 +562,17 @@ function renderDirectoryHTML(directory) {
           </div>
           <div class="section-info">
             <h3 id="ungrouped-title" class="section-title">Students Not in Groups</h3>
-            <p class="section-count">${studentsWithoutGroup.length} ${studentsWithoutGroup.length === 1 ? "student" : "students"}</p>
+            <p class="section-count">${studentsWithoutGroup.length} ${studentsWithoutGroup.length === 1 ? 'student' : 'students'}</p>
           </div>
         </div>
         <div class="section-badge section-badge--ungrouped">${studentsWithoutGroup.length}</div>
       </div>
       <div class="members-grid members-grid--ungrouped">
-        ${studentsWithoutGroup.map((student) => renderMemberCard(student, "student")).join("")}
+        ${studentsWithoutGroup.map((student) => renderMemberCard(student, 'student')).join('')}
       </div>
     </section>
   `
-      : "";
+      : '';
 
   // Empty state when no members exist
   const emptyStateHTML =
@@ -588,7 +588,7 @@ function renderDirectoryHTML(directory) {
       </p>
     </div>
   `
-      : "";
+      : '';
 
   return `
     <div class="class-directory">
@@ -598,17 +598,17 @@ function renderDirectoryHTML(directory) {
           <div class="directory-meta">
             <span class="directory-quarter">
               <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-              ${escapeHtml(classInfo.quarter || "No quarter specified")}
+              ${escapeHtml(classInfo.quarter || 'No quarter specified')}
             </span>
             ${
               totalMembers > 0
                 ? `
             <span class="directory-total">
               <i class="fas fa-users" aria-hidden="true"></i>
-              ${totalMembers} total ${totalMembers === 1 ? "member" : "members"}
+              ${totalMembers} total ${totalMembers === 1 ? 'member' : 'members'}
             </span>
             `
-                : ""
+                : ''
             }
           </div>
         </div>
@@ -634,7 +634,7 @@ function renderMemberCard(member, roleType) {
   const displayName = member.preferredName || member.name;
   // Use a data URL placeholder instead of missing file
   const defaultAvatar =
-    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+";
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+';
   const photoUrl = member.photoUrl || defaultAvatar;
 
   // Build contact links with proper icons and styling
@@ -683,7 +683,7 @@ function renderMemberCard(member, roleType) {
       <span class="member-pronunciation-text">${escapeHtml(member.pronunciation)}</span>
     </div>
   `
-    : "";
+    : '';
 
   const pronounsHTML = member.pronouns
     ? `
@@ -692,7 +692,7 @@ function renderMemberCard(member, roleType) {
       <span class="member-pronouns-text">${escapeHtml(member.pronouns)}</span>
     </div>
   `
-    : "";
+    : '';
 
   const bioHTML = member.bio
     ? `
@@ -700,7 +700,7 @@ function renderMemberCard(member, roleType) {
       <p class="member-bio">${escapeHtml(member.bio)}</p>
     </div>
   `
-    : "";
+    : '';
 
   return `
     <article class="member-card member-card--${roleType}" 
@@ -740,11 +740,11 @@ function renderMemberCard(member, roleType) {
                 Contact
               </div>
               <div class="contact-links">
-                ${contactLinks.join("")}
+                ${contactLinks.join('')}
               </div>
             </div>
           `
-              : ""
+              : ''
           }
         </div>
       </div>
@@ -760,7 +760,7 @@ function renderMemberCard(member, roleType) {
 function renderGroupCard(group) {
   // Use a data URL placeholder instead of missing file
   const defaultGroupLogo =
-    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzhCNUNGNiIvPgo8cGF0aCBkPSJNMjAgMTJjLTQuNDE4IDAtOCAzLjU4Mi04IDhzMy41ODIgOCA4IDggOC0zLjU4MiA4LTgtMy41ODItOC04LTh6bS0yIDZ2NGgydi00aDJ2NGgyVjE4aDJ2NGgyVjE4aDAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8L3N2Zz4=";
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iIzhCNUNGNiIvPgo8cGF0aCBkPSJNMjAgMTJjLTQuNDE4IDAtOCAzLjU4Mi04IDhzMy41ODIgOCA4IDggOC0zLjU4MiA4LTgtMy41ODItOC04LTh6bS0yIDZ2NGgydi00aDJ2NGgyVjE4aDJ2NGgyVjE4aDAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8L3N2Zz4=';
   const logoUrl = group.logoUrl || defaultGroupLogo;
 
   // Separate leaders and regular members
@@ -775,21 +775,21 @@ function renderGroupCard(group) {
       const displayName = member.preferredName || member.name;
       const photoUrl =
         member.photoUrl ||
-        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+";
+        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+';
 
       return `
-      <div class="group-avatar-item ${member.isLeader ? "group-avatar--leader" : ""}" 
+      <div class="group-avatar-item ${member.isLeader ? 'group-avatar--leader' : ''}" 
            style="z-index: ${4 - index};"
-           title="${escapeHtml(displayName)}${member.isLeader ? " (Leader)" : ""}">
+           title="${escapeHtml(displayName)}${member.isLeader ? ' (Leader)' : ''}">
         <img src="${escapeHtml(photoUrl)}" 
              alt="${escapeHtml(displayName)}" 
              class="group-member-avatar"
              onerror="this.src='/images/default-avatar.png'">
-        ${member.isLeader ? '<div class="leader-indicator"><i class="fas fa-crown"></i></div>' : ""}
+        ${member.isLeader ? '<div class="leader-indicator"><i class="fas fa-crown"></i></div>' : ''}
       </div>
     `;
     })
-    .join("");
+    .join('');
 
   const remainingCount = totalMembers > 4 ? totalMembers - 4 : 0;
 
@@ -800,15 +800,15 @@ function renderGroupCard(group) {
     <div class="group-members-section">
       <div class="members-section-header">
         <i class="fas fa-crown" aria-hidden="true"></i>
-        <span class="members-section-title">${leaders.length === 1 ? "Leader" : "Leaders"}</span>
+        <span class="members-section-title">${leaders.length === 1 ? 'Leader' : 'Leaders'}</span>
         <span class="members-section-count">${leaders.length}</span>
       </div>
       <div class="members-section-list">
-        ${leaders.map((member) => renderGroupMember(member, true)).join("")}
+        ${leaders.map((member) => renderGroupMember(member, true)).join('')}
       </div>
     </div>
   `
-      : "";
+      : '';
 
   const membersHTML =
     regularMembers.length > 0
@@ -820,11 +820,11 @@ function renderGroupCard(group) {
         <span class="members-section-count">${regularMembers.length}</span>
       </div>
       <div class="members-section-list">
-        ${regularMembers.map((member) => renderGroupMember(member, false)).join("")}
+        ${regularMembers.map((member) => renderGroupMember(member, false)).join('')}
       </div>
     </div>
   `
-      : "";
+      : '';
 
   return `
     <article class="group-card" 
@@ -855,7 +855,7 @@ function renderGroupCard(group) {
                 <p class="group-mantra">${escapeHtml(group.mantra)}</p>
               </div>
             `
-                : ""
+                : ''
             }
             
             ${
@@ -874,7 +874,7 @@ function renderGroupCard(group) {
                 </a>
               </div>
             `
-                : ""
+                : ''
             }
           </div>
         </div>
@@ -885,11 +885,11 @@ function renderGroupCard(group) {
             ${
               remainingCount > 0
                 ? `
-              <div class="group-avatar-more" title="and ${remainingCount} more ${remainingCount === 1 ? "member" : "members"}">
+              <div class="group-avatar-more" title="and ${remainingCount} more ${remainingCount === 1 ? 'member' : 'members'}">
                 <span>+${remainingCount}</span>
               </div>
             `
-                : ""
+                : ''
             }
           </div>
         </div>
@@ -913,7 +913,7 @@ function renderGroupMember(member, isLeader) {
   const displayName = member.preferredName || member.name;
   const photoUrl =
     member.photoUrl ||
-    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+";
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzk5QTNBRiIvPgo8cGF0aCBkPSJNMzAgMzJjMC02LjYyNy01LjM3My0xMi0xMi0xMnMtMTIgNS4zNzMtMTIgMTIiIGZpbGw9IiM5OUEzQUYiLz4KPC9zdmc+';
 
   // Build contact links for group members
   const contactLinks = [];
@@ -941,7 +941,7 @@ function renderGroupMember(member, isLeader) {
   }
 
   return `
-    <div class="group-member-item ${isLeader ? "group-member-item--leader" : ""}">
+    <div class="group-member-item ${isLeader ? 'group-member-item--leader' : ''}">
       <div class="group-member-info">
         <div class="group-member-avatar-container">
           <img src="${escapeHtml(photoUrl)}" 
@@ -955,7 +955,7 @@ function renderGroupMember(member, isLeader) {
               <i class="fas fa-crown" aria-hidden="true"></i>
             </div>
           `
-              : ""
+              : ''
           }
         </div>
         <div class="group-member-details">
@@ -965,7 +965,7 @@ function renderGroupMember(member, isLeader) {
               ? `
             <span class="group-member-pronouns">${escapeHtml(member.pronouns)}</span>
           `
-              : ""
+              : ''
           }
         </div>
       </div>
@@ -974,10 +974,10 @@ function renderGroupMember(member, isLeader) {
         contactLinks.length > 0
           ? `
         <div class="group-member-contacts">
-          ${contactLinks.join("")}
+          ${contactLinks.join('')}
         </div>
       `
-          : ""
+          : ''
       }
     </div>
   `;

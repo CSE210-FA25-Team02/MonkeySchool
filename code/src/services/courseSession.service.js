@@ -1,7 +1,7 @@
 // Service functions for CourseSession-related database operations
 // code/src/services/courseSession.service.js
 
-import { prisma } from "../lib/prisma.js";
+import { prisma } from '../lib/prisma.js';
 
 /**
  * Create a new course session
@@ -51,7 +51,7 @@ export async function getCourseSessionById(id) {
           active: true,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       },
     },
@@ -74,7 +74,7 @@ export async function getSessionsByClassId(classId) {
           active: true,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       },
       _count: {
@@ -84,7 +84,7 @@ export async function getSessionsByClassId(classId) {
       },
     },
     orderBy: {
-      date: "desc",
+      date: 'desc',
     },
   });
 }
@@ -115,7 +115,7 @@ export async function getSessionsByClassIdAndDate(classId, date) {
           active: true,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
       },
       _count: {
@@ -125,7 +125,7 @@ export async function getSessionsByClassIdAndDate(classId, date) {
       },
     },
     orderBy: {
-      date: "asc",
+      date: 'asc',
     },
   });
 }

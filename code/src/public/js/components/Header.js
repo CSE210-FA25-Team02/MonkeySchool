@@ -5,7 +5,7 @@
  */
 
 export class Header {
-  constructor(containerId = "header") {
+  constructor(containerId = 'header') {
     this.containerId = containerId;
     this.container = null;
     this.isDropdownOpen = false;
@@ -18,7 +18,7 @@ export class Header {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(
-        `Header: Container with id "${this.containerId}" not found`,
+        `Header: Container with id "${this.containerId}" not found`
       );
       return;
     }
@@ -32,7 +32,7 @@ export class Header {
    */
   render() {
     // Always render just the profile dropdown (no title)
-    const existingProfile = this.container.querySelector(".header__profile");
+    const existingProfile = this.container.querySelector('.header__profile');
     const dropdownHTML = `
       <div class="header__profile">
         <button class="header__profile-button" 
@@ -46,7 +46,7 @@ export class Header {
         <div class="header__dropdown" role="menu" aria-label="Profile menu">
           <a href="/users/profile" 
              class="header__dropdown-item"
-             ${typeof htmx !== "undefined" ? `hx-get="/users/profile" hx-target="#main-content" hx-push-url="true"` : ""}>
+             ${typeof htmx !== 'undefined' ? `hx-get="/users/profile" hx-target="#main-content" hx-push-url="true"` : ''}>
             View Profile
           </a>
           <button class="header__dropdown-item" id="logout-btn" type="button" style="width:100%;text-align:left;" hx-get="/auth/logout" hx-target="body" hx-swap="outerHTML">
@@ -57,8 +57,8 @@ export class Header {
     `;
     if (!existingProfile) {
       const headerContent =
-        this.container.querySelector(".header__content") || this.container;
-      const headerRight = headerContent.querySelector(".header__right");
+        this.container.querySelector('.header__content') || this.container;
+      const headerRight = headerContent.querySelector('.header__right');
       if (!headerRight) {
         headerContent.innerHTML = `
           <div class="header__left"></div>
@@ -77,53 +77,53 @@ export class Header {
    */
   attachEventListeners() {
     // Add logout functionality
-    const logoutBtn = this.container.querySelector("#logout-btn");
+    const logoutBtn = this.container.querySelector('#logout-btn');
     if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
+      logoutBtn.addEventListener('click', () => {
         // Placeholder: Replace with real logout logic (API call, clear session, redirect, etc.)
-        if (typeof htmx !== "undefined") {
-          htmx.ajax("POST", "/auth/logout", {
-            target: "body",
-            swap: "outerHTML",
+        if (typeof htmx !== 'undefined') {
+          htmx.ajax('POST', '/auth/logout', {
+            target: 'body',
+            swap: 'outerHTML',
           });
         } else {
-          window.location.href = "/auth/logout";
+          window.location.href = '/auth/logout';
         }
       });
     }
     const profileButton = this.container.querySelector(
-      ".header__profile-button",
+      '.header__profile-button'
     );
-    const dropdown = this.container.querySelector(".header__dropdown");
+    const dropdown = this.container.querySelector('.header__dropdown');
 
     if (!profileButton || !dropdown) {
       return;
     }
 
     // Toggle dropdown on button click
-    profileButton.addEventListener("click", (e) => {
+    profileButton.addEventListener('click', (e) => {
       e.stopPropagation();
       this.toggleDropdown();
     });
 
     // Close dropdown when clicking outside
-    document.addEventListener("click", (e) => {
+    document.addEventListener('click', (e) => {
       if (this.isDropdownOpen && !this.container.contains(e.target)) {
         this.closeDropdown();
       }
     });
 
     // Close dropdown on Escape key
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && this.isDropdownOpen) {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isDropdownOpen) {
         this.closeDropdown();
       }
     });
 
     // Close dropdown when clicking on a dropdown item
-    const dropdownItems = dropdown.querySelectorAll(".header__dropdown-item");
+    const dropdownItems = dropdown.querySelectorAll('.header__dropdown-item');
     dropdownItems.forEach((item) => {
-      item.addEventListener("click", () => {
+      item.addEventListener('click', () => {
         setTimeout(() => {
           this.closeDropdown();
         }, 100);
@@ -137,18 +137,18 @@ export class Header {
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
     const profileButton = this.container.querySelector(
-      ".header__profile-button",
+      '.header__profile-button'
     );
-    const dropdown = this.container.querySelector(".header__dropdown");
+    const dropdown = this.container.querySelector('.header__dropdown');
 
     if (this.isDropdownOpen) {
-      dropdown.classList.add("header__dropdown--open");
-      profileButton.setAttribute("aria-expanded", "true");
-      profileButton.classList.add("header__profile-button--active");
+      dropdown.classList.add('header__dropdown--open');
+      profileButton.setAttribute('aria-expanded', 'true');
+      profileButton.classList.add('header__profile-button--active');
     } else {
-      dropdown.classList.remove("header__dropdown--open");
-      profileButton.setAttribute("aria-expanded", "false");
-      profileButton.classList.remove("header__profile-button--active");
+      dropdown.classList.remove('header__dropdown--open');
+      profileButton.setAttribute('aria-expanded', 'false');
+      profileButton.classList.remove('header__profile-button--active');
     }
   }
 
@@ -162,16 +162,16 @@ export class Header {
 
     this.isDropdownOpen = false;
     const profileButton = this.container.querySelector(
-      ".header__profile-button",
+      '.header__profile-button'
     );
-    const dropdown = this.container.querySelector(".header__dropdown");
+    const dropdown = this.container.querySelector('.header__dropdown');
 
     if (dropdown) {
-      dropdown.classList.remove("header__dropdown--open");
+      dropdown.classList.remove('header__dropdown--open');
     }
     if (profileButton) {
-      profileButton.setAttribute("aria-expanded", "false");
-      profileButton.classList.remove("header__profile-button--active");
+      profileButton.setAttribute('aria-expanded', 'false');
+      profileButton.classList.remove('header__profile-button--active');
     }
   }
 }

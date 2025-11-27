@@ -87,7 +87,7 @@ export function createActivityModal(classes) {
                     hx-swap="outerHTML"
                 >
                     <option value="">-- Select a class --</option>
-                    ${classes.map((cls) => `<option value="${cls.id}">${cls.name}</option>`).join("")}
+                    ${classes.map((cls) => `<option value="${cls.id}">${cls.name}</option>`).join('')}
                 </select>
 
 
@@ -147,7 +147,7 @@ export function createEditActivityModal(categories, activity, classes) {
                     hx-target="#activity-fields"
                     hx-swap="outerHTML"
                 >
-                    ${classes.map((cls) => `<option value="${cls.id}" ${cls.id === activity.classId ? "selected" : ""}>${cls.name}</option>`).join("")}
+                    ${classes.map((cls) => `<option value="${cls.id}" ${cls.id === activity.classId ? 'selected' : ''}>${cls.name}</option>`).join('')}
                 </select>
 
                 <div id="activity-fields">
@@ -156,12 +156,12 @@ export function createEditActivityModal(categories, activity, classes) {
                         ${categories
                           .map(
                             (c) => `
-                        <option value="${c.id}" ${c.id === activity.categoryId ? "selected" : ""}>
+                        <option value="${c.id}" ${c.id === activity.categoryId ? 'selected' : ''}>
                                 ${c.name}
                         </option>
-                        `,
+                        `
                           )
-                          .join("")}
+                          .join('')}
                     </select>
                 </div>
 
@@ -169,7 +169,7 @@ export function createEditActivityModal(categories, activity, classes) {
                 <input type="datetime-local" name="startTime" value="${toDatetimeLocal(activity.startTime)}" required>
 
                 <label>Punch Out:</label>
-                <input type="datetime-local" name="endTime" value="${activity.endTime ? toDatetimeLocal(activity.endTime) : ""}">
+                <input type="datetime-local" name="endTime" value="${activity.endTime ? toDatetimeLocal(activity.endTime) : ''}">
 
                 
                 <button type="submit">Save</button>
@@ -193,7 +193,7 @@ export function enableActivityFields(categories) {
         <div id="activity-fields">
             <label>Category:</label>
             <select name="categoryId" required>
-                ${categories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("")}
+                ${categories.map((c) => `<option value="${c.id}">${c.name}</option>`).join('')}
             </select>
 
             <label>Punch In:</label>
@@ -222,12 +222,12 @@ export function refreshCategories(categories, categoryId) {
             ${categories
               .map(
                 (c) => `
-            <option value="${c.id}" ${c.id === categoryId ? "selected" : ""}>
+            <option value="${c.id}" ${c.id === categoryId ? 'selected' : ''}>
                     ${c.name}
             </option>
-            `,
+            `
               )
-              .join("")}
+              .join('')}
         </select>
     </div>
     `;

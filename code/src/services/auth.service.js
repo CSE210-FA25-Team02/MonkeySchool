@@ -4,14 +4,14 @@
  * Handles email validation, user creation/retrieval, and JWT token management
  */
 
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import csv from "csv-parser";
-import jwt from "jsonwebtoken";
-import { prisma } from "../lib/prisma.js";
-import { env } from "../config/env.js";
-import { getUserByEmail, createUser } from "./user.service.js";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import csv from 'csv-parser';
+import jwt from 'jsonwebtoken';
+import { prisma } from '../lib/prisma.js';
+import { env } from '../config/env.js';
+import { getUserByEmail, createUser } from './user.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,12 +24,12 @@ const __dirname = path.dirname(__filename);
  */
 export async function isEmailAllowed(email) {
   // Check if it's a UCSD email
-  if (email.endsWith("@ucsd.edu")) {
+  if (email.endsWith('@ucsd.edu')) {
     return true;
   }
 
   // Check CSV file for external emails
-  const csvPath = path.join(__dirname, "../../data/external-emails.csv");
+  const csvPath = path.join(__dirname, '../../data/external-emails.csv');
 
   return new Promise((resolve, reject) => {
     const allowedEmails = [];
@@ -42,17 +42,17 @@ export async function isEmailAllowed(email) {
 
     fs.createReadStream(csvPath)
       .pipe(csv())
-      .on("data", (row) => {
+      .on('data', (row) => {
         if (row.email && row.email.trim()) {
           allowedEmails.push(row.email.trim().toLowerCase());
         }
       })
-      .on("end", () => {
+      .on('end', () => {
         const emailLower = email.toLowerCase().trim();
         resolve(allowedEmails.includes(emailLower));
       })
-      .on("error", (error) => {
-        console.error("Error reading CSV file:", error);
+      .on('error', (error) => {
+        console.error('Error reading CSV file:', error);
         reject(error);
       });
   });
@@ -71,7 +71,7 @@ export async function getOrCreateUser(profile) {
   const isAllowed = await isEmailAllowed(email);
   if (!isAllowed) {
     throw new Error(
-      "Email not authorized. Only UCSD emails or whitelisted external emails are allowed.",
+      'Email not authorized. Only UCSD emails or whitelisted external emails are allowed.'
     );
   }
 
@@ -82,7 +82,7 @@ export async function getOrCreateUser(profile) {
     // Create new user
     user = await createUser({
       email,
-      name: name || email.split("@")[0],
+      name: name || email.split('@')[0],
       photoUrl: picture || null,
     });
   } else {
@@ -111,7 +111,7 @@ export function generateToken(user) {
   };
 
   return jwt.sign(payload, env.JWT_SECRET, {
-    expiresIn: "7d", // Token expires in 7 days
+    expiresIn: '7d', // Token expires in 7 days
   });
 }
 
@@ -124,7 +124,7 @@ export function verifyToken(token) {
   try {
     return jwt.verify(token, env.JWT_SECRET);
   } catch (error) {
-    console.error("Token verification error:", error);
+    console.error('Token verification error:', error);
     return null;
   }
 }

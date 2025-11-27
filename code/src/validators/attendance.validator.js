@@ -6,13 +6,13 @@
 
 // code/src/validators/attendance.validator.js
 
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Schema for creating an attendance poll
  */
 export const createPollSchema = z.object({
-  sessionId: z.string().min(1, "Session ID is required"),
+  sessionId: z.string().min(1, 'Session ID is required'),
   durationMinutes: z
     .number()
     .int()
@@ -27,7 +27,7 @@ export const createPollSchema = z.object({
 export const submitAttendanceSchema = z.object({
   code: z
     .string()
-    .regex(/^\d{8}$/, "Code must be exactly 8 digits")
+    .regex(/^\d{8}$/, 'Code must be exactly 8 digits')
     .min(8)
     .max(8),
 });
@@ -36,11 +36,11 @@ export const submitAttendanceSchema = z.object({
  * Schema for creating a course session
  */
 export const createCourseSessionSchema = z.object({
-  classId: z.string().min(1, "Class ID is required"),
+  classId: z.string().min(1, 'Class ID is required'),
   name: z
     .string()
-    .min(1, "Session name is required")
-    .max(255, "Session name must not exceed 255 characters")
+    .min(1, 'Session name is required')
+    .max(255, 'Session name must not exceed 255 characters')
     .trim(),
   date: z.coerce.date(),
   startTime: z.coerce.date().optional(),

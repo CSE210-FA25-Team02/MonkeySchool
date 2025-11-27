@@ -1,13 +1,13 @@
 // Service functions for AttendanceRecord-related database operations
 // code/src/services/attendanceRecord.service.js
 
-import { prisma } from "../lib/prisma.js";
+import { prisma } from '../lib/prisma.js';
 import {
   NotFoundError,
   ConflictError,
   ForbiddenError,
   GoneError,
-} from "../utils/api-error.js";
+} from '../utils/api-error.js';
 
 /**
  * Check if a student is enrolled in a class
@@ -21,7 +21,7 @@ async function isStudentEnrolled(studentId, classId) {
       userId: studentId,
       classId: classId,
       role: {
-        in: ["STUDENT", "TA", "TUTOR", "PROFESSOR"], // All enrolled roles
+        in: ['STUDENT', 'TA', 'TUTOR', 'PROFESSOR'], // All enrolled roles
       },
     },
   });
@@ -68,15 +68,15 @@ export async function submitAttendance(code, studentId) {
         },
       });
       if (expiredPoll) {
-        throw new GoneError("Code expired");
+        throw new GoneError('Code expired');
       }
-      throw new NotFoundError("Invalid code");
+      throw new NotFoundError('Invalid code');
     }
 
     // Check if student is enrolled in the class
     const enrolled = await isStudentEnrolled(studentId, poll.session.classId);
     if (!enrolled) {
-      throw new ForbiddenError("Not enrolled in course");
+      throw new ForbiddenError('Not enrolled in course');
     }
 
     // Check if already marked (using unique constraint)
@@ -90,7 +90,7 @@ export async function submitAttendance(code, studentId) {
     });
 
     if (existing) {
-      throw new ConflictError("Already marked attendance for this session");
+      throw new ConflictError('Already marked attendance for this session');
     }
 
     // Create attendance record
@@ -141,7 +141,7 @@ export async function getSessionAttendance(sessionId) {
       },
     },
     orderBy: {
-      markedAt: "asc",
+      markedAt: 'asc',
     },
   });
 }
@@ -176,7 +176,7 @@ export async function getCourseAttendanceSummary(courseId) {
       },
     },
     orderBy: {
-      date: "desc",
+      date: 'desc',
     },
   });
 
@@ -185,7 +185,7 @@ export async function getCourseAttendanceSummary(courseId) {
     where: {
       classId: courseId,
       role: {
-        in: ["STUDENT", "TA", "TUTOR"],
+        in: ['STUDENT', 'TA', 'TUTOR'],
       },
     },
     include: {
@@ -276,7 +276,7 @@ export async function getStudentAttendance(studentId) {
       },
     },
     orderBy: {
-      markedAt: "desc",
+      markedAt: 'desc',
     },
   });
 
@@ -286,7 +286,7 @@ export async function getStudentAttendance(studentId) {
     sessionId: record.session.id,
     sessionName: record.session.name,
     date: record.session.date,
-    status: "present",
+    status: 'present',
     markedAt: record.markedAt,
     pollCode: record.poll?.code,
   }));
@@ -311,7 +311,7 @@ export async function getCourseAttendanceRecords(courseId) {
       startTime: true,
     },
     orderBy: {
-      date: "asc", // Order by date ascending for chronological display
+      date: 'asc', // Order by date ascending for chronological display
     },
   });
 
@@ -320,7 +320,7 @@ export async function getCourseAttendanceRecords(courseId) {
     where: {
       classId: courseId,
       role: {
-        in: ["STUDENT", "TA", "TUTOR"],
+        in: ['STUDENT', 'TA', 'TUTOR'],
       },
     },
     include: {
@@ -334,7 +334,7 @@ export async function getCourseAttendanceRecords(courseId) {
     },
     orderBy: {
       user: {
-        name: "asc",
+        name: 'asc',
       },
     },
   });
@@ -438,7 +438,7 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
       },
     },
     orderBy: {
-      markedAt: "desc",
+      markedAt: 'desc',
     },
   });
 
@@ -461,7 +461,7 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
       timestamp: record.markedAt,
       date: record.session.date,
       sessionName: record.session.name,
-      status: "present",
+      status: 'present',
       markedAt: record.markedAt,
       pollCode: record.poll?.code,
     });
@@ -469,6 +469,6 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
 
   // Convert to array and sort by course name
   return Array.from(courseMap.values()).sort((a, b) =>
-    a.courseName.localeCompare(b.courseName),
+    a.courseName.localeCompare(b.courseName)
   );
 }

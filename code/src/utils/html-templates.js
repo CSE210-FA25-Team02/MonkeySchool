@@ -18,11 +18,11 @@
  */
 export function createBaseLayout(title, content, options = {}) {
   const {
-    lang = "en",
-    dir = "ltr",
-    charset = "UTF-8",
-    viewport = "width=device-width, initial-scale=1.0",
-    description = "Student Management System",
+    lang = 'en',
+    dir = 'ltr',
+    charset = 'UTF-8',
+    viewport = 'width=device-width, initial-scale=1.0',
+    description = 'Student Management System',
   } = options;
   return `
 <!DOCTYPE html>
@@ -108,13 +108,13 @@ export function createErrorMessage(message, errors = null) {
               .map(
                 (error) => `
                 <li class="alert__item">${escapeHtml(error)}</li>
-            `,
+            `
               )
-              .join("")}
+              .join('')}
         </ul>
     </details>
     `
-        : ""
+        : ''
     }
 </div>`;
 }
@@ -138,14 +138,14 @@ export function createSuccessMessage(message) {
  * @returns {string} Escaped HTML string
  */
 export function escapeHtml(text) {
-  if (text == null) return "";
-  if (typeof text !== "string") return String(text);
+  if (text == null) return '';
+  if (typeof text !== 'string') return String(text);
   const map = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;",
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
   };
 
   return text.replace(/[&<>"']/g, (m) => map[m]);
@@ -157,12 +157,12 @@ export function escapeHtml(text) {
  * @param {string} [lang='en'] Language code for formatting rule
  * @returns {string} Formatted date string
  */
-export function formatDate(dateString, lang = "en") {
+export function formatDate(dateString, lang = 'en') {
   const date = new Date(dateString);
   return date.toLocaleDateString(lang, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 }
 
@@ -172,7 +172,7 @@ export function formatDate(dateString, lang = "en") {
  * @returns {Array<string>} List of upcoming quarters
  */
 export function getUpcomingQuarters(count = 8) {
-  const quarters = ["WI", "SP", "SU", "FA"];
+  const quarters = ['WI', 'SP', 'SU', 'FA'];
   const currDate = new Date();
   const currYear = currDate.getFullYear();
   const currMonth = currDate.getMonth();

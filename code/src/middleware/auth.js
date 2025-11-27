@@ -4,8 +4,8 @@
  * Validates JWT tokens and attaches user to request
  */
 
-import { verifyToken } from "../services/auth.service.js";
-import { getUserById } from "../services/user.service.js";
+import { verifyToken } from '../services/auth.service.js';
+import { getUserById } from '../services/user.service.js';
 
 /**
  * Middleware to ensure request is authenticated by validating JWT token
@@ -23,50 +23,50 @@ export async function requireAuth(req, res, next) {
       // Check if this is an API request (has quarter param or Accept: application/json)
       const isApiRequest =
         req.params.quarter ||
-        req.path.startsWith("/api") ||
-        req.get("Accept")?.includes("application/json");
+        req.path.startsWith('/api') ||
+        req.get('Accept')?.includes('application/json');
       if (isApiRequest) {
-        return res.status(401).json({ error: "Authentication required" });
+        return res.status(401).json({ error: 'Authentication required' });
       }
-      return res.redirect("/login");
+      return res.redirect('/login');
     }
 
     const decoded = verifyToken(token);
     if (!decoded) {
       const isApiRequest =
         req.params.quarter ||
-        req.path.startsWith("/api") ||
-        req.get("Accept")?.includes("application/json");
+        req.path.startsWith('/api') ||
+        req.get('Accept')?.includes('application/json');
       if (isApiRequest) {
-        return res.status(401).json({ error: "Invalid token" });
+        return res.status(401).json({ error: 'Invalid token' });
       }
-      return res.redirect("/login");
+      return res.redirect('/login');
     }
 
     const user = await getUserById(decoded.id);
     if (!user) {
       const isApiRequest =
         req.params.quarter ||
-        req.path.startsWith("/api") ||
-        req.get("Accept")?.includes("application/json");
+        req.path.startsWith('/api') ||
+        req.get('Accept')?.includes('application/json');
       if (isApiRequest) {
-        return res.status(401).json({ error: "User not found" });
+        return res.status(401).json({ error: 'User not found' });
       }
-      return res.redirect("/login");
+      return res.redirect('/login');
     }
 
     // Attach user to request
     req.user = user;
     next();
   } catch (error) {
-    console.error("Auth middleware error:", error);
+    console.error('Auth middleware error:', error);
     const isApiRequest =
       req.params.quarter ||
-      req.path.startsWith("/api") ||
-      req.get("Accept")?.includes("application/json");
+      req.path.startsWith('/api') ||
+      req.get('Accept')?.includes('application/json');
     if (isApiRequest) {
-      return res.status(500).json({ error: "Authentication error" });
+      return res.status(500).json({ error: 'Authentication error' });
     }
-    res.redirect("/login");
+    res.redirect('/login');
   }
 }

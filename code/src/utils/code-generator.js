@@ -5,7 +5,7 @@
  * Uses crypto-secure random number generation with retry logic for uniqueness.
  */
 
-import { randomInt } from "crypto";
+import { randomInt } from 'crypto';
 
 const MAX_RETRIES = 10;
 const CODE_LENGTH = 8;
@@ -18,7 +18,7 @@ const MAX_CODE = 99999999; // 8 digits max
  */
 function generateCode() {
   const code = randomInt(MIN_CODE, MAX_CODE + 1);
-  return code.toString().padStart(CODE_LENGTH, "0");
+  return code.toString().padStart(CODE_LENGTH, '0');
 }
 
 /**
@@ -28,8 +28,8 @@ function generateCode() {
  * @throws {Error} If unable to generate unique code after MAX_RETRIES attempts
  */
 export async function generateUniqueCode(uniquenessChecker) {
-  if (typeof uniquenessChecker !== "function") {
-    throw new Error("uniquenessChecker must be a function");
+  if (typeof uniquenessChecker !== 'function') {
+    throw new Error('uniquenessChecker must be a function');
   }
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -42,7 +42,7 @@ export async function generateUniqueCode(uniquenessChecker) {
   }
 
   throw new Error(
-    `Failed to generate unique code after ${MAX_RETRIES} attempts`,
+    `Failed to generate unique code after ${MAX_RETRIES} attempts`
   );
 }
 
@@ -52,7 +52,7 @@ export async function generateUniqueCode(uniquenessChecker) {
  * @returns {boolean} True if valid
  */
 export function validateCodeFormat(code) {
-  if (typeof code !== "string") {
+  if (typeof code !== 'string') {
     return false;
   }
   return /^\d{8}$/.test(code);

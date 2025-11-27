@@ -1,14 +1,14 @@
-import * as activityService from "../services/activity.service.js";
-import { asyncHandler } from "../utils/async-handler.js";
-import { NotFoundError } from "../utils/api-error.js";
+import * as activityService from '../services/activity.service.js';
+import { asyncHandler } from '../utils/async-handler.js';
+import { NotFoundError } from '../utils/api-error.js';
 import {
   createPunchCard,
   createActivityModal,
   createEditActivityModal,
   enableActivityFields,
-} from "../utils/htmx-templates/activity-templates.js";
-import { getClassesByUserId } from "../services/class.service.js";
-import { getClassRole } from "../services/classRole.service.js";
+} from '../utils/htmx-templates/activity-templates.js';
+import { getClassesByUserId } from '../services/class.service.js';
+import { getClassRole } from '../services/classRole.service.js';
 
 /**
  * Create Activity Punch
@@ -24,14 +24,14 @@ export const createActivity = asyncHandler(async (req, res) => {
       startTime: new Date(req.body.startTime),
       endTime: req.body.endTime ? new Date(req.body.endTime) : null,
     };
-    console.log("Activity Data", activityData);
+    console.log('Activity Data', activityData);
     activity = await activityService.createActivity(activityData);
   } catch {
-    console.log("Failed to create activity");
-    return res.status(500).send("Failed to create activity. Try again.");
+    console.log('Failed to create activity');
+    return res.status(500).send('Failed to create activity. Try again.');
   }
 
-  if (!activity) throw new NotFoundError("Activity");
+  if (!activity) throw new NotFoundError('Activity');
   res.status(201).json(activity);
 });
 
@@ -51,11 +51,11 @@ export const updateActivity = asyncHandler(async (req, res) => {
     };
     updatedActivity = await activityService.updateActivity(id, activityData);
   } catch {
-    console.log("Failed to update activity");
-    return res.status(500).send("Failed to update activity. Try again.");
+    console.log('Failed to update activity');
+    return res.status(500).send('Failed to update activity. Try again.');
   }
 
-  if (!updatedActivity) throw new NotFoundError("Activity");
+  if (!updatedActivity) throw new NotFoundError('Activity');
   res.status(201).json(updatedActivity);
 });
 
@@ -69,10 +69,10 @@ export const getActivity = asyncHandler(async (req, res) => {
   try {
     activity = await activityService.getActivityById(id);
   } catch {
-    console.log("Failed to get activity");
-    return res.status(500).send("Failed to get activity. Try again.");
+    console.log('Failed to get activity');
+    return res.status(500).send('Failed to get activity. Try again.');
   }
-  if (!activity) throw new NotFoundError("Activity");
+  if (!activity) throw new NotFoundError('Activity');
   res.status(200).json(activity);
 });
 
@@ -86,8 +86,8 @@ export const getActivitiesByUser = asyncHandler(async (req, res) => {
   try {
     activities = await activityService.getActivitiesByUserId(userId);
   } catch {
-    console.log("Failed to get activities for user");
-    return res.status(500).send("Failed to get activities for this user.");
+    console.log('Failed to get activities for user');
+    return res.status(500).send('Failed to get activities for this user.');
   }
 
   res.status(200).json(activities);
@@ -101,8 +101,8 @@ export const deleteActivity = asyncHandler(async (req, res) => {
   try {
     await activityService.deleteActivity(id);
   } catch {
-    console.log("Failed to remove activity");
-    return res.status(500).send("Failed to remove activity. Try again.");
+    console.log('Failed to remove activity');
+    return res.status(500).send('Failed to remove activity. Try again.');
   }
 
   res.status(204).send();
@@ -127,9 +127,9 @@ export const getActivityDropdown = asyncHandler(async (req, res) => {
         <option value="${a.id}">
             ${new Date(a.startTime).toLocaleDateString()} - ${a.class.name} - ${a.category.name}
         </option>
-    `,
+    `
     )
-    .join("");
+    .join('');
 
   res.status(201).send(html);
 });
@@ -142,7 +142,7 @@ export const getActivityDetails = asyncHandler(async (req, res) => {
   const id = req.query.punchSelect;
 
   const activity = await activityService.getActivityById(id);
-  if (!activity) return res.send("<div>No activity found.</div>");
+  if (!activity) return res.send('<div>No activity found.</div>');
 
   const start = new Date(activity.startTime);
   const end = activity.endTime ? new Date(activity.endTime) : null;
@@ -155,13 +155,13 @@ export const getActivityDetails = asyncHandler(async (req, res) => {
 
         <div class="punchcard__section">
             <strong class="punchcard__label">Punch In Time</strong>
-            <div class="punchcard__value">${start.toLocaleDateString()} - ${start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</div>
+            <div class="punchcard__value">${start.toLocaleDateString()} - ${start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</div>
         </div>
 
         <div class="punchcard__section punchcard__section--last">
             <strong class="punchcard__label">Punch Out Time</strong>
             <div class="punchcard__value">
-                ${end ? end.toLocaleDateString() + " - " + end.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "—"}
+                ${end ? end.toLocaleDateString() + ' - ' + end.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '—'}
             </div>
         </div>
     `);
@@ -203,7 +203,7 @@ export const loadActivityFields = asyncHandler(async (req, res) => {
 
   if (!classId) {
     return res.send(
-      "<div id='activity-fields'>Error: No class selected.</div>",
+      "<div id='activity-fields'>Error: No class selected.</div>"
     );
   }
 
@@ -220,7 +220,7 @@ export const loadActivityFields = asyncHandler(async (req, res) => {
 
 export const renderPunchCard = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  console.log("UserID:", userId);
+  console.log('UserID:', userId);
   res.status(201).send(createPunchCard());
 });
 
@@ -228,5 +228,5 @@ export const renderPunchCard = asyncHandler(async (req, res) => {
  * Close Activity Punch Form
  */
 export const closeActivityPunchForm = asyncHandler(async (req, res) => {
-  res.status(201).send("");
+  res.status(201).send('');
 });

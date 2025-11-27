@@ -4,10 +4,10 @@
  * Handles the left fixed navigation bar with collapsible functionality
  */
 
-import { navigationConfig } from "../config/navigationConfig.js";
+import { navigationConfig } from '../config/navigationConfig.js';
 
 export class NavBar {
-  constructor(containerId = "navbar") {
+  constructor(containerId = 'navbar') {
     this.containerId = containerId;
     this.container = null;
     this.isOpen = false;
@@ -22,7 +22,7 @@ export class NavBar {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(
-        `NavBar: Container with id "${this.containerId}" not found`,
+        `NavBar: Container with id "${this.containerId}" not found`
       );
       return;
     }
@@ -45,7 +45,7 @@ export class NavBar {
     const navItemsHTML = navigationConfig.mainNav
       .map((item, index) => {
         const isActive = this.isActiveRoute(item.path);
-        const activeClass = isActive ? "navbar__item--active" : "";
+        const activeClass = isActive ? 'navbar__item--active' : '';
 
         return `
         <div class="navbar__item ${activeClass}" 
@@ -59,7 +59,7 @@ export class NavBar {
         </div>
       `;
       })
-      .join("");
+      .join('');
 
     // No hamburger menu - nav bar is always visible
     this.container.innerHTML = `
@@ -89,10 +89,10 @@ export class NavBar {
    * Check if a route is currently active
    */
   isActiveRoute(path) {
-    if (path === "/" && this.currentPath === "/") {
+    if (path === '/' && this.currentPath === '/') {
       return true;
     }
-    if (path !== "/" && this.currentPath.startsWith(path)) {
+    if (path !== '/' && this.currentPath.startsWith(path)) {
       return true;
     }
     return false;
@@ -102,14 +102,14 @@ export class NavBar {
    * Set the active navigation item
    */
   setActiveNavItem() {
-    const navItems = this.container.querySelectorAll(".navbar__item");
+    const navItems = this.container.querySelectorAll('.navbar__item');
     navItems.forEach((item) => {
       const path = item.dataset.path;
       if (this.isActiveRoute(path)) {
-        item.classList.add("navbar__item--active");
+        item.classList.add('navbar__item--active');
         this.activeNavItem = item;
       } else {
-        item.classList.remove("navbar__item--active");
+        item.classList.remove('navbar__item--active');
       }
     });
   }
@@ -119,9 +119,9 @@ export class NavBar {
    */
   attachEventListeners() {
     // Navigation item clicks
-    const navItems = this.container.querySelectorAll(".navbar__item");
+    const navItems = this.container.querySelectorAll('.navbar__item');
     navItems.forEach((item) => {
-      item.addEventListener("click", () => {
+      item.addEventListener('click', () => {
         const path = item.dataset.path;
         const navIndex = item.dataset.navIndex;
         this.handleNavClick(path, navIndex, item);
@@ -129,13 +129,13 @@ export class NavBar {
     });
 
     // Update active state on route change (for HTMX navigation)
-    window.addEventListener("htmx:afterSettle", () => {
+    window.addEventListener('htmx:afterSettle', () => {
       this.currentPath = window.location.pathname;
       this.setActiveNavItem();
     });
 
     // Handle browser back/forward
-    window.addEventListener("popstate", () => {
+    window.addEventListener('popstate', () => {
       this.currentPath = window.location.pathname;
       this.setActiveNavItem();
     });
@@ -149,7 +149,7 @@ export class NavBar {
 
     // If nav item has submenu, trigger submenu open event
     if (navItem && navItem.subMenu && navItem.subMenu.length > 0) {
-      const event = new CustomEvent("navItemClick", {
+      const event = new CustomEvent('navItemClick', {
         detail: { navItem, element, path },
       });
       document.dispatchEvent(event);
@@ -164,9 +164,9 @@ export class NavBar {
    */
   navigate(path) {
     // Use HTMX if available, otherwise use standard navigation
-    if (typeof htmx !== "undefined") {
-      htmx.ajax("GET", path, { target: "#main-content", swap: "innerHTML" });
-      window.history.pushState({}, "", path);
+    if (typeof htmx !== 'undefined') {
+      htmx.ajax('GET', path, { target: '#main-content', swap: 'innerHTML' });
+      window.history.pushState({}, '', path);
     } else {
       window.location.href = path;
     }
