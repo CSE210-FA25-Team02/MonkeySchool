@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Attendance - Monkey School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/shell.css">
+    <link rel="stylesheet" href="css/pages/attendance.css">
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Floating Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-mark">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item" title="Dashboard">
+                    <i class="fa-solid fa-grip-vertical nav-icon"></i>
+                </a>
+                <a href="my-classes.html" class="nav-item active" title="My Classes">
+                    <i class="fa-solid fa-book-open nav-icon"></i>
+                </a>
+                <a href="class.html" class="nav-item" title="Schedule">
+                    <i class="fa-regular fa-calendar nav-icon"></i>
+                </a>
+                <a href="groups.html" class="nav-item" title="My Groups">
+                    <i class="fa-solid fa-users-rectangle nav-icon"></i>
+                </a>
+                <a href="#" class="nav-item" title="Settings">
+                    <i class="fa-solid fa-gear nav-icon"></i>
+                </a>
+            </nav>
+
+            <div style="margin-top: auto; padding-bottom: 24px;">
+                <a href="login.html" class="nav-item" title="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Canvas -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="breadcrumbs">
+                    <a href="index.html">Dashboard</a>
+                    <span style="color: var(--color-text-muted)">/</span>
+                    <a href="class.html">CSE 210</a>
+                    <span style="color: var(--color-text-muted)">/</span>
+                    <span class="current">Live Attendance</span>
+                </div>
+            </header>
+
+            <div class="content-canvas">
+                <div class="container" style="height: calc(100% - 40px);">
+
+                    <div class="attendance-demo-split">
+
+                        <!-- PROFESSOR VIEW -->
+                        <div class="demo-column prof-view">
+                            <div class="demo-label">PROFESSOR SCREEN</div>
+
+                            <div class="poll-status-badge">
+                                <div class="pulsing-dot"></div>
+                                Session Active
+                            </div>
+
+                            <div class="big-code-display">
+                                8392 1045
+                            </div>
+
+                            <div class="timer-ring">
+                                <svg width="200" height="200">
+                                    <circle cx="100" cy="100" r="90" fill="none" stroke="#E5E7EB" stroke-width="8" />
+                                    <circle cx="100" cy="100" r="90" fill="none" stroke="#F2A93B" stroke-width="8"
+                                        stroke-dasharray="565" stroke-dashoffset="100" transform="rotate(-90 100 100)"
+                                        stroke-linecap="round" />
+                                </svg>
+                                <div class="timer-text">04:32</div>
+                            </div>
+
+                            <div class="live-stats">
+                                <div class="stat-item">
+                                    <span class="stat-num">42</span>
+                                    <span class="stat-desc">Present</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-num" style="color: var(--color-text-muted);">6</span>
+                                    <span class="stat-desc">Absent</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STUDENT VIEW -->
+                        <div class="demo-column"
+                            style="background: #F3F4F6; align-items: center; justify-content: center;">
+                            <div class="demo-label">STUDENT PHONE</div>
+
+                            <!-- Phone Frame -->
+                            <div
+                                style="background: white; width: 320px; height: 600px; border-radius: 32px; border: 8px solid #1F2937; box-shadow: 0 20px 40px rgba(0,0,0,0.2); padding: 24px; display: flex; flex-direction: column;">
+
+                                <div style="text-align: center; margin-bottom: 40px; margin-top: 40px;">
+                                    <h3 style="font-size: 20px; font-weight: bold; color: var(--color-brand-deep);">CSE
+                                        210</h3>
+                                    <p style="color: var(--color-text-muted); font-size: 14px;">Software Engineering</p>
+                                </div>
+
+                                <!-- Input State -->
+                                <div id="student-input-state" class="student-view">
+                                    <div class="input-instruction">
+                                        <p style="font-weight: 500;">Enter Attendance Code</p>
+                                        <p style="font-size: 12px; color: var(--color-text-muted);">Code is displayed on
+                                            the main screen</p>
+                                    </div>
+
+                                    <div class="code-input-group">
+                                        <input type="text" class="digit-input" maxlength="1" value="8">
+                                        <input type="text" class="digit-input" maxlength="1" value="3">
+                                        <input type="text" class="digit-input" maxlength="1" value="9">
+                                        <input type="text" class="digit-input" maxlength="1" placeholder="-">
+                                    </div>
+
+                                    <button class="btn-submit-code" onclick="simulateSubmit()">
+                                        Submit Code
+                                    </button>
+                                </div>
+
+                                <!-- Success State -->
+                                <div id="student-success-state" class="success-state">
+                                    <div class="success-icon">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                    <h2 style="color: var(--color-brand-deep); margin-bottom: 8px;">You're In!</h2>
+                                    <p style="color: var(--color-text-muted); font-size: 14px;">Marked present at 10:05
+                                        AM</p>
+
+                                    <div
+                                        style="margin-top: 32px; background: #F9FAFB; padding: 16px; border-radius: 12px; text-align: left;">
+                                        <div
+                                            style="font-size: 12px; font-weight: bold; color: var(--color-text-muted); margin-bottom: 8px;">
+                                            NEXT UP</div>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div
+                                                style="width: 32px; height: 32px; background: #E0F2FE; color: #0284C7; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fa-solid fa-bolt"></i>
+                                            </div>
+                                            <div style="font-size: 14px; font-weight: 500;">Team Standup</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function simulateSubmit() {
+            document.getElementById('student-input-state').style.display = 'none';
+            document.getElementById('student-success-state').style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

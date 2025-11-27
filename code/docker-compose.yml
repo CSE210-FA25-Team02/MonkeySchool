@@ -26,13 +26,11 @@ services:
     build: .
     container_name: monkeyschool-app
     restart: always
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
-      PORT: ${PORT:-3000}
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
-      CORS_ORIGIN: http://localhost:${PORT:-3000}
-      RATE_LIMIT_WINDOW_MS: 900000
-      RATE_LIMIT_MAX_REQUESTS: 100
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
     depends_on:
