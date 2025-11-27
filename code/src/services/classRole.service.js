@@ -1,6 +1,6 @@
-import { prisma } from '../lib/prisma.js';
+import { prisma } from "../lib/prisma.js";
 
-const VALID_ROLES = ['PROFESSOR', 'TA', 'STUDENT', 'TUTOR'];
+const VALID_ROLES = ["PROFESSOR", "TA", "STUDENT", "TUTOR"];
 
 /**
  * Assign or update a user's role in a class.
@@ -15,7 +15,7 @@ export async function upsertClassRole({ userId, classId, role }) {
 
   if (!VALID_ROLES.includes(normalized)) {
     throw new Error(
-      `Invalid role "${role}". Allowed roles: ${VALID_ROLES.join(', ')}`
+      `Invalid role "${role}". Allowed roles: ${VALID_ROLES.join(", ")}`,
     );
   }
 
@@ -67,6 +67,6 @@ export async function getRoster(classId) {
   return prisma.classRole.findMany({
     where: { classId },
     include: { user: true },
-    orderBy: { role: 'asc' },
+    orderBy: { role: "asc" },
   });
 }

@@ -1,22 +1,22 @@
-import * as userService from '../services/user.service.js';
-import { asyncHandler } from '../utils/async-handler.js';
-import { NotFoundError } from '../utils/api-error.js';
+import * as userService from "../services/user.service.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { NotFoundError } from "../utils/api-error.js";
 import {
   createBaseLayout,
   createErrorMessage,
   createSuccessMessage,
-} from '../utils/html-templates.js';
+} from "../utils/html-templates.js";
 import {
   createUserProfile,
   createProfileLinkField,
-} from '../utils/components/profile-page.js';
+} from "../utils/components/profile-page.js";
 
 /**
  * Get user by ID
  */
 export const getUser = asyncHandler(async (req, res) => {
   const user = await userService.getUserById(req.params.id);
-  if (!user) throw new NotFoundError('User not found');
+  if (!user) throw new NotFoundError("User not found");
   res.json(user);
 });
 
@@ -24,14 +24,14 @@ export const getUser = asyncHandler(async (req, res) => {
  * Load User Profile Page
  */
 export const renderUserProfilePage = asyncHandler(async (req, res) => {
-  const isHtmx = !!req.headers['hx-request'];
-  const mode = req.query.mode === 'edit' ? 'edit' : 'view';
+  const isHtmx = !!req.headers["hx-request"];
+  const mode = req.query.mode === "edit" ? "edit" : "view";
 
   try {
     const userId = req.user?.id;
-    if (!userId) throw new NotFoundError('User not authenticated');
+    if (!userId) throw new NotFoundError("User not authenticated");
     const user = await userService.getUserById(userId);
-    if (!user) throw new NotFoundError('User not found');
+    if (!user) throw new NotFoundError("User not found");
 
     const profileHtml = createUserProfile(user, { mode });
     const html = isHtmx
@@ -42,12 +42,12 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
   } catch (err) {
     const status = err.statusCode || 500;
     const message =
-      status === 404 ? 'User not found.' : 'Failed to load user profile.';
+      status === 404 ? "User not found." : "Failed to load user profile.";
 
     const errorHtml = createErrorMessage(message);
     const html = isHtmx
       ? errorHtml
-      : createBaseLayout('Error - Profile', errorHtml);
+      : createBaseLayout("Error - Profile", errorHtml);
 
     res.status(status).send(html);
   }
@@ -66,13 +66,13 @@ export const createUser = asyncHandler(async (req, res) => {
  */
 export const updateUser = asyncHandler(async (req, res) => {
   const updatedUser = await userService.updateUser(req.params.id, req.body);
-  const isHtmx = !!req.headers['hx-request'];
+  const isHtmx = !!req.headers["hx-request"];
 
   if (isHtmx) {
     const html =
-      createSuccessMessage('Profile updated successfully.') +
-      createUserProfile(updatedUser, { mode: 'view' });
-    res.set('HX-Push', `/users/profile`);
+      createSuccessMessage("Profile updated successfully.") +
+      createUserProfile(updatedUser, { mode: "view" });
+    res.set("HX-Push", `/users/profile`);
     res.send(html);
   } else {
     res.json(updatedUser);
@@ -85,13 +85,13 @@ export const updateUser = asyncHandler(async (req, res) => {
 export const renderProfileLinkField = asyncHandler(async (req, res) => {
   const { type } = req.query;
 
-  if (!['social', 'chat'].includes(type)) {
-    res.status(400).send('Invalid link type');
+  if (!["social", "chat"].includes(type)) {
+    res.status(400).send("Invalid link type");
     return;
   }
 
   // Optionally, you could check req.user here if needed for context
-  const html = createProfileLinkField('', { type });
+  const html = createProfileLinkField("", { type });
   res.send(html);
 });
 

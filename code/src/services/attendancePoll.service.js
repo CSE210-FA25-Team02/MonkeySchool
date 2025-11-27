@@ -1,9 +1,9 @@
 // Service functions for AttendancePoll-related database operations
 // code/src/services/attendancePoll.service.js
 
-import { prisma } from '../lib/prisma.js';
-import { generateUniqueCode } from '../utils/code-generator.js';
-import { env } from '../config/env.js';
+import { prisma } from "../lib/prisma.js";
+import { generateUniqueCode } from "../utils/code-generator.js";
+import { env } from "../config/env.js";
 
 /**
  * Check if a code is unique (not already in use by an active poll)
@@ -29,7 +29,7 @@ async function isCodeUnique(code) {
 export async function createAttendancePoll(
   sessionId,
   durationMinutes,
-  createdBy
+  createdBy,
 ) {
   // Use provided duration or default from config (ensure it's a number)
   const duration =
@@ -122,7 +122,7 @@ export async function getPollsBySessionId(sessionId) {
       },
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 }

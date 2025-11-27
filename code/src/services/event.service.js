@@ -1,7 +1,7 @@
 // Service functions for Event-related database operations
 // code/src/services/event.service.js
 
-import { prisma } from '../lib/prisma.js';
+import { prisma } from "../lib/prisma.js";
 
 /**
  * Helper function to check if user has permission to create specific event type
@@ -15,7 +15,7 @@ async function canUserCreateEventType(
   userId,
   eventType,
   classId,
-  groupId = null
+  groupId = null,
 ) {
   // Get user's role in the class
   const classRole = await prisma.classRole.findFirst({
@@ -28,14 +28,14 @@ async function canUserCreateEventType(
   if (!classRole) return false;
 
   // Check group leader permission if it's a GROUP_MEETING
-  if (eventType === 'GROUP_MEETING') {
+  if (eventType === "GROUP_MEETING") {
     if (groupId) {
       // If checking for a specific group, check if user is leader of that group
       const groupRole = await prisma.groupRole.findFirst({
         where: {
           userId,
           groupId,
-          role: 'LEADER',
+          role: "LEADER",
         },
       });
       return !!groupRole;
@@ -44,7 +44,7 @@ async function canUserCreateEventType(
       const groupLeaderRoles = await prisma.groupRole.findMany({
         where: {
           userId,
-          role: 'LEADER',
+          role: "LEADER",
           group: {
             classId,
           },
@@ -56,15 +56,15 @@ async function canUserCreateEventType(
 
   // Check course-related event permissions
   if (
-    ['COURSE_LECTURE', 'COURSE_OFFICE_HOUR', 'COURSE_DISCUSSION'].includes(
-      eventType
+    ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(
+      eventType,
     )
   ) {
-    return ['PROFESSOR', 'TA'].includes(classRole.role);
+    return ["PROFESSOR", "TA"].includes(classRole.role);
   }
 
   // OTHER events can be created by anyone in the class
-  if (eventType === 'OTHER') {
+  if (eventType === "OTHER") {
     return true;
   }
 
@@ -101,10 +101,10 @@ async function canUserModifyEvent(userId, eventId) {
     });
 
     // Professors and TAs can modify course-related events
-    if (classRole && ['PROFESSOR', 'TA'].includes(classRole.role)) {
+    if (classRole && ["PROFESSOR", "TA"].includes(classRole.role)) {
       if (
-        ['COURSE_LECTURE', 'COURSE_OFFICE_HOUR', 'COURSE_DISCUSSION'].includes(
-          event.type
+        ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(
+          event.type,
         )
       ) {
         return true;
@@ -113,12 +113,12 @@ async function canUserModifyEvent(userId, eventId) {
   }
 
   // Group leaders can modify group meetings in their groups
-  if (event.groupId && event.type === 'GROUP_MEETING') {
+  if (event.groupId && event.type === "GROUP_MEETING") {
     const groupRole = await prisma.groupRole.findFirst({
       where: {
         userId,
         groupId: event.groupId,
-        role: 'LEADER',
+        role: "LEADER",
       },
     });
     return !!groupRole;
@@ -149,12 +149,12 @@ export async function createEvent(eventData) {
     eventData.userId,
     eventData.type,
     eventData.classId,
-    eventData.groupId
+    eventData.groupId,
   );
 
   if (!hasPermission) {
     throw new Error(
-      `User does not have permission to create ${eventData.type} events`
+      `User does not have permission to create ${eventData.type} events`,
     );
   }
 
@@ -210,7 +210,7 @@ export async function updateEvent(id, data, userId) {
   const hasPermission = await canUserModifyEvent(userId, id);
 
   if (!hasPermission) {
-    throw new Error('User does not have permission to modify this event');
+    throw new Error("User does not have permission to modify this event");
   }
 
   return prisma.event.update({
@@ -242,7 +242,7 @@ export async function deleteEvent(id, userId) {
   const hasPermission = await canUserModifyEvent(userId, id);
 
   if (!hasPermission) {
-    throw new Error('User does not have permission to delete this event');
+    throw new Error("User does not have permission to delete this event");
   }
 
   return prisma.event.delete({
@@ -282,7 +282,7 @@ export async function getEventsByClassId(classId) {
       group: true,
     },
     orderBy: {
-      startTime: 'asc',
+      startTime: "asc",
     },
   });
 }
@@ -307,7 +307,7 @@ export async function getEventsByGroupId(groupId) {
       class: true,
     },
     orderBy: {
-      startTime: 'asc',
+      startTime: "asc",
     },
   });
 }
@@ -335,7 +335,7 @@ export async function getClassEventsWithPermissions(classId, userId) {
           isCreator: event.userId === userId,
         },
       };
-    })
+    }),
   );
 
   return eventsWithPermissions;
@@ -350,18 +350,18 @@ export async function getClassEventsWithPermissions(classId, userId) {
 export async function getUserEventPermissions(userId, classId) {
   const permissions = {};
   const eventTypes = [
-    'COURSE_LECTURE',
-    'COURSE_OFFICE_HOUR',
-    'COURSE_DISCUSSION',
-    'GROUP_MEETING',
-    'OTHER',
+    "COURSE_LECTURE",
+    "COURSE_OFFICE_HOUR",
+    "COURSE_DISCUSSION",
+    "GROUP_MEETING",
+    "OTHER",
   ];
 
   for (const eventType of eventTypes) {
     permissions[eventType] = await canUserCreateEventType(
       userId,
       eventType,
-      classId
+      classId,
     );
   }
 

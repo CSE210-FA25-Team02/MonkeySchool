@@ -17,7 +17,7 @@ export function createClassForm(quarters) {
                     <label class="classes-modal__label">
                         Quarter:
                         <select name="quarter" class="classes-modal__select" required>
-                            ${quarters.map((q) => `<option value="${q}">${q}</option>`).join('')}
+                            ${quarters.map((q) => `<option value="${q}">${q}</option>`).join("")}
                         </select>
                     </label>
             

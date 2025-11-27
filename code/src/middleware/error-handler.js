@@ -6,16 +6,16 @@
 
 // code/src/middleware/error-handler.js
 
-import { ApiError } from '../utils/api-error.js';
-import { env } from '../config/env.js';
-import { Prisma } from '@prisma/client';
+import { ApiError } from "../utils/api-error.js";
+import { env } from "../config/env.js";
+import { Prisma } from "@prisma/client";
 import {
   createErrorMessage,
   createBaseLayout,
-} from '../utils/html-templates.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { readFile } from 'fs/promises';
+} from "../utils/html-templates.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { readFile } from "fs/promises";
 
 /**
  * Handle Prisma-specific errors
@@ -24,25 +24,25 @@ import { readFile } from 'fs/promises';
  */
 function handlePrismaError(err) {
   switch (err.code) {
-    case 'P2002':
+    case "P2002":
       return {
         statusCode: 409,
-        message: 'A record with this information already exists.',
+        message: "A record with this information already exists.",
       };
-    case 'P2025':
+    case "P2025":
       return {
         statusCode: 404,
-        message: 'The requested record was not found.',
+        message: "The requested record was not found.",
       };
-    case 'P2003':
+    case "P2003":
       return {
         statusCode: 400,
-        message: 'Invalid data provided.',
+        message: "Invalid data provided.",
       };
     default:
       return {
         statusCode: 500,
-        message: 'Database operation failed.',
+        message: "Database operation failed.",
       };
   }
 }
@@ -55,9 +55,9 @@ function handlePrismaError(err) {
  * @returns {void}
  */
 export function errorHandler(err, req, res) {
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
   let statusCode = 500;
-  let message = 'An unexpected error occurred.';
+  let message = "An unexpected error occurred.";
   let errors = null;
 
   // Handle Prisma errors
@@ -72,19 +72,19 @@ export function errorHandler(err, req, res) {
     message = err.message;
   }
   // Handle validation errors
-  else if (err.name === 'ValidationError') {
+  else if (err.name === "ValidationError") {
     statusCode = 400;
-    message = 'Please check your input and try again.';
+    message = "Please check your input and try again.";
     errors = err.errors;
   }
   // Handle unknown errors
   else {
-    console.error('Unhandled error:', err);
+    console.error("Unhandled error:", err);
 
-    if (env.NODE_ENV === 'development') {
+    if (env.NODE_ENV === "development") {
       message = err.message;
     } else {
-      message = 'Internal server error';
+      message = "Internal server error";
     }
   }
 
@@ -100,8 +100,8 @@ export function errorHandler(err, req, res) {
       `Error ${statusCode} - Student Management System`,
       errorHtml,
       {
-        description: 'An error occurred while processing your request.',
-      }
+        description: "An error occurred while processing your request.",
+      },
     );
     res.status(statusCode).send(fullPage);
   }
@@ -114,7 +114,7 @@ export function errorHandler(err, req, res) {
  * @returns {Promise<void>}
  */
 export async function notFoundHandler(req, res) {
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
@@ -138,7 +138,7 @@ export async function notFoundHandler(req, res) {
                      hx-target="#main-content"
                      hx-push-url="true"
                    `
-                       : ''
+                       : ""
                    }>
                     Go Back to Dashboard
                 </a>
@@ -154,8 +154,8 @@ export async function notFoundHandler(req, res) {
     // For direct navigation, serve the same index.html as home page
     // This ensures the same layout (navbar, header, footer) is used
     try {
-      const indexHtmlPath = path.join(__dirname, '..', 'public', 'index.html');
-      const html = await readFile(indexHtmlPath, 'utf8');
+      const indexHtmlPath = path.join(__dirname, "..", "public", "index.html");
+      const html = await readFile(indexHtmlPath, "utf8");
 
       // Replace the main content with the not-implemented message
       // Find the main-content section and replace everything inside it
@@ -169,31 +169,31 @@ export async function notFoundHandler(req, res) {
           return `${openingTag}
         ${errorHtml}
     ${closingTag}`;
-        }
+        },
       );
       res.status(404).send(updatedHtml);
     } catch (err) {
-      console.error('Error reading index.html:', err);
+      console.error("Error reading index.html:", err);
       // Fallback: serve index.html as-is and let client-side handle it
       // Or use a simpler approach - just serve index.html and the URL will trigger client-side 404 handling
       try {
         const indexHtmlPath = path.join(
           __dirname,
-          '..',
-          'public',
-          'index.html'
+          "..",
+          "public",
+          "index.html",
         );
-        const html = await readFile(indexHtmlPath, 'utf8');
+        const html = await readFile(indexHtmlPath, "utf8");
         res.status(404).send(html);
       } catch (fallbackErr) {
-        console.error('Error serving index.html as fallback:', fallbackErr);
+        console.error("Error serving index.html as fallback:", fallbackErr);
         // Last resort: use base layout
         const fullPage = createBaseLayout(
-          'Page Under Construction - Monkey School',
+          "Page Under Construction - Monkey School",
           errorHtml,
           {
-            description: 'This page is currently under construction.',
-          }
+            description: "This page is currently under construction.",
+          },
         );
         res.status(404).send(fullPage);
       }

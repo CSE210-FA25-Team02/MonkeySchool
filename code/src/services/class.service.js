@@ -1,20 +1,20 @@
 // Service functions for Class-related database operations
 // code/src/services/class.service.js
 
-import { prisma } from '../lib/prisma.js';
+import { prisma } from "../lib/prisma.js";
 
 /**
  * Generate a short, human-friendly class invite code.
  * @returns {string} Randomly generated 8-character invite code
  */
 function generateInviteCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   return Array.from(
     {
       length: 8,
     },
-    () => chars[Math.floor(Math.random() * chars.length)]
-  ).join('');
+    () => chars[Math.floor(Math.random() * chars.length)],
+  ).join("");
 }
 
 /**
@@ -167,7 +167,7 @@ export async function getClassDirectory(id) {
             },
           },
         },
-        orderBy: [{ role: 'asc' }, { user: { name: 'asc' } }],
+        orderBy: [{ role: "asc" }, { user: { name: "asc" } }],
       },
       groups: {
         include: {
@@ -190,8 +190,8 @@ export async function getClassDirectory(id) {
               },
             },
             orderBy: [
-              { role: 'desc' }, // LEADER first
-              { user: { name: 'asc' } },
+              { role: "desc" }, // LEADER first
+              { user: { name: "asc" } },
             ],
           },
           supervisors: {
@@ -208,7 +208,7 @@ export async function getClassDirectory(id) {
             },
           },
         },
-        orderBy: { name: 'asc' },
+        orderBy: { name: "asc" },
       },
     },
   });
@@ -231,21 +231,21 @@ export async function getClassDirectory(id) {
     };
 
     switch (member.role) {
-      case 'PROFESSOR':
+      case "PROFESSOR":
         professors.push(userData);
         break;
-      case 'TA':
+      case "TA":
         tas.push(userData);
         break;
-      case 'TUTOR':
+      case "TUTOR":
         tutors.push(userData);
         break;
-      case 'STUDENT': {
+      case "STUDENT": {
         // Check if student is in any group
         const isInGroup = classData.groups.some((group) =>
           group.members.some(
-            (groupMember) => groupMember.userId === member.userId
-          )
+            (groupMember) => groupMember.userId === member.userId,
+          ),
         );
         if (!isInGroup) {
           studentsWithoutGroup.push(userData);
@@ -264,7 +264,7 @@ export async function getClassDirectory(id) {
     github: group.github,
     members: group.members.map((member) => ({
       ...member.user,
-      isLeader: member.role === 'LEADER',
+      isLeader: member.role === "LEADER",
       groupRole: member.role,
     })),
     supervisors: group.supervisors.map((supervisor) => supervisor.user),
@@ -309,7 +309,7 @@ export async function getAllClasses() {
       },
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 }

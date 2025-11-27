@@ -3,7 +3,7 @@
  * code/src/utils/htmx-templates/attendance-templates.js
  */
 
-import { escapeHtml } from '../html-templates.js';
+import { escapeHtml } from "../html-templates.js";
 
 /**
  * Create a modal form to start attendance for a session
@@ -238,7 +238,7 @@ export function displayAttendanceResult(result) {
     return `
       <div class="attendance-result attendance-result--error">
         <p class="attendance-result__message">
-          ${escapeHtml(result.error || 'Failed to mark attendance')}
+          ${escapeHtml(result.error || "Failed to mark attendance")}
         </p>
       </div>
     `;
@@ -271,7 +271,7 @@ export function displaySessionAttendance(data) {
     return `
       <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
         ${backButton}
-        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || 'Session Attendance')}</h2>
+        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
         <p class="attendance-table__empty">No attendance records yet.</p>
       </section>
     `;
@@ -285,14 +285,14 @@ export function displaySessionAttendance(data) {
       <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
       <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
     </tr>
-  `
+  `,
     )
-    .join('');
+    .join("");
 
   return `
     <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
       ${backButton}
-      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || 'Session Attendance')}</h2>
+      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
       <div class="attendance-table__container">
         <table class="attendance-table__table" role="table">
           <thead>
@@ -324,9 +324,9 @@ export function displayCourseAttendanceSummary(summary) {
     .map(
       (s) => `
     <th class="attendance-summary__header">${escapeHtml(s.name)}</th>
-  `
+  `,
     )
-    .join('');
+    .join("");
 
   // Build student rows
   const studentRows = students
@@ -334,10 +334,10 @@ export function displayCourseAttendanceSummary(summary) {
       const sessionCells = sessions
         .map((session) => {
           const record = student.sessions[session.id];
-          const status = record?.present ? '✓' : '—';
+          const status = record?.present ? "✓" : "—";
           return `<td class="attendance-summary__cell">${status}</td>`;
         })
-        .join('');
+        .join("");
 
       return `
       <tr class="attendance-summary__row">
@@ -350,7 +350,7 @@ export function displayCourseAttendanceSummary(summary) {
       </tr>
     `;
     })
-    .join('');
+    .join("");
 
   return `
     <section class="attendance-summary" role="region" aria-labelledby="attendance-summary-title">
@@ -401,9 +401,9 @@ export function displayStudentAttendance(data) {
       <div class="attendance-history__status attendance-history__status--present">Present</div>
       <div class="attendance-history__time">Marked at: ${new Date(record.markedAt).toLocaleString()}</div>
     </div>
-  `
+  `,
     )
-    .join('');
+    .join("");
 
   return `
     <section class="attendance-history" role="region" aria-labelledby="attendance-history-title">
@@ -435,7 +435,7 @@ export function displayStudentAttendanceGrouped(data) {
   const courseItems = courses
     .map((course, index) => {
       const courseId = `course-${course.courseId}`;
-      const isExpanded = index === 0 ? 'true' : 'false'; // First course expanded by default
+      const isExpanded = index === 0 ? "true" : "false"; // First course expanded by default
 
       const attendanceRows = course.attendances
         .map(
@@ -447,9 +447,9 @@ export function displayStudentAttendanceGrouped(data) {
           <span class="attendance-course-table__status attendance-course-table__status--present">${escapeHtml(attendance.status)}</span>
         </td>
       </tr>
-    `
+    `,
         )
-        .join('');
+        .join("");
 
       return `
       <div class="attendance-course-item">
@@ -461,13 +461,13 @@ export function displayStudentAttendanceGrouped(data) {
           onclick="toggleCourseAttendance(this)"
         >
           <span class="attendance-course-item__name">${escapeHtml(course.courseName)}</span>
-          <span class="attendance-course-item__count">${course.attendances.length} session${course.attendances.length !== 1 ? 's' : ''}</span>
+          <span class="attendance-course-item__count">${course.attendances.length} session${course.attendances.length !== 1 ? "s" : ""}</span>
           <span class="attendance-course-item__icon" aria-hidden="true">▼</span>
         </button>
         <div 
-          class="attendance-course-item__content ${isExpanded ? 'attendance-course-item__content--expanded' : ''}"
+          class="attendance-course-item__content ${isExpanded ? "attendance-course-item__content--expanded" : ""}"
           id="${courseId}-content"
-          aria-hidden="${isExpanded ? 'false' : 'true'}"
+          aria-hidden="${isExpanded ? "false" : "true"}"
         >
           <div class="attendance-course-table__container">
             <table class="attendance-course-table" role="table">
@@ -487,7 +487,7 @@ export function displayStudentAttendanceGrouped(data) {
       </div>
     `;
     })
-    .join('');
+    .join("");
 
   return `
     <section class="attendance-history" role="region" aria-labelledby="attendance-history-title" id="attendance-history-section">
@@ -544,7 +544,7 @@ export function createStartAttendanceButton(sessionId) {
  * @returns {string} HTML string for the session creation form
  */
 export function createSessionForm(classId) {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
 
   return `
     <section id="session-modal" class="attendance-modal__overlay">
@@ -724,12 +724,12 @@ function isPollExpired(poll) {
  */
 function getCodeStatus(poll) {
   if (!poll) {
-    return { status: 'none', text: '—' };
+    return { status: "none", text: "—" };
   }
   if (isPollExpired(poll)) {
-    return { status: 'expired', text: 'Expired' };
+    return { status: "expired", text: "Expired" };
   }
-  return { status: 'active', text: 'Active' };
+  return { status: "active", text: "Active" };
 }
 
 /**
@@ -744,8 +744,8 @@ function formatSessionTime(session) {
   if (session.startTime) {
     const time = new Date(session.startTime);
     const timeStr = time.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
     });
     return `${dateStr} at ${timeStr}`;
   }
@@ -769,7 +769,7 @@ export function displayProfessorAttendancePage(data) {
         isExpanded,
       });
     })
-    .join('');
+    .join("");
 
   return `
     <div class="container">
@@ -814,7 +814,7 @@ export function displaySessionRecordsPage(data) {
   if (!attendance || attendance.length === 0) {
     return `
       <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || 'Session Attendance')}</h2>
+        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
         <p class="attendance-table__empty">No attendance records yet.</p>
       </section>
     `;
@@ -828,13 +828,13 @@ export function displaySessionRecordsPage(data) {
       <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
       <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
     </tr>
-  `
+  `,
     )
-    .join('');
+    .join("");
 
   return `
     <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || 'Session Attendance')}</h2>
+      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
       <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
       <div class="attendance-table__container">
         <table class="attendance-table__table" role="table">
@@ -888,9 +888,9 @@ export function displayCourseRecordsPage(data) {
     .map(
       (session) => `
     <th class="attendance-table__header">${escapeHtml(session.name)}</th>
-  `
+  `,
     )
-    .join('');
+    .join("");
 
   // Build student rows with attendance status for each session
   const studentRows = students
@@ -918,7 +918,7 @@ export function displayCourseRecordsPage(data) {
         `;
           }
         })
-        .join('');
+        .join("");
 
       // Calculate percentage
       const attendancePercentage =
@@ -938,7 +938,7 @@ export function displayCourseRecordsPage(data) {
       </tr>
     `;
     })
-    .join('');
+    .join("");
 
   return `
     <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
@@ -1026,7 +1026,7 @@ export function displayCourseItem(data) {
         <td class="attendance-sessions-table__cell">${escapeHtml(session.name)}</td>
         <td class="attendance-sessions-table__cell">${formatSessionTime(session)}</td>
         <td class="attendance-sessions-table__cell">
-          ${hasCode ? escapeHtml(latestPoll.code) : '—'}
+          ${hasCode ? escapeHtml(latestPoll.code) : "—"}
         </td>
         ${statusCell}
         <td class="attendance-sessions-table__cell attendance-sessions-table__cell--actions">
@@ -1035,7 +1035,7 @@ export function displayCourseItem(data) {
       </tr>
     `;
     })
-    .join('');
+    .join("");
 
   const sessionsTable =
     sessions.length > 0
@@ -1068,20 +1068,20 @@ export function displayCourseItem(data) {
       <button 
         class="attendance-course-item__header"
         type="button"
-        aria-expanded="${isExpanded ? 'true' : 'false'}"
+        aria-expanded="${isExpanded ? "true" : "false"}"
         aria-controls="${courseId}-content"
-        hx-get="/attendance/course/${course.id}/toggle?expanded=${isExpanded ? 'true' : 'false'}"
+        hx-get="/attendance/course/${course.id}/toggle?expanded=${isExpanded ? "true" : "false"}"
         hx-target="#course-item-${course.id}"
         hx-swap="outerHTML"
       >
         <span class="attendance-course-item__name">${escapeHtml(course.name)}</span>
-        <span class="attendance-course-item__count">${sessions.length} session${sessions.length !== 1 ? 's' : ''}</span>
-        <span class="attendance-course-item__icon" aria-hidden="true">${isExpanded ? '▼' : '▶'}</span>
+        <span class="attendance-course-item__count">${sessions.length} session${sessions.length !== 1 ? "s" : ""}</span>
+        <span class="attendance-course-item__icon" aria-hidden="true">${isExpanded ? "▼" : "▶"}</span>
       </button>
       <div 
-        class="attendance-course-item__content ${isExpanded ? 'attendance-course-item__content--expanded' : ''}"
+        class="attendance-course-item__content ${isExpanded ? "attendance-course-item__content--expanded" : ""}"
         id="${courseId}-content"
-        aria-hidden="${!isExpanded ? 'true' : 'false'}"
+        aria-hidden="${!isExpanded ? "true" : "false"}"
       >
         ${sessionsTable}
         <div class="attendance-course-item__actions">

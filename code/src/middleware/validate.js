@@ -7,9 +7,9 @@
 
 // code/src/middleware/validate.js
 
-import { ZodError } from 'zod';
-import { BadRequestError } from '../utils/api-error.js';
-import { createErrorMessage } from '../utils/html-templates.js';
+import { ZodError } from "zod";
+import { BadRequestError } from "../utils/api-error.js";
+import { createErrorMessage } from "../utils/html-templates.js";
 
 /**
  * Zod-style schema
@@ -31,7 +31,7 @@ import { createErrorMessage } from '../utils/html-templates.js';
  * @param {'body'|'query'|'params'} [type='body'] Request segment to validate
  * @returns {RequestHandler} Middleware function
  */
-export function validate(schema, type = 'body') {
+export function validate(schema, type = "body") {
   return (req, res, next) => {
     try {
       const validated = schema.parse(req[type]);
@@ -39,16 +39,16 @@ export function validate(schema, type = 'body') {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const isHtmxRequest = req.headers['hx-request'];
+        const isHtmxRequest = req.headers["hx-request"];
 
         // Format validation errors for display
         const validationErrors = error.errors.map((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           return `${field}: ${err.message}`;
         });
 
         const errorMessage =
-          'Please correct the following errors and try again:';
+          "Please correct the following errors and try again:";
 
         if (isHtmxRequest) {
           // Return HTML error for HTMX requests
@@ -56,7 +56,7 @@ export function validate(schema, type = 'body') {
           return res.status(400).send(errorHtml);
         } else {
           // For non-HTMX requests, create a proper API error
-          const error = new BadRequestError('Validation failed');
+          const error = new BadRequestError("Validation failed");
           error.errors = validationErrors;
           return next(error);
         }
@@ -74,7 +74,7 @@ export function validate(schema, type = 'body') {
  * @param {boolean} [options.returnToForm=false] Add validation errors directly to request for controllers
  * @returns {RequestHandler} Middleware function
  */
-export function validateWithErrors(schema, type = 'body', options = {}) {
+export function validateWithErrors(schema, type = "body", options = {}) {
   const { returnToForm = false } = options;
 
   return (req, res, next) => {
@@ -84,14 +84,14 @@ export function validateWithErrors(schema, type = 'body', options = {}) {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const isHtmxRequest = req.headers['hx-request'];
+        const isHtmxRequest = req.headers["hx-request"];
 
         // Create detailed error information
         const fieldErrors = {};
         const generalErrors = [];
 
         error.errors.forEach((err) => {
-          const field = err.path.join('.');
+          const field = err.path.join(".");
           if (field) {
             fieldErrors[field] = err.message;
           } else {
@@ -111,11 +111,11 @@ export function validateWithErrors(schema, type = 'body', options = {}) {
           return;
         }
 
-        const errorMessage = 'Please correct the following errors:';
+        const errorMessage = "Please correct the following errors:";
         const allErrors = [
           ...generalErrors,
           ...Object.entries(fieldErrors).map(
-            ([field, message]) => `${field}: ${message}`
+            ([field, message]) => `${field}: ${message}`,
           ),
         ];
 
@@ -123,7 +123,7 @@ export function validateWithErrors(schema, type = 'body', options = {}) {
           const errorHtml = createErrorMessage(errorMessage, allErrors);
           return res.status(400).send(errorHtml);
         } else {
-          const error = new BadRequestError('Validation failed');
+          const error = new BadRequestError("Validation failed");
           error.errors = allErrors;
           return next(error);
         }

@@ -18,18 +18,18 @@ export function requireRole(resourceType, allowedRoles) {
       const user = req.user;
 
       if (!user) {
-        return res.status(401).json({ error: 'Authentication required' });
+        return res.status(401).json({ error: "Authentication required" });
       }
 
       const roles = user[`${resourceType}Roles`];
       if (!roles) {
-        return res.status(500).json({ error: 'Invalid resource type' });
+        return res.status(500).json({ error: "Invalid resource type" });
       }
 
       const role = roles.find(
         (r) =>
           r[`${resourceType}Id`] === resourceId &&
-          r[resourceType].quarter === quarter
+          r[resourceType].quarter === quarter,
       );
 
       if (!role) {
@@ -41,13 +41,13 @@ export function requireRole(resourceType, allowedRoles) {
       if (!allowedRoles.includes(role.role)) {
         return res
           .status(403)
-          .json({ error: 'Forbidden: You do not have the required role' });
+          .json({ error: "Forbidden: You do not have the required role" });
       }
 
       next();
     } catch (error) {
-      console.error('Authorization middleware error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("Authorization middleware error:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   };
 }

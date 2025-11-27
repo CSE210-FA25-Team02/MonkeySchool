@@ -1,5 +1,5 @@
-import * as classRoleService from '../services/classRole.service.js';
-import { asyncHandler } from '../utils/async-handler.js';
+import * as classRoleService from "../services/classRole.service.js";
+import { asyncHandler } from "../utils/async-handler.js";
 
 /**
  * Add or update a user’s role inside a class

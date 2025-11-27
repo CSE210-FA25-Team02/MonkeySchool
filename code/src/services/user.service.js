@@ -1,7 +1,7 @@
 // Service functions for User-related database operations
 // code/src/services/user.service.js
 
-import { prisma } from '../lib/prisma.js';
+import { prisma } from "../lib/prisma.js";
 
 /**
  * Create a new user record.

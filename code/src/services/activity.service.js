@@ -1,7 +1,7 @@
 // Service functions for Activity/Punchcard-related database operations
 // code/src/services/activity.service.js
 
-import { prisma } from '../lib/prisma.js';
+import { prisma } from "../lib/prisma.js";
 
 /**
  * Create a new activity.
@@ -53,7 +53,7 @@ export async function getActivitiesByUserId(userId) {
       category: true,
       class: true,
     },
-    orderBy: { startTime: 'desc' },
+    orderBy: { startTime: "desc" },
   });
 }
 
@@ -67,14 +67,14 @@ export async function getAllCategories(userRole) {
   try {
     const categories = await prisma.activityCategory.findMany({
       where: {
-        OR: [{ role: userRole }, { role: 'ALL' }],
+        OR: [{ role: userRole }, { role: "ALL" }],
       },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
 
     return categories;
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error("Error fetching categories:", error);
     return [];
   }
 }

@@ -36,7 +36,7 @@ export class BadRequestError extends ApiError {
    * is malformed or invalid
    * @param {string} [message='Bad Request'] Error message
    */
-  constructor(message = 'Bad Request') {
+  constructor(message = "Bad Request") {
     super(message, 400);
   }
 }
@@ -51,7 +51,7 @@ export class UnauthorizedError extends ApiError {
    * authentication missing or invalid
    * @param {string} [message='Unauthorized'] Error message
    */
-  constructor(message = 'Unauthorized') {
+  constructor(message = "Unauthorized") {
     super(message, 401);
   }
 }
@@ -66,7 +66,7 @@ export class ForbiddenError extends ApiError {
    * user is authenticated but lacks permission
    * @param {string} [message='Forbidden'] Error message
    */
-  constructor(message = 'Forbidden') {
+  constructor(message = "Forbidden") {
     super(message, 403);
   }
 }
@@ -81,7 +81,7 @@ export class NotFoundError extends ApiError {
    * resource does not exist
    * @param {string} [message='Resource not found'] Error message
    */
-  constructor(message = 'Resource not found') {
+  constructor(message = "Resource not found") {
     super(message, 404);
   }
 }
@@ -96,7 +96,7 @@ export class ConflictError extends ApiError {
    * already exists or conflicts with current state
    * @param {string} [message='Resource conflict'] Error message
    */
-  constructor(message = 'Resource conflict') {
+  constructor(message = "Resource conflict") {
     super(message, 409);
   }
 }
@@ -111,7 +111,7 @@ export class InternalServerError extends ApiError {
    * unexpected issue occurs in server
    * @param {string} [message='Internal server error'] Error message
    */
-  constructor(message = 'Internal server error') {
+  constructor(message = "Internal server error") {
     super(message, 500, false);
   }
 }
@@ -125,7 +125,7 @@ export class GoneError extends ApiError {
    * Create a GoneError
    * @param {string} [message="Resource has expired"] - Error message
    */
-  constructor(message = 'Resource has expired') {
+  constructor(message = "Resource has expired") {
     super(message, 410);
   }
 }

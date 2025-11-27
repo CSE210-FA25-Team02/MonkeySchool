@@ -6,19 +6,19 @@
 
 // code/src/app.js
 
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import compression from 'compression';
-import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
-import cookieParser from 'cookie-parser';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { env } from './config/env.js';
-import routes from './routes/index.js';
-import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
-import { requireAuth } from './middleware/auth.js';
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import compression from "compression";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
+import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+import { env } from "./config/env.js";
+import routes from "./routes/index.js";
+import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
+import { requireAuth } from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,7 +31,7 @@ export function createApp() {
   const app = express();
 
   // Serve static files
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, "public")));
 
   // Security middleware with HTMX-friendly CSP
   app.use(
@@ -43,31 +43,31 @@ export function createApp() {
             "'self'",
             "'unsafe-inline'", // Required for HTMX inline event handlers
             "'unsafe-eval'", // Required for ES6 modules in some browsers
-            'https://unpkg.com', // For HTMX CDN
-            'https://cdn.jsdelivr.net', // Alternative CDN
+            "https://unpkg.com", // For HTMX CDN
+            "https://cdn.jsdelivr.net", // Alternative CDN
           ],
           styleSrc: [
             "'self'",
             "'unsafe-inline'", // For dynamic styling
-            'https://cdnjs.cloudflare.com', // For Font Awesome
+            "https://cdnjs.cloudflare.com", // For Font Awesome
           ],
           fontSrc: [
             "'self'",
-            'https://fonts.gstatic.com',
-            'https://cdnjs.cloudflare.com', // For Font Awesome fonts
+            "https://fonts.gstatic.com",
+            "https://cdnjs.cloudflare.com", // For Font Awesome fonts
           ],
           connectSrc: [
             "'self'",
-            'https://oauth2.googleapis.com',
-            'https://www.googleapis.com',
-            'https://accounts.google.com',
+            "https://oauth2.googleapis.com",
+            "https://www.googleapis.com",
+            "https://accounts.google.com",
           ],
-          imgSrc: ["'self'", 'data:', 'blob:', 'https:'], // Allow Google profile images
-          formAction: ["'self'", 'https://accounts.google.com'], // Allow OAuth redirects
+          imgSrc: ["'self'", "data:", "blob:", "https:"], // Allow Google profile images
+          formAction: ["'self'", "https://accounts.google.com"], // Allow OAuth redirects
         },
       },
-      crossOriginEmbedderPolicy: env.NODE_ENV === 'production',
-    })
+      crossOriginEmbedderPolicy: env.NODE_ENV === "production",
+    }),
   );
 
   // CORS configuration for HTMX requests
@@ -75,16 +75,16 @@ export function createApp() {
     cors({
       origin: env.CORS_ORIGIN,
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
       allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'HX-Request',
-        'HX-Target',
-        'HX-Current-URL',
-        'HX-Trigger',
+        "Content-Type",
+        "Authorization",
+        "HX-Request",
+        "HX-Target",
+        "HX-Current-URL",
+        "HX-Trigger",
       ],
-    })
+    }),
   );
 
   // Rate limiting
@@ -100,36 +100,36 @@ export function createApp() {
     standardHeaders: true,
     legacyHeaders: false,
   });
-  app.use('/', limiter);
+  app.use("/", limiter);
 
   // Cookie parsing
   app.use(cookieParser());
 
   // Body parsing
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
   // Compression
   app.use(compression());
 
   // Request logging
-  if (env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
+  if (env.NODE_ENV === "development") {
+    app.use(morgan("dev"));
   } else {
-    app.use(morgan('combined'));
+    app.use(morgan("combined"));
   }
 
   // Set view engine for server-side rendering
-  app.set('view engine', 'ejs');
-  app.set('views', path.join(__dirname, 'views'));
+  app.set("view engine", "ejs");
+  app.set("views", path.join(__dirname, "views"));
 
   // Health check (returns HTML for HTMX compatibility)
-  app.get('/', requireAuth, (req, res) => {
+  app.get("/", requireAuth, (req, res) => {
     // If not authenticated, redirect to /login
     if (!req.user) {
-      return res.redirect('/login');
+      return res.redirect("/login");
     }
-    const isHtmxRequest = req.headers['hx-request'];
+    const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
       res.send(`
         <div class="health-status">
@@ -140,65 +140,65 @@ export function createApp() {
         </div>
       `);
     } else {
-      res.sendFile(path.join(__dirname, 'public', 'index.html'));
+      res.sendFile(path.join(__dirname, "public", "index.html"));
     }
   });
 
   // Serve login page
-  app.get('/login', (req, res) => {
+  app.get("/login", (req, res) => {
     // If already authenticated, redirect to home
     if (req.user) {
-      return res.redirect('/');
+      return res.redirect("/");
     }
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    res.sendFile(path.join(__dirname, "public", "login.html"));
   });
 
-  app.use('/', routes);
+  app.use("/", routes);
 
   // Attendance page routes (must be before error handlers)
-  app.get('/attendance', requireAuth, async (req, res, next) => {
+  app.get("/attendance", requireAuth, async (req, res, next) => {
     const { getAttendancePage } = await import(
-      './controllers/attendance.controller.js'
+      "./controllers/attendance.controller.js"
     );
     // getAttendancePage is already wrapped with asyncHandler, so it handles errors
     return getAttendancePage(req, res, next);
   });
   // Session-wise attendance records page (professor only)
   app.get(
-    '/attendance/course/session/:sessionId/records',
+    "/attendance/course/session/:sessionId/records",
     requireAuth,
     async (req, res, next) => {
       const { getSessionRecordsPage } = await import(
-        './controllers/attendance.controller.js'
+        "./controllers/attendance.controller.js"
       );
       return getSessionRecordsPage(req, res, next);
-    }
+    },
   );
 
   // Course-wise attendance records page (professor only)
   app.get(
-    '/attendance/course/:courseId/records',
+    "/attendance/course/:courseId/records",
     requireAuth,
     async (req, res, next) => {
       const { getCourseRecordsPage } = await import(
-        './controllers/attendance.controller.js'
+        "./controllers/attendance.controller.js"
       );
       return getCourseRecordsPage(req, res, next);
-    }
+    },
   );
 
   // Redirect /courses/attendance to /attendance for backward compatibility
-  app.get('/courses/attendance', requireAuth, async (req, res, next) => {
-    const isHtmxRequest = req.headers['hx-request'];
+  app.get("/courses/attendance", requireAuth, async (req, res, next) => {
+    const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
       // For HTMX, call the attendance page handler directly
       const { getAttendancePage } = await import(
-        './controllers/attendance.controller.js'
+        "./controllers/attendance.controller.js"
       );
       return getAttendancePage(req, res, next);
     } else {
       // For direct navigation, redirect
-      res.redirect('/attendance');
+      res.redirect("/attendance");
     }
   });
 

@@ -1,60 +1,60 @@
-import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.js'; //Use to restrict routes to logged-in users
-import * as activityController from '../controllers/activity.controller.js';
-import { asyncHandler } from '../utils/async-handler.js';
+import { Router } from "express";
+import { requireAuth } from "../middleware/auth.js"; //Use to restrict routes to logged-in users
+import * as activityController from "../controllers/activity.controller.js";
+import { asyncHandler } from "../utils/async-handler.js";
 
 const router = Router();
 
 // HTMX
 router.get(
-  '/user/dropdown',
+  "/user/dropdown",
   requireAuth,
-  asyncHandler(activityController.getActivityDropdown)
+  asyncHandler(activityController.getActivityDropdown),
 );
-router.get('/details', asyncHandler(activityController.getActivityDetails));
+router.get("/details", asyncHandler(activityController.getActivityDetails));
 router.get(
-  '/user/render',
+  "/user/render",
   requireAuth,
-  asyncHandler(activityController.renderPunchCard)
-);
-router.get(
-  '/new-modal',
-  requireAuth,
-  asyncHandler(activityController.renderActivityModal)
+  asyncHandler(activityController.renderPunchCard),
 );
 router.get(
-  '/edit-modal',
+  "/new-modal",
   requireAuth,
-  asyncHandler(activityController.renderEditModal)
+  asyncHandler(activityController.renderActivityModal),
 );
 router.get(
-  '/close-form',
+  "/edit-modal",
   requireAuth,
-  asyncHandler(activityController.closeActivityPunchForm)
+  asyncHandler(activityController.renderEditModal),
 );
 router.get(
-  '/load-fields',
+  "/close-form",
   requireAuth,
-  asyncHandler(activityController.loadActivityFields)
+  asyncHandler(activityController.closeActivityPunchForm),
+);
+router.get(
+  "/load-fields",
+  requireAuth,
+  asyncHandler(activityController.loadActivityFields),
 );
 
 // CRUD
-router.post('/', requireAuth, asyncHandler(activityController.createActivity));
+router.post("/", requireAuth, asyncHandler(activityController.createActivity));
 router.get(
-  '/user',
+  "/user",
   requireAuth,
-  asyncHandler(activityController.getActivitiesByUser)
+  asyncHandler(activityController.getActivitiesByUser),
 );
-router.get('/:id', requireAuth, asyncHandler(activityController.getActivity));
+router.get("/:id", requireAuth, asyncHandler(activityController.getActivity));
 router.put(
-  '/:id',
+  "/:id",
   requireAuth,
-  asyncHandler(activityController.updateActivity)
+  asyncHandler(activityController.updateActivity),
 );
 router.delete(
-  '/:id',
+  "/:id",
   requireAuth,
-  asyncHandler(activityController.deleteActivity)
+  asyncHandler(activityController.deleteActivity),
 );
 
 export default router;

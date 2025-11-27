@@ -1,20 +1,20 @@
 // Attendance Controller
 // code/src/controllers/attendance.controller.js
 
-import * as attendancePollService from '../services/attendancePoll.service.js';
-import * as attendanceRecordService from '../services/attendanceRecord.service.js';
-import * as courseSessionService from '../services/courseSession.service.js';
-import * as classService from '../services/class.service.js';
-import { asyncHandler } from '../utils/async-handler.js';
-import { NotFoundError, ForbiddenError } from '../utils/api-error.js';
+import * as attendancePollService from "../services/attendancePoll.service.js";
+import * as attendanceRecordService from "../services/attendanceRecord.service.js";
+import * as courseSessionService from "../services/courseSession.service.js";
+import * as classService from "../services/class.service.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { NotFoundError, ForbiddenError } from "../utils/api-error.js";
 import {
   createPollSchema,
   submitAttendanceSchema,
-} from '../validators/attendance.validator.js';
-import { createStartAttendanceModal } from '../utils/htmx-templates/attendance-templates.js';
-import { env } from '../config/env.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
+} from "../validators/attendance.validator.js";
+import { createStartAttendanceModal } from "../utils/htmx-templates/attendance-templates.js";
+import { env } from "../config/env.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 /**
  * Create an attendance poll for a session
@@ -23,12 +23,12 @@ import { fileURLToPath } from 'url';
 export const createPoll = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   // Handle both form-encoded and JSON
   let body = req.body;
-  if (typeof body.durationMinutes === 'string') {
+  if (typeof body.durationMinutes === "string") {
     body.durationMinutes = body.durationMinutes
       ? parseInt(body.durationMinutes, 10)
       : undefined;
@@ -38,7 +38,7 @@ export const createPoll = asyncHandler(async (req, res) => {
   const validation = createPollSchema.safeParse(body);
   if (!validation.success) {
     return res.status(400).json({
-      error: 'Validation failed',
+      error: "Validation failed",
       details: validation.error.flatten().fieldErrors,
     });
   }
@@ -48,29 +48,29 @@ export const createPoll = asyncHandler(async (req, res) => {
   // Get session and verify professor owns the class
   const session = await courseSessionService.getCourseSessionById(sessionId);
   if (!session) {
-    throw new NotFoundError('Session not found');
+    throw new NotFoundError("Session not found");
   }
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === 'PROFESSOR'
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
-    throw new ForbiddenError('Only professors can create attendance polls');
+    throw new ForbiddenError("Only professors can create attendance polls");
   }
 
   // Create poll
   const poll = await attendancePollService.createAttendancePoll(
     sessionId,
     durationMinutes,
-    userId
+    userId,
   );
 
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
     // Close modal and refresh attendance page to show new code
     // Use HX-Redirect to navigate to attendance page (HTMX will handle it)
-    res.status(201).header('HX-Redirect', '/attendance').send('');
+    res.status(201).header("HX-Redirect", "/attendance").send("");
   } else {
     res.status(201).json({
       pollId: poll.id,
@@ -88,7 +88,7 @@ export const createPoll = asyncHandler(async (req, res) => {
 export const submitAttendance = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   // Handle both form-encoded and JSON
@@ -97,19 +97,19 @@ export const submitAttendance = asyncHandler(async (req, res) => {
   // Validate input
   const validation = submitAttendanceSchema.safeParse(body);
   if (!validation.success) {
-    const isHtmxRequest = req.headers['hx-request'];
+    const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
       const { displayAttendanceResult } = await import(
-        '../utils/htmx-templates/attendance-templates.js'
+        "../utils/htmx-templates/attendance-templates.js"
       );
       const errorHtml = displayAttendanceResult({
         success: false,
-        error: 'Invalid code format. Please enter an 8-digit code.',
+        error: "Invalid code format. Please enter an 8-digit code.",
       });
       return res.status(400).send(errorHtml);
     }
     return res.status(400).json({
-      error: 'Validation failed',
+      error: "Validation failed",
       details: validation.error.flatten().fieldErrors,
     });
   }
@@ -120,15 +120,15 @@ export const submitAttendance = asyncHandler(async (req, res) => {
     // Submit attendance (atomic operation)
     const record = await attendanceRecordService.submitAttendance(code, userId);
 
-    const isHtmxRequest = req.headers['hx-request'];
+    const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
       // Import display function
       const { displayAttendanceResult } = await import(
-        '../utils/htmx-templates/attendance-templates.js'
+        "../utils/htmx-templates/attendance-templates.js"
       );
       const resultHtml = displayAttendanceResult({
         success: true,
-        status: 'success',
+        status: "success",
         sessionId: record.sessionId,
         markedAt: record.markedAt,
         courseName: record.session.class.name,
@@ -137,26 +137,26 @@ export const submitAttendance = asyncHandler(async (req, res) => {
       res.status(200).send(resultHtml);
     } else {
       res.status(200).json({
-        status: 'success',
+        status: "success",
         sessionId: record.sessionId,
         markedAt: record.markedAt,
       });
     }
   } catch (error) {
     // Error handling is done by the service, but we need to format the response
-    const isHtmxRequest = req.headers['hx-request'];
+    const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
       const { displayAttendanceResult } = await import(
-        '../utils/htmx-templates/attendance-templates.js'
+        "../utils/htmx-templates/attendance-templates.js"
       );
       const errorHtml = displayAttendanceResult({
         success: false,
-        error: error.message || 'Failed to submit attendance',
+        error: error.message || "Failed to submit attendance",
       });
       return res.status(error.statusCode || 500).send(errorHtml);
     } else {
       res.status(error.statusCode || 500).json({
-        error: error.message || 'Failed to submit attendance',
+        error: error.message || "Failed to submit attendance",
       });
     }
     // Don't re-throw for HTMX requests as we've handled it
@@ -174,7 +174,7 @@ export const submitAttendance = asyncHandler(async (req, res) => {
 export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   const { sessionId } = req.params;
@@ -182,27 +182,27 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   // Get session
   const session = await courseSessionService.getCourseSessionById(sessionId);
   if (!session) {
-    throw new NotFoundError('Session not found');
+    throw new NotFoundError("Session not found");
   }
 
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === 'PROFESSOR'
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user?.isProf;
   if (!isProfessor && !isAdmin) {
-    throw new ForbiddenError('Only professors can view session attendance');
+    throw new ForbiddenError("Only professors can view session attendance");
   }
 
   // Get attendance records
   const attendance =
     await attendanceRecordService.getSessionAttendance(sessionId);
 
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
 
   const { displaySessionRecordsPage } = await import(
-    '../utils/htmx-templates/attendance-templates.js'
+    "../utils/htmx-templates/attendance-templates.js"
   );
   const html = displaySessionRecordsPage({
     sessionId,
@@ -223,9 +223,9 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
     // For direct navigation, inject the content into index.html with full layout
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    const indexPath = path.join(__dirname, '..', 'public', 'index.html');
-    const fs = await import('fs');
-    const indexContent = await fs.promises.readFile(indexPath, 'utf8');
+    const indexPath = path.join(__dirname, "..", "public", "index.html");
+    const fs = await import("fs");
+    const indexContent = await fs.promises.readFile(indexPath, "utf8");
 
     // Replace main content with our HTML
     const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
@@ -233,7 +233,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      }
+      },
     );
 
     res.send(updatedHtml);
@@ -248,7 +248,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
 export const getCourseRecordsPage = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   const { courseId } = req.params;
@@ -256,25 +256,25 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(courseId);
   if (!klass) {
-    throw new NotFoundError('Course not found');
+    throw new NotFoundError("Course not found");
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === 'PROFESSOR'
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user?.isProf;
   if (!isProfessor && !isAdmin) {
-    throw new ForbiddenError('Only professors can view course attendance');
+    throw new ForbiddenError("Only professors can view course attendance");
   }
 
   // Get attendance records for all sessions in the course
   const data =
     await attendanceRecordService.getCourseAttendanceRecords(courseId);
 
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
 
   const { displayCourseRecordsPage } = await import(
-    '../utils/htmx-templates/attendance-templates.js'
+    "../utils/htmx-templates/attendance-templates.js"
   );
   const html = displayCourseRecordsPage({
     courseId: klass.id,
@@ -289,9 +289,9 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
     // For direct navigation, inject the content into index.html with full layout
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    const indexPath = path.join(__dirname, '..', 'public', 'index.html');
-    const fs = await import('fs');
-    const indexContent = await fs.promises.readFile(indexPath, 'utf8');
+    const indexPath = path.join(__dirname, "..", "public", "index.html");
+    const fs = await import("fs");
+    const indexContent = await fs.promises.readFile(indexPath, "utf8");
 
     // Replace main content with our HTML
     const mainTagRegex = /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
@@ -299,7 +299,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      }
+      },
     );
 
     res.send(updatedHtml);
@@ -313,7 +313,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
 export const getSessionAttendance = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   const { sessionId } = req.params;
@@ -321,17 +321,17 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
   // Get session
   const session = await courseSessionService.getCourseSessionById(sessionId);
   if (!session) {
-    throw new NotFoundError('Session not found');
+    throw new NotFoundError("Session not found");
   }
 
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === 'PROFESSOR'
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user?.isProf; // Simple admin check - adjust as needed
   if (!isProfessor && !isAdmin) {
-    throw new ForbiddenError('Only professors can view session attendance');
+    throw new ForbiddenError("Only professors can view session attendance");
   }
 
   // Get polls and attendance
@@ -339,10 +339,10 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
   const attendance =
     await attendanceRecordService.getSessionAttendance(sessionId);
 
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
     const { displaySessionAttendance } = await import(
-      '../utils/htmx-templates/attendance-templates.js'
+      "../utils/htmx-templates/attendance-templates.js"
     );
     const data = {
       sessionId,
@@ -394,7 +394,7 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
 export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   const { courseId } = req.params;
@@ -402,24 +402,24 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(courseId);
   if (!klass) {
-    throw new NotFoundError('Course not found');
+    throw new NotFoundError("Course not found");
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === 'PROFESSOR'
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user?.isProf; // Simple admin check
   if (!isProfessor && !isAdmin) {
-    throw new ForbiddenError('Only professors can view course attendance');
+    throw new ForbiddenError("Only professors can view course attendance");
   }
 
   const summary =
     await attendanceRecordService.getCourseAttendanceSummary(courseId);
 
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
     const { displayCourseAttendanceSummary } = await import(
-      '../utils/htmx-templates/attendance-templates.js'
+      "../utils/htmx-templates/attendance-templates.js"
     );
     const html = displayCourseAttendanceSummary(summary);
     res.send(html);
@@ -435,15 +435,15 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
 export const getStudentAttendance = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
 
   if (isHtmxRequest) {
     // For HTMX requests, return grouped data with collapsible UI
     const { displayStudentAttendanceGrouped } = await import(
-      '../utils/htmx-templates/attendance-templates.js'
+      "../utils/htmx-templates/attendance-templates.js"
     );
     const groupedAttendance =
       await attendanceRecordService.getStudentAttendanceGroupedByCourse(userId);
@@ -469,7 +469,7 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
 export const getAttendancePollForm = asyncHandler(async (req, res) => {
   const { sessionId } = req.query;
   if (!sessionId) {
-    return res.status(400).json({ error: 'Session ID required' });
+    return res.status(400).json({ error: "Session ID required" });
   }
 
   const defaultDuration = env.ATTENDANCE_DEFAULT_DURATION;
@@ -484,7 +484,7 @@ export const getAttendancePollForm = asyncHandler(async (req, res) => {
 export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   const { sessionId } = req.params;
@@ -492,16 +492,16 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   // Get session
   const session = await courseSessionService.getCourseSessionById(sessionId);
   if (!session) {
-    throw new NotFoundError('Session not found');
+    throw new NotFoundError("Session not found");
   }
 
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === 'PROFESSOR'
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
-    throw new ForbiddenError('Only professors can view code status');
+    throw new ForbiddenError("Only professors can view code status");
   }
 
   // Get latest poll
@@ -509,7 +509,7 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   const latestPoll = polls.length > 0 ? polls[0] : null;
 
   const { getCodeStatusFragment } = await import(
-    '../utils/htmx-templates/attendance-templates.js'
+    "../utils/htmx-templates/attendance-templates.js"
   );
   const html = getCodeStatusFragment(latestPoll);
   res.send(html);
@@ -522,7 +522,7 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
 export const toggleCoursePane = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
   const { courseId } = req.params;
@@ -531,23 +531,23 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(courseId);
   if (!klass) {
-    throw new NotFoundError('Course not found');
+    throw new NotFoundError("Course not found");
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === 'PROFESSOR'
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
-    throw new ForbiddenError('Only professors can view course attendance');
+    throw new ForbiddenError("Only professors can view course attendance");
   }
 
   // Get sessions for the class
   const sessions = await courseSessionService.getSessionsByClassId(courseId);
-  const wasExpanded = expanded === 'true' || expanded === true;
+  const wasExpanded = expanded === "true" || expanded === true;
   const isExpanded = !wasExpanded; // Toggle the state
 
   const { displayCourseItem } = await import(
-    '../utils/htmx-templates/attendance-templates.js'
+    "../utils/htmx-templates/attendance-templates.js"
   );
   const html = displayCourseItem({
     course: klass,
@@ -564,14 +564,14 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
 export const getAttendancePage = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: "Authentication required" });
   }
 
-  const isHtmxRequest = req.headers['hx-request'];
+  const isHtmxRequest = req.headers["hx-request"];
 
   // Get user's classes to determine role
   const userClasses = await classService.getClassesByUserId(userId);
-  const professorClasses = userClasses.filter((c) => c.role === 'PROFESSOR');
+  const professorClasses = userClasses.filter((c) => c.role === "PROFESSOR");
   const isProfessor = professorClasses.length > 0;
 
   // Import templates
@@ -579,9 +579,9 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
     createAttendanceCodeInput,
     displayStudentAttendanceGrouped,
     displayProfessorAttendancePage,
-  } = await import('../utils/htmx-templates/attendance-templates.js');
+  } = await import("../utils/htmx-templates/attendance-templates.js");
 
-  let html = '';
+  let html = "";
 
   if (isProfessor) {
     // For professors: show their classes with sessions in a table format
@@ -599,10 +599,10 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       const classesWithSessions = await Promise.all(
         professorClasses.map(async (klass) => {
           const sessions = await courseSessionService.getSessionsByClassId(
-            klass.id
+            klass.id,
           );
           return { ...klass, sessions };
-        })
+        }),
       );
 
       html = displayProfessorAttendancePage({
@@ -640,9 +640,9 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
     // The client-side code will detect the route and load the content via HTMX
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    const indexPath = path.join(__dirname, '..', 'public', 'index.html');
-    const fs = await import('fs');
-    const indexContent = await fs.promises.readFile(indexPath, 'utf8');
+    const indexPath = path.join(__dirname, "..", "public", "index.html");
+    const fs = await import("fs");
+    const indexContent = await fs.promises.readFile(indexPath, "utf8");
 
     // Inject the content directly into the main tag
     // This ensures the content is available immediately on page load
@@ -651,7 +651,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      }
+      },
     );
 
     res.send(updatedHtml);

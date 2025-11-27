@@ -6,9 +6,9 @@
 
 // code/src/server.js
 
-import { createApp } from './app.js';
-import { env } from './config/env.js';
-import { disconnectPrisma } from './lib/prisma.js';
+import { createApp } from "./app.js";
+import { env } from "./config/env.js";
+import { disconnectPrisma } from "./lib/prisma.js";
 
 const app = createApp();
 
@@ -38,21 +38,21 @@ async function gracefulShutdown(signal) {
   console.log(`\n${signal} received. Starting graceful shutdown...`);
 
   server.close(async () => {
-    console.log('HTTP server closed');
+    console.log("HTTP server closed");
 
     try {
       await disconnectPrisma();
-      console.log('Database connections closed');
+      console.log("Database connections closed");
       process.exit(0);
     } catch (error) {
-      console.error('Error during shutdown:', error);
+      console.error("Error during shutdown:", error);
       process.exit(1);
     }
   });
 
   // Force shutdown after 10 seconds
   setTimeout(() => {
-    console.error('Forced shutdown after timeout');
+    console.error("Forced shutdown after timeout");
     process.exit(1);
   }, 10000);
 }
@@ -60,18 +60,18 @@ async function gracefulShutdown(signal) {
 /**
  * Handle shutdown signals
  */
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 /**
  * Handle uncaught errors
  */
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  gracefulShutdown('uncaughtException');
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  gracefulShutdown("uncaughtException");
 });
 
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled Rejection:', reason);
-  gracefulShutdown('unhandledRejection');
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
+  gracefulShutdown("unhandledRejection");
 });
