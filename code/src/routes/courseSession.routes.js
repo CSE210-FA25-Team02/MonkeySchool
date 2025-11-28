@@ -25,13 +25,13 @@ router.get("/", (req, res) => {
 // Get all sessions for a class
 router.get(
   "/class/:classId",
-  asyncHandler(courseSessionController.getSessionsByClass),
+  asyncHandler(courseSessionController.getSessionsByClass)
 );
 
 // Get today's sessions for a class
 router.get(
   "/class/:classId/today",
-  asyncHandler(courseSessionController.getTodaySessions),
+  asyncHandler(courseSessionController.getTodaySessions)
 );
 
 // Get session creation form (HTMX)
@@ -46,7 +46,7 @@ router.put("/:id", asyncHandler(courseSessionController.updateCourseSession));
 // Delete a session
 router.delete(
   "/:id",
-  asyncHandler(courseSessionController.deleteCourseSession),
+  asyncHandler(courseSessionController.deleteCourseSession)
 );
 
 export default router;

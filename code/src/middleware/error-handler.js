@@ -101,7 +101,7 @@ export function errorHandler(err, req, res) {
       errorHtml,
       {
         description: "An error occurred while processing your request.",
-      },
+      }
     );
     res.status(statusCode).send(fullPage);
   }
@@ -169,7 +169,7 @@ export async function notFoundHandler(req, res) {
           return `${openingTag}
         ${errorHtml}
     ${closingTag}`;
-        },
+        }
       );
       res.status(404).send(updatedHtml);
     } catch (err) {
@@ -181,7 +181,7 @@ export async function notFoundHandler(req, res) {
           __dirname,
           "..",
           "public",
-          "index.html",
+          "index.html"
         );
         const html = await readFile(indexHtmlPath, "utf8");
         res.status(404).send(html);
@@ -193,7 +193,7 @@ export async function notFoundHandler(req, res) {
           errorHtml,
           {
             description: "This page is currently under construction.",
-          },
+          }
         );
         res.status(404).send(fullPage);
       }

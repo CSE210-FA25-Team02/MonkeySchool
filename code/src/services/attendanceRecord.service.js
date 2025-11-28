@@ -469,6 +469,6 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
 
   // Convert to array and sort by course name
   return Array.from(courseMap.values()).sort((a, b) =>
-    a.courseName.localeCompare(b.courseName),
+    a.courseName.localeCompare(b.courseName)
   );
 }

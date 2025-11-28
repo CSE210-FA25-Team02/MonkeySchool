@@ -67,7 +67,7 @@ export function createApp() {
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
-    }),
+    })
   );
 
   // CORS configuration for HTMX requests
@@ -84,7 +84,7 @@ export function createApp() {
         "HX-Current-URL",
         "HX-Trigger",
       ],
-    }),
+    })
   );
 
   // Rate limiting
@@ -172,7 +172,7 @@ export function createApp() {
         "./controllers/attendance.controller.js"
       );
       return getSessionRecordsPage(req, res, next);
-    },
+    }
   );
 
   // Course-wise attendance records page (professor only)
@@ -184,7 +184,7 @@ export function createApp() {
         "./controllers/attendance.controller.js"
       );
       return getCourseRecordsPage(req, res, next);
-    },
+    }
   );
 
   // Redirect /courses/attendance to /attendance for backward compatibility

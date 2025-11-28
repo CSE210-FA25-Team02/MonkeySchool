@@ -285,7 +285,7 @@ export function displaySessionAttendance(data) {
       <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
       <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
     </tr>
-  `,
+  `
     )
     .join("");
 
@@ -324,7 +324,7 @@ export function displayCourseAttendanceSummary(summary) {
     .map(
       (s) => `
     <th class="attendance-summary__header">${escapeHtml(s.name)}</th>
-  `,
+  `
     )
     .join("");
 
@@ -401,7 +401,7 @@ export function displayStudentAttendance(data) {
       <div class="attendance-history__status attendance-history__status--present">Present</div>
       <div class="attendance-history__time">Marked at: ${new Date(record.markedAt).toLocaleString()}</div>
     </div>
-  `,
+  `
     )
     .join("");
 
@@ -447,7 +447,7 @@ export function displayStudentAttendanceGrouped(data) {
           <span class="attendance-course-table__status attendance-course-table__status--present">${escapeHtml(attendance.status)}</span>
         </td>
       </tr>
-    `,
+    `
         )
         .join("");
 
@@ -828,7 +828,7 @@ export function displaySessionRecordsPage(data) {
       <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
       <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
     </tr>
-  `,
+  `
     )
     .join("");
 
@@ -888,7 +888,7 @@ export function displayCourseRecordsPage(data) {
     .map(
       (session) => `
     <th class="attendance-table__header">${escapeHtml(session.name)}</th>
-  `,
+  `
     )
     .join("");
 

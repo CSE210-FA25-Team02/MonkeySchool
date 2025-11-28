@@ -22,7 +22,7 @@ export class NavBar {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(
-        `NavBar: Container with id "${this.containerId}" not found`,
+        `NavBar: Container with id "${this.containerId}" not found`
       );
       return;
     }

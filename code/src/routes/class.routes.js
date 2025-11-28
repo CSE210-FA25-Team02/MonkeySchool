@@ -11,14 +11,14 @@ const router = Router({ mergeParams: true });
 router.get(
   "/my-classes",
   requireAuth,
-  asyncHandler(classController.renderUserClasses),
+  asyncHandler(classController.renderUserClasses)
 );
 
 // Class Create Form
 router.get(
   "/form",
   requireAuth,
-  asyncHandler(classController.renderCreateClassForm),
+  asyncHandler(classController.renderCreateClassForm)
 );
 router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 
@@ -28,14 +28,14 @@ router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 router.get(
   "/user/classes",
   requireAuth,
-  asyncHandler(classController.getUserClasses),
+  asyncHandler(classController.getUserClasses)
 );
 
 // Invite lookup must come before /:id
 router.get(
   "/invite/:code",
   requireAuth,
-  asyncHandler(classController.getClassByInviteCode),
+  asyncHandler(classController.getClassByInviteCode)
 );
 
 // CRUD
@@ -49,20 +49,20 @@ router.get(
       return requireRole("class", ["PROFESSOR", "TA", "TUTOR", "STUDENT"])(
         req,
         res,
-        next,
+        next
       );
     }
     next();
   },
-  asyncHandler(classController.getClass),
+  asyncHandler(classController.getClass)
 );
 router.get(
   "/:id/directory/json",
-  asyncHandler(classController.getClassDirectory),
+  asyncHandler(classController.getClassDirectory)
 ); // For testing and preview
 router.get(
   "/:id/directory",
-  asyncHandler(classController.renderClassDirectory),
+  asyncHandler(classController.renderClassDirectory)
 );
 router.put(
   "/:id",
@@ -74,7 +74,7 @@ router.put(
     }
     next();
   },
-  asyncHandler(classController.updateClass),
+  asyncHandler(classController.updateClass)
 );
 router.delete(
   "/:id",
@@ -86,7 +86,7 @@ router.delete(
     }
     next();
   },
-  asyncHandler(classController.deleteClass),
+  asyncHandler(classController.deleteClass)
 );
 
 export default router;

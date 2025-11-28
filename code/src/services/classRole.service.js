@@ -15,7 +15,7 @@ export async function upsertClassRole({ userId, classId, role }) {
 
   if (!VALID_ROLES.includes(normalized)) {
     throw new Error(
-      `Invalid role "${role}". Allowed roles: ${VALID_ROLES.join(", ")}`,
+      `Invalid role "${role}". Allowed roles: ${VALID_ROLES.join(", ")}`
     );
   }
 

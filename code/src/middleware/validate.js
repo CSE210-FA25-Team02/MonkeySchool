@@ -115,7 +115,7 @@ export function validateWithErrors(schema, type = "body", options = {}) {
         const allErrors = [
           ...generalErrors,
           ...Object.entries(fieldErrors).map(
-            ([field, message]) => `${field}: ${message}`,
+            ([field, message]) => `${field}: ${message}`
           ),
         ];
 

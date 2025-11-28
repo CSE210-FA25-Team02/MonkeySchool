@@ -53,7 +53,7 @@ export const createPoll = asyncHandler(async (req, res) => {
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create attendance polls");
@@ -63,7 +63,7 @@ export const createPoll = asyncHandler(async (req, res) => {
   const poll = await attendancePollService.createAttendancePoll(
     sessionId,
     durationMinutes,
-    userId,
+    userId
   );
 
   const isHtmxRequest = req.headers["hx-request"];
@@ -188,7 +188,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user?.isProf;
   if (!isProfessor && !isAdmin) {
@@ -233,7 +233,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      },
+      }
     );
 
     res.send(updatedHtml);
@@ -260,7 +260,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user?.isProf;
   if (!isProfessor && !isAdmin) {
@@ -299,7 +299,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      },
+      }
     );
 
     res.send(updatedHtml);
@@ -327,7 +327,7 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user?.isProf; // Simple admin check - adjust as needed
   if (!isProfessor && !isAdmin) {
@@ -406,7 +406,7 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user?.isProf; // Simple admin check
   if (!isProfessor && !isAdmin) {
@@ -498,7 +498,7 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can view code status");
@@ -535,7 +535,7 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can view course attendance");
@@ -599,10 +599,10 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       const classesWithSessions = await Promise.all(
         professorClasses.map(async (klass) => {
           const sessions = await courseSessionService.getSessionsByClassId(
-            klass.id,
+            klass.id
           );
           return { ...klass, sessions };
-        }),
+        })
       );
 
       html = displayProfessorAttendancePage({
@@ -651,7 +651,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       mainTagRegex,
       (match, openingTag, oldContent, closingTag) => {
         return `${openingTag}${html}${closingTag}`;
-      },
+      }
     );
 
     res.send(updatedHtml);

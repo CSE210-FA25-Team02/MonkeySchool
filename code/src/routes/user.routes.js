@@ -9,12 +9,12 @@ const router = Router();
 router.get(
   "/profile",
   requireAuth,
-  asyncHandler(userController.renderUserProfilePage),
+  asyncHandler(userController.renderUserProfilePage)
 );
 router.get(
   "/profile/link-field",
   requireAuth,
-  asyncHandler(userController.renderProfileLinkField),
+  asyncHandler(userController.renderProfileLinkField)
 );
 router.post("/", asyncHandler(userController.createUser));
 router.get("/:id", asyncHandler(userController.getUser));

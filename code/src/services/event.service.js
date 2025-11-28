@@ -15,7 +15,7 @@ async function canUserCreateEventType(
   userId,
   eventType,
   classId,
-  groupId = null,
+  groupId = null
 ) {
   // Get user's role in the class
   const classRole = await prisma.classRole.findFirst({
@@ -57,7 +57,7 @@ async function canUserCreateEventType(
   // Check course-related event permissions
   if (
     ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(
-      eventType,
+      eventType
     )
   ) {
     return ["PROFESSOR", "TA"].includes(classRole.role);
@@ -104,7 +104,7 @@ async function canUserModifyEvent(userId, eventId) {
     if (classRole && ["PROFESSOR", "TA"].includes(classRole.role)) {
       if (
         ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(
-          event.type,
+          event.type
         )
       ) {
         return true;
@@ -149,12 +149,12 @@ export async function createEvent(eventData) {
     eventData.userId,
     eventData.type,
     eventData.classId,
-    eventData.groupId,
+    eventData.groupId
   );
 
   if (!hasPermission) {
     throw new Error(
-      `User does not have permission to create ${eventData.type} events`,
+      `User does not have permission to create ${eventData.type} events`
     );
   }
 
@@ -335,7 +335,7 @@ export async function getClassEventsWithPermissions(classId, userId) {
           isCreator: event.userId === userId,
         },
       };
-    }),
+    })
   );
 
   return eventsWithPermissions;
@@ -361,7 +361,7 @@ export async function getUserEventPermissions(userId, classId) {
     permissions[eventType] = await canUserCreateEventType(
       userId,
       eventType,
-      classId,
+      classId
     );
   }
 
