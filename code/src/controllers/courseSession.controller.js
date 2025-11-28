@@ -274,9 +274,8 @@ export const getSessionForm = asyncHandler(async (req, res) => {
     throw new ForbiddenError("Only professors can create sessions");
   }
 
-  const { createSessionForm } = await import(
-    "../utils/htmx-templates/attendance-templates.js"
-  );
+  const { createSessionForm } =
+    await import("../utils/htmx-templates/attendance-templates.js");
   const formHtml = createSessionForm(classId);
   res.send(formHtml);
 });
