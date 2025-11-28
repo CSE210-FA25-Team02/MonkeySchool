@@ -597,6 +597,25 @@
           }
         }
       });
+
+      document.body.addEventListener("htmx:afterSwap", (evt) => {
+        const url = evt.detail.pathInfo?.requestPath;
+        if (url && url.startsWith("/")) {
+          localStorage.setItem("lastPage", url);
+        }
+      });
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        const last = localStorage.getItem("lastPage");
+        if (!last) return;
+
+        try {
+          const res = await fetch(last);
+          if (!res.ok) return;
+          const html = await res.text();
+          document.querySelector("#main-content").innerHTML = html;
+        } catch (e) {}
+      });
     </script>
   </body>
 </html>
