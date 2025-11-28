@@ -4,8 +4,6 @@
  * Configures Express app with middleware and routes for HTMX responses
  */
 
-// code/src/app.js
-
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -14,13 +12,23 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import path from "path";
-import { fileURLToPath } from "url";
-import { env } from "./config/env.js";
+import {
+  fileURLToPath
+} from "url";
+import {
+  env
+} from "./config/env.js";
 import routes from "./routes/index.js";
-import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
-import { requireAuth } from "./middleware/auth.js";
+import {
+  errorHandler,
+  notFoundHandler
+} from "./middleware/error-handler.js";
+import {
+  requireAuth
+} from "./middleware/auth.js";
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(
+  import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
@@ -46,6 +54,8 @@ export function createApp() {
             "https://unpkg.com", // For HTMX CDN
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],
+          // Allow inline event handlers like onclick, onsubmit, etc.
+          scriptSrcAttr: ["'unsafe-inline'"],
           styleSrc: [
             "'self'",
             "'unsafe-inline'", // For dynamic styling
@@ -106,8 +116,13 @@ export function createApp() {
   app.use(cookieParser());
 
   // Body parsing
-  app.use(express.json({ limit: "10mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+  app.use(express.json({
+    limit: "10mb"
+  }));
+  app.use(express.urlencoded({
+    extended: true,
+    limit: "10mb"
+  }));
 
   // Compression
   app.use(compression());
@@ -123,33 +138,16 @@ export function createApp() {
   app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "views"));
 
-  // Health check (returns HTML for HTMX compatibility)
-  app.get("/", requireAuth, (req, res) => {
-    // If not authenticated, redirect to /login
-    if (!req.user) {
-      return res.redirect("/login");
-    }
-    const isHtmxRequest = req.headers["hx-request"];
-    if (isHtmxRequest) {
-      res.send(`
-        <div class="health-status">
-          <h2>System Status</h2>
-          <p>✅ Express + Prisma API is running</p>
-          <p>📅 Version: 1.0.0</p>
-          <p>🌍 Environment: ${env.NODE_ENV}</p>
-        </div>
-      `);
-    } else {
-      res.sendFile(path.join(__dirname, "public", "index.html"));
-    }
+  // Dashboard - requires authentication
+  app.get("/", requireAuth, async (req, res, next) => {
+    const {
+      getDashboard
+    } = await import("./controllers/dashboard.controller.js");
+    return getDashboard(req, res, next);
   });
 
   // Serve login page
   app.get("/login", (req, res) => {
-    // If already authenticated, redirect to home
-    if (req.user) {
-      return res.redirect("/");
-    }
     res.sendFile(path.join(__dirname, "public", "login.html"));
   });
 
@@ -157,7 +155,9 @@ export function createApp() {
 
   // Attendance page routes (must be before error handlers)
   app.get("/attendance", requireAuth, async (req, res, next) => {
-    const { getAttendancePage } = await import(
+    const {
+      getAttendancePage
+    } = await import(
       "./controllers/attendance.controller.js"
     );
     // getAttendancePage is already wrapped with asyncHandler, so it handles errors
@@ -168,7 +168,9 @@ export function createApp() {
     "/attendance/course/session/:sessionId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getSessionRecordsPage } = await import(
+      const {
+        getSessionRecordsPage
+      } = await import(
         "./controllers/attendance.controller.js"
       );
       return getSessionRecordsPage(req, res, next);
@@ -180,7 +182,9 @@ export function createApp() {
     "/attendance/course/:courseId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getCourseRecordsPage } = await import(
+      const {
+        getCourseRecordsPage
+      } = await import(
         "./controllers/attendance.controller.js"
       );
       return getCourseRecordsPage(req, res, next);
@@ -192,7 +196,9 @@ export function createApp() {
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
       // For HTMX, call the attendance page handler directly
-      const { getAttendancePage } = await import(
+      const {
+        getAttendancePage
+      } = await import(
         "./controllers/attendance.controller.js"
       );
       return getAttendancePage(req, res, next);

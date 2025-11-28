@@ -1,101 +1,84 @@
 /**
- * Main Application Initialization
- *
- * Initializes all navigation components on page load
+ * Monkey School - App Interaction
+ * Handles global UI interactions (Sidebar, Modals, Toasts)
  */
 
-import { NavBar } from "./components/NavBar.js";
-import { SubMenu } from "./components/SubMenu.js";
-import { Header } from "./components/Header.js";
-import { Footer } from "./components/Footer.js";
-import { generateColorCSS } from "./config/colors.js";
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🐒 Monkey School UI Loaded');
 
-/**
- * Initialize the application
- */
-function initApp() {
-  // Inject color CSS variables
-  const style = document.createElement("style");
-  style.textContent = generateColorCSS();
-  document.head.appendChild(style);
+    // === TOAST SYSTEM ===
+    window.showToast = (title, message, type = 'info') => {
+        const container = document.getElementById('toast-container');
+        if (!container) {
+            // Create container if missing
+            const newContainer = document.createElement('div');
+            newContainer.id = 'toast-container';
+            newContainer.className = 'toast-container';
+            document.body.appendChild(newContainer);
+            return showToast(title, message, type);
+        }
 
-  // Initialize components
-  const navbar = new NavBar("navbar");
-  navbar.init();
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        
+        let iconClass = 'fa-info';
+        if (type === 'success') iconClass = 'fa-check';
+        if (type === 'error') iconClass = 'fa-exclamation';
 
-  const submenu = new SubMenu("submenu");
-  submenu.init();
+        toast.innerHTML = `
+            <div class="toast-icon">
+                <i class="fa-solid ${iconClass}"></i>
+            </div>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <div class="toast-close" onclick="this.parentElement.remove()">
+                <i class="fa-solid fa-times"></i>
+            </div>
+        `;
 
-  const header = new Header("header");
-  header.init();
+        container.appendChild(toast);
 
-  const footer = new Footer("footer");
-  footer.init();
-
-  // Make components available globally for debugging
-  if (typeof window !== "undefined") {
-    window.app = {
-      navbar,
-      submenu,
-      header,
-      footer,
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.add('hiding');
+            toast.addEventListener('transitionend', () => {
+                toast.remove();
+            });
+        }, 4000);
     };
-  }
-}
 
-// Initialize when DOM is ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initApp);
-} else {
-  initApp();
-}
+    // === MODAL SYSTEM ===
+    window.openModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('open');
+        }
+    };
 
-// Re-initialize on HTMX page swaps (if needed)
-if (typeof htmx !== "undefined") {
-  document.body.addEventListener("htmx:afterSettle", () => {
-    // Update active states, but don't re-initialize components
-    // as they maintain their own state
-  });
-}
+    window.closeModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('open');
+        }
+    };
 
-// Load content for the current route on initial page load
-// This handles direct navigation to routes like /attendance
-if (typeof htmx !== "undefined") {
-  document.addEventListener("DOMContentLoaded", () => {
-    const path = window.location.pathname;
-    const mainContent = document.getElementById("main-content");
-
-    // Skip loading content for root and login pages
-    if (path === "/" || path === "/login" || !mainContent) {
-      return;
-    }
-
-    // Check if main content has meaningful, route-specific content
-    // (not just error messages or empty containers)
-    const innerText = (
-      mainContent.innerText ||
-      mainContent.textContent ||
-      ""
-    ).trim();
-    const hasRouteContent =
-      innerText.length > 50 && // Has substantial content
-      !mainContent.querySelector(".not-implemented") && // Not error page
-      (mainContent.querySelector(".attendance-page") || // Has attendance content
-        mainContent.querySelector("section") || // Has any section
-        innerText.length > 100); // Or just has lots of text
-
-    // If main content doesn't have route-specific content, load it via HTMX
-    if (!hasRouteContent) {
-      // Small delay to ensure HTMX and all components are fully initialized
-      setTimeout(() => {
-        htmx.ajax("GET", path, {
-          target: "#main-content",
-          swap: "innerHTML",
-          headers: { "HX-Request": "true" },
+    // Close modal on outside click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('open');
+            }
         });
-      }, 200);
-    }
-  });
-}
+    });
 
-export { initApp };
+    // === HTMX Event Listeners ===
+    // Show toast on HTMX error
+    document.body.addEventListener('htmx:responseError', (evt) => {
+        const errorMsg = evt.detail.xhr.responseText || "An unexpected error occurred";
+        showToast("Error", errorMsg, "error");
+    });
+
+    // Handle HTMX redirects if needed manually (usually HX-Redirect handles it)
+});

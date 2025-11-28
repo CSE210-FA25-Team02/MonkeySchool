@@ -5,20 +5,28 @@ import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
-// CRUD
+// Profile Page
 router.get(
   "/profile",
   requireAuth,
   asyncHandler(userController.renderUserProfilePage),
 );
-router.get(
-  "/profile/link-field",
+
+// Update Profile
+router.put(
+  "/profile",
   requireAuth,
-  asyncHandler(userController.renderProfileLinkField),
+  asyncHandler(userController.updateUserProfile),
 );
-router.post("/", asyncHandler(userController.createUser));
-router.get("/:id", asyncHandler(userController.getUser));
-router.put("/:id", asyncHandler(userController.updateUser));
-router.delete("/:id", asyncHandler(userController.deleteUser));
+
+// Update Settings
+router.post(
+  "/settings",
+  requireAuth,
+  asyncHandler(userController.updateUserSettings),
+);
+
+// JSON API
+router.get("/:id", requireAuth, asyncHandler(userController.getUser));
 
 export default router;

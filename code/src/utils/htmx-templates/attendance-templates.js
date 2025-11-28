@@ -1,1103 +1,439 @@
 /**
- * HTMX Templates for Attendance System
+ * HTMX Templates for Attendance Page
  * code/src/utils/htmx-templates/attendance-templates.js
+ *
+ * Based on demo/attendance.html
+ * Per NOTES: UI for prof and student has to be separated
  */
 
-import { escapeHtml } from "../html-templates.js";
+import {
+  escapeHtml
+} from "../html-templates.js";
 
 /**
- * Create a modal form to start attendance for a session
- * @param {string} sessionId - ID of the course session
- * @param {number} [defaultDuration=10] - Default duration in minutes
- * @returns {string} HTML string for the modal form
+ * Render the main attendance page
+ * @param {Object} user - User object
+ * @param {Array} courses - List of courses with attendance sessions
+ * @param {Array} studentHistory - Student's attendance history (for student view)
+ * @returns {string} HTML string
  */
-export function createStartAttendanceModal(sessionId, defaultDuration = 10) {
-  return `
-    <section id="attendance-modal" class="attendance-modal__overlay">
-      <div class="attendance-modal">
-        <h2>Start Attendance</h2>
-        <form 
-          hx-post="/attendance/poll/create" 
-          hx-target="#attendance-modal" 
-          hx-swap="outerHTML"
-        >
-          <input type="hidden" name="sessionId" value="${sessionId}">
-          <label class="attendance-modal__label">
-            Duration (minutes):
-            <input 
-              type="number" 
-              name="durationMinutes" 
-              class="attendance-modal__input" 
-              value="${defaultDuration}"
-              min="1"
-              max="1440"
-            >
-          </label>
-          
-          <div class="attendance-modal__actions">
-            <button type="submit" class="attendance-modal__button attendance-modal__button--primary">
-              Start Attendance
-            </button>
-            <button 
-              type="button" 
-              class="attendance-modal__button attendance-modal__button--secondary"
-              hx-on:click="
-                event.preventDefault();
-                event.stopPropagation();
-                const modal = document.getElementById('attendance-modal');
-                if(modal) {
-                  modal.style.transition = 'opacity 0.15s ease-out';
-                  modal.style.opacity = '0';
-                  setTimeout(function() {
-                    if(modal && modal.parentNode) {
-                      modal.remove();
-                    }
-                  }, 150);
-                }
-              "
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Display the generated attendance code with timer
- * @param {Object} poll - Attendance poll object
- * @returns {string} HTML string for the attendance code display
- */
-export function displayAttendanceCode(poll) {
-  const expiresAt = new Date(poll.expiresAt);
-  const now = new Date();
-  const secondsRemaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
-
-  return `
-    <section id="attendance-modal" class="attendance-modal__overlay">
-      <div class="attendance-modal attendance-modal--code">
-        <h2>Attendance Code</h2>
-        <div class="attendance-code">
-          <div class="attendance-code__display" id="attendance-code-display">
-            ${poll.code}
-          </div>
-          <div class="attendance-code__timer" id="attendance-code-timer">
-            Expires in: <span id="timer-seconds">${secondsRemaining}</span> seconds
-          </div>
-          <button 
-            id="copy-code-btn" 
-            class="attendance-code__copy-btn"
-            aria-label="Copy attendance code"
-          >
-            Copy Code
-          </button>
-        </div>
-        <div class="attendance-modal__actions">
-          <button 
-            type="button" 
-            class="attendance-modal__button attendance-modal__button--secondary" 
-            onclick="document.getElementById('attendance-modal')?.remove()"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </section>
-    <script>
-      // Timer countdown
-      let timeLeft = ${secondsRemaining};
-      const timerElement = document.getElementById('timer-seconds');
-      const timerInterval = setInterval(() => {
-        timeLeft--;
-        if (timerElement) {
-          timerElement.textContent = timeLeft;
-        }
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          if (timerElement) {
-            timerElement.textContent = 'Expired';
-          }
-        }
-      }, 1000);
-
-      // Copy code functionality
-      const copyBtn = document.getElementById('copy-code-btn');
-      if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-          const code = '${poll.code}';
-          navigator.clipboard.writeText(code)
-            .then(() => {
-              copyBtn.textContent = 'Copied!';
-              setTimeout(() => {
-                copyBtn.textContent = 'Copy Code';
-              }, 2000);
-            })
-            .catch(err => console.error('Clipboard error:', err));
-        });
-      }
-    </script>
-  `;
-}
-
-/**
- * Student code input component
- * @returns {string} HTML string for the attendance code input form
- */
-export function createAttendanceCodeInput() {
-  return `
-    <section class="attendance-input" role="region" aria-labelledby="attendance-input-title">
-      <h2 id="attendance-input-title" class="attendance-input__title">Mark Attendance</h2>
-      <form 
-        class="attendance-input__form"
-        hx-post="/attendance/submit"
-        hx-target="#attendance-result"
-        hx-swap="innerHTML"
-        hx-headers='{"Content-Type": "application/json"}'
-        onsubmit="this.querySelector('#attendance-code').value = '';"
-      >
-        <label for="attendance-code" class="attendance-input__label">
-          Enter Attendance Code:
-        </label>
-        <div class="attendance-input__group">
-          <input 
-            type="text" 
-            id="attendance-code" 
-            name="code" 
-            class="attendance-input__field"
-            placeholder="00000000"
-            pattern="[0-9]{8}"
-            maxlength="8"
-            required
-            aria-required="true"
-            aria-label="8-digit attendance code"
-          >
-          <button 
-            type="submit" 
-            class="attendance-input__submit"
-            aria-label="Submit attendance"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
-      <div id="attendance-result" class="attendance-input__result" role="status" aria-live="polite"></div>
-    </section>
-  `;
-}
-
-/**
- * Display attendance submission result
- * @param {Object} result - Result object with success/error status
- * @returns {string} HTML string for the result display
- */
-export function displayAttendanceResult(result) {
-  if (result.success) {
-    return `
-      <div class="attendance-result attendance-result--success">
-        <p class="attendance-result__message">
-          ✓ Marked present for ${escapeHtml(result.courseName)} — ${escapeHtml(result.sessionName)}
-        </p>
-        <p class="attendance-result__time">
-          Marked at: ${new Date(result.markedAt).toLocaleString()}
-        </p>
-      </div>
-      <script>
-        // Auto-refresh attendance list after successful submission
-        (function() {
-          setTimeout(() => {
-            // Close any modals
-            const modal = document.getElementById('attendance-modal');
-            if (modal) {
-              modal.remove();
-            }
-            
-            // Refresh attendance history section using HTMX
-            const historySection = document.getElementById('attendance-history-section');
-            if (historySection && typeof htmx !== 'undefined') {
-              htmx.ajax('GET', '/attendance/student/me', {
-                target: '#attendance-history-section',
-                swap: 'outerHTML'
-              });
-            } else if (typeof htmx !== 'undefined') {
-              // If section doesn't exist yet, refresh the whole page content
-              htmx.ajax('GET', '/attendance', {
-                target: '#main-content',
-                swap: 'outerHTML'
-              });
-            } else {
-              // Fallback: reload the page if HTMX is not available
-              window.location.reload();
-            }
-          }, 1000);
-        })();
-      </script>
-    `;
-  } else {
-    return `
-      <div class="attendance-result attendance-result--error">
-        <p class="attendance-result__message">
-          ${escapeHtml(result.error || "Failed to mark attendance")}
-        </p>
-      </div>
-    `;
-  }
-}
-
-/**
- * Display session attendance table (for professors)
- * @param {Object} data - Session attendance data
- * @returns {string} HTML string for the session attendance table
- */
-export function displaySessionAttendance(data) {
-  const { sessionName, attendance } = data;
-
-  const backButton = `
-    <div class="attendance-table__header-actions">
-      <button 
-        class="btn btn--secondary"
-        hx-get="/attendance"
-        hx-target="#main-content"
-        hx-swap="outerHTML"
-        hx-push-url="true"
-      >
-        ← Back to Attendance
-      </button>
-    </div>
-  `;
-
-  if (!attendance || attendance.length === 0) {
-    return `
-      <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-        ${backButton}
-        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
-        <p class="attendance-table__empty">No attendance records yet.</p>
-      </section>
-    `;
-  }
-
-  const rows = attendance
-    .map(
-      (record) => `
-    <tr class="attendance-table__row">
-      <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
-      <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
-      <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
-    </tr>
-  `,
-    )
-    .join("");
-
-  return `
-    <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-      ${backButton}
-      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
-      <div class="attendance-table__container">
-        <table class="attendance-table__table" role="table">
-          <thead>
-            <tr>
-              <th class="attendance-table__header">Student Name</th>
-              <th class="attendance-table__header">Email</th>
-              <th class="attendance-table__header">Marked At</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Display course attendance summary (for professors)
- * @param {Object} summary - Course attendance summary data
- * @returns {string} HTML string for the course attendance summary table
- */
-export function displayCourseAttendanceSummary(summary) {
-  const { sessions, students } = summary;
-
-  // Build session headers
-  const sessionHeaders = sessions
-    .map(
-      (s) => `
-    <th class="attendance-summary__header">${escapeHtml(s.name)}</th>
-  `,
-    )
-    .join("");
-
-  // Build student rows
-  const studentRows = students
-    .map((student) => {
-      const sessionCells = sessions
-        .map((session) => {
-          const record = student.sessions[session.id];
-          const status = record?.present ? "✓" : "—";
-          return `<td class="attendance-summary__cell">${status}</td>`;
-        })
-        .join("");
-
-      return `
-      <tr class="attendance-summary__row">
-        <td class="attendance-summary__cell">${escapeHtml(student.name)}</td>
-        <td class="attendance-summary__cell">${escapeHtml(student.email)}</td>
-        ${sessionCells}
-        <td class="attendance-summary__cell attendance-summary__cell--percentage">
-          ${student.attendancePercentage}%
-        </td>
-      </tr>
-    `;
-    })
-    .join("");
-
-  return `
-    <section class="attendance-summary" role="region" aria-labelledby="attendance-summary-title">
-      <h2 id="attendance-summary-title" class="attendance-summary__title">Course Attendance Summary</h2>
-      <div class="attendance-summary__container">
-        <table class="attendance-summary__table" role="table">
-          <thead>
-            <tr>
-              <th class="attendance-summary__header">Student</th>
-              <th class="attendance-summary__header">Email</th>
-              ${sessionHeaders}
-              <th class="attendance-summary__header">Attendance %</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${studentRows}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Display student's personal attendance history
- * @param {Object} data - Student attendance data
- * @returns {string} HTML string for the student attendance history
- */
-export function displayStudentAttendance(data) {
-  const { attendance } = data;
-
-  if (!attendance || attendance.length === 0) {
-    return `
-      <section class="attendance-history" role="region" aria-labelledby="attendance-history-title">
-        <h2 id="attendance-history-title" class="attendance-history__title">My Attendance</h2>
-        <p class="attendance-history__empty">No attendance records yet.</p>
-      </section>
-    `;
-  }
-
-  const records = attendance
-    .map(
-      (record) => `
-    <div class="attendance-history__record">
-      <div class="attendance-history__course">${escapeHtml(record.courseName)}</div>
-      <div class="attendance-history__session">${escapeHtml(record.sessionName)}</div>
-      <div class="attendance-history__date">${new Date(record.date).toLocaleDateString()}</div>
-      <div class="attendance-history__status attendance-history__status--present">Present</div>
-      <div class="attendance-history__time">Marked at: ${new Date(record.markedAt).toLocaleString()}</div>
-    </div>
-  `,
-    )
-    .join("");
-
-  return `
-    <section class="attendance-history" role="region" aria-labelledby="attendance-history-title">
-      <h2 id="attendance-history-title" class="attendance-history__title">My Attendance</h2>
-      <div class="attendance-history__list">
-        ${records}
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Display student's personal attendance history grouped by course (collapsible)
- * @param {Object} data - Student attendance data grouped by course
- * @returns {string} HTML string for the grouped attendance history
- */
-export function displayStudentAttendanceGrouped(data) {
-  const { courses } = data;
-
-  if (!courses || courses.length === 0) {
-    return `
-      <section class="attendance-history" role="region" aria-labelledby="attendance-history-title" id="attendance-history-section">
-        <h2 id="attendance-history-title" class="attendance-history__title">My Attendance</h2>
-        <p class="attendance-history__empty">No attendance records yet.</p>
-      </section>
-    `;
-  }
-
-  const courseItems = courses
-    .map((course, index) => {
-      const courseId = `course-${course.courseId}`;
-      const isExpanded = index === 0 ? "true" : "false"; // First course expanded by default
-
-      const attendanceRows = course.attendances
-        .map(
-          (attendance) => `
-      <tr class="attendance-course-table__row">
-        <td class="attendance-course-table__cell">${new Date(attendance.timestamp).toLocaleString()}</td>
-        <td class="attendance-course-table__cell">${escapeHtml(attendance.sessionName)}</td>
-        <td class="attendance-course-table__cell">
-          <span class="attendance-course-table__status attendance-course-table__status--present">${escapeHtml(attendance.status)}</span>
-        </td>
-      </tr>
-    `,
-        )
-        .join("");
-
-      return `
-      <div class="attendance-course-item">
-        <button 
-          class="attendance-course-item__header"
-          type="button"
-          aria-expanded="${isExpanded}"
-          aria-controls="${courseId}-content"
-          onclick="toggleCourseAttendance(this)"
-        >
-          <span class="attendance-course-item__name">${escapeHtml(course.courseName)}</span>
-          <span class="attendance-course-item__count">${course.attendances.length} session${course.attendances.length !== 1 ? "s" : ""}</span>
-          <span class="attendance-course-item__icon" aria-hidden="true">▼</span>
-        </button>
-        <div 
-          class="attendance-course-item__content ${isExpanded ? "attendance-course-item__content--expanded" : ""}"
-          id="${courseId}-content"
-          aria-hidden="${isExpanded ? "false" : "true"}"
-        >
-          <div class="attendance-course-table__container">
-            <table class="attendance-course-table" role="table">
-              <thead>
-                <tr>
-                  <th class="attendance-course-table__header">Date / Time</th>
-                  <th class="attendance-course-table__header">Session Name</th>
-                  <th class="attendance-course-table__header">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${attendanceRows}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    `;
-    })
-    .join("");
-
-  return `
-    <section class="attendance-history" role="region" aria-labelledby="attendance-history-title" id="attendance-history-section">
-      <h2 id="attendance-history-title" class="attendance-history__title">My Attendance</h2>
-      <div class="attendance-history__courses">
-        ${courseItems}
-      </div>
-    </section>
-    <script>
-      function toggleCourseAttendance(button) {
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
-        const contentId = button.getAttribute('aria-controls');
-        const content = document.getElementById(contentId);
-        const icon = button.querySelector('.attendance-course-item__icon');
-        
-        if (isExpanded) {
-          button.setAttribute('aria-expanded', 'false');
-          content.setAttribute('aria-hidden', 'true');
-          content.classList.remove('attendance-course-item__content--expanded');
-          icon.textContent = '▶';
-        } else {
-          button.setAttribute('aria-expanded', 'true');
-          content.setAttribute('aria-hidden', 'false');
-          content.classList.add('attendance-course-item__content--expanded');
-          icon.textContent = '▼';
-        }
-      }
-    </script>
-  `;
-}
-
-/**
- * Start Attendance button component
- * @param {string} sessionId - ID of the course session
- * @returns {string} HTML string for the start attendance button
- */
-export function createStartAttendanceButton(sessionId) {
-  return `
-    <button 
-      class="btn btn--primary"
-      hx-get="/attendance/poll/form?sessionId=${sessionId}"
-      hx-target="#attendance-modal-container"
-      hx-swap="beforeend"
-      aria-label="Start attendance for this session"
-    >
-      Start Attendance Poll
-    </button>
-  `;
-}
-
-/**
- * Create a modal form to create a new course session
- * @param {string} classId - ID of the class
- * @returns {string} HTML string for the session creation form
- */
-export function createSessionForm(classId) {
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
-
-  return `
-    <section id="session-modal" class="attendance-modal__overlay">
-      <div class="attendance-modal">
-        <h2>Create New Session</h2>
-        <div id="session-modal-error" class="alert alert--error" style="display: none; margin-bottom: 1rem;"></div>
-        <form 
-          id="create-session-form"
-          hx-post="/course-sessions" 
-          hx-target="#main-content"
-          hx-swap="innerHTML"
-          hx-push-url="true"
-          hx-on::before-request="
-            // Close modal immediately on form submission start
-            const modal = document.getElementById('session-modal');
-            if(modal) {
-              // Store that we're submitting so we don't reopen on error
-              modal.setAttribute('data-submitting', 'true');
-            }
-          "
-          hx-on::before-swap="
-            const status = event.detail.xhr.status;
-            const modal = document.getElementById('session-modal');
-            
-            // Handle validation errors - show error, keep modal open
-            if(status === 400) {
-              if(modal) modal.removeAttribute('data-submitting');
-              event.detail.shouldSwap = false;
-              const errorDiv = document.getElementById('session-modal-error');
-              if(errorDiv) {
-                errorDiv.innerHTML = event.detail.xhr.responseText;
-                errorDiv.style.display = 'block';
-              }
-              return false;
-            }
-            
-            // On success (200, 201) - close modal immediately before swap
-            if(status === 200 || status === 201) {
-              if(modal) {
-                modal.style.transition = 'opacity 0.15s ease-out';
-                modal.style.opacity = '0';
-                setTimeout(function() {
-                  if(modal && modal.parentNode) {
-                    modal.remove();
-                  }
-                }, 150);
-              }
-            }
-          "
-          hx-on::after-request="
-            // Close modal immediately on successful response
-            const status = event.detail.xhr.status;
-            if(status === 200 || status === 201) {
-              const modal = document.getElementById('session-modal');
-              if(modal) {
-                modal.style.transition = 'opacity 0.15s ease-out';
-                modal.style.opacity = '0';
-                setTimeout(function() {
-                  if(modal && modal.parentNode) {
-                    modal.remove();
-                  }
-                }, 150);
-              }
-            }
-          "
-        >
-          <input type="hidden" name="classId" value="${classId}">
-          
-          <label class="attendance-modal__label">
-            Session Name:
-            <input 
-              type="text" 
-              name="name" 
-              class="attendance-modal__input" 
-              placeholder="e.g., Lecture 1, Lab Session 2"
-              required
-            >
-          </label>
-          
-          <label class="attendance-modal__label">
-            Date:
-            <input 
-              type="date" 
-              name="date" 
-              class="attendance-modal__input" 
-              value="${today}"
-              required
-            >
-          </label>
-          
-          <label class="attendance-modal__label">
-            Start Time (optional):
-            <input 
-              type="time" 
-              name="startTime" 
-              class="attendance-modal__input"
-            >
-          </label>
-          
-          <label class="attendance-modal__label">
-            End Time (optional):
-            <input 
-              type="time" 
-              name="endTime" 
-              class="attendance-modal__input"
-            >
-          </label>
-          
-          <div class="attendance-modal__actions">
-            <button type="submit" class="attendance-modal__button attendance-modal__button--primary">
-              Create Session
-            </button>
-            <button 
-              type="button" 
-              class="attendance-modal__button attendance-modal__button--secondary"
-              hx-on:click="
-                event.preventDefault();
-                event.stopPropagation();
-                const modal = document.getElementById('session-modal');
-                if(modal) {
-                  modal.style.transition = 'opacity 0.15s ease-out';
-                  modal.style.opacity = '0';
-                  setTimeout(function() {
-                    if(modal && modal.parentNode) {
-                      modal.remove();
-                    }
-                  }, 150);
-                }
-              "
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Create button to open session creation form
- * @param {string} classId - ID of the class
- * @returns {string} HTML string for the session creation button
- */
-export function createSessionButton(classId) {
-  return `
-    <button 
-      class="btn btn--primary"
-      hx-get="/course-sessions/form?classId=${classId}"
-      hx-target="#attendance-modal-container"
-      hx-swap="beforeend"
-      aria-label="Create a new session for this class"
-    >
-      Create Session
-    </button>
-  `;
-}
-
-/**
- * Check if a poll is expired
- * @param {Object|null} poll - Poll object to check
- * @returns {boolean} True if poll is expired or null
- */
-function isPollExpired(poll) {
-  if (!poll || !poll.expiresAt) {
-    return true;
-  }
-  const now = new Date();
-  const expiresAt = new Date(poll.expiresAt);
-  return now >= expiresAt;
-}
-
-/**
- * Get code status (active/expired)
- * @param {Object|null} poll - Poll object to check
- * @returns {Object} Status object with status and text
- */
-function getCodeStatus(poll) {
-  if (!poll) {
-    return { status: "none", text: "—" };
-  }
-  if (isPollExpired(poll)) {
-    return { status: "expired", text: "Expired" };
-  }
-  return { status: "active", text: "Active" };
-}
-
-/**
- * Format time for display
- * @param {Object} session - Session object with date and startTime
- * @returns {string} Formatted time string
- */
-function formatSessionTime(session) {
-  const date = new Date(session.date);
-  const dateStr = date.toLocaleDateString();
-
-  if (session.startTime) {
-    const time = new Date(session.startTime);
-    const timeStr = time.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    return `${dateStr} at ${timeStr}`;
-  }
-  return dateStr;
-}
-
-/**
- * Display professor attendance page with course-based organization
- * @param {Object} data - Professor attendance page data
- * @returns {string} HTML string for the professor attendance page
- */
-export function displayProfessorAttendancePage(data) {
-  const { classes } = data;
-
-  const coursePanes = classes
-    .map((klass, courseIndex) => {
-      const isExpanded = courseIndex === 0;
-      return displayCourseItem({
-        course: klass,
-        sessions: klass.sessions,
-        isExpanded,
-      });
-    })
-    .join("");
+export function renderAttendancePage(user, courses = [], studentHistory = []) {
+  // Check if user is professor/TA (can manage attendance)
+  const isProf = (user && user.isProf) || (user && user.role === "PROFESSOR") || (user && user.role === "TA");
 
   return `
     <div class="container">
-      <section class="attendance-page" role="region" aria-labelledby="attendance-page-title">
-        <div class="attendance-page__header">
-          <h2 id="attendance-page-title" class="attendance-page__title">Attendance</h2>
-        </div>
-        <div class="attendance-courses">
-          ${coursePanes}
-        </div>
-        <div id="attendance-modal-container"></div>
-      </section>
+      <!-- Role Switcher (Demo Only) -->
+      <div class="role-switcher" style="margin-bottom: var(--space-6);">
+        <button class="btn-role ${isProf ? "active" : ""}" onclick="switchAttendanceView('professor')">Professor View</button>
+        <button class="btn-role ${!isProf ? "active" : ""}" onclick="switchAttendanceView('student')">Student View</button>
+      </div>
+
+      <!-- Professor View -->
+      <div id="view-professor" class="view-section" style="display: ${isProf ? "block" : "none"};">
+        ${renderProfessorView(courses)}
+      </div>
+
+      <!-- Student View -->
+      <div id="view-student" class="view-section" style="display: ${!isProf ? "block" : "none"};">
+        ${renderStudentView(studentHistory)}
+      </div>
     </div>
-  `;
-}
 
-/**
- * Get code status fragment for HTMX polling
- * @param {Object|null} poll - Attendance poll object or null
- * @returns {string} HTML string for the code status fragment
- */
-export function getCodeStatusFragment(poll) {
-  const codeStatus = getCodeStatus(poll);
-  if (!poll) {
-    return `<span class="attendance-code-status">—</span>`;
-  }
-  return `
-    <span class="attendance-code-status attendance-code-status--${codeStatus.status}">
-      ${escapeHtml(codeStatus.text)}
-    </span>
-  `;
-}
+    <!-- Modals -->
+    ${renderCreateSessionModal()}
+    ${renderLivePollModal()}
 
-/**
- * Display session-wise attendance records page
- * @param {Object} data - Session records page data
- * @returns {string} HTML string for the session records page
- */
-export function displaySessionRecordsPage(data) {
-  const { sessionName, courseName, attendance } = data;
-
-  if (!attendance || attendance.length === 0) {
-    return `
-      <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-        <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
-        <p class="attendance-table__empty">No attendance records yet.</p>
-      </section>
-    `;
-  }
-
-  const rows = attendance
-    .map(
-      (record) => `
-    <tr class="attendance-table__row">
-      <td class="attendance-table__cell">${escapeHtml(record.name)}</td>
-      <td class="attendance-table__cell">${escapeHtml(record.email)}</td>
-      <td class="attendance-table__cell">${new Date(record.markedAt).toLocaleString()}</td>
-    </tr>
-  `,
-    )
-    .join("");
-
-  return `
-    <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-      <h2 id="attendance-table-title" class="attendance-table__title">${escapeHtml(sessionName || "Session Attendance")}</h2>
-      <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
-      <div class="attendance-table__container">
-        <table class="attendance-table__table" role="table">
-          <thead>
-            <tr>
-              <th class="attendance-table__header">Student Name</th>
-              <th class="attendance-table__header">Email</th>
-              <th class="attendance-table__header">Marked At</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Display course-wise attendance records page
- * Pivoted table: students as rows, sessions as columns
- * @param {Object} data - Course records page data
- * @returns {string} HTML string for the course records page
- */
-export function displayCourseRecordsPage(data) {
-  const { courseName, sessions, students } = data;
-
-  if (!sessions || sessions.length === 0) {
-    return `
-      <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-        <h2 id="attendance-table-title" class="attendance-table__title">Course Attendance Records</h2>
-        <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
-        <p class="attendance-table__empty">No sessions yet.</p>
-      </section>
-    `;
-  }
-
-  if (!students || students.length === 0) {
-    return `
-      <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-        <h2 id="attendance-table-title" class="attendance-table__title">Course Attendance Records</h2>
-        <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
-        <p class="attendance-table__empty">No enrolled students yet.</p>
-      </section>
-    `;
-  }
-
-  // Build session header columns
-  const sessionHeaders = sessions
-    .map(
-      (session) => `
-    <th class="attendance-table__header">${escapeHtml(session.name)}</th>
-  `,
-    )
-    .join("");
-
-  // Build student rows with attendance status for each session
-  const studentRows = students
-    .map((student) => {
-      // Calculate attendance percentage
-      const totalSessions = sessions.length;
-      let attendedSessions = 0;
-
-      // Build cells for each session and count attendance
-      const sessionCells = sessions
-        .map((session) => {
-          const attendance = student.sessionAttendance[session.id];
-          if (attendance && attendance.present) {
-            attendedSessions++;
-            return `
-          <td class="attendance-table__cell attendance-table__cell--present">
-            ✓
-          </td>
-        `;
-          } else {
-            return `
-          <td class="attendance-table__cell attendance-table__cell--absent">
-            —
-          </td>
-        `;
-          }
-        })
-        .join("");
-
-      // Calculate percentage
-      const attendancePercentage =
-        totalSessions > 0
-          ? Math.round((attendedSessions / totalSessions) * 100)
-          : 0;
-
-      return `
-      <tr class="attendance-table__row">
-        <td class="attendance-table__cell attendance-table__cell--student-name">
-          ${escapeHtml(student.name)}
-        </td>
-        ${sessionCells}
-        <td class="attendance-table__cell attendance-table__cell--percentage">
-          ${attendancePercentage}%
-        </td>
-      </tr>
-    `;
-    })
-    .join("");
-
-  return `
-    <section class="attendance-table" role="region" aria-labelledby="attendance-table-title">
-      <h2 id="attendance-table-title" class="attendance-table__title">Course Attendance Records</h2>
-      <p class="attendance-table__subtitle">Course: ${escapeHtml(courseName)}</p>
-      <div class="attendance-table__container">
-        <table class="attendance-table__table" role="table">
-          <thead>
-            <tr>
-              <th class="attendance-table__header">Student Name</th>
-              ${sessionHeaders}
-              <th class="attendance-table__header">Total %</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${studentRows}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  `;
-}
-
-/**
- * Display course item (for toggling - includes button and content)
- * @param {Object} data - Course item data
- * @returns {string} HTML string for the course item
- */
-export function displayCourseItem(data) {
-  const { course, sessions, isExpanded } = data;
-  const courseId = `course-${course.id}`;
-
-  // Build table rows for sessions
-  const sessionRows = sessions
-    .map((session) => {
-      const latestPoll =
-        session.attendancePolls && session.attendancePolls.length > 0
-          ? session.attendancePolls[0]
-          : null;
-      const codeStatus = getCodeStatus(latestPoll);
-      const hasCode = latestPoll !== null;
-
-      // Determine action button
-      let actionButton;
-      if (hasCode) {
-        actionButton = `
-        <button 
-          class="btn btn--primary btn--small"
-          hx-get="/attendance/course/session/${session.id}/records"
-          hx-target="#main-content"
-          hx-swap="outerHTML"
-          hx-push-url="true"
-        >
-          View Records
-        </button>
-      `;
-      } else {
-        actionButton = `
-        <button 
-          class="btn btn--primary btn--small"
-          hx-get="/attendance/poll/form?sessionId=${session.id}"
-          hx-target="#attendance-modal-container"
-          hx-swap="beforeend"
-        >
-          Generate Code
-        </button>
-      `;
+    <script>
+      function switchAttendanceView(role) {
+        document.querySelectorAll('.btn-role').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
+        
+        if (role === 'professor') {
+          document.querySelector('button[onclick*="professor"]').classList.add('active');
+          document.getElementById('view-professor').style.display = 'block';
+        } else {
+          document.querySelector('button[onclick*="student"]').classList.add('active');
+          document.getElementById('view-student').style.display = 'block';
+        }
       }
 
-      // Code status cell (no auto-refresh)
-      const statusCell = hasCode
-        ? `
-        <td class="attendance-sessions-table__cell">
-          <span class="attendance-code-status attendance-code-status--${codeStatus.status}">
-            ${escapeHtml(codeStatus.text)}
-          </span>
-        </td>
-      `
-        : `
-        <td class="attendance-sessions-table__cell">—</td>
-      `;
+      function toggleCourse(courseId) {
+        const content = document.getElementById('content-' + courseId);
+        const icon = document.getElementById('icon-' + courseId);
+        
+        if (content.style.display === 'none') {
+          content.style.display = 'block';
+          icon.className = 'fa-solid fa-chevron-down';
+        } else {
+          content.style.display = 'none';
+          icon.className = 'fa-solid fa-chevron-right';
+        }
+      }
 
-      return `
-      <tr class="attendance-sessions-table__row">
-        <td class="attendance-sessions-table__cell">${escapeHtml(session.name)}</td>
-        <td class="attendance-sessions-table__cell">${formatSessionTime(session)}</td>
-        <td class="attendance-sessions-table__cell">
-          ${hasCode ? escapeHtml(latestPoll.code) : "—"}
-        </td>
-        ${statusCell}
-        <td class="attendance-sessions-table__cell attendance-sessions-table__cell--actions">
-          ${actionButton}
-        </td>
-      </tr>
-    `;
-    })
-    .join("");
+      function submitAttendanceCode() {
+        const input = document.getElementById('attendance-code-input');
+        if (input.value.replace(/\\s/g, '').length < 8) {
+          showToast('Invalid Code', 'Please enter a valid 8-digit code.', 'error');
+          return;
+        }
+        
+        // TODO: Backend integration - submit code via HTMX
+        document.getElementById('student-input-form').style.opacity = '0.5';
+        setTimeout(() => {
+          document.getElementById('student-input-form').style.display = 'none';
+          document.getElementById('student-success-msg').style.display = 'block';
+          showToast('Success', 'Attendance marked successfully!', 'success');
+        }, 800);
+      }
 
-  const sessionsTable =
-    sessions.length > 0
-      ? `
-    <div class="attendance-sessions-table__container">
-      <table class="attendance-sessions-table" role="table">
-        <thead>
-          <tr>
-            <th class="attendance-sessions-table__header">Session Name</th>
-            <th class="attendance-sessions-table__header">Time</th>
-            <th class="attendance-sessions-table__header">Attendance Code</th>
-            <th class="attendance-sessions-table__header">Code Status</th>
-            <th class="attendance-sessions-table__header">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${sessionRows}
-        </tbody>
-      </table>
-    </div>
-  `
-      : `
-    <div class="attendance-course-item__empty">
-      <p>No sessions yet. Create a session to start taking attendance.</p>
-    </div>
+      function openLivePoll(code) {
+        document.querySelector('.live-code').textContent = code;
+        openModal('modal-live-poll');
+      }
+    </script>
   `;
+}
+
+/**
+ * Render Professor View
+ */
+function renderProfessorView(courses) {
+  // Mock courses if none provided
+  const displayCourses =
+    courses.length > 0 ?
+    courses : [{
+        id: "cse210",
+        name: "CSE 210: Software Engineering",
+        quarter: "FA25",
+        sessions: [{
+            id: "s1",
+            name: "Week 5: Design Patterns",
+            date: "Nov 23, 2025",
+            time: "10:00 AM",
+            code: "8392 1045",
+            status: "active",
+          },
+          {
+            id: "s2",
+            name: "Week 4: Architecture",
+            date: "Nov 16, 2025",
+            time: "10:00 AM",
+            code: "9921 0034",
+            status: "expired",
+          },
+        ],
+      },
+      {
+        id: "cse110",
+        name: "CSE 110: Software Engineering (Undergrad)",
+        quarter: "FA25",
+        sessions: [],
+      },
+    ];
 
   return `
-    <div class="attendance-course-item" id="course-item-${course.id}">
-      <button 
-        class="attendance-course-item__header"
-        type="button"
-        aria-expanded="${isExpanded ? "true" : "false"}"
-        aria-controls="${courseId}-content"
-        hx-get="/attendance/course/${course.id}/toggle?expanded=${isExpanded ? "true" : "false"}"
-        hx-target="#course-item-${course.id}"
-        hx-swap="outerHTML"
-      >
-        <span class="attendance-course-item__name">${escapeHtml(course.name)}</span>
-        <span class="attendance-course-item__count">${sessions.length} session${sessions.length !== 1 ? "s" : ""}</span>
-        <span class="attendance-course-item__icon" aria-hidden="true">${isExpanded ? "▼" : "▶"}</span>
-      </button>
-      <div 
-        class="attendance-course-item__content ${isExpanded ? "attendance-course-item__content--expanded" : ""}"
-        id="${courseId}-content"
-        aria-hidden="${!isExpanded ? "true" : "false"}"
-      >
-        ${sessionsTable}
-        <div class="attendance-course-item__actions">
-          ${createSessionButton(course.id)}
-        <button 
-          class="btn btn--secondary"
-          hx-get="/attendance/course/${course.id}/records"
-          hx-target="#main-content"
-          hx-swap="outerHTML"
-          hx-push-url="true"
-          aria-label="View attendance for all sessions in this course"
-        >
-          View Attendance
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+      <h1 style="font-size: var(--text-2xl); color: var(--color-brand-deep); font-weight: bold;">
+        Course Attendance
+      </h1>
+    </div>
+
+    ${displayCourses.map((course, idx) => renderCourseCard(course, idx === 0)).join("")}
+  `;
+}
+
+/**
+ * Render a single course card with sessions
+ */
+function renderCourseCard(course, expanded = true) {
+  // Check if course has any active sessions
+  const hasActiveSessions = course.sessions && course.sessions.some((s) => s.status === "active");
+
+  return `
+    <div class="bento-card span-4" style="margin-bottom: var(--space-6);">
+      <div class="card-header" onclick="toggleCourse('${course.id}')" style="cursor: pointer;">
+        <div class="card-title">
+          <i class="fa-solid fa-chevron-${expanded ? "down" : "right"}" id="icon-${course.id}"></i>
+          ${escapeHtml(course.name)}
+          ${course.quarter ? `<span class="badge badge-soft">${escapeHtml(course.quarter)}</span>` : ""}
+          ${hasActiveSessions ? '<span class="badge badge-active">LIVE</span>' : ""}
+        </div>
+        <div class="card-action">
+          <button class="btn btn--primary btn--small" onclick="event.stopPropagation(); openModal('modal-create-session')">
+            + New Session
+          </button>
+        </div>
+      </div>
+
+      <div id="content-${course.id}" class="course-content" style="display: ${expanded ? "block" : "none"};">
+        ${course.sessions?.length > 0 ? renderSessionsTable(course.sessions) : renderEmptySessions()}
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render sessions table
+ */
+function renderSessionsTable(sessions) {
+  return `
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Session Name</th>
+          <th>Date / Time</th>
+          <th>Code</th>
+          <th>Status</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sessions.map((s) => renderSessionRow(s)).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+/**
+ * Render a single session row
+ */
+function renderSessionRow(session) {
+  const statusClass = session.status === "active" ? "status-active" : "status-expired";
+  const statusLabel = session.status === "active" ? "Active" : "Expired";
+
+  return `
+    <tr>
+      <td><strong>${escapeHtml(session.name)}</strong></td>
+      <td>${escapeHtml(session.date)} • ${escapeHtml(session.time)}</td>
+      <td class="font-mono">${escapeHtml(session.code)}</td>
+      <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
+      <td class="actions-cell">
+        ${
+          session.status === "active"
+            ? `<button class="btn-icon" title="View Live Poll" onclick="openLivePoll('${escapeHtml(session.code)}')">
+                <i class="fa-solid fa-tower-broadcast"></i>
+              </button>`
+            : ""
+        }
+        <button class="btn-icon" title="View Records">
+          <i class="fa-solid fa-list"></i>
         </button>
+      </td>
+    </tr>
+  `;
+}
+
+/**
+ * Render empty sessions message
+ */
+function renderEmptySessions() {
+  return `
+    <div style="padding: var(--space-4); text-align: center; color: var(--color-text-muted);">
+      No active sessions. Create one to start taking attendance.
+    </div>
+  `;
+}
+
+/**
+ * Render Student View
+ */
+function renderStudentView(history) {
+  // Mock history if none provided
+  const displayHistory =
+    history.length > 0 ?
+    history : [{
+        course: "CSE 210",
+        rate: "92%",
+        records: [{
+            date: "Nov 16",
+            session: "Week 4: Architecture",
+            time: "10:05 AM",
+            status: "present"
+          },
+          {
+            date: "Nov 09",
+            session: "Week 3: Agile Methods",
+            time: "10:02 AM",
+            status: "present"
+          },
+        ],
+      },
+      {
+        course: "CSE 202",
+        rate: "85%",
+        records: [{
+          date: "Nov 22",
+          session: "Dynamic Programming",
+          time: "--:--",
+          status: "absent"
+        }],
+      },
+    ];
+
+  return `
+    <div class="attendance-student-grid">
+      <!-- Code Input Card -->
+      <div class="bento-card span-2">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-qrcode"></i> Mark Attendance</div>
+        </div>
+        <div class="card-content" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+          <div id="student-input-form">
+            <p style="color: var(--color-text-muted); margin-bottom: var(--space-4);">
+              Enter the 8-digit code provided by your professor.
+            </p>
+            <div class="input-code-wrapper">
+              <input type="text" class="big-input" placeholder="0000 0000" maxlength="9" id="attendance-code-input">
+            </div>
+            <button class="btn btn--primary btn--full" onclick="submitAttendanceCode()">Submit Code</button>
+          </div>
+
+          <!-- Success State (Hidden) -->
+          <div id="student-success-msg" style="display: none; text-align: center; animation: fadeIn 0.5s;">
+            <div class="success-icon-lg"><i class="fa-solid fa-check"></i></div>
+            <h3 style="color: var(--color-brand-deep);">You're Checked In!</h3>
+            <p class="text-muted">Session marked successfully</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Card -->
+      <div class="bento-card span-2 row-span-2">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
+        </div>
+        <div class="history-list">
+          ${displayHistory.map((group) => renderHistoryGroup(group)).join("")}
         </div>
       </div>
     </div>
   `;
 }
+
+/**
+ * Render history group
+ */
+function renderHistoryGroup(group) {
+  return `
+    <div class="history-group">
+      <div class="history-group-header">${escapeHtml(group.course)} (${escapeHtml(group.rate)})</div>
+      ${group.records.map((r) => renderHistoryItem(r)).join("")}
+    </div>
+  `;
+}
+
+/**
+ * Render history item
+ */
+function renderHistoryItem(record) {
+  const statusClass = record.status === "present" ? "status-present" : "status-absent";
+  const statusLabel = record.status === "present" ? "Present" : "Absent";
+
+  return `
+    <div class="history-item">
+      <div class="history-date">${escapeHtml(record.date)}</div>
+      <div class="history-details">
+        <div class="history-title">${escapeHtml(record.session)}</div>
+        <div class="history-time">${escapeHtml(record.time)}</div>
+      </div>
+      <div class="status-badge ${statusClass}">${statusLabel}</div>
+    </div>
+  `;
+}
+
+/**
+ * Render Create Session Modal
+ */
+function renderCreateSessionModal() {
+  return `
+    <div id="modal-create-session" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Create Session</h3>
+          <button class="btn-close" onclick="closeModal('modal-create-session')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <form 
+          hx-post="/attendance/sessions"
+          hx-target="#main-content"
+          hx-swap="innerHTML"
+          onsubmit="closeModal('modal-create-session')"
+        >
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Session Name</label>
+              <input type="text" class="form-input" name="name" placeholder="e.g. Week 6: Testing Strategies" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-input" name="date" required>
+            </div>
+            <div class="form-group" style="display: flex; gap: 12px;">
+              <div style="flex: 1;">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-input" name="startTime" required>
+              </div>
+              <div style="flex: 1;">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-input" name="endTime" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-session')">Cancel</button>
+            <button type="submit" class="btn btn--primary">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render Live Poll Modal
+ */
+function renderLivePollModal() {
+  return `
+    <div id="modal-live-poll" class="modal-overlay live-poll-overlay">
+      <div class="live-poll-card">
+        <div class="live-header">
+          <span class="live-badge">
+            <div class="pulsing-dot"></div> LIVE SESSION
+          </span>
+          <button class="btn-close-white" onclick="closeModal('modal-live-poll')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+
+        <div class="live-code-container">
+          <div class="live-code">---- ----</div>
+          <div class="live-timer-ring">
+            <svg class="progress-ring" width="120" height="120">
+              <circle class="progress-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="52" cx="60" cy="60" />
+            </svg>
+            <span class="live-time">05:00</span>
+          </div>
+        </div>
+
+        <div class="live-stats-row">
+          <div class="stat-box">
+            <div class="stat-val">0</div>
+            <div class="stat-lbl">Present</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val">0%</div>
+            <div class="stat-lbl">Attendance Rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Export for backward compatibility with existing attendance controller
+export {
+  renderProfessorView as displayProfessorAttendancePage,
+  renderStudentView as displayStudentAttendanceGrouped,
+};

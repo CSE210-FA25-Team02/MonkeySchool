@@ -1,5 +1,5 @@
 # Dockerfile for MonkeySchool Node.js Backend
-FROM node:24
+FROM node:22
 
 # Set working directory
 WORKDIR /usr/src/app

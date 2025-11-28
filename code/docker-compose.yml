@@ -38,6 +38,7 @@ services:
     # Do not mount local code to avoid overwriting entrypoint script
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     command: ["node", "src/server.js"]
 
 volumes:
