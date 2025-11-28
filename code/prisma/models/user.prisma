@@ -18,7 +18,9 @@ model User {
 
   classRoles      ClassRole[]
   groupRoles      GroupRole[]
-  groupSupervises GroupSupervisor[] // NEW
+  groupSupervises GroupSupervisor[]
+  groupsCreated   Group[]           @relation("GroupCreator")
+  groupsLed       Group[]           @relation("GroupLeader")
 
   activities      Activity[]   
   attendancePolls   AttendancePoll[]   @relation("PollCreator")

@@ -1,16 +1,28 @@
 model Group {
-  id      String    @id @default(cuid())
-  name    String
-  logoUrl String?
-  mantra  String?
-  github  String?
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  notes       String?   // Internal notes (visible to TAs and Team Leaders)
+  logoUrl     String?
+  mantra      String?
+  github      String?
 
-  classId String
-  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId   String
+  class     Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  createdById String?
+  createdBy   User?   @relation("GroupCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  leaderId  String?
+  leader    User?   @relation("GroupLeader", fields: [leaderId], references: [id], onDelete: SetNull)
 
   members     GroupRole[]
   supervisors GroupSupervisor[] // NEW
   events Event[] // Events created for this group
+  supervisors GroupSupervisor[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("groups")
 }
