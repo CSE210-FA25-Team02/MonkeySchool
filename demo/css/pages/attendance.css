@@ -24,7 +24,7 @@
 
 .btn-role.active {
     background: var(--color-brand-deep);
-    color: white;
+  color: white;
     box-shadow: var(--shadow-sm);
 }
 
@@ -44,7 +44,7 @@
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: var(--text-sm);
+  font-size: var(--text-sm);
 }
 
 .data-table th {
@@ -67,7 +67,7 @@
 
 .badge-soft {
     background: var(--color-brand-light);
-    color: var(--color-brand-deep);
+  color: var(--color-brand-deep);
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 10px;
@@ -78,7 +78,7 @@
     padding: 4px 10px;
     border-radius: var(--radius-full);
     font-size: 11px;
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .status-active {
@@ -92,7 +92,7 @@
 }
 
 .actions-cell {
-    display: flex;
+  display: flex;
     justify-content: flex-end;
     gap: 8px;
 }
@@ -102,7 +102,7 @@
     height: 28px;
     border-radius: 4px;
     color: var(--color-text-muted);
-    display: flex;
+  display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
@@ -110,7 +110,7 @@
 
 .btn-icon:hover {
     background: var(--color-brand-light);
-    color: var(--color-brand-deep);
+  color: var(--color-brand-deep);
 }
 
 .font-mono {
@@ -128,8 +128,8 @@
 }
 
 .input-code-wrapper {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
     margin: var(--space-6) 0;
 }
 
@@ -140,21 +140,21 @@
     padding: 16px;
     letter-spacing: 8px;
     border: 2px solid var(--color-brand-light);
-    border-radius: var(--radius-md);
-    font-family: var(--font-mono);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
     color: var(--color-brand-deep);
-    font-weight: bold;
+  font-weight: bold;
     transition: all 0.2s;
 }
 
 .big-input:focus {
-    outline: none;
-    border-color: var(--color-accent-gold);
-    box-shadow: 0 0 0 4px rgba(242, 169, 59, 0.1);
+  outline: none;
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 0 4px rgba(242, 169, 59, 0.1);
 }
 
 .btn--full {
-    width: 100%;
+  width: 100%;
     padding: 12px;
 }
 
@@ -209,7 +209,7 @@
 
 .status-badge {
     font-size: 10px;
-    font-weight: bold;
+  font-weight: bold;
     padding: 2px 6px;
     border-radius: 4px;
 }
@@ -235,7 +235,7 @@
 .live-poll-card {
     background: transparent;
     color: white;
-    text-align: center;
+  text-align: center;
     width: 100%;
     max-width: 600px;
 }
@@ -252,8 +252,8 @@
     border-radius: var(--radius-full);
     font-weight: bold;
     font-size: 12px;
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
     gap: 8px;
 }
 
