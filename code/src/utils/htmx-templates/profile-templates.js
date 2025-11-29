@@ -120,7 +120,10 @@ export function renderProfilePage(user, activity = []) {
 }
 
 /**
- * Render activity timeline
+ * Render activity timeline on the profile page.
+ *
+ * @param {Array} activity - Optional list of activity items
+ * @returns {string} HTML string
  */
 function renderActivityTimeline(activity) {
   // Mock activity if none provided
@@ -175,7 +178,10 @@ function renderActivityTimeline(activity) {
 }
 
 /**
- * Render Edit Profile Modal
+ * Render Edit Profile modal for the current user.
+ *
+ * @param {Object} user - User object
+ * @returns {string} HTML string
  */
 function renderEditProfileModal(user) {
   const displayName = user?.name || "";

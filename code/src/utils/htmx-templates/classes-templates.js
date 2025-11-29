@@ -6,11 +6,13 @@
 import { escapeHtml } from "../html-templates.js";
 
 /**
- * Render the Class Detail Page (Tabs + Content)
- * Matches demo/class.html
+ * Render the Class Detail Page (Tabs + Content).
+ * Matches demo/class.html layout.
+ *
  * @param {Object} classInfo - Class data
- * @param {string} activeTab - Currently active tab (directory, attendance, groups, settings)
- * @param {string} content - HTML content for the active tab
+ * @param {string} [activeTab='directory'] - Currently active tab
+ * @param {string} [content=''] - HTML content for the active tab
+ * @returns {string} HTML string
  */
 export function renderClassDetail(
   classInfo,
@@ -73,6 +75,7 @@ export function renderClassDetail(
  * @param {Object} data
  * @returns {string} HTML
  */
+// eslint-disable-next-line no-unused-vars
 export function renderClassDirectory(data) {
   // Mock implementation of Directory Tab content (as seen in demo/class.html)
   return `
@@ -206,7 +209,10 @@ export function renderClassList(classes) {
 }
 
 /**
- * Create Class Modal
+ * Create Class modal markup used on the class list page.
+ *
+ * @param {Array} [upcomingQuarters=[]] - Optional list of upcoming quarter codes
+ * @returns {string} HTML string
  */
 export function createClassForm(upcomingQuarters = []) {
   const options = upcomingQuarters.length

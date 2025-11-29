@@ -46,7 +46,13 @@ export function renderAvailabilityPage(user) {
     "5:00 PM",
   ];
 
-  // Simple dummy pattern: available in afternoons Mon–Thu
+  /**
+   * Dummy availability pattern used for initial grid state.
+   *
+   * @param {number} dayIndex - Index of day (0-6, Sunday–Saturday)
+   * @param {number} slotIndex - Index of time slot in the grid
+   * @returns {boolean} True if this cell should be marked available
+   */
   const isInitiallyAvailable = (dayIndex, slotIndex) =>
     dayIndex >= 1 && dayIndex <= 4 && slotIndex >= 8 && slotIndex <= 15;
 

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
       newContainer.id = "toast-container";
       newContainer.className = "toast-container";
       document.body.appendChild(newContainer);
-      return showToast(title, message, type);
+      return window.showToast(title, message, type);
     }
 
     const toast = document.createElement("div");
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("htmx:responseError", (evt) => {
     const errorMsg =
       evt.detail.xhr.responseText || "An unexpected error occurred";
-    showToast("Error", errorMsg, "error");
+    window.showToast("Error", errorMsg, "error");
   });
 
   // Handle HTMX redirects if needed manually (usually HX-Redirect handles it)

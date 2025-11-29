@@ -13,9 +13,9 @@ import {
   createErrorMessage,
   createBaseLayout,
 } from "../utils/html-templates.js";
-import path from "path";
-import { fileURLToPath } from "url";
-import { readFile } from "fs/promises";
+// import path from "path";
+// import { fileURLToPath } from "url";
+// import { readFile } from "fs/promises";
 
 /**
  * Handle Prisma-specific errors
@@ -115,8 +115,8 @@ export function errorHandler(err, req, res) {
  */
 export async function notFoundHandler(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
+  // const __filename = fileURLToPath(import.meta.url);
+  // const __dirname = path.dirname(__filename);
 
   // HTML structure that matches the main content area structure
   // Includes container wrapper to match the layout of other pages

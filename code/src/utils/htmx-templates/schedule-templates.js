@@ -9,22 +9,14 @@
 import { escapeHtml } from "../html-templates.js";
 
 /**
- * Generate dummy events for a class
+ * Generate dummy events for a class.
+ *
  * @param {string} classId - Class ID
  * @param {Date} startDate - Start of the week/day
  * @returns {Array} Array of event objects
  */
 function generateDummyEvents(classId, startDate) {
   const events = [];
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
 
   // Monday - Office Hours
   const monday = new Date(startDate);
@@ -126,7 +118,10 @@ function generateDummyEvents(classId, startDate) {
 }
 
 /**
- * Format time for display
+ * Format time for display in the calendar.
+ *
+ * @param {Date} date - Date object to format
+ * @returns {string} Formatted time string
  */
 function formatTime(date) {
   return date.toLocaleTimeString("en-US", {
@@ -137,7 +132,10 @@ function formatTime(date) {
 }
 
 /**
- * Get event type styling
+ * Get CSS class name for a given event type.
+ *
+ * @param {string} type - Event type identifier
+ * @returns {string} CSS class name
  */
 function getEventTypeClass(type) {
   const map = {
@@ -150,7 +148,10 @@ function getEventTypeClass(type) {
 }
 
 /**
- * Get event type icon
+ * Get Font Awesome icon class for a given event type.
+ *
+ * @param {string} type - Event type identifier
+ * @returns {string} Icon class name
  */
 function getEventTypeIcon(type) {
   const map = {
@@ -413,7 +414,10 @@ export function renderSchedulePage(
 }
 
 /**
- * Render create event modal
+ * Render create-event modal for a specific class.
+ *
+ * @param {string} classId - ID of the class the event belongs to
+ * @returns {string} HTML string
  */
 function renderCreateEventModal(classId) {
   return `
@@ -429,6 +433,7 @@ function renderCreateEventModal(classId) {
           onsubmit="event.preventDefault(); saveEventDummy(); closeModal('modal-create-event');"
         >
           <div class="modal-body">
+            <input type="hidden" name="classId" value="${escapeHtml(classId)}">
             <div class="form-group">
               <label class="form-label">Event Title</label>
               <input type="text" name="title" class="form-input" placeholder="e.g. Lecture 1" required>

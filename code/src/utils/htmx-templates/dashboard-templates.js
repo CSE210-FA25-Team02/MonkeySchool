@@ -88,6 +88,12 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
   `;
 }
 
+/**
+ * Render upcoming events list on the dashboard.
+ *
+ * @param {Array} events - List of upcoming event objects
+ * @returns {string} HTML string
+ */
 function renderUpcomingEvents(events) {
   if (!events || events.length === 0) {
     return `<div style="text-align: center; padding: 16px; color: var(--color-text-muted);">No upcoming events</div>`;
@@ -134,6 +140,12 @@ function renderUpcomingEvents(events) {
     .join("");
 }
 
+/**
+ * Render recent classes list on the dashboard.
+ *
+ * @param {Array} classes - List of class summary objects
+ * @returns {string} HTML string
+ */
 function renderRecentClassesList(classes) {
   if (!classes || classes.length === 0) {
     return `
@@ -164,6 +176,11 @@ function renderRecentClassesList(classes) {
     .join("");
 }
 
+/**
+ * Render the dashboard-level Create Class modal.
+ *
+ * @returns {string} HTML string
+ */
 export function createCreateClassModal() {
   return `
     <div id="modal-create-class" class="modal-overlay">
@@ -201,6 +218,11 @@ export function createCreateClassModal() {
     `;
 }
 
+/**
+ * Render the Work Journal (Quick Journal) modal.
+ *
+ * @returns {string} HTML string
+ */
 export function createQuickJournalModal() {
   return `
     <div id="modal-quick-journal" class="modal-overlay">

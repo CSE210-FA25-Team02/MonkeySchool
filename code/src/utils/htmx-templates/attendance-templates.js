@@ -97,7 +97,62 @@ export function renderAttendancePage(user, courses = [], studentHistory = []) {
 }
 
 /**
- * Render Professor View
+ * Create Start Attendance modal HTML for a given session.
+ * Pure frontend/dummy implementation used for HTMX.
+ *
+ * @param {string} sessionId - Target session ID
+ * @param {number} durationMinutes - Poll duration in minutes
+ * @returns {string} HTML string for the start-attendance modal
+ */
+export function createStartAttendanceModal(sessionId, durationMinutes) {
+  return `
+    <div id="modal-start-attendance" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Start Attendance</h3>
+          <button class="btn-close" onclick="closeModal('modal-start-attendance')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <form 
+          hx-post="/attendance/polls"
+          hx-target="#main-content"
+          hx-swap="innerHTML"
+          onsubmit="closeModal('modal-start-attendance')"
+        >
+          <div class="modal-body">
+            <input type="hidden" name="sessionId" value="${escapeHtml(sessionId)}">
+            <div class="form-group">
+              <label class="form-label">Duration (minutes)</label>
+              <input 
+                type="number" 
+                class="form-input" 
+                name="durationMinutes" 
+                min="1" 
+                max="1440" 
+                value="${durationMinutes}"
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn--secondary" onclick="closeModal('modal-start-attendance')">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn--primary">
+              Start Attendance
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render professor attendance overview with course list.
+ *
+ * @param {Array} courses - List of course objects
+ * @returns {string} HTML string
  */
 function renderProfessorView(courses) {
   // Mock courses if none provided
@@ -148,7 +203,11 @@ function renderProfessorView(courses) {
 }
 
 /**
- * Render a single course card with sessions
+ * Render a single course card and its sessions table.
+ *
+ * @param {Object} course - Course data including sessions
+ * @param {boolean} [expanded=true] - Whether course is initially expanded
+ * @returns {string} HTML string
  */
 function renderCourseCard(course, expanded = true) {
   // Check if course has any active sessions
@@ -179,7 +238,10 @@ function renderCourseCard(course, expanded = true) {
 }
 
 /**
- * Render sessions table
+ * Render sessions table for a single course.
+ *
+ * @param {Array} sessions - List of session objects
+ * @returns {string} HTML string
  */
 function renderSessionsTable(sessions) {
   return `
@@ -201,7 +263,10 @@ function renderSessionsTable(sessions) {
 }
 
 /**
- * Render a single session row
+ * Render a single session row within the sessions table.
+ *
+ * @param {Object} session - Session row data
+ * @returns {string} HTML string
  */
 function renderSessionRow(session) {
   const statusClass =
@@ -231,7 +296,9 @@ function renderSessionRow(session) {
 }
 
 /**
- * Render empty sessions message
+ * Render empty state when no sessions exist for a course.
+ *
+ * @returns {string} HTML string
  */
 function renderEmptySessions() {
   return `
@@ -242,7 +309,10 @@ function renderEmptySessions() {
 }
 
 /**
- * Render Student View
+ * Render student attendance history view.
+ *
+ * @param {Array} history - Grouped attendance history
+ * @returns {string} HTML string
  */
 function renderStudentView(history) {
   // Mock history if none provided
@@ -323,7 +393,10 @@ function renderStudentView(history) {
 }
 
 /**
- * Render history group
+ * Render a grouped history block for a single course.
+ *
+ * @param {Object} group - History group (course + records)
+ * @returns {string} HTML string
  */
 function renderHistoryGroup(group) {
   return `
@@ -335,7 +408,10 @@ function renderHistoryGroup(group) {
 }
 
 /**
- * Render history item
+ * Render a single history record row.
+ *
+ * @param {Object} record - Individual attendance record
+ * @returns {string} HTML string
  */
 function renderHistoryItem(record) {
   const statusClass =
@@ -355,7 +431,9 @@ function renderHistoryItem(record) {
 }
 
 /**
- * Render Create Session Modal
+ * Render modal for creating a new attendance session.
+ *
+ * @returns {string} HTML string
  */
 function renderCreateSessionModal() {
   return `
@@ -404,7 +482,9 @@ function renderCreateSessionModal() {
 }
 
 /**
- * Render Live Poll Modal
+ * Render live poll modal used during active attendance session.
+ *
+ * @returns {string} HTML string
  */
 function renderLivePollModal() {
   return `
