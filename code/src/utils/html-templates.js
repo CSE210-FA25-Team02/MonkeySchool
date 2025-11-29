@@ -67,6 +67,7 @@ export function createBaseLayout(title, content, options = {}) {
     <link rel="stylesheet" href="/css/pages/class-list.css">
     <link rel="stylesheet" href="/css/pages/profile.css">
     <link rel="stylesheet" href="/css/pages/availability.css">
+    <link rel="stylesheet" href="/css/pages/schedule.css">
     <!-- Legacy support for specific pages until migrated -->
     <link rel="stylesheet" href="/css/pages/attendance.css">
 

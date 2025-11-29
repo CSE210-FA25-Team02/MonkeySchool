@@ -157,20 +157,25 @@ export function renderClassList(classes) {
         const bgStyle = c.color || gradients[Math.floor(Math.random() * gradients.length)];
         
         return `
-        <a href="/classes/${c.id}" class="course-card">
-            <div class="course-header" style="background: ${bgStyle};">
-                <span class="course-badge">${escapeHtml(c.quarter || 'Current')}</span>
-                ${c.isFavorite ? '<i class="fa-solid fa-star" style="color: rgba(255,255,255,0.5);"></i>' : ''}
-            </div>
-            <div class="course-body">
-                <div class="course-code">${escapeHtml(c.code || c.name.split(':')[0] || 'CLASS')}</div>
-                <div class="course-title">${escapeHtml(c.name)}</div>
-                <div class="course-meta">
-                    <div class="meta-item"><i class="fa-solid fa-users"></i> ${c.studentCount || 0}</div>
-                    <div class="meta-item"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(c.location || 'Online')}</div>
+        <div class="course-card-wrapper">
+            <a href="/classes/${c.id}" class="course-card">
+                <div class="course-header" style="background: ${bgStyle};">
+                    <span class="course-badge">${escapeHtml(c.quarter || 'Current')}</span>
+                    ${c.isFavorite ? '<i class="fa-solid fa-star" style="color: rgba(255,255,255,0.5);"></i>' : ''}
                 </div>
-            </div>
-        </a>
+                <div class="course-body">
+                    <div class="course-code">${escapeHtml(c.code || c.name.split(':')[0] || 'CLASS')}</div>
+                    <div class="course-title">${escapeHtml(c.name)}</div>
+                    <div class="course-meta">
+                        <div class="meta-item"><i class="fa-solid fa-users"></i> ${c.studentCount || 0}</div>
+                        <div class="meta-item"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(c.location || 'Online')}</div>
+                    </div>
+                </div>
+            </a>
+            <a href="/classes/${c.id}/schedule" class="course-calendar-link">
+                <i class="fa-regular fa-calendar"></i> View Calendar
+            </a>
+        </div>
         `;
     }).join('');
 
