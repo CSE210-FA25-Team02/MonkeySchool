@@ -48,13 +48,16 @@ defineFeature(feature, (test) => {
       });
     });
 
-    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
-      context.session = await courseSessionService.createCourseSession({
-        classId: context.klass.id,
-        name: sessionName,
-        date: new Date(),
-      });
-    });
+    and(
+      /^a course session "(.*)" exists for the class$/,
+      async (sessionName) => {
+        context.session = await courseSessionService.createCourseSession({
+          classId: context.klass.id,
+          name: sessionName,
+          date: new Date(),
+        });
+      },
+    );
 
     when(
       /^the professor creates an attendance poll for the session with duration (\d+) minutes$/,
@@ -130,13 +133,16 @@ defineFeature(feature, (test) => {
       });
     });
 
-    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
-      context.session = await courseSessionService.createCourseSession({
-        classId: context.klass.id,
-        name: sessionName,
-        date: new Date(),
-      });
-    });
+    and(
+      /^a course session "(.*)" exists for the class$/,
+      async (sessionName) => {
+        context.session = await courseSessionService.createCourseSession({
+          classId: context.klass.id,
+          name: sessionName,
+          date: new Date(),
+        });
+      },
+    );
 
     and("an active attendance poll exists for the session", async () => {
       context.poll = await attendancePollService.createAttendancePoll(
@@ -206,13 +212,16 @@ defineFeature(feature, (test) => {
       });
     });
 
-    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
-      context.session = await courseSessionService.createCourseSession({
-        classId: context.klass.id,
-        name: sessionName,
-        date: new Date(),
-      });
-    });
+    and(
+      /^a course session "(.*)" exists for the class$/,
+      async (sessionName) => {
+        context.session = await courseSessionService.createCourseSession({
+          classId: context.klass.id,
+          name: sessionName,
+          date: new Date(),
+        });
+      },
+    );
 
     and("an expired attendance poll exists for the session", async () => {
       // Create a poll that's already expired
@@ -232,17 +241,20 @@ defineFeature(feature, (test) => {
     });
 
     when("the student submits the expired attendance code", async () => {
-      const token =  generateToken(context.student);
+      const token = generateToken(context.student);
       context.response = await request
         .post("/attendance/submit")
         .set("Cookie", `auth_token=${token}`)
         .send({ code: context.poll.code });
     });
 
-    then(/^the submission should be rejected with "(.*)" error$/, (errorMsg) => {
-      expect(context.response.status).toBe(410); // Gone
-      expect(context.response.body.error).toContain(errorMsg);
-    });
+    then(
+      /^the submission should be rejected with "(.*)" error$/,
+      (errorMsg) => {
+        expect(context.response.status).toBe(410); // Gone
+        expect(context.response.body.error).toContain(errorMsg);
+      },
+    );
   });
 
   test("Student submits duplicate attendance", ({ given, and, when, then }) => {
@@ -278,13 +290,16 @@ defineFeature(feature, (test) => {
       });
     });
 
-    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
-      context.session = await courseSessionService.createCourseSession({
-        classId: context.klass.id,
-        name: sessionName,
-        date: new Date(),
-      });
-    });
+    and(
+      /^a course session "(.*)" exists for the class$/,
+      async (sessionName) => {
+        context.session = await courseSessionService.createCourseSession({
+          classId: context.klass.id,
+          name: sessionName,
+          date: new Date(),
+        });
+      },
+    );
 
     and("an active attendance poll exists for the session", async () => {
       context.poll = await attendancePollService.createAttendancePoll(
@@ -294,12 +309,15 @@ defineFeature(feature, (test) => {
       );
     });
 
-    and("the student has already marked attendance for the session", async () => {
-      await attendanceRecordService.submitAttendance(
-        context.poll.code,
-        context.student.id,
-      );
-    });
+    and(
+      "the student has already marked attendance for the session",
+      async () => {
+        await attendanceRecordService.submitAttendance(
+          context.poll.code,
+          context.student.id,
+        );
+      },
+    );
 
     when("the student submits the attendance code again", async () => {
       const token = generateToken(context.student);
@@ -309,10 +327,13 @@ defineFeature(feature, (test) => {
         .send({ code: context.poll.code });
     });
 
-    then(/^the submission should be rejected with "(.*)" error$/, (errorMsg) => {
-      expect(context.response.status).toBe(409); // Conflict
-      expect(context.response.body.error).toContain(errorMsg);
-    });
+    then(
+      /^the submission should be rejected with "(.*)" error$/,
+      (errorMsg) => {
+        expect(context.response.status).toBe(409); // Conflict
+        expect(context.response.body.error).toContain(errorMsg);
+      },
+    );
   });
 
   test("Unenrolled student cannot submit attendance", ({
@@ -349,13 +370,16 @@ defineFeature(feature, (test) => {
       // Do nothing
     });
 
-    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
-      context.session = await courseSessionService.createCourseSession({
-        classId: context.klass.id,
-        name: sessionName,
-        date: new Date(),
-      });
-    });
+    and(
+      /^a course session "(.*)" exists for the class$/,
+      async (sessionName) => {
+        context.session = await courseSessionService.createCourseSession({
+          classId: context.klass.id,
+          name: sessionName,
+          date: new Date(),
+        });
+      },
+    );
 
     and("an active attendance poll exists for the session", async () => {
       context.poll = await attendancePollService.createAttendancePoll(
@@ -373,10 +397,13 @@ defineFeature(feature, (test) => {
         .send({ code: context.poll.code });
     });
 
-    then(/^the submission should be rejected with "(.*)" error$/, (errorMsg) => {
-      expect(context.response.status).toBe(403); // Forbidden
-      expect(context.response.body.error).toContain(errorMsg);
-    });
+    then(
+      /^the submission should be rejected with "(.*)" error$/,
+      (errorMsg) => {
+        expect(context.response.status).toBe(403); // Forbidden
+        expect(context.response.body.error).toContain(errorMsg);
+      },
+    );
   });
 
   test("Professor views session attendance", ({ given, and, when, then }) => {
@@ -413,13 +440,16 @@ defineFeature(feature, (test) => {
       });
     });
 
-    and(/^a course session "(.*)" exists for the class$/, async (sessionName) => {
-      context.session = await courseSessionService.createCourseSession({
-        classId: context.klass.id,
-        name: sessionName,
-        date: new Date(),
-      });
-    });
+    and(
+      /^a course session "(.*)" exists for the class$/,
+      async (sessionName) => {
+        context.session = await courseSessionService.createCourseSession({
+          classId: context.klass.id,
+          name: sessionName,
+          date: new Date(),
+        });
+      },
+    );
 
     and("attendance records exist for the session", async () => {
       context.poll = await attendancePollService.createAttendancePoll(

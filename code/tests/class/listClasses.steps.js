@@ -46,7 +46,7 @@ defineFeature(feature, (test) => {
           name: className,
           role,
         });
-      }
+      },
     );
 
     // Second enrollment
@@ -68,12 +68,12 @@ defineFeature(feature, (test) => {
           name: className,
           role,
         });
-      }
+      },
     );
 
     when("the user requests their class list", async () => {
       context.response = await request.get(
-        `/classes/user/classes?userId=${context.user.id}`
+        `/classes/user/classes?userId=${context.user.id}`,
       );
     });
 
@@ -87,13 +87,13 @@ defineFeature(feature, (test) => {
       /^the response should include "(.*)" with role "(.*)"$/,
       (className, role) => {
         const found = context.response.body.find(
-          (c) => c.name === className && c.role === role
+          (c) => c.name === className && c.role === role,
         );
         expect(found).toBeDefined();
         expect(found.name).toBe(className);
         expect(found.role).toBe(role);
         expect(found.inviteCode).toBeDefined();
-      }
+      },
     );
 
     // Second assertion
@@ -101,13 +101,13 @@ defineFeature(feature, (test) => {
       /^the response should include "(.*)" with role "(.*)"$/,
       (className, role) => {
         const found = context.response.body.find(
-          (c) => c.name === className && c.role === role
+          (c) => c.name === className && c.role === role,
         );
         expect(found).toBeDefined();
         expect(found.name).toBe(className);
         expect(found.role).toBe(role);
         expect(found.inviteCode).toBeDefined();
-      }
+      },
     );
   });
 
@@ -133,7 +133,7 @@ defineFeature(feature, (test) => {
 
     when("the user requests their class list", async () => {
       context.response = await request.get(
-        `/classes/user/classes?userId=${context.user.id}`
+        `/classes/user/classes?userId=${context.user.id}`,
       );
     });
 
@@ -169,12 +169,12 @@ defineFeature(feature, (test) => {
             role,
           },
         });
-      }
+      },
     );
 
     when("the user requests the HTML class list page", async () => {
       context.response = await request.get(
-        `/classes/my-classes?userId=${context.user.id}`
+        `/classes/my-classes?userId=${context.user.id}`,
       );
     });
 

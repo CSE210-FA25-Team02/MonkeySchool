@@ -8,7 +8,7 @@ import {
   createGroupsAndRoles,
 } from "./seed-data/class-list-class-roles.js";
 
-import {createDefaultCategories} from "./seed-data/activity-list.js";
+import { createDefaultCategories } from "./seed-data/activity-list.js";
 
 async function main() {
   console.log("Seeding database with multiple classes...");
@@ -46,7 +46,7 @@ async function main() {
 
   console.log("\nTest URL:");
   console.log(
-    `   http://localhost:3000/classes/my-classes?userId=${users[0].id}`
+    `   http://localhost:3000/classes/my-classes?userId=${users[0].id}`,
   );
 }
 

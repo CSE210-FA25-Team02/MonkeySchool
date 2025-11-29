@@ -92,7 +92,11 @@ defineFeature(feature, (test) => {
     given(/^a class named "(.*)" exists$/, async (name) => {
       // Create a user for authentication
       context.user = await prisma.user.create({
-        data: { email: "student@ucsd.edu", name: "Student User", isProf: false},
+        data: {
+          email: "student@ucsd.edu",
+          name: "Student User",
+          isProf: false,
+        },
       });
       context.klass = await classService.createClass({ name });
     });
@@ -100,11 +104,11 @@ defineFeature(feature, (test) => {
     when(/^I request the class ID for "(.*)"$/, async (name) => {
       const token = generateToken(context.user);
       context.response = await request
-      .get(`/classes/${context.klass.id}`)
-      .set("Cookie", `auth_token=${token}`);
+        .get(`/classes/${context.klass.id}`)
+        .set("Cookie", `auth_token=${token}`);
     });
 
-    then(/^I should recieve a class called "(.*)"$/, async (name) =>{
+    then(/^I should recieve a class called "(.*)"$/, async (name) => {
       expect(context.response.status).toBe(200);
       expect(context.response.body.name).toBe(name);
     });
@@ -114,16 +118,20 @@ defineFeature(feature, (test) => {
     given(/^no class named "(.*)" exists$/, async (name) => {
       // Create a user for authentication
       context.user = await prisma.user.create({
-        data: { email: "student@ucsd.edu", name: "Student User", isProf: false},
+        data: {
+          email: "student@ucsd.edu",
+          name: "Student User",
+          isProf: false,
+        },
       });
-      await prisma.class.deleteMany({ where: { name }});
+      await prisma.class.deleteMany({ where: { name } });
     });
 
     when(/^I request a class with ID (\d+)$/, async (id) => {
       const token = generateToken(context.user);
       context.response = await request
-      .get(`/classes/${id}`)
-      .set("Cookie", `auth_token=${token}`);
+        .get(`/classes/${id}`)
+        .set("Cookie", `auth_token=${token}`);
     });
 
     then(/^I should not get a 404 Not Found response$/, async () => {
@@ -135,7 +143,11 @@ defineFeature(feature, (test) => {
     given(/^a class named "(.*)" exists$/, async (name) => {
       // Create a user for authentication
       context.user = await prisma.user.create({
-        data: { email: "student@ucsd.edu", name: "Student User", isProf: false},
+        data: {
+          email: "student@ucsd.edu",
+          name: "Student User",
+          isProf: false,
+        },
       });
 
       // Create a class
@@ -160,47 +172,56 @@ defineFeature(feature, (test) => {
     given(/^a user "(.*)" with email "(.*)" exists$/, async (name, email) => {
       // Create a user for authentication
       context.user = await prisma.user.create({
-        data: { email: email, name: name, isProf: false},
+        data: { email: email, name: name, isProf: false },
       });
     });
 
-    given(/^a class named "(.*)" exists and includes "(.*)"$/, async (className, userName) => {
-      const klass = await classService.createClass({ name: className });
-      await prisma.classRole.create({
-        data: {
-          userId: context.user.id,
-          classId: klass.id,
-          role: "STUDENT"
-        }
-      });
-      context.classes = context.classes || [];
-      context.classes.push(klass);
-    });
+    given(
+      /^a class named "(.*)" exists and includes "(.*)"$/,
+      async (className, userName) => {
+        const klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: klass.id,
+            role: "STUDENT",
+          },
+        });
+        context.classes = context.classes || [];
+        context.classes.push(klass);
+      },
+    );
 
-    and(/^a class named "(.*)" exists and includes "(.*)"$/, async (className, userName) => {
-      const klass = await classService.createClass({ name: className });
-      await prisma.classRole.create({
-        data: {
-          userId: context.user.id,
-          classId: klass.id,
-          role: "STUDENT"
-        }
-      });
-      context.classes.push(klass);
-    });
+    and(
+      /^a class named "(.*)" exists and includes "(.*)"$/,
+      async (className, userName) => {
+        const klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: klass.id,
+            role: "STUDENT",
+          },
+        });
+        context.classes.push(klass);
+      },
+    );
 
     when(/^I request the classes for "(.*)"$/, async (name) => {
       const token = generateToken(context.user);
       context.response = await request
-      .get(`/classes/user/classes`)
-      .set("Cookie", `auth_token=${token}`);
+        .get(`/classes/user/classes`)
+        .set("Cookie", `auth_token=${token}`);
     });
 
-    then(/^I should receive the classes "(.*)" and "(.*)"$/, async (className1, className2) =>{
-      expect(context.response.status).toBe(200);
-      const classNames = context.response.body.map(c => c.name);
-      expect(classNames).toContain(className1);
-      expect(classNames).toContain(className2);
-    });
+    then(
+      /^I should receive the classes "(.*)" and "(.*)"$/,
+      async (className1, className2) => {
+        expect(context.response.status).toBe(200);
+        const classNames = context.response.body.map((c) => c.name);
+        expect(classNames).toContain(className1);
+        expect(classNames).toContain(className2);
+      },
+    );
   });
 });
