@@ -3,7 +3,10 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { prisma } from "../../src/lib/prisma.js";
 import { resetDatabase } from "../utils/reset-db.js";
-import { generateUniqueCode, validateCodeFormat } from "../../src/utils/code-generator.js";
+import {
+  generateUniqueCode,
+  validateCodeFormat,
+} from "../../src/utils/code-generator.js";
 import * as attendancePollService from "../../src/services/attendancePoll.service.js";
 import * as attendanceRecordService from "../../src/services/attendanceRecord.service.js";
 import * as courseSessionService from "../../src/services/courseSession.service.js";
@@ -200,26 +203,17 @@ describe("AttendanceRecord Service", () => {
 
   it("should reject duplicate submission", async () => {
     // First submission
-    await attendanceRecordService.submitAttendance(
-      poll.code,
-      student.id,
-    );
+    await attendanceRecordService.submitAttendance(poll.code, student.id);
 
     // Second submission should fail
     await expect(
-      attendanceRecordService.submitAttendance(
-        poll.code,
-        student.id,
-      ),
+      attendanceRecordService.submitAttendance(poll.code, student.id),
     ).rejects.toThrow("Already marked");
   });
 
   it("should reject submission with invalid code", async () => {
     await expect(
-      attendanceRecordService.submitAttendance(
-        "99999999",
-        student.id,
-      ),
+      attendanceRecordService.submitAttendance("99999999", student.id),
     ).rejects.toThrow();
   });
 
@@ -234,19 +228,13 @@ describe("AttendanceRecord Service", () => {
     });
 
     await expect(
-      attendanceRecordService.submitAttendance(
-        poll.code,
-        unenrolledStudent.id,
-      ),
+      attendanceRecordService.submitAttendance(poll.code, unenrolledStudent.id),
     ).rejects.toThrow("Not enrolled");
   });
 
   it("should get session attendance", async () => {
     // Submit attendance
-    await attendanceRecordService.submitAttendance(
-      poll.code,
-      student.id,
-    );
+    await attendanceRecordService.submitAttendance(poll.code, student.id);
 
     const attendance = await attendanceRecordService.getSessionAttendance(
       session.id,
@@ -258,10 +246,7 @@ describe("AttendanceRecord Service", () => {
 
   it("should get student attendance history", async () => {
     // Submit attendance
-    await attendanceRecordService.submitAttendance(
-      poll.code,
-      student.id,
-    );
+    await attendanceRecordService.submitAttendance(poll.code, student.id);
 
     const history = await attendanceRecordService.getStudentAttendance(
       student.id,
@@ -316,7 +301,9 @@ describe("AttendancePoll Service - Additional Tests", () => {
         professor.id,
       );
 
-      const polls = await attendancePollService.getPollsBySessionId(session1.id);
+      const polls = await attendancePollService.getPollsBySessionId(
+        session1.id,
+      );
 
       expect(polls.length).toBe(2);
       expect(polls.map((p) => p.id)).toContain(poll1.id);
@@ -339,7 +326,9 @@ describe("AttendancePoll Service - Additional Tests", () => {
         professor.id,
       );
 
-      const polls = await attendancePollService.getPollsBySessionId(session1.id);
+      const polls = await attendancePollService.getPollsBySessionId(
+        session1.id,
+      );
 
       expect(polls.length).toBe(2);
       // Most recent should be first
@@ -348,7 +337,9 @@ describe("AttendancePoll Service - Additional Tests", () => {
     });
 
     it("should return empty array for session with no polls", async () => {
-      const polls = await attendancePollService.getPollsBySessionId(session2.id);
+      const polls = await attendancePollService.getPollsBySessionId(
+        session2.id,
+      );
       expect(polls).toEqual([]);
     });
 
@@ -374,7 +365,9 @@ describe("AttendancePoll Service - Additional Tests", () => {
       });
       await attendanceRecordService.submitAttendance(poll.code, student.id);
 
-      const polls = await attendancePollService.getPollsBySessionId(session1.id);
+      const polls = await attendancePollService.getPollsBySessionId(
+        session1.id,
+      );
       expect(polls[0]._count.records).toBe(1);
     });
   });
@@ -497,7 +490,9 @@ describe("AttendanceRecord Service - Additional Tests", () => {
       expect(summary.students.length).toBe(2);
 
       // Check student1 attendance
-      const student1Data = summary.students.find((s) => s.studentId === student1.id);
+      const student1Data = summary.students.find(
+        (s) => s.studentId === student1.id,
+      );
       expect(student1Data).toBeDefined();
       expect(student1Data.presentCount).toBe(2);
       expect(student1Data.totalSessions).toBe(2);
@@ -506,7 +501,9 @@ describe("AttendanceRecord Service - Additional Tests", () => {
       expect(student1Data.sessions[session1.id].present).toBe(true);
 
       // Check student2 attendance
-      const student2Data = summary.students.find((s) => s.studentId === student2.id);
+      const student2Data = summary.students.find(
+        (s) => s.studentId === student2.id,
+      );
       expect(student2Data).toBeDefined();
       expect(student2Data.presentCount).toBe(1);
       expect(student2Data.totalSessions).toBe(2);
@@ -565,7 +562,9 @@ describe("AttendanceRecord Service - Additional Tests", () => {
       expect(data.sessions[1].id).toBe(session2.id);
 
       // Check student1 attendance
-      const student1Data = data.students.find((s) => s.studentId === student1.id);
+      const student1Data = data.students.find(
+        (s) => s.studentId === student1.id,
+      );
       expect(student1Data).toBeDefined();
       expect(student1Data.sessionAttendance[session1.id]).toBeDefined();
       expect(student1Data.sessionAttendance[session1.id].present).toBe(true);
@@ -573,7 +572,9 @@ describe("AttendanceRecord Service - Additional Tests", () => {
       expect(student1Data.sessionAttendance[session2.id].present).toBe(true);
 
       // Check student2 attendance
-      const student2Data = data.students.find((s) => s.studentId === student2.id);
+      const student2Data = data.students.find(
+        (s) => s.studentId === student2.id,
+      );
       expect(student2Data).toBeDefined();
       expect(student2Data.sessionAttendance[session1.id]).toBeDefined();
       expect(student2Data.sessionAttendance[session1.id].present).toBe(true);
@@ -620,9 +621,10 @@ describe("AttendanceRecord Service - Additional Tests", () => {
       await attendanceRecordService.submitAttendance(poll1.code, student1.id);
       await attendanceRecordService.submitAttendance(poll2.code, student1.id);
 
-      const grouped = await attendanceRecordService.getStudentAttendanceGroupedByCourse(
-        student1.id,
-      );
+      const grouped =
+        await attendanceRecordService.getStudentAttendanceGroupedByCourse(
+          student1.id,
+        );
 
       expect(grouped.length).toBe(1);
       expect(grouped[0].courseId).toBe(klass.id);
@@ -655,9 +657,10 @@ describe("AttendanceRecord Service - Additional Tests", () => {
       await attendanceRecordService.submitAttendance(poll1.code, student1.id);
       await attendanceRecordService.submitAttendance(poll3.code, student1.id);
 
-      const grouped = await attendanceRecordService.getStudentAttendanceGroupedByCourse(
-        student1.id,
-      );
+      const grouped =
+        await attendanceRecordService.getStudentAttendanceGroupedByCourse(
+          student1.id,
+        );
 
       expect(grouped.length).toBe(2);
       // Should be sorted by course name
@@ -666,9 +669,10 @@ describe("AttendanceRecord Service - Additional Tests", () => {
     });
 
     it("should return empty array for student with no attendance", async () => {
-      const grouped = await attendanceRecordService.getStudentAttendanceGroupedByCourse(
-        student1.id,
-      );
+      const grouped =
+        await attendanceRecordService.getStudentAttendanceGroupedByCourse(
+          student1.id,
+        );
 
       expect(grouped).toEqual([]);
     });
@@ -676,9 +680,10 @@ describe("AttendanceRecord Service - Additional Tests", () => {
     it("should include poll code in attendance records", async () => {
       await attendanceRecordService.submitAttendance(poll1.code, student1.id);
 
-      const grouped = await attendanceRecordService.getStudentAttendanceGroupedByCourse(
-        student1.id,
-      );
+      const grouped =
+        await attendanceRecordService.getStudentAttendanceGroupedByCourse(
+          student1.id,
+        );
 
       expect(grouped[0].attendances[0].pollCode).toBe(poll1.code);
     });

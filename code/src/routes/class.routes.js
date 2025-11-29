@@ -14,6 +14,14 @@ router.get(
   asyncHandler(classController.renderUserClasses),
 );
 
+// Class Create Form
+router.get(
+  "/form",
+  requireAuth,
+  asyncHandler(classController.renderCreateClassForm),
+);
+router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
+
 // JSON API route for programmatic access
 // Using optionalAuth to allow query param fallback for tests
 // TODO: Change back to requireAuth once full JWT testing is implemented
@@ -29,13 +37,6 @@ router.get(
   requireAuth,
   asyncHandler(classController.getClassByInviteCode),
 );
-
-// Class Create Form
-router.get("/form", asyncHandler(classController.renderCreateClassForm));
-router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
-
-// Classes Page
-router.get("/", asyncHandler(classController.renderClassPage));
 
 // CRUD
 router.post("/create", requireAuth, asyncHandler(classController.createClass));

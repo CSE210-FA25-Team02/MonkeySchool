@@ -15,6 +15,16 @@ import { createStartAttendanceModal } from "../utils/htmx-templates/attendance-t
 import { env } from "../config/env.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import {
+  displayAttendanceResult,
+  displayCourseRecordsPage,
+  displaySessionRecordsPage,
+  displaySessionAttendance,
+  displayCourseAttendanceSummary,
+  displayStudentAttendanceGrouped,
+  getCodeStatusFragment,
+  displayCourseItem,
+} from "../utils/htmx-templates/attendance-templates.js";
 
 /**
  * Create an attendance poll for a session
@@ -99,9 +109,6 @@ export const submitAttendance = asyncHandler(async (req, res) => {
   if (!validation.success) {
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
-      const { displayAttendanceResult } = await import(
-        "../utils/htmx-templates/attendance-templates.js"
-      );
       const errorHtml = displayAttendanceResult({
         success: false,
         error: "Invalid code format. Please enter an 8-digit code.",
@@ -122,10 +129,6 @@ export const submitAttendance = asyncHandler(async (req, res) => {
 
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
-      // Import display function
-      const { displayAttendanceResult } = await import(
-        "../utils/htmx-templates/attendance-templates.js"
-      );
       const resultHtml = displayAttendanceResult({
         success: true,
         status: "success",
@@ -146,9 +149,6 @@ export const submitAttendance = asyncHandler(async (req, res) => {
     // Error handling is done by the service, but we need to format the response
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
-      const { displayAttendanceResult } = await import(
-        "../utils/htmx-templates/attendance-templates.js"
-      );
       const errorHtml = displayAttendanceResult({
         success: false,
         error: error.message || "Failed to submit attendance",
@@ -200,10 +200,6 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
     await attendanceRecordService.getSessionAttendance(sessionId);
 
   const isHtmxRequest = req.headers["hx-request"];
-
-  const { displaySessionRecordsPage } = await import(
-    "../utils/htmx-templates/attendance-templates.js"
-  );
   const html = displaySessionRecordsPage({
     sessionId,
     sessionName: session.name,
@@ -273,9 +269,6 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
 
-  const { displayCourseRecordsPage } = await import(
-    "../utils/htmx-templates/attendance-templates.js"
-  );
   const html = displayCourseRecordsPage({
     courseId: klass.id,
     courseName: klass.name,
@@ -341,9 +334,6 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
-    const { displaySessionAttendance } = await import(
-      "../utils/htmx-templates/attendance-templates.js"
-    );
     const data = {
       sessionId,
       sessionName: session.name,
@@ -418,9 +408,6 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
-    const { displayCourseAttendanceSummary } = await import(
-      "../utils/htmx-templates/attendance-templates.js"
-    );
     const html = displayCourseAttendanceSummary(summary);
     res.send(html);
   } else {
@@ -441,10 +428,6 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
   const isHtmxRequest = req.headers["hx-request"];
 
   if (isHtmxRequest) {
-    // For HTMX requests, return grouped data with collapsible UI
-    const { displayStudentAttendanceGrouped } = await import(
-      "../utils/htmx-templates/attendance-templates.js"
-    );
     const groupedAttendance =
       await attendanceRecordService.getStudentAttendanceGroupedByCourse(userId);
     const html = displayStudentAttendanceGrouped({
@@ -508,9 +491,6 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   const polls = await attendancePollService.getPollsBySessionId(sessionId);
   const latestPoll = polls.length > 0 ? polls[0] : null;
 
-  const { getCodeStatusFragment } = await import(
-    "../utils/htmx-templates/attendance-templates.js"
-  );
   const html = getCodeStatusFragment(latestPoll);
   res.send(html);
 });
@@ -546,9 +526,6 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
   const wasExpanded = expanded === "true" || expanded === true;
   const isExpanded = !wasExpanded; // Toggle the state
 
-  const { displayCourseItem } = await import(
-    "../utils/htmx-templates/attendance-templates.js"
-  );
   const html = displayCourseItem({
     course: klass,
     sessions,
