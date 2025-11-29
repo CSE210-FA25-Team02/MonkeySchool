@@ -19,11 +19,24 @@
 export function createBaseLayout(title, content, options = {}) {
   const {
     lang = "en",
-      dir = "ltr",
-      charset = "UTF-8",
-      viewport = "width=device-width, initial-scale=1.0",
-      description = "Student Management System",
+    dir = "ltr",
+    charset = "UTF-8",
+    viewport = "width=device-width, initial-scale=1.0",
+    description = "Student Management System",
+    user = null,
   } = options;
+
+  // Derive simple user display data for header pill
+  const displayName = escapeHtml(user?.name || "User");
+  const initials =
+    displayName
+      .split(" ")
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "U";
+
   return `
 <!DOCTYPE html>
 <html lang="${lang}" dir="${dir}">
@@ -52,6 +65,7 @@ export function createBaseLayout(title, content, options = {}) {
     <link rel="stylesheet" href="/css/components/toast.css">
     <!-- Page Specific Styles -->
     <link rel="stylesheet" href="/css/pages/class-list.css">
+    <link rel="stylesheet" href="/css/pages/profile.css">
     <!-- Legacy support for specific pages until migrated -->
     <link rel="stylesheet" href="/css/pages/attendance.css">
 
@@ -78,7 +92,7 @@ export function createBaseLayout(title, content, options = {}) {
                 <a href="#" class="nav-item" title="My Groups">
                     <i class="fa-solid fa-users-rectangle nav-icon"></i>
                 </a>
-                <a href="#" class="nav-item" title="Settings">
+                <a href="/users/profile" class="nav-item ${title === 'Profile' ? 'active' : ''}" title="Settings">
                     <i class="fa-solid fa-gear nav-icon"></i>
                 </a>
             </nav>
@@ -103,12 +117,12 @@ export function createBaseLayout(title, content, options = {}) {
                 
                 <div class="top-actions">
                      <!-- User Profile Pill -->
-                    <div class="user-pill">
+                    <a href="/users/profile" class="user-pill" style="text-decoration: none; color: inherit;">
                         <div class="user-avatar">
-                             <i class="fa-solid fa-user"></i>
+                             ${initials}
                         </div>
-                        <span class="user-name">User</span>
-                    </div>
+                        <span class="user-name">${displayName}</span>
+                    </a>
                 </div>
             </header>
 

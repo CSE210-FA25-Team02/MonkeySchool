@@ -1,5 +1,6 @@
 .env
 coverage
 .env.test
+.env.backup
 node_modules
 package-lock.json
