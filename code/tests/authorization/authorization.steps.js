@@ -49,7 +49,7 @@ defineFeature(feature, (test) => {
       /^a user with the role "(.*)" for the class "(.*)" in the "(.*)" quarter$/,
       async (role, className, quarter) => {
         await createUserWithRole(role, className, quarter);
-      }
+      },
     );
 
     when(
@@ -58,7 +58,7 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/${quarter}/classes/${context.klass.id}`)
           .set("Cookie", `auth_token=${authToken}`);
-      }
+      },
     );
 
     then("the user should be able to access the resource", () => {
@@ -75,7 +75,7 @@ defineFeature(feature, (test) => {
       /^a user with the role "(.*)" for the class "(.*)" in the "(.*)" quarter$/,
       async (role, className, quarter) => {
         await createUserWithRole(role, className, quarter);
-      }
+      },
     );
 
     when(
@@ -85,7 +85,7 @@ defineFeature(feature, (test) => {
           .put(`/${quarter}/classes/${context.klass.id}`)
           .set("Cookie", `auth_token=${authToken}`)
           .send({ name: "New Name" });
-      }
+      },
     );
 
     then("the user should not be able to access the resource", () => {
@@ -117,7 +117,7 @@ defineFeature(feature, (test) => {
           role: role,
         });
         authToken = authService.generateToken({ id: user.id });
-      }
+      },
     );
 
     and(
@@ -132,7 +132,7 @@ defineFeature(feature, (test) => {
           classId: class2.id,
           role: role,
         });
-      }
+      },
     );
 
     when(
@@ -142,7 +142,7 @@ defineFeature(feature, (test) => {
           .put(`/${quarter}/classes/${class1.id}`)
           .set("Cookie", `auth_token=${authToken}`)
           .send({ name: "New Class Name" });
-      }
+      },
     );
 
     then("the user should not be able to access the resource", () => {
@@ -159,7 +159,7 @@ defineFeature(feature, (test) => {
       /^a user with the role "(.*)" for the class "(.*)" in the "(.*)" quarter$/,
       async (role, className, quarter) => {
         await createUserWithRole(role, className, quarter);
-      }
+      },
     );
 
     when(
@@ -168,7 +168,7 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/${quarter}/classes/${context.klass.id}`)
           .set("Cookie", `auth_token=${authToken}`);
-      }
+      },
     );
 
     then("the user should not be able to access the resource", () => {
@@ -193,9 +193,9 @@ defineFeature(feature, (test) => {
           quarter: quarter,
         });
         context.response = await request.get(
-          `/${quarter}/classes/${context.klass.id}`
+          `/${quarter}/classes/${context.klass.id}`,
         );
-      }
+      },
     );
 
     then("the user should not be able to access the resource", () => {
@@ -224,7 +224,7 @@ defineFeature(feature, (test) => {
           name: className,
           quarter: quarter,
         });
-      }
+      },
     );
 
     when(
@@ -233,7 +233,7 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/${quarter}/classes/${context.klass.id}`)
           .set("Cookie", `auth_token=${authToken}`);
-      }
+      },
     );
 
     then("the user should not be able to access the resource", () => {

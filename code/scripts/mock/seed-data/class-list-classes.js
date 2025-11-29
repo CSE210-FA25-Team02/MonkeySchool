@@ -8,7 +8,10 @@ export const classesData = [
   { name: "CSE 210", quarter: "FA25" },
   { name: "CSE 110", quarter: "FA25" },
   { name: "CSE 100", quarter: "WI26" },
-  { name: "Advanced Software Engineering and Project Management", quarter: "FA25" },
+  {
+    name: "Advanced Software Engineering and Project Management",
+    quarter: "FA25",
+  },
   { name: "Data Structures", quarter: "WI26" },
   { name: "CSE 141", quarter: "SP26" },
   { name: "Computer Architecture", quarter: "SP26" },
@@ -33,11 +36,10 @@ export async function createClasses() {
           name: data.name,
           quarter: data.quarter,
         },
-      })
-    )
+      }),
+    ),
   );
 
   console.log(`Created ${classes.length} classes`);
   return classes;
 }
-
