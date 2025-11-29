@@ -1,0 +1,182 @@
+/* =========================================
+   Punch Card Widget
+   ========================================= */
+.punch-widget {
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    min-width: 300px;
+}
+
+.punch-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.punch-title {
+    font-weight: var(--weight-bold);
+    color: var(--color-text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.current-time {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    background: var(--color-bg-canvas);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+}
+
+/* Big Punch Button */
+.punch-btn-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-6);
+}
+
+.punch-btn {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(14, 83, 74, 0.3);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2;
+    position: relative;
+}
+
+.punch-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 35px rgba(14, 83, 74, 0.4);
+}
+
+.punch-btn:active {
+    transform: scale(0.95);
+}
+
+.punch-btn.punched-in {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.3);
+}
+
+.punch-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.punch-label {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Ripple Effect Ring */
+.punch-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--color-brand-light);
+    border-radius: 50%;
+    z-index: 1;
+    animation: ripple 2s infinite;
+}
+
+@keyframes ripple {
+    0% { width: 140px; height: 140px; opacity: 0.8; border-width: 4px; }
+    100% { width: 200px; height: 200px; opacity: 0; border-width: 0; }
+}
+
+/* Course Selector */
+.punch-course-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+}
+
+/* Stats Footer */
+.punch-footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-bg-canvas);
+}
+
+.punch-stat {
+    text-align: center;
+}
+
+.punch-stat-val {
+    font-weight: bold;
+    color: var(--color-text-main);
+}
+
+.punch-stat-label {
+    font-size: 10px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+}
+
+/* History List Style */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3);
+    background: var(--color-bg-canvas);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.history-time {
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    margin-right: var(--space-3);
+}
+
+.history-badge {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: var(--space-3);
+}
+
+.badge-in { background: var(--color-status-success); }
+.badge-out { background: var(--color-status-warning); }
+
+
+

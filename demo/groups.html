@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Groups - Monkey School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/shell.css">
+    <link rel="stylesheet" href="css/components/notification.css">
+    <link rel="stylesheet" href="css/components/toast.css">
+    <link rel="stylesheet" href="css/pages/class.css"> <!-- Reuse group card styles -->
+    <style>
+        /* Groups Page Specific Styles */
+        .groups-header {
+            margin-bottom: var(--space-8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-label {
+            font-size: var(--text-sm);
+            font-weight: bold;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--color-bg-canvas);
+            margin-left: var(--space-4);
+        }
+
+        /* Invite Card */
+        .invite-card {
+            background: white;
+            border: 1px dashed var(--color-accent-gold);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invite-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--color-accent-gold);
+        }
+
+        .invite-content {
+            flex: 1;
+        }
+
+        .invite-title {
+            font-weight: bold;
+            color: var(--color-text-main);
+        }
+
+        .invite-meta {
+            font-size: var(--text-xs);
+            color: var(--color-text-muted);
+        }
+
+        .invite-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        /* Empty State for Groups */
+        .empty-group-state {
+            text-align: center;
+            padding: var(--space-8);
+            background: var(--color-bg-surface);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--color-bg-canvas);
+            color: var(--color-text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Floating Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-mark">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item" title="Dashboard">
+                    <i class="fa-solid fa-grip-vertical nav-icon"></i>
+                </a>
+                <a href="my-classes.html" class="nav-item" title="My Classes">
+                    <i class="fa-solid fa-book-open nav-icon"></i>
+                </a>
+                <a href="class.html" class="nav-item" title="Schedule">
+                    <i class="fa-regular fa-calendar nav-icon"></i>
+                </a>
+                <a href="groups.html" class="nav-item active" title="My Groups">
+                    <i class="fa-solid fa-users-rectangle nav-icon"></i>
+                </a>
+                <a href="#" class="nav-item" title="Settings">
+                    <i class="fa-solid fa-gear nav-icon"></i>
+                </a>
+            </nav>
+
+            <div style="margin-top: auto; padding-bottom: 24px;">
+                 <a href="login.html" class="nav-item" title="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Canvas -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="breadcrumbs">
+                    <a href="index.html">Dashboard</a>
+                    <span style="color: var(--color-text-muted)">/</span>
+                    <span class="current">My Groups</span>
+                </div>
+
+                <div class="top-actions">
+                    <div style="position: relative;">
+                        <button id="trigger-notif" class="nav-item" title="Notifications">
+                            <i class="fa-regular fa-bell nav-icon"></i>
+                            <div style="position: absolute; top: 10px; right: 10px; width: 8px; height: 8px; background: var(--color-status-error); border-radius: 50%; border: 2px solid var(--color-bg-canvas);"></div>
+                        </button>
+                        <!-- Notification Panel -->
+                        <div id="notif-panel" class="notification-panel">
+                            <div class="notif-header">
+                                <div class="notif-title">Notifications 🍌</div>
+                                <span class="notif-mark-read">Mark all read</span>
+                            </div>
+                            <div class="notif-list">
+                                <div class="notif-item unread">
+                                    <div class="notif-icon" style="background: #FEF3C7; color: #D97706;"><i class="fa-solid fa-envelope"></i></div>
+                                    <div class="notif-content">
+                                        <div class="notif-text">You have a new group invite from <strong>Design Bananas</strong>.</div>
+                                        <div class="notif-time">Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="user-pill">
+                        <div class="user-avatar">ZZ</div>
+                        <span class="user-name">Zihan Zhou</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="content-canvas">
+                <div class="container" style="max-width: 1000px;">
+                    
+                    <div class="groups-header">
+                        <div>
+                            <h1 style="font-size: var(--text-2xl); font-weight: bold;">My Groups</h1>
+                            <p style="color: var(--color-text-muted);">Collaborate with your team across all courses.</p>
+                        </div>
+                        <button onclick="showToast('Info', 'Go to specific class to create a group', 'info')" style="background: white; border: 1px solid var(--color-border-subtle); padding: 8px 16px; border-radius: 20px; font-weight: bold; color: var(--color-brand-deep);">
+                            <i class="fa-solid fa-plus"></i> Create Group
+                        </button>
+                    </div>
+
+                    <!-- Pending Invites -->
+                    <div class="section-label">Pending Invites (1)</div>
+                    <div class="invite-card">
+                        <div class="group-logo" style="background: #FEF3C7; color: #D97706;">DB</div>
+                        <div class="invite-content">
+                            <div class="invite-title">Design Bananas</div>
+                            <div class="invite-meta">Invited by <strong>Alice</strong> for <strong>CSE 202</strong></div>
+                        </div>
+                        <div class="invite-actions">
+                            <button onclick="this.closest('.invite-card').remove(); showToast('Joined', 'You joined Design Bananas!', 'success')" style="background: var(--color-brand-deep); color: white; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: bold;">Accept</button>
+                            <button onclick="this.closest('.invite-card').remove()" style="background: transparent; border: 1px solid var(--color-border-subtle); color: var(--color-text-muted); padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: bold;">Decline</button>
+                        </div>
+                    </div>
+
+                    <!-- Active Groups -->
+                    <div class="section-label">Active Groups</div>
+                    <div class="group-grid">
+                        <!-- Existing Group Card reused from Class Page -->
+                        <div class="group-card">
+                            <div class="group-header">
+                                <div class="group-logo">🐒</div>
+                                <div>
+                                    <div class="group-name">Code Monkeys</div>
+                                    <div class="group-mantra">"Apes together strong"</div>
+                                </div>
+                                <span style="margin-left: auto; font-size: 10px; background: white; padding: 2px 6px; border-radius: 4px; color: var(--color-text-muted);">CSE 210</span>
+                            </div>
+                            <div class="group-members">
+                                <div class="group-member-list">
+                                    <div class="mini-member">
+                                        <div class="mini-avatar">ZZ</div>
+                                        <span>Zihan Zhou (Leader)</span>
+                                    </div>
+                                    <div class="mini-member">
+                                        <div class="mini-avatar">DY</div>
+                                        <span>Dingyi Yu</span>
+                                    </div>
+                                    <div class="mini-member">
+                                        <div class="mini-avatar">SG</div>
+                                        <span>Shresth Grover</span>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-bg-canvas); display: flex; gap: 8px;">
+                                    <button class="icon-btn" style="width: 100%; flex: 1; font-size: 12px; gap: 4px;">
+                                        <i class="fa-brands fa-github"></i> Repo
+                                    </button>
+                                    <button class="icon-btn" style="width: 100%; flex: 1; font-size: 12px; gap: 4px;">
+                                        <i class="fa-solid fa-message"></i> Chat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Find a Group -->
+                    <div class="section-label" style="margin-top: var(--space-8);">Find a Group</div>
+                    <div class="empty-group-state">
+                        <div style="font-size: 24px; margin-bottom: 8px;">🔍</div>
+                        <div style="font-weight: bold; color: var(--color-text-main);">You are not in a group for CSE 110</div>
+                        <p style="font-size: 12px; margin-bottom: 16px;">Browse available groups or create your own.</p>
+                        <a href="class.html" style="color: var(--color-brand-medium); font-weight: bold; font-size: 12px; text-decoration: underline;">Go to Class Page &rarr;</a>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
+
+
+

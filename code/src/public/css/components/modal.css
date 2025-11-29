@@ -1,0 +1,147 @@
+/* =========================================
+   Modal / Dialog Styles
+   ========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(14, 83, 74, 0.2);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-fast);
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-card {
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 500px;
+    box-shadow: var(--shadow-float);
+    transform: scale(0.95) translateY(10px);
+    transition: all var(--transition-smooth);
+    overflow: hidden;
+}
+
+.modal-overlay.open .modal-card {
+    transform: scale(1) translateY(0);
+}
+
+.modal-header {
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-bg-canvas);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-main);
+}
+
+.btn-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    transition: var(--transition-fast);
+}
+
+.btn-close:hover {
+    background: var(--color-bg-canvas);
+    color: var(--color-text-main);
+}
+
+.modal-body {
+    padding: var(--space-6);
+}
+
+.form-group {
+    margin-bottom: var(--space-4);
+}
+
+.form-label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-main);
+    margin-bottom: var(--space-2);
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    transition: var(--transition-fast);
+}
+
+.form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--color-brand-medium);
+    box-shadow: 0 0 0 3px rgba(14, 83, 74, 0.05);
+}
+
+.form-helper {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-2);
+}
+
+.modal-footer {
+    padding: var(--space-6);
+    background: var(--color-bg-canvas);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font-weight: var(--weight-medium);
+    font-size: var(--text-sm);
+    transition: var(--transition-fast);
+}
+
+.btn-secondary {
+    color: var(--color-text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.btn-secondary:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--color-text-main);
+}
+
+.btn-primary {
+    background: var(--color-brand-deep);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--color-brand-medium);
+    box-shadow: var(--shadow-sm);
+}
+
+
+

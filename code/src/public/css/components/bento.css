@@ -1,0 +1,145 @@
+/* =========================================
+   Bento Grid System
+   ========================================= */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  padding-bottom: var(--space-8);
+}
+
+.bento-card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+}
+
+/* Spanning Classes */
+.span-1 { grid-column: span 1; }
+.span-2 { grid-column: span 2; }
+.span-3 { grid-column: span 3; }
+.span-4 { grid-column: span 4; }
+
+.row-span-2 { grid-row: span 2; }
+
+/* Card Content Styles */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.card-title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.card-title i {
+  color: var(--color-brand-medium);
+  font-size: var(--text-base);
+}
+
+.card-action {
+  color: var(--color-accent-gold);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+
+.card-content {
+  flex: 1;
+}
+
+/* Specific Card Variants */
+.card-welcome {
+  background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%);
+  color: white;
+}
+
+.card-welcome .card-title,
+.card-welcome .card-content {
+  color: white;
+}
+
+.stat-value {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+  margin: var(--space-2) 0;
+}
+
+.stat-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.stat-trend {
+  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.trend-up { color: var(--color-status-success); }
+.trend-down { color: var(--color-status-error); }
+
+/* List Items in Cards */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-bg-canvas);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-canvas);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--space-3);
+  color: var(--color-brand-deep);
+}
+
+.list-item-content {
+  flex: 1;
+}
+
+.list-item-title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.list-item-subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+
+
+
+
+
+

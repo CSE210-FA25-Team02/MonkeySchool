@@ -1,0 +1,123 @@
+/* =========================================
+   Class List Page Styles (My Classes)
+   From demo/my-classes.html
+   ========================================= */
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-6);
+    padding-top: var(--space-4);
+}
+
+.course-card {
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: all var(--transition-smooth);
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-float);
+    border-color: var(--color-brand-light);
+}
+
+.course-header {
+    height: 120px;
+    background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%);
+    padding: var(--space-6);
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.course-header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+
+.course-badge {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(4px);
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+}
+
+.course-body {
+    padding: var(--space-6);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-code {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.course-title {
+    font-size: var(--text-lg);
+    font-weight: bold;
+    margin-bottom: var(--space-4);
+    line-height: 1.3;
+}
+
+.course-meta {
+    margin-top: auto;
+    display: flex;
+    gap: var(--space-4);
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Create New Card */
+.create-card {
+    border: 2px dashed var(--color-brand-light);
+    background: transparent;
+    box-shadow: none;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-brand-medium);
+    cursor: pointer;
+    min-height: 240px;
+}
+
+.create-card:hover {
+    background: rgba(14, 83, 74, 0.03);
+    border-color: var(--color-brand-medium);
+    transform: translateY(-2px);
+}
+
+.create-icon {
+    font-size: 32px;
+    margin-bottom: var(--space-2);
+    color: var(--color-accent-gold);
+}
+

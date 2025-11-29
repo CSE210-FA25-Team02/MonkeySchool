@@ -1,0 +1,349 @@
+/* =========================================
+   Schedule Calendar Page
+   ========================================= */
+
+.schedule-class-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-6);
+  gap: var(--space-4);
+}
+
+.schedule-class-info {
+  flex: 1;
+}
+
+.schedule-class-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+  margin-bottom: var(--space-2);
+}
+
+.schedule-class-meta {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.schedule-class-quarter {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.schedule-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.schedule-view-toggle {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--color-bg-canvas);
+  padding: 4px;
+  border-radius: var(--radius-md);
+}
+
+.schedule-view-btn {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.schedule-view-btn:hover {
+  color: var(--color-text-main);
+  background: var(--color-bg-surface);
+}
+
+.schedule-view-btn--active {
+  background: var(--color-brand-deep);
+  color: white;
+}
+
+.schedule-view-btn--active:hover {
+  background: var(--color-brand-medium);
+  color: white;
+}
+
+.schedule-navigation {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.schedule-nav-btn {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface);
+  color: var(--color-text-main);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-sm);
+}
+
+.schedule-nav-btn:hover {
+  background: var(--color-bg-canvas);
+  border-color: var(--color-brand-medium);
+}
+
+.schedule-nav-btn--today {
+  font-weight: var(--weight-medium);
+  min-width: 60px;
+}
+
+.schedule-content {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  overflow-x: auto;
+}
+
+/* Week View */
+.schedule-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-4);
+  min-width: 1000px;
+}
+
+.schedule-day-column {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-canvas);
+  min-height: 600px;
+}
+
+.schedule-day-column--today {
+  border-color: var(--color-brand-medium);
+  background: rgba(27, 106, 89, 0.02);
+}
+
+.schedule-day-header {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  text-align: center;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.schedule-day-name {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-1);
+}
+
+.schedule-day-number {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+  margin-bottom: var(--space-1);
+}
+
+.schedule-day-number--today {
+  color: var(--color-brand-deep);
+}
+
+.schedule-day-count {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.schedule-day-events {
+  flex: 1;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  overflow-y: auto;
+}
+
+/* Day View */
+.schedule-day-view {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.schedule-day-header-large {
+  text-align: center;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--color-border-subtle);
+}
+
+.schedule-day-name-large {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+  margin-bottom: var(--space-2);
+}
+
+.schedule-day-date-large {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+}
+
+.schedule-day-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.schedule-empty-state {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Event Cards */
+.schedule-event {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.schedule-event:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.schedule-event__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+}
+
+.schedule-event__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.schedule-event__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+  margin-bottom: var(--space-1);
+}
+
+.schedule-event__time {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-bottom: var(--space-1);
+}
+
+.schedule-event__location {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Event Type Variants */
+.schedule-event--office-hours {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.schedule-event--office-hours .schedule-event__icon {
+  background: rgba(34, 197, 94, 0.2);
+  color: #16a34a;
+}
+
+.schedule-event--lecture {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.schedule-event--lecture .schedule-event__icon {
+  background: rgba(59, 130, 246, 0.2);
+  color: #2563eb;
+}
+
+.schedule-event--meeting {
+  background: rgba(249, 115, 22, 0.1);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.schedule-event--meeting .schedule-event__icon {
+  background: rgba(249, 115, 22, 0.2);
+  color: #ea580c;
+}
+
+.schedule-event--default {
+  background: var(--color-bg-canvas);
+  border-color: var(--color-border-subtle);
+}
+
+.schedule-event--default .schedule-event__icon {
+  background: var(--color-bg-canvas);
+  color: var(--color-text-muted);
+}
+
+/* Course Calendar Link (in class list) */
+.course-card-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-calendar-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-bg-canvas);
+  color: var(--color-brand-medium);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  border-top: 1px solid var(--color-border-subtle);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.course-calendar-link:hover {
+  background: rgba(27, 106, 89, 0.05);
+  color: var(--color-brand-deep);
+}
+
+.course-calendar-link i {
+  font-size: var(--text-base);
+}
+

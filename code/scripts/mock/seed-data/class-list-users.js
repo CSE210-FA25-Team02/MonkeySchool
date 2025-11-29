@@ -16,6 +16,7 @@ export async function createUsers() {
                 email: "tpowell@ucsd.edu",
                 name: "Prof. Powell",
                 pronouns: "he/him",
+                isProf: true,
             },
         }),
         prisma.user.create({
@@ -23,6 +24,7 @@ export async function createUsers() {
                 email: "jsmith@ucsd.edu",
                 name: "Prof. Smith",
                 pronouns: "she/her",
+                isProf: true,
             },
         }),
         prisma.user.create({
@@ -30,6 +32,7 @@ export async function createUsers() {
                 email: "mjohnson@ucsd.edu",
                 name: "Prof. Johnson",
                 pronouns: "they/them",
+                isProf: true,
             },
         }),
     ]);

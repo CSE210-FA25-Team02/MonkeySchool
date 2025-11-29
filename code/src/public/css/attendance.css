@@ -1,0 +1,311 @@
+/* =========================================
+   Attendance Page Styles
+   ========================================= */
+
+/* Role Switcher in Header */
+.role-switcher {
+    display: flex;
+    background: var(--color-bg-canvas);
+    border-radius: var(--radius-full);
+    padding: 4px;
+    margin-right: auto;
+    margin-left: var(--space-8);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.btn-role {
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-muted);
+    transition: all var(--transition-fast);
+}
+
+.btn-role.active {
+    background: var(--color-brand-deep);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-role:hover:not(.active) {
+    color: var(--color-brand-deep);
+}
+
+/* =========================================
+   Professor View Tables
+   ========================================= */
+.course-content {
+    padding: var(--space-4);
+    background: var(--color-bg-canvas); /* Slightly darker inner bg */
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+.data-table th {
+    text-align: left;
+    color: var(--color-text-muted);
+    font-weight: var(--weight-medium);
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.data-table td {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text-main);
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.badge-soft {
+    background: var(--color-brand-light);
+    color: var(--color-brand-deep);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    margin-left: 8px;
+}
+
+.status-pill {
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.status-active {
+    background: #DEF7EC;
+    color: #03543F;
+}
+
+.status-expired {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.actions-cell {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.btn-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: var(--color-brand-light);
+    color: var(--color-brand-deep);
+}
+
+.font-mono {
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   Student View
+   ========================================= */
+.attendance-student-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+}
+
+.input-code-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: var(--space-6) 0;
+}
+
+.big-input {
+    width: 100%;
+    font-size: 32px;
+    text-align: center;
+    padding: 16px;
+    letter-spacing: 8px;
+    border: 2px solid var(--color-brand-light);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    color: var(--color-brand-deep);
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.big-input:focus {
+    outline: none;
+    border-color: var(--color-accent-gold);
+    box-shadow: 0 0 0 4px rgba(242, 169, 59, 0.1);
+}
+
+.btn--full {
+    width: 100%;
+    padding: 12px;
+}
+
+.success-icon-lg {
+    font-size: 48px;
+    color: var(--color-status-success);
+    margin-bottom: var(--space-4);
+}
+
+/* History List */
+.history-group {
+    margin-bottom: var(--space-6);
+}
+
+.history-group-header {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-1);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-bg-canvas);
+}
+
+.history-date {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    width: 60px;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-title {
+    font-weight: var(--weight-medium);
+    font-size: var(--text-sm);
+}
+
+.history-time {
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+.status-badge {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.status-present {
+    color: var(--color-status-success);
+    background: #ECFDF5;
+}
+
+.status-absent {
+    color: var(--color-status-error);
+    background: #FEF2F2;
+}
+
+/* =========================================
+   Live Poll Overlay
+   ========================================= */
+.live-poll-overlay {
+    background: rgba(14, 83, 74, 0.95); /* Dark overlay */
+    backdrop-filter: blur(8px);
+}
+
+.live-poll-card {
+    background: transparent;
+    color: white;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.live-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-12);
+}
+
+.live-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-close-white {
+    color: white;
+    opacity: 0.7;
+    font-size: 24px;
+}
+.btn-close-white:hover { opacity: 1; }
+
+.live-code {
+    font-family: var(--font-mono);
+    font-size: 80px;
+    font-weight: 800;
+    letter-spacing: 12px;
+    margin-bottom: var(--space-8);
+    text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.live-timer-ring {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--space-12);
+}
+
+.progress-ring__circle {
+    transition: 0.35s stroke-dashoffset;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    stroke-dasharray: 326; /* 2 * PI * r */
+    stroke-dashoffset: 60;
+}
+
+.live-time {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.live-stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.stat-box {
+    text-align: center;
+}
+.stat-val { font-size: 48px; font-weight: bold; line-height: 1; }
+.stat-lbl { font-size: 12px; opacity: 0.7; text-transform: uppercase; margin-top: 8px; }

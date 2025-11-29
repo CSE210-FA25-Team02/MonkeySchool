@@ -13,9 +13,9 @@ import {
   createErrorMessage,
   createBaseLayout,
 } from "../utils/html-templates.js";
-import path from "path";
-import { fileURLToPath } from "url";
-import { readFile } from "fs/promises";
+// import path from "path";
+// import { fileURLToPath } from "url";
+// import { readFile } from "fs/promises";
 
 /**
  * Handle Prisma-specific errors
@@ -115,8 +115,8 @@ export function errorHandler(err, req, res) {
  */
 export async function notFoundHandler(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
+  // const __filename = fileURLToPath(import.meta.url);
+  // const __dirname = path.dirname(__filename);
 
   // HTML structure that matches the main content area structure
   // Includes container wrapper to match the layout of other pages
@@ -151,52 +151,14 @@ export async function notFoundHandler(req, res) {
     // For HTMX requests, return partial HTML immediately (goes into #main-content)
     res.status(404).send(errorHtml);
   } else {
-    // For direct navigation, serve the same index.html as home page
-    // This ensures the same layout (navbar, header, footer) is used
-    try {
-      const indexHtmlPath = path.join(__dirname, "..", "public", "index.html");
-      const html = await readFile(indexHtmlPath, "utf8");
-
-      // Replace the main content with the not-implemented message
-      // Find the main-content section and replace everything inside it
-      // The main tag structure: <main id="main-content" ...> ... </main>
-      const mainTagRegex =
-        /(<main id="main-content"[^>]*>)([\s\S]*?)(<\/main>)/;
-      const updatedHtml = html.replace(
-        mainTagRegex,
-        (match, openingTag, oldContent, closingTag) => {
-          // Replace the old content with the error HTML
-          return `${openingTag}
-        ${errorHtml}
-    ${closingTag}`;
-        },
-      );
-      res.status(404).send(updatedHtml);
-    } catch (err) {
-      console.error("Error reading index.html:", err);
-      // Fallback: serve index.html as-is and let client-side handle it
-      // Or use a simpler approach - just serve index.html and the URL will trigger client-side 404 handling
-      try {
-        const indexHtmlPath = path.join(
-          __dirname,
-          "..",
-          "public",
-          "index.html",
-        );
-        const html = await readFile(indexHtmlPath, "utf8");
-        res.status(404).send(html);
-      } catch (fallbackErr) {
-        console.error("Error serving index.html as fallback:", fallbackErr);
-        // Last resort: use base layout
-        const fullPage = createBaseLayout(
-          "Page Under Construction - Monkey School",
-          errorHtml,
-          {
-            description: "This page is currently under construction.",
-          },
-        );
-        res.status(404).send(fullPage);
-      }
-    }
+    // For direct navigation, use createBaseLayout
+    const fullPage = createBaseLayout(
+      "Page Not Found - Monkey School",
+      errorHtml,
+      {
+        description: "The requested page could not be found.",
+      },
+    );
+    res.status(404).send(fullPage);
   }
 }
