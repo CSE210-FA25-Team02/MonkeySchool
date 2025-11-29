@@ -22,6 +22,32 @@ export const getUser = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Create user (JSON API)
+ * Used by legacy tests and backend tools.
+ */
+export const createUser = asyncHandler(async (req, res) => {
+  const user = await userService.createUser(req.body);
+  res.status(201).json(user);
+});
+
+/**
+ * Update user (JSON API)
+ * Only updates fields provided in the request body.
+ */
+export const updateUser = asyncHandler(async (req, res) => {
+  const updated = await userService.updateUser(req.params.id, req.body);
+  res.json(updated);
+});
+
+/**
+ * Delete user (JSON API)
+ */
+export const deleteUser = asyncHandler(async (req, res) => {
+  await userService.deleteUser(req.params.id);
+  res.status(204).send();
+});
+
+/**
  * Load User Profile Page
  * Auth: requireAuth
  */
@@ -92,6 +118,36 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     });
     res.send(fullPage);
   }
+});
+
+/**
+ * Load Profile Page Link Fields (used by main branch UI)
+ * Currently returns a simple dummy input block for social/chat links.
+ */
+export const renderProfileLinkField = asyncHandler(async (req, res) => {
+  const { type } = req.query;
+
+  if (!["social", "chat"].includes(type)) {
+    res.status(400).send("Invalid link type");
+    return;
+  }
+
+  // Minimal HTML used by legacy UI – kept for compatibility with main branch.
+  const label = type === "social" ? "Social link URL" : "Chat handle";
+
+  const html = `
+    <div class="form-group">
+      <label class="form-label">${label}</label>
+      <input
+        type="text"
+        class="form-input"
+        name="${type}Links[]"
+        placeholder="https://example.com/..."
+      />
+    </div>
+  `;
+
+  res.send(html);
 });
 
 /**
