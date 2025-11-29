@@ -1,19 +1,11 @@
-import {
-  Router
-} from "express";
+import { Router } from "express";
 import * as classController from "../controllers/class.controller.js";
-import {
-  asyncHandler
-} from "../utils/async-handler.js";
-import {
-  requireAuth
-} from "../middleware/auth.js";
-import {
-  requireRole
-} from "../middleware/authorize.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { requireAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/authorize.js";
 
 const router = Router({
-  mergeParams: true
+  mergeParams: true,
 });
 
 // ============================================
@@ -33,11 +25,7 @@ router.get(
 );
 
 // Class Detail Page
-router.get(
-  "/:id",
-  requireAuth,
-  asyncHandler(classController.renderClassPage),
-);
+router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
 
 // Class Directory (HTMX partial)
 router.get(

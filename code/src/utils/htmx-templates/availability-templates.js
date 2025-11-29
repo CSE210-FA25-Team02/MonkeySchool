@@ -15,7 +15,15 @@ import { escapeHtml } from "../html-templates.js";
 export function renderAvailabilityPage(user) {
   const displayName = escapeHtml(user?.name || "Student");
 
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   const timeSlots = [
     "8:00 AM",
     "8:30 AM",
@@ -203,5 +211,3 @@ export function renderAvailabilityPage(user) {
     ${scriptHelpers}
   `;
 }
-
-

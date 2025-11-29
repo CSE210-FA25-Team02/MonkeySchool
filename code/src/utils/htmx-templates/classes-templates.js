@@ -12,16 +12,20 @@ import { escapeHtml } from "../html-templates.js";
  * @param {string} activeTab - Currently active tab (directory, attendance, groups, settings)
  * @param {string} content - HTML content for the active tab
  */
-export function renderClassDetail(classInfo, activeTab = 'directory', content = '') {
-    return `
+export function renderClassDetail(
+  classInfo,
+  activeTab = "directory",
+  content = "",
+) {
+  return `
         <!-- Class Banner -->
         <div class="class-banner" style="background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%); border-radius: var(--radius-lg); padding: var(--space-8); color: white; margin-bottom: var(--space-6); position: relative; overflow: hidden;">
             <div class="class-header-content" style="position: relative; z-index: 1;">
-                <span class="class-code" style="font-family: var(--font-mono); background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: var(--radius-full); font-size: var(--text-sm); display: inline-block; margin-bottom: var(--space-4); backdrop-filter: blur(4px);">${escapeHtml(classInfo.code || 'CLASS')}</span>
+                <span class="class-code" style="font-family: var(--font-mono); background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: var(--radius-full); font-size: var(--text-sm); display: inline-block; margin-bottom: var(--space-4); backdrop-filter: blur(4px);">${escapeHtml(classInfo.code || "CLASS")}</span>
                 <h1 class="class-title" style="font-size: var(--text-3xl); font-weight: var(--weight-bold); margin-bottom: var(--space-2);">${escapeHtml(classInfo.name)}</h1>
                 <div class="class-meta" style="display: flex; gap: var(--space-6); font-size: var(--text-sm); opacity: 0.9;">
-                    <div class="class-meta-item"><i class="fa-regular fa-calendar"></i> ${escapeHtml(classInfo.quarter || 'Current')}</div>
-                    <div class="class-meta-item"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(classInfo.location || 'Remote')}</div>
+                    <div class="class-meta-item"><i class="fa-regular fa-calendar"></i> ${escapeHtml(classInfo.quarter || "Current")}</div>
+                    <div class="class-meta-item"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(classInfo.location || "Remote")}</div>
                     <div class="class-meta-item"><i class="fa-solid fa-users"></i> ${classInfo.studentCount || 0} Students</div>
                 </div>
             </div>
@@ -36,22 +40,22 @@ export function renderClassDetail(classInfo, activeTab = 'directory', content = 
             <a href="/classes/${classInfo.id}/directory" 
                hx-get="/classes/${classInfo.id}/directory"
                hx-target="#tab-content"
-               class="tab-item ${activeTab === 'directory' ? 'active' : ''}" 
-               style="padding: var(--space-3) 0; color: ${activeTab === 'directory' ? 'var(--color-brand-deep)' : 'var(--color-text-muted)'}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === 'directory' ? 'var(--color-accent-gold)' : 'transparent'}; cursor: pointer; text-decoration: none;">
+               class="tab-item ${activeTab === "directory" ? "active" : ""}" 
+               style="padding: var(--space-3) 0; color: ${activeTab === "directory" ? "var(--color-brand-deep)" : "var(--color-text-muted)"}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === "directory" ? "var(--color-accent-gold)" : "transparent"}; cursor: pointer; text-decoration: none;">
                Directory
             </a>
             <a href="/classes/${classInfo.id}/attendance"
-               class="tab-item ${activeTab === 'attendance' ? 'active' : ''}"
+               class="tab-item ${activeTab === "attendance" ? "active" : ""}"
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
                Attendance <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px; margin-left: 4px;"></i>
             </a>
             <a href="/classes/${classInfo.id}/groups"
-               class="tab-item ${activeTab === 'groups' ? 'active' : ''}"
+               class="tab-item ${activeTab === "groups" ? "active" : ""}"
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
                Groups
             </a>
             <a href="/classes/${classInfo.id}/settings"
-               class="tab-item ${activeTab === 'settings' ? 'active' : ''}"
+               class="tab-item ${activeTab === "settings" ? "active" : ""}"
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
                Settings
             </a>
@@ -64,15 +68,14 @@ export function renderClassDetail(classInfo, activeTab = 'directory', content = 
     `;
 }
 
-
 /**
  * Render the class directory content (Tab Content)
  * @param {Object} data
  * @returns {string} HTML
  */
 export function renderClassDirectory(data) {
-     // Mock implementation of Directory Tab content (as seen in demo/class.html)
-     return `
+  // Mock implementation of Directory Tab content (as seen in demo/class.html)
+  return `
         <!-- Teaching Staff -->
         <div class="directory-section" style="margin-bottom: var(--space-8);">
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
@@ -133,8 +136,8 @@ export function renderClassDirectory(data) {
  * @returns {string} HTML string
  */
 export function renderClassList(classes) {
-    // Header
-    const headerHTML = `
+  // Header
+  const headerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
             <h1 style="font-size: var(--text-2xl); font-weight: bold;">All Classes</h1>
             <div style="display: flex; gap: 12px;">
@@ -145,30 +148,32 @@ export function renderClassList(classes) {
         </div>
     `;
 
-    // Class Cards
-    const classCardsHTML = classes.map(c => {
-        // Randomize gradient for demo purposes if not specified
-        const gradients = [
-             'linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%)', // Green
-             'linear-gradient(135deg, #1F2937 0%, #4B5563 100%)', // Gray
-             'linear-gradient(135deg, #0369A1 0%, #0EA5E9 100%)', // Blue
-             'linear-gradient(135deg, #7C2D12 0%, #EA580C 100%)'  // Orange
-        ];
-        const bgStyle = c.color || gradients[Math.floor(Math.random() * gradients.length)];
-        
-        return `
+  // Class Cards
+  const classCardsHTML = classes
+    .map((c) => {
+      // Randomize gradient for demo purposes if not specified
+      const gradients = [
+        "linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%)", // Green
+        "linear-gradient(135deg, #1F2937 0%, #4B5563 100%)", // Gray
+        "linear-gradient(135deg, #0369A1 0%, #0EA5E9 100%)", // Blue
+        "linear-gradient(135deg, #7C2D12 0%, #EA580C 100%)", // Orange
+      ];
+      const bgStyle =
+        c.color || gradients[Math.floor(Math.random() * gradients.length)];
+
+      return `
         <div class="course-card-wrapper">
             <a href="/classes/${c.id}" class="course-card">
                 <div class="course-header" style="background: ${bgStyle};">
-                    <span class="course-badge">${escapeHtml(c.quarter || 'Current')}</span>
-                    ${c.isFavorite ? '<i class="fa-solid fa-star" style="color: rgba(255,255,255,0.5);"></i>' : ''}
+                    <span class="course-badge">${escapeHtml(c.quarter || "Current")}</span>
+                    ${c.isFavorite ? '<i class="fa-solid fa-star" style="color: rgba(255,255,255,0.5);"></i>' : ""}
                 </div>
                 <div class="course-body">
-                    <div class="course-code">${escapeHtml(c.code || c.name.split(':')[0] || 'CLASS')}</div>
+                    <div class="course-code">${escapeHtml(c.code || c.name.split(":")[0] || "CLASS")}</div>
                     <div class="course-title">${escapeHtml(c.name)}</div>
                     <div class="course-meta">
                         <div class="meta-item"><i class="fa-solid fa-users"></i> ${c.studentCount || 0}</div>
-                        <div class="meta-item"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(c.location || 'Online')}</div>
+                        <div class="meta-item"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(c.location || "Online")}</div>
                     </div>
                 </div>
             </a>
@@ -177,10 +182,11 @@ export function renderClassList(classes) {
             </a>
         </div>
         `;
-    }).join('');
+    })
+    .join("");
 
-    // Create New Class Card (Always appended)
-    const createCardHTML = `
+  // Create New Class Card (Always appended)
+  const createCardHTML = `
         <button class="course-card create-card" onclick="window.openModal('modal-create-class')">
             <div class="create-icon">
                 <i class="fa-solid fa-plus-circle"></i>
@@ -189,7 +195,7 @@ export function renderClassList(classes) {
         </button>
     `;
 
-    return `
+  return `
         ${headerHTML}
         <div class="courses-grid">
             ${classCardsHTML}
@@ -203,15 +209,15 @@ export function renderClassList(classes) {
  * Create Class Modal
  */
 export function createClassForm(upcomingQuarters = []) {
-    const options = upcomingQuarters.length 
-        ? upcomingQuarters.map(q => `<option value="${q}">${q}</option>`).join('')
-        : `
+  const options = upcomingQuarters.length
+    ? upcomingQuarters.map((q) => `<option value="${q}">${q}</option>`).join("")
+    : `
             <option value="FA25">Fall 2025</option>
             <option value="WI26">Winter 2026</option>
             <option value="SP26">Spring 2026</option>
         `;
 
-    return `
+  return `
     <div id="modal-create-class" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -254,7 +260,7 @@ export function createClassForm(upcomingQuarters = []) {
  * @returns {string} HTML
  */
 export function displayInvite(inviteUrl) {
-    return `
+  return `
         <div style="text-align: center; padding: 16px;">
             <div style="font-size: 48px; margin-bottom: 16px; color: var(--color-brand-medium);">
                 <i class="fa-solid fa-circle-check"></i>

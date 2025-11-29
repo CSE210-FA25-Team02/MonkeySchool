@@ -16,11 +16,19 @@ import { escapeHtml } from "../html-templates.js";
  */
 function generateDummyEvents(classId, startDate) {
   const events = [];
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
   // Monday - Office Hours
   const monday = new Date(startDate);
-  monday.setDate(startDate.getDate() + (1 - startDate.getDay() + 7) % 7);
+  monday.setDate(startDate.getDate() + ((1 - startDate.getDay() + 7) % 7));
   const mondayStart = new Date(monday);
   mondayStart.setHours(7, 30, 0, 0);
   const mondayEnd = new Date(monday);
@@ -36,7 +44,7 @@ function generateDummyEvents(classId, startDate) {
 
   // Monday - Lecture
   const monday2 = new Date(startDate);
-  monday2.setDate(startDate.getDate() + (1 - startDate.getDay() + 7) % 7);
+  monday2.setDate(startDate.getDate() + ((1 - startDate.getDay() + 7) % 7));
   const monday2Start = new Date(monday2);
   monday2Start.setHours(12, 0, 0, 0);
   const monday2End = new Date(monday2);
@@ -52,7 +60,7 @@ function generateDummyEvents(classId, startDate) {
 
   // Tuesday - Office Hours
   const tuesday = new Date(startDate);
-  tuesday.setDate(startDate.getDate() + (2 - startDate.getDay() + 7) % 7);
+  tuesday.setDate(startDate.getDate() + ((2 - startDate.getDay() + 7) % 7));
   const tuesdayStart = new Date(tuesday);
   tuesdayStart.setHours(11, 0, 0, 0);
   const tuesdayEnd = new Date(tuesday);
@@ -68,7 +76,7 @@ function generateDummyEvents(classId, startDate) {
 
   // Tuesday - Team Meeting
   const tuesday2 = new Date(startDate);
-  tuesday2.setDate(startDate.getDate() + (2 - startDate.getDay() + 7) % 7);
+  tuesday2.setDate(startDate.getDate() + ((2 - startDate.getDay() + 7) % 7));
   const tuesday2Start = new Date(tuesday2);
   tuesday2Start.setHours(14, 0, 0, 0);
   const tuesday2End = new Date(tuesday2);
@@ -84,7 +92,7 @@ function generateDummyEvents(classId, startDate) {
 
   // Tuesday - Lecture
   const tuesday3 = new Date(startDate);
-  tuesday3.setDate(startDate.getDate() + (2 - startDate.getDay() + 7) % 7);
+  tuesday3.setDate(startDate.getDate() + ((2 - startDate.getDay() + 7) % 7));
   const tuesday3Start = new Date(tuesday3);
   tuesday3Start.setHours(23, 10, 0, 0);
   const tuesday3End = new Date(tuesday3);
@@ -100,7 +108,7 @@ function generateDummyEvents(classId, startDate) {
 
   // Wednesday - Lecture
   const wednesday = new Date(startDate);
-  wednesday.setDate(startDate.getDate() + (3 - startDate.getDay() + 7) % 7);
+  wednesday.setDate(startDate.getDate() + ((3 - startDate.getDay() + 7) % 7));
   const wednesdayStart = new Date(wednesday);
   wednesdayStart.setHours(23, 6, 0, 0);
   const wednesdayEnd = new Date(wednesday);
@@ -161,7 +169,11 @@ function getEventTypeIcon(type) {
  * @param {Date} currentDate - Current date for the view
  * @returns {string} HTML string
  */
-export function renderSchedulePage(classInfo, view = "week", currentDate = new Date()) {
+export function renderSchedulePage(
+  classInfo,
+  view = "week",
+  currentDate = new Date(),
+) {
   const classId = classInfo.id;
   const className = escapeHtml(classInfo.name);
   const classQuarter = escapeHtml(classInfo.quarter || "Current");
@@ -191,7 +203,15 @@ export function renderSchedulePage(classInfo, view = "week", currentDate = new D
   }
 
   // Format dates for display
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   const dayAbbr = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   // Get week dates
@@ -255,11 +275,15 @@ export function renderSchedulePage(classInfo, view = "week", currentDate = new D
                           <div class="schedule-event__time">
                             <i class="fa-regular fa-clock"></i> ${startTime} - ${endTime}
                           </div>
-                          ${event.location ? `
+                          ${
+                            event.location
+                              ? `
                             <div class="schedule-event__location">
                               <i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}
                             </div>
-                          ` : ""}
+                          `
+                              : ""
+                          }
                         </div>
                       </div>
                     `;
@@ -281,12 +305,13 @@ export function renderSchedulePage(classInfo, view = "week", currentDate = new D
         <div class="schedule-day-date-large">${displayDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</div>
       </div>
       <div class="schedule-day-events-list">
-        ${displayEvents.length > 0
-          ? displayEvents
-              .map((event) => {
-                const startTime = formatTime(event.start);
-                const endTime = formatTime(event.end);
-                return `
+        ${
+          displayEvents.length > 0
+            ? displayEvents
+                .map((event) => {
+                  const startTime = formatTime(event.start);
+                  const endTime = formatTime(event.end);
+                  return `
                   <div class="schedule-event ${getEventTypeClass(event.type)}" data-event-id="${event.id}">
                     <div class="schedule-event__icon">
                       <i class="fa-solid ${getEventTypeIcon(event.type)}"></i>
@@ -296,17 +321,22 @@ export function renderSchedulePage(classInfo, view = "week", currentDate = new D
                       <div class="schedule-event__time">
                         <i class="fa-regular fa-clock"></i> ${startTime} - ${endTime}
                       </div>
-                      ${event.location ? `
+                      ${
+                        event.location
+                          ? `
                         <div class="schedule-event__location">
                           <i class="fa-solid fa-location-dot"></i> ${escapeHtml(event.location)}
                         </div>
-                      ` : ""}
+                      `
+                          : ""
+                      }
                     </div>
                   </div>
                 `;
-              })
-              .join("")
-          : '<div class="schedule-empty-state">No events scheduled for this day.</div>'}
+                })
+                .join("")
+            : '<div class="schedule-empty-state">No events scheduled for this day.</div>'
+        }
       </div>
     </div>
   `;
@@ -463,4 +493,3 @@ function renderCreateEventModal(classId) {
     </script>
   `;
 }
-

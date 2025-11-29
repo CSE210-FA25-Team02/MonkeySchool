@@ -6,9 +6,7 @@
  * Per NOTES: UI for prof and student has to be separated
  */
 
-import {
-  escapeHtml
-} from "../html-templates.js";
+import { escapeHtml } from "../html-templates.js";
 
 /**
  * Render the main attendance page
@@ -19,7 +17,10 @@ import {
  */
 export function renderAttendancePage(user, courses = [], studentHistory = []) {
   // Check if user is professor/TA (can manage attendance)
-  const isProf = (user && user.isProf) || (user && user.role === "PROFESSOR") || (user && user.role === "TA");
+  const isProf =
+    (user && user.isProf) ||
+    (user && user.role === "PROFESSOR") ||
+    (user && user.role === "TA");
 
   return `
     <div class="container">
@@ -101,36 +102,39 @@ export function renderAttendancePage(user, courses = [], studentHistory = []) {
 function renderProfessorView(courses) {
   // Mock courses if none provided
   const displayCourses =
-    courses.length > 0 ?
-    courses : [{
-        id: "cse210",
-        name: "CSE 210: Software Engineering",
-        quarter: "FA25",
-        sessions: [{
-            id: "s1",
-            name: "Week 5: Design Patterns",
-            date: "Nov 23, 2025",
-            time: "10:00 AM",
-            code: "8392 1045",
-            status: "active",
+    courses.length > 0
+      ? courses
+      : [
+          {
+            id: "cse210",
+            name: "CSE 210: Software Engineering",
+            quarter: "FA25",
+            sessions: [
+              {
+                id: "s1",
+                name: "Week 5: Design Patterns",
+                date: "Nov 23, 2025",
+                time: "10:00 AM",
+                code: "8392 1045",
+                status: "active",
+              },
+              {
+                id: "s2",
+                name: "Week 4: Architecture",
+                date: "Nov 16, 2025",
+                time: "10:00 AM",
+                code: "9921 0034",
+                status: "expired",
+              },
+            ],
           },
           {
-            id: "s2",
-            name: "Week 4: Architecture",
-            date: "Nov 16, 2025",
-            time: "10:00 AM",
-            code: "9921 0034",
-            status: "expired",
+            id: "cse110",
+            name: "CSE 110: Software Engineering (Undergrad)",
+            quarter: "FA25",
+            sessions: [],
           },
-        ],
-      },
-      {
-        id: "cse110",
-        name: "CSE 110: Software Engineering (Undergrad)",
-        quarter: "FA25",
-        sessions: [],
-      },
-    ];
+        ];
 
   return `
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
@@ -148,7 +152,8 @@ function renderProfessorView(courses) {
  */
 function renderCourseCard(course, expanded = true) {
   // Check if course has any active sessions
-  const hasActiveSessions = course.sessions && course.sessions.some((s) => s.status === "active");
+  const hasActiveSessions =
+    course.sessions && course.sessions.some((s) => s.status === "active");
 
   return `
     <div class="bento-card span-4" style="margin-bottom: var(--space-6);">
@@ -199,7 +204,8 @@ function renderSessionsTable(sessions) {
  * Render a single session row
  */
 function renderSessionRow(session) {
-  const statusClass = session.status === "active" ? "status-active" : "status-expired";
+  const statusClass =
+    session.status === "active" ? "status-active" : "status-expired";
   const statusLabel = session.status === "active" ? "Active" : "Expired";
 
   return `
@@ -241,35 +247,40 @@ function renderEmptySessions() {
 function renderStudentView(history) {
   // Mock history if none provided
   const displayHistory =
-    history.length > 0 ?
-    history : [{
-        course: "CSE 210",
-        rate: "92%",
-        records: [{
-            date: "Nov 16",
-            session: "Week 4: Architecture",
-            time: "10:05 AM",
-            status: "present"
+    history.length > 0
+      ? history
+      : [
+          {
+            course: "CSE 210",
+            rate: "92%",
+            records: [
+              {
+                date: "Nov 16",
+                session: "Week 4: Architecture",
+                time: "10:05 AM",
+                status: "present",
+              },
+              {
+                date: "Nov 09",
+                session: "Week 3: Agile Methods",
+                time: "10:02 AM",
+                status: "present",
+              },
+            ],
           },
           {
-            date: "Nov 09",
-            session: "Week 3: Agile Methods",
-            time: "10:02 AM",
-            status: "present"
+            course: "CSE 202",
+            rate: "85%",
+            records: [
+              {
+                date: "Nov 22",
+                session: "Dynamic Programming",
+                time: "--:--",
+                status: "absent",
+              },
+            ],
           },
-        ],
-      },
-      {
-        course: "CSE 202",
-        rate: "85%",
-        records: [{
-          date: "Nov 22",
-          session: "Dynamic Programming",
-          time: "--:--",
-          status: "absent"
-        }],
-      },
-    ];
+        ];
 
   return `
     <div class="attendance-student-grid">
@@ -327,7 +338,8 @@ function renderHistoryGroup(group) {
  * Render history item
  */
 function renderHistoryItem(record) {
-  const statusClass = record.status === "present" ? "status-present" : "status-absent";
+  const statusClass =
+    record.status === "present" ? "status-present" : "status-absent";
   const statusLabel = record.status === "present" ? "Present" : "Absent";
 
   return `

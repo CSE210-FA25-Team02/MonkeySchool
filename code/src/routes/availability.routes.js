@@ -9,5 +9,3 @@ const router = Router();
 router.get("/", requireAuth, asyncHandler(getAvailabilityPage));
 
 export default router;
-
-

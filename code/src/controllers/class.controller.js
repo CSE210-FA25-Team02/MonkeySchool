@@ -2,18 +2,18 @@
  * ============================================================================
  * Class Controller
  * ============================================================================
- * 
+ *
  * File: code/src/controllers/class.controller.js
- * 
+ *
  * This controller handles all class-related routes including:
  * - Rendering class list page (My Classes)
  * - Rendering class detail page with directory
  * - CRUD operations for classes
- * 
+ *
  * BACKEND DATA FLOW:
  * - Frontend templates are in: utils/htmx-templates/classes-templates.js
  * - Real data comes from: services/class.service.js
- * 
+ *
  * ============================================================================
  */
 
@@ -21,7 +21,7 @@ import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import {
   getUpcomingQuarters,
-  createBaseLayout
+  createBaseLayout,
 } from "../utils/html-templates.js";
 import {
   createClassForm,
@@ -30,12 +30,8 @@ import {
   renderClassDirectory as renderDirectoryTemplate,
   renderClassDetail,
 } from "../utils/htmx-templates/classes-templates.js";
-import {
-  asyncHandler
-} from "../utils/async-handler.js";
-import {
-  NotFoundError
-} from "../utils/api-error.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { NotFoundError } from "../utils/api-error.js";
 
 // ============================================================================
 // PAGE ROUTES - These render full HTML pages
@@ -43,7 +39,7 @@ import {
 
 /**
  * Render My Classes Page
- * 
+ *
  * Route: GET /classes/my-classes
  * Auth: requireAuth
  */
@@ -70,14 +66,12 @@ export const renderUserClasses = asyncHandler(async (req, res) => {
 
 /**
  * Render Class Detail Page
- * 
+ *
  * Route: GET /classes/:id
  * Auth: requireAuth
  */
 export const renderClassPage = asyncHandler(async (req, res) => {
-  const {
-    id
-  } = req.params;
+  const { id } = req.params;
 
   // Fetch class info
   const klass = await classService.getClassById(id);
@@ -92,13 +86,15 @@ export const renderClassPage = asyncHandler(async (req, res) => {
   }
 
   // Render page
-  const content = renderDirectoryTemplate(directory || {
-    class: klass,
-    professors: [],
-    tas: [],
-    tutors: [],
-    groups: []
-  });
+  const content = renderDirectoryTemplate(
+    directory || {
+      class: klass,
+      professors: [],
+      tas: [],
+      tutors: [],
+      groups: [],
+    },
+  );
   const pageHtml = renderClassDetail(klass, "directory", content);
 
   const isHtmx = req.headers["hx-request"];
@@ -112,18 +108,20 @@ export const renderClassPage = asyncHandler(async (req, res) => {
 
 /**
  * Render Class Directory (HTMX Partial)
- * 
+ *
  * Route: GET /classes/:id/directory
  * Used for: Tab switching in class detail page
  */
 export const renderClassDirectory = asyncHandler(async (req, res) => {
   const directory = await classService.getClassDirectory(req.params.id);
-  const content = renderDirectoryTemplate(directory || {
-    professors: [],
-    tas: [],
-    tutors: [],
-    groups: []
-  });
+  const content = renderDirectoryTemplate(
+    directory || {
+      professors: [],
+      tas: [],
+      tutors: [],
+      groups: [],
+    },
+  );
   res.send(content);
 });
 
@@ -169,15 +167,12 @@ export const getUserClasses = asyncHandler(async (req, res) => {
  * Create a New Class
  * Route: POST /classes/create
  * Auth: requireAuth
- * 
+ *
  * NOTE: For demo purposes, any authenticated user can create a class.
  * TODO: In production, restrict to isProf === true
  */
 export const createClass = asyncHandler(async (req, res) => {
-  const {
-    name,
-    quarter
-  } = req.body;
+  const { name, quarter } = req.body;
   const userId = req.user.id;
 
   // TODO: Uncomment for production to restrict to professors only
@@ -194,7 +189,7 @@ export const createClass = asyncHandler(async (req, res) => {
   try {
     klass = await classService.createClass({
       name,
-      quarter
+      quarter,
     });
   } catch (err) {
     console.error("Error creating class:", err);
@@ -249,21 +244,21 @@ export const getClassByInviteCode = asyncHandler(async (req, res) => {
 /**
  * Join Class by Invite Code (Page Route)
  * Route: GET /invite/:code
- * 
+ *
  * This is the top-level invite route that students use to join a class.
  * It adds the user as a STUDENT and redirects to the class page.
  */
 export const joinClassByInviteCode = asyncHandler(async (req, res) => {
-  const {
-    code
-  } = req.params;
+  const { code } = req.params;
   const userId = req.user.id;
 
   // Find class by invite code
   const klass = await classService.getClassByInviteCode(code);
   if (!klass) {
     // Show error page
-    const errorHtml = createBaseLayout("Invalid Invite", `
+    const errorHtml = createBaseLayout(
+      "Invalid Invite",
+      `
       <div style="text-align: center; padding: 48px;">
         <div style="font-size: 64px; margin-bottom: 16px; color: var(--color-status-error);">
           <i class="fa-solid fa-circle-xmark"></i>
@@ -274,7 +269,8 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         </p>
         <a href="/" class="btn btn--primary">Go to Dashboard</a>
       </div>
-    `);
+    `,
+    );
     return res.status(404).send(errorHtml);
   }
 
@@ -294,7 +290,9 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
   });
 
   // Show success page
-  const successHtml = createBaseLayout("Joined Class", `
+  const successHtml = createBaseLayout(
+    "Joined Class",
+    `
     <div style="text-align: center; padding: 48px;">
       <div style="font-size: 64px; margin-bottom: 16px; color: var(--color-brand-medium);">
         <i class="fa-solid fa-circle-check"></i>
@@ -308,7 +306,8 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         <a href="/classes/${klass.id}" class="btn btn--primary">Go to Class</a>
       </div>
     </div>
-  `);
+  `,
+  );
   res.send(successHtml);
 });
 

@@ -39,6 +39,10 @@ router.use("/:quarter/classRoles", classRoleRoutes);
 
 // Top-level invite route for joining classes
 // URL: /invite/XXXXXXXX
-router.get("/invite/:code", requireAuth, asyncHandler(classController.joinClassByInviteCode));
+router.get(
+  "/invite/:code",
+  requireAuth,
+  asyncHandler(classController.joinClassByInviteCode),
+);
 
 export default router;

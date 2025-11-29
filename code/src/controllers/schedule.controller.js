@@ -43,12 +43,9 @@ export const renderClassSchedule = asyncHandler(async (req, res) => {
   if (isHtmx) {
     res.send(content);
   } else {
-    const fullPage = createBaseLayout(
-      `${klass.name} - Schedule`,
-      content,
-      { user: req.user },
-    );
+    const fullPage = createBaseLayout(`${klass.name} - Schedule`, content, {
+      user: req.user,
+    });
     res.send(fullPage);
   }
 });
-

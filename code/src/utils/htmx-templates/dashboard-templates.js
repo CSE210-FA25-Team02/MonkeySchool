@@ -3,9 +3,7 @@
  * code/src/utils/htmx-templates/dashboard-templates.js
  */
 
-import {
-    escapeHtml
-} from "../html-templates.js";
+import { escapeHtml } from "../html-templates.js";
 
 /**
  * Create the main dashboard HTML
@@ -15,9 +13,10 @@ import {
  * @returns {string} HTML string
  */
 export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
-    // Get user's first name for greeting, fallback to 'Student' for demo mode
-    const displayName = (user && user.name) ? escapeHtml(user.name.split(' ')[0]) : 'Student';
-    return `
+  // Get user's first name for greeting, fallback to 'Student' for demo mode
+  const displayName =
+    user && user.name ? escapeHtml(user.name.split(" ")[0]) : "Student";
+  return `
     <div class="bento-grid">
         <!-- Welcome Card -->
         <div class="bento-card span-2 card-welcome">
@@ -90,36 +89,37 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
 }
 
 function renderUpcomingEvents(events) {
-    if (!events || events.length === 0) {
-        return `<div style="text-align: center; padding: 16px; color: var(--color-text-muted);">No upcoming events</div>`;
-    }
+  if (!events || events.length === 0) {
+    return `<div style="text-align: center; padding: 16px; color: var(--color-text-muted);">No upcoming events</div>`;
+  }
 
-    const iconMap = {
-        lecture: {
-            icon: 'fa-book-open',
-            bg: '#E0F2FE',
-            color: '#0284C7'
-        },
-        meeting: {
-            icon: 'fa-user-group',
-            bg: '#F3E8FF',
-            color: '#7C3AED'
-        },
-        'office-hours': {
-            icon: 'fa-clock',
-            bg: '#FEF3C7',
-            color: '#D97706'
-        },
-        default: {
-            icon: 'fa-calendar',
-            bg: '#E5E7EB',
-            color: '#6B7280'
-        },
-    };
+  const iconMap = {
+    lecture: {
+      icon: "fa-book-open",
+      bg: "#E0F2FE",
+      color: "#0284C7",
+    },
+    meeting: {
+      icon: "fa-user-group",
+      bg: "#F3E8FF",
+      color: "#7C3AED",
+    },
+    "office-hours": {
+      icon: "fa-clock",
+      bg: "#FEF3C7",
+      color: "#D97706",
+    },
+    default: {
+      icon: "fa-calendar",
+      bg: "#E5E7EB",
+      color: "#6B7280",
+    },
+  };
 
-    return events.map(e => {
-        const style = iconMap[e.type] || iconMap.default;
-        return `
+  return events
+    .map((e) => {
+      const style = iconMap[e.type] || iconMap.default;
+      return `
             <div class="list-item">
                 <div class="list-item-icon" style="background: ${style.bg}; color: ${style.color};">
                     <i class="fa-solid ${style.icon}"></i>
@@ -130,20 +130,23 @@ function renderUpcomingEvents(events) {
                 </div>
             </div>
         `;
-    }).join('');
+    })
+    .join("");
 }
 
 function renderRecentClassesList(classes) {
-    if (!classes || classes.length === 0) {
-        return `
+  if (!classes || classes.length === 0) {
+    return `
             <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
                 <p>No classes yet.</p>
                 <button class="btn btn--text" onclick="openModal('modal-create-class')">Create your first class</button>
             </div>
         `;
-    }
+  }
 
-    return classes.map(c => `
+  return classes
+    .map(
+      (c) => `
         <div class="list-item">
             <div class="list-item-icon">
                 <i class="fa-solid fa-graduation-cap"></i>
@@ -156,11 +159,13 @@ function renderRecentClassesList(classes) {
                 <a href="/classes/${c.id}" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></a>
             </div>
         </div>
-    `).join('');
+    `,
+    )
+    .join("");
 }
 
 export function createCreateClassModal() {
-    return `
+  return `
     <div id="modal-create-class" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -197,7 +202,7 @@ export function createCreateClassModal() {
 }
 
 export function createQuickJournalModal() {
-    return `
+  return `
     <div id="modal-quick-journal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">

@@ -128,10 +128,26 @@ function renderActivityTimeline(activity) {
     activity.length > 0
       ? activity
       : [
-          { type: "punch", title: 'Punched in for <strong>CSE 210</strong>', time: "Today, 9:58 AM" },
-          { type: "post", title: "Commented on Group Discussion", time: "Yesterday, 4:30 PM" },
-          { type: "punch", title: 'Punched out from <strong>CSE 202</strong>', time: "Yesterday, 2:00 PM" },
-          { type: "join", title: 'Joined <strong>Team Alpha</strong>', time: "Last week" },
+          {
+            type: "punch",
+            title: "Punched in for <strong>CSE 210</strong>",
+            time: "Today, 9:58 AM",
+          },
+          {
+            type: "post",
+            title: "Commented on Group Discussion",
+            time: "Yesterday, 4:30 PM",
+          },
+          {
+            type: "punch",
+            title: "Punched out from <strong>CSE 202</strong>",
+            time: "Yesterday, 2:00 PM",
+          },
+          {
+            type: "join",
+            title: "Joined <strong>Team Alpha</strong>",
+            time: "Last week",
+          },
         ];
 
   const iconMap = {
@@ -153,7 +169,7 @@ function renderActivityTimeline(activity) {
           <div class="timeline-meta">${escapeHtml(item.time)}</div>
         </div>
       </div>
-    `
+    `,
     )
     .join("");
 }
