@@ -236,7 +236,8 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
     // For direct navigation, use createBaseLayout
     const fullPage = createBaseLayout(
       `${session.name} - Attendance Records`,
-      html
+      html,
+      { user: req.user },
     );
     res.send(fullPage);
   }
@@ -291,7 +292,8 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
     // For direct navigation, use createBaseLayout
     const fullPage = createBaseLayout(
       `${klass.name} - Attendance Records`,
-      html
+      html,
+      { user: req.user },
     );
     res.send(fullPage);
   }
@@ -626,7 +628,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
   if (isHtmxRequest) {
     res.send(html);
   } else {
-    const fullPage = createBaseLayout("Attendance", html);
+    const fullPage = createBaseLayout("Attendance", html, { user });
     res.send(fullPage);
   }
 });

@@ -59,7 +59,7 @@ export const getDashboard = asyncHandler(async (req, res) => {
     if (isHtmxRequest) {
         res.send(dashboardHtml);
     } else {
-        const fullHtml = createBaseLayout("Dashboard", dashboardHtml);
+        const fullHtml = createBaseLayout("Dashboard", dashboardHtml, { user });
         res.send(fullHtml);
     }
 });

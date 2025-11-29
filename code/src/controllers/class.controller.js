@@ -63,7 +63,7 @@ export const renderUserClasses = asyncHandler(async (req, res) => {
   if (isHtmxRequest) {
     res.send(content);
   } else {
-    const fullPage = createBaseLayout("My Classes", content);
+    const fullPage = createBaseLayout("My Classes", content, { user });
     res.send(fullPage);
   }
 });
@@ -105,7 +105,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
   if (isHtmx) {
     res.send(pageHtml);
   } else {
-    const fullPage = createBaseLayout(klass.name, pageHtml);
+    const fullPage = createBaseLayout(klass.name, pageHtml, { user: req.user });
     res.send(fullPage);
   }
 });
