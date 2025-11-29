@@ -66,6 +66,7 @@ export function createBaseLayout(title, content, options = {}) {
     <!-- Page Specific Styles -->
     <link rel="stylesheet" href="/css/pages/class-list.css">
     <link rel="stylesheet" href="/css/pages/profile.css">
+    <link rel="stylesheet" href="/css/pages/availability.css">
     <!-- Legacy support for specific pages until migrated -->
     <link rel="stylesheet" href="/css/pages/attendance.css">
 
@@ -80,29 +81,33 @@ export function createBaseLayout(title, content, options = {}) {
                 <i class="fa-solid fa-graduation-cap"></i>
             </div>
             <nav class="nav-menu">
-                <a href="/" class="nav-item ${title === 'Dashboard' ? 'active' : ''}" title="Dashboard">
+                <a href="/" class="nav-item ${title === "Dashboard" ? "active" : ""}" title="Dashboard">
                     <i class="fa-solid fa-grip-vertical nav-icon"></i>
                 </a>
-                <a href="/classes" class="nav-item ${title === 'Classes' ? 'active' : ''}" title="My Classes">
+                <a href="/classes" class="nav-item ${title === "Classes" ? "active" : ""}" title="My Classes">
                     <i class="fa-solid fa-book-open nav-icon"></i>
                 </a>
-                <a href="/attendance" class="nav-item ${title === 'Attendance' ? 'active' : ''}" title="Attendance">
+                <a href="/attendance" class="nav-item ${title === "Attendance" ? "active" : ""}" title="Attendance">
                     <i class="fa-solid fa-clipboard-user nav-icon"></i>
                 </a>
-                <a href="#" class="nav-item" title="My Groups">
+                <a href="/availability" class="nav-item ${title === "Availability" ? "active" : ""}" title="My Groups">
                     <i class="fa-solid fa-users-rectangle nav-icon"></i>
                 </a>
-                <a href="/users/profile" class="nav-item ${title === 'Profile' ? 'active' : ''}" title="Settings">
+                <a href="/users/profile" class="nav-item ${title === "Profile" ? "active" : ""}" title="Settings">
                     <i class="fa-solid fa-gear nav-icon"></i>
                 </a>
             </nav>
             
             <div style="margin-top: auto; padding-bottom: 24px;">
-                 <form action="/auth/logout" method="POST" style="display: inline;">
-                    <button type="submit" class="nav-item" title="Logout" style="background:none; border:none; cursor:pointer; width: 48px; height: 48px;">
-                        <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i>
-                    </button>
-                </form>
+                <button 
+                    type="button" 
+                    class="nav-item" 
+                    title="Logout" 
+                    style="background:none; border:none; cursor:pointer; width: 48px; height: 48px;"
+                    onclick="openModal('modal-logout')"
+                >
+                    <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i>
+                </button>
             </div>
         </aside>
 
@@ -134,6 +139,56 @@ export function createBaseLayout(title, content, options = {}) {
         </main>
     </div>
     
+    <!-- Logout Confirmation Modal -->
+    <div id="modal-logout" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Sign out</h3>
+          <button class="btn-close" onclick="closeModal('modal-logout')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="margin-bottom: 8px;">Are you sure you want to log out?</p>
+          <p style="font-size: 12px; color: var(--color-text-muted);">
+            You can sign back in anytime using your UCSD email.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="button" 
+            class="btn btn--secondary" 
+            onclick="closeModal('modal-logout')"
+          >
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn btn--primary"
+            onclick="handleLogoutConfirm()"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.handleLogoutConfirm = function () {
+        // Close modal immediately for snappy UX
+        if (typeof closeModal === "function") {
+          closeModal("modal-logout");
+        }
+
+        // Prefer HTMX for partial swap if available
+        if (typeof htmx !== "undefined") {
+          htmx.ajax("GET", "/auth/logout", { target: "body", swap: "outerHTML" });
+        } else {
+          window.location.href = "/auth/logout";
+        }
+      };
+    </script>
+
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 </body>
@@ -153,7 +208,7 @@ export function createErrorMessage(message, errors = null) {
   return `
     <div class="alert alert--error" role="alert">
         <strong>Error:</strong> ${escapeHtml(message)}
-        ${details ? `<br><small>${escapeHtml(details)}</small>` : ''}
+        ${details ? `<br><small>${escapeHtml(details)}</small>` : ""}
     </div>
     <script>
         if (window.showToast) {
