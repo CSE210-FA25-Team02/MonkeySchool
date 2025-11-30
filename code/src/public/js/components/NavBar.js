@@ -78,6 +78,7 @@ export class NavBar {
     const icons = {
       home: '<i class="fas fa-home" aria-hidden="true"></i>',
       book: '<i class="fas fa-book" aria-hidden="true"></i>',
+      users: '<i class="fas fa-users" aria-hidden="true"></i>',
       user: '<i class="fas fa-user" aria-hidden="true"></i>',
     };
     return (

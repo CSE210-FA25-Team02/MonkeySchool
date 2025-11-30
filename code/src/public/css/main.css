@@ -17,6 +17,8 @@
 @import "./components/class-directory.css";
 @import "./components/member-cards.css";
 @import "./components/group-cards.css";
+@import "./components/calendar-grid.css";
+@import "./components/groups-dashboard.css";
 @import './punchcard.css';
 @import './components/attendance.css';
 

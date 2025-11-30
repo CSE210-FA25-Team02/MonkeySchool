@@ -123,6 +123,8 @@ export async function getUserAvailability(userId) {
  * @returns {Promise<Object>}
  */
 export async function getGroupAvailability(groupId) {
+  console.log(`[getGroupAvailability] Getting availability for groupId: ${groupId}`);
+  
   // Get all group members with their availability
   const groupMembers = await prisma.groupRole.findMany({
     where: { groupId },
@@ -135,6 +137,16 @@ export async function getGroupAvailability(groupId) {
         }
       }
     }
+  });
+
+  console.log(`[getGroupAvailability] Found ${groupMembers.length} group members`);
+  groupMembers.forEach((member, index) => {
+    console.log(`[getGroupAvailability] Member ${index + 1}: ${member.user.name || member.user.email} (${member.user.id})`);
+    console.log(`[getGroupAvailability] - Role: ${member.role}`);
+    console.log(`[getGroupAvailability] - Availability records: ${member.user.availability.length}`);
+    member.user.availability.forEach((avail, availIndex) => {
+      console.log(`[getGroupAvailability]   ${availIndex + 1}. Day ${avail.dayOfWeek}, ${avail.startTime}-${avail.endTime}, Available: ${avail.isAvailable}`);
+    });
   });
 
   const totalMembers = groupMembers.length;
@@ -153,11 +165,16 @@ export async function getGroupAvailability(groupId) {
   }
 
   // Count availability for each time slot
+  console.log(`[getGroupAvailability] Processing availability for ${groupMembers.length} members...`);
   groupMembers.forEach(member => {
+    console.log(`[getGroupAvailability] Processing member: ${member.user.name || member.user.email}`);
     member.user.availability.forEach(avail => {
+      console.log(`[getGroupAvailability] Processing availability: Day ${avail.dayOfWeek}, ${avail.startTime}-${avail.endTime}`);
       // For each availability range, count all 30-min slots
       const startIndex = TIME_SLOTS.indexOf(avail.startTime);
       const endIndex = TIME_SLOTS.indexOf(avail.endTime);
+      
+      console.log(`[getGroupAvailability] Time slot indices: start=${startIndex}, end=${endIndex}`);
       
       if (startIndex !== -1 && endIndex !== -1) {
         for (let i = startIndex; i < endIndex; i++) {
@@ -167,7 +184,10 @@ export async function getGroupAvailability(groupId) {
             id: member.user.id,
             name: member.user.preferredName || member.user.name
           });
+          console.log(`[getGroupAvailability] Added ${member.user.name || member.user.email} to day ${avail.dayOfWeek}, slot ${timeSlot}`);
         }
+      } else {
+        console.log(`[getGroupAvailability] ERROR: Invalid time slots for ${avail.startTime}-${avail.endTime}`);
       }
     });
   });

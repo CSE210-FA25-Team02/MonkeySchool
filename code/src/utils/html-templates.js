@@ -51,6 +51,7 @@ export function createBaseLayout(title, content, options = {}) {
     
     <!-- Application Scripts -->
     <script type="module" src="/js/app.js" defer></script>
+    <script type="module" src="/js/components/AvailabilityCalendar.js" defer></script>
 </head>
 <body>
     <!-- Skip to main content for screen readers -->

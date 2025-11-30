@@ -28,6 +28,11 @@ export const navigationConfig = {
       ],
     },
     {
+      name: "Groups",
+      path: "/groups",
+      icon: "users",
+    },
+    {
       name: "Account",
       path: "/account",
       icon: "user",
