@@ -85,6 +85,14 @@ export const renderClassPage = asyncHandler(async (req, res) => {
     directory.class = klass;
   }
 
+  // Class Information
+  const studentCount = klass.members.filter(m => m.role === "STUDENT").length;
+
+  const classInfo = {
+    ...klass,
+    studentCount
+  };
+
   // Render page
   const content = renderDirectoryTemplate(
     directory || {
@@ -95,7 +103,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       groups: [],
     },
   );
-  const pageHtml = renderClassDetail(klass, "directory", content);
+  const pageHtml = renderClassDetail(classInfo, "directory", content);
 
   const isHtmx = req.headers["hx-request"];
   if (isHtmx) {

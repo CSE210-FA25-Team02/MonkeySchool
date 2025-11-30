@@ -108,7 +108,17 @@ export async function getClassesByUserId(userId) {
       userId,
     },
     include: {
-      class: true,
+      class: {
+        include: {
+          _count: {
+            select: { 
+              members: {
+                where: {role: "STUDENT"}
+              }, 
+            }, 
+          },
+        },
+      },
     },
   });
 
@@ -119,6 +129,7 @@ export async function getClassesByUserId(userId) {
     inviteCode: cr.class.inviteCode,
     createdAt: cr.class.createdAt,
     role: cr.role,
+    studentCount: cr.class._count.members,
   }));
 }
 

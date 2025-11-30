@@ -3,7 +3,7 @@
  * code/src/utils/htmx-templates/classes-templates.js
  */
 
-import { escapeHtml } from "../html-templates.js";
+import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
 
 /**
  * Render the Class Detail Page (Tabs + Content).
@@ -204,7 +204,7 @@ export function renderClassList(classes) {
             ${classCardsHTML}
             ${createCardHTML}
         </div>
-        ${createClassForm()}
+        ${createClassForm(getUpcomingQuarters())}
     `;
 }
 
@@ -216,7 +216,7 @@ export function renderClassList(classes) {
  */
 export function createClassForm(upcomingQuarters = []) {
   const options = upcomingQuarters.length
-    ? upcomingQuarters.map((q) => `<option value="${q}">${q}</option>`).join("")
+    ? upcomingQuarters.map((q) => `<option value="${q.code}">${q.full}</option>`).join("")
     : `
             <option value="FA25">Fall 2025</option>
             <option value="WI26">Winter 2026</option>
@@ -275,7 +275,7 @@ export function displayInvite(inviteUrl) {
             <p style="color: var(--color-text-muted); margin-bottom: 16px;">Share this invite link with your students:</p>
             <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                 <input type="text" readonly value="${escapeHtml(inviteUrl)}" id="invite-url-input" class="form-input" style="flex: 1; font-size: 12px;" onclick="this.select()">
-                <button class="btn btn--secondary" id="copy-invite-btn" onclick="copyInviteUrl()">
+                <button type="button" class="btn btn--secondary" id="copy-invite-btn" onclick="copyInviteUrl()">
                     <i class="fa-solid fa-copy"></i> Copy
                 </button>
             </div>

@@ -3,7 +3,7 @@
  * code/src/utils/htmx-templates/dashboard-templates.js
  */
 
-import { escapeHtml } from "../html-templates.js";
+import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
 
 /**
  * Create the main dashboard HTML
@@ -81,7 +81,7 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
     </div>
 
     <!-- Create Class Modal (Hidden by default) -->
-    ${createCreateClassModal()}
+    ${createCreateClassModal(getUpcomingQuarters())}
     
     <!-- Quick Journal Modal -->
     ${createQuickJournalModal()}
@@ -181,7 +181,15 @@ function renderRecentClassesList(classes) {
  *
  * @returns {string} HTML string
  */
-export function createCreateClassModal() {
+export function createCreateClassModal(upcomingQuarters = []) {
+  const options = upcomingQuarters.length
+    ? upcomingQuarters.map((q) => `<option value="${q.code}">${q.full}</option>`).join("")
+    : `
+        <option value="FA25">Fall 2025</option>
+        <option value="WI26">Winter 2026</option>
+        <option value="SP26">Spring 2026</option>
+    `;
+
   return `
     <div id="modal-create-class" class="modal-overlay">
         <div class="modal-card">
@@ -202,9 +210,7 @@ export function createCreateClassModal() {
                     <div class="form-group">
                         <label class="form-label">Quarter</label>
                         <select name="quarter" class="form-select">
-                            <option value="FA25">Fall 2025</option>
-                            <option value="WI26">Winter 2026</option>
-                            <option value="SP26">Spring 2026</option>
+                            ${options}
                         </select>
                     </div>
                 </div>
