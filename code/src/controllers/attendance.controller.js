@@ -413,8 +413,9 @@ export const getAttendancePollForm = asyncHandler(async (req, res) => {
   }
 
   const defaultDuration = env.ATTENDANCE_DEFAULT_DURATION;
-  const { createStartAttendanceModal } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { createStartAttendanceModal } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
   const formHtml = createStartAttendanceModal(sessionId, defaultDuration);
   res.send(formHtml);
 });
@@ -495,8 +496,9 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
   const isHtmxRequest = req.headers["hx-request"];
 
   // Import the new unified template
-  const { renderAttendancePage } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { renderAttendancePage } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
 
   // Get user's classes
   const userClasses = await classService.getClassesByUserId(userId);

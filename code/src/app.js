@@ -139,8 +139,9 @@ export function createApp() {
 
   // Dashboard - requires authentication
   app.get("/", requireAuth, async (req, res, next) => {
-    const { getDashboard } =
-      await import("./controllers/dashboard.controller.js");
+    const { getDashboard } = await import(
+      "./controllers/dashboard.controller.js"
+    );
     return getDashboard(req, res, next);
   });
 

@@ -86,11 +86,11 @@ export const renderClassPage = asyncHandler(async (req, res) => {
   }
 
   // Class Information
-  const studentCount = klass.members.filter(m => m.role === "STUDENT").length;
+  const studentCount = klass.members.filter((m) => m.role === "STUDENT").length;
 
   const classInfo = {
     ...klass,
-    studentCount
+    studentCount,
   };
 
   // Render page

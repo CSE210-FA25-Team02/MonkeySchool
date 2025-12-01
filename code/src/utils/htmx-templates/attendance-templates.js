@@ -525,7 +525,6 @@ function renderLivePollModal() {
 }
 
 export function createSessionForm() {}
-
 export function displayAttendanceResult() {}
 export function displayCourseRecordsPage() {}
 export function displaySessionRecordsPage() {}

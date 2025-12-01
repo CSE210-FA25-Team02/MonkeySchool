@@ -278,7 +278,7 @@ export function formatDate(dateString, lang = "en") {
  */
 export function getUpcomingQuarters(count = 8) {
   const quarters = ["WI", "SP", "SU", "FA"];
-  const quarterNames = { WI: "Winter", SP: "Spring", SU: "Summer", FA: "Fall"};
+  const quarterNames = { WI: "Winter", SP: "Spring", SU: "Summer", FA: "Fall" };
   const currDate = new Date();
   const currYear = currDate.getFullYear();
   const currMonth = currDate.getMonth();

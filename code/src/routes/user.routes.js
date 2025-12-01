@@ -9,28 +9,28 @@ const router = Router();
 router.get(
   "/profile",
   requireAuth,
-  asyncHandler(userController.renderUserProfilePage)
+  asyncHandler(userController.renderUserProfilePage),
 );
 
 // Profile link field (legacy main-branch endpoint)
 router.get(
   "/profile/link-field",
   requireAuth,
-  asyncHandler(userController.renderProfileLinkField)
+  asyncHandler(userController.renderProfileLinkField),
 );
 
 // Update Profile
 router.put(
   "/profile",
   requireAuth,
-  asyncHandler(userController.updateUserProfile)
+  asyncHandler(userController.updateUserProfile),
 );
 
 // Update Settings
 router.post(
   "/settings",
   requireAuth,
-  asyncHandler(userController.updateUserSettings)
+  asyncHandler(userController.updateUserSettings),
 );
 
 // JSON API

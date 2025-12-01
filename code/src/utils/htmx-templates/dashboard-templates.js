@@ -183,7 +183,9 @@ function renderRecentClassesList(classes) {
  */
 export function createCreateClassModal(upcomingQuarters = []) {
   const options = upcomingQuarters.length
-    ? upcomingQuarters.map((q) => `<option value="${q.code}">${q.full}</option>`).join("")
+    ? upcomingQuarters
+        .map((q) => `<option value="${q.code}">${q.full}</option>`)
+        .join("")
     : `
         <option value="FA25">Fall 2025</option>
         <option value="WI26">Winter 2026</option>

@@ -113,11 +113,11 @@ export async function getClassesByUserId(userId) {
       class: {
         include: {
           _count: {
-            select: { 
+            select: {
               members: {
-                where: {role: "STUDENT"}
-              }, 
-            }, 
+                where: { role: "STUDENT" },
+              },
+            },
           },
         },
       },
