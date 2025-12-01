@@ -199,25 +199,34 @@ export function createCreateClassModal(upcomingQuarters = []) {
             </div>
             <form 
                 hx-post="/classes/create" 
-                hx-target="#modal-create-class .modal-body" 
+                hx-target="#modal-create-class-content" 
                 hx-swap="innerHTML"
             >
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Class Name</label>
-                        <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                <section id="modal-create-class-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Class Name</label>
+                            <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quarter</label>
+                            <select name="quarter" class="form-select">
+                                ${options}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <select name="location" class="form-select">
+                                <option value="In Person">In Person</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Quarter</label>
-                        <select name="quarter" class="form-select">
-                            ${options}
-                        </select>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-class')">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create Class</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-class')">Cancel</button>
-                    <button type="submit" class="btn btn--primary">Create Class</button>
-                </div>
+                </section>
             </form>
         </div>
     </div>

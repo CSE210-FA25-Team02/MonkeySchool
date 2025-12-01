@@ -233,27 +233,36 @@ export function createClassForm(upcomingQuarters = []) {
                 </button>
             </div>
             <form 
-                hx-post="/classes" 
+                hx-post="/classes/create" 
                 hx-target="#main-content" 
                 hx-swap="innerHTML"
                 onsubmit="window.closeModal('modal-create-class')"
             >
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Class Name</label>
-                        <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                <section id="modal-create-class-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Class Name</label>
+                            <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quarter</label>
+                            <select name="quarter" class="form-select">
+                                ${options}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <select name="location" class="form-select">
+                                <option value="In Person">In Person</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Quarter</label>
-                        <select name="quarter" class="form-select">
-                            ${options}
-                        </select>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn--secondary" onclick="window.closeModal('modal-create-class')">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create Class</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn--secondary" onclick="window.closeModal('modal-create-class')">Cancel</button>
-                    <button type="submit" class="btn btn--primary">Create Class</button>
-                </div>
+                </section>
             </form>
         </div>
     </div>
@@ -280,7 +289,7 @@ export function displayInvite(inviteUrl) {
                 </button>
             </div>
             <div style="display: flex; gap: 8px; justify-content: center;">
-                <button class="btn btn--secondary" onclick="closeModal('modal-create-class')">Close</button>
+                <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-class'); window.location.reload();">Close</button>
                 <a href="/classes/my-classes" class="btn btn--primary">
                     <i class="fa-solid fa-arrow-right"></i> View My Classes
                 </a>

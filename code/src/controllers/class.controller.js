@@ -180,7 +180,7 @@ export const getUserClasses = asyncHandler(async (req, res) => {
  * TODO: In production, restrict to isProf === true
  */
 export const createClass = asyncHandler(async (req, res) => {
-  const { name, quarter } = req.body;
+  const { name, quarter, location } = req.body;
   const userId = req.user.id;
 
   // TODO: Uncomment for production to restrict to professors only
@@ -198,6 +198,7 @@ export const createClass = asyncHandler(async (req, res) => {
     klass = await classService.createClass({
       name,
       quarter,
+      location,
     });
   } catch (err) {
     console.error("Error creating class:", err);
