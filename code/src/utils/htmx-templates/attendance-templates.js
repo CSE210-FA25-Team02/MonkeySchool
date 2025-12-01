@@ -524,15 +524,6 @@ function renderLivePollModal() {
   `;
 }
 
-export function createSessionForm() {}
-export function displayAttendanceResult() {}
-export function displayCourseRecordsPage() {}
-export function displaySessionRecordsPage() {}
-export function displaySessionAttendance() {}
-export function displayCourseAttendanceSummary() {}
-export function getCodeStatusFragment() {}
-export function displayCourseItem() {}
-
 // Export for backward compatibility with existing attendance controller
 export {
   renderProfessorView as displayProfessorAttendancePage,

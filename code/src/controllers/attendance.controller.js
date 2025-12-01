@@ -14,18 +14,7 @@ import {
 } from "../validators/attendance.validator.js";
 // Note: attendance-templates.js exports are imported dynamically where needed
 import { env } from "../config/env.js";
-import path from "path";
-import { fileURLToPath } from "url";
-import {
-  displayAttendanceResult,
-  displayCourseRecordsPage,
-  displaySessionRecordsPage,
-  displaySessionAttendance,
-  displayCourseAttendanceSummary,
-  displayStudentAttendanceGrouped,
-  getCodeStatusFragment,
-  displayCourseItem,
-} from "../utils/htmx-templates/attendance-templates.js";
+
 
 /**
  * Create an attendance poll for a session

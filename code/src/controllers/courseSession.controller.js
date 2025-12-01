@@ -6,7 +6,7 @@ import * as classService from "../services/class.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError, ForbiddenError } from "../utils/api-error.js";
 import { createCourseSessionSchema } from "../validators/attendance.validator.js";
-import { createSessionForm } from "../utils/htmx-templates/attendance-templates.js";
+
 
 /**
  * Create a new course session
