@@ -3,7 +3,7 @@
  * code/src/utils/htmx-templates/dashboard-templates.js
  */
 
-import { escapeHtml } from "../html-templates.js";
+import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
 
 /**
  * Create the main dashboard HTML
@@ -81,7 +81,7 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
     </div>
 
     <!-- Create Class Modal (Hidden by default) -->
-    ${createCreateClassModal()}
+    ${createCreateClassModal(getUpcomingQuarters())}
     
     <!-- Quick Journal Modal -->
     ${createQuickJournalModal()}
@@ -181,7 +181,17 @@ function renderRecentClassesList(classes) {
  *
  * @returns {string} HTML string
  */
-export function createCreateClassModal() {
+export function createCreateClassModal(upcomingQuarters = []) {
+  const options = upcomingQuarters.length
+    ? upcomingQuarters
+        .map((q) => `<option value="${q.code}">${q.full}</option>`)
+        .join("")
+    : `
+        <option value="FA25">Fall 2025</option>
+        <option value="WI26">Winter 2026</option>
+        <option value="SP26">Spring 2026</option>
+    `;
+
   return `
     <div id="modal-create-class" class="modal-overlay">
         <div class="modal-card">
@@ -191,27 +201,34 @@ export function createCreateClassModal() {
             </div>
             <form 
                 hx-post="/classes/create" 
-                hx-target="#modal-create-class .modal-body" 
+                hx-target="#modal-create-class-content" 
                 hx-swap="innerHTML"
             >
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Class Name</label>
-                        <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                <section id="modal-create-class-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Class Name</label>
+                            <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quarter</label>
+                            <select name="quarter" class="form-select">
+                                ${options}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <select name="location" class="form-select">
+                                <option value="In Person">In Person</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Quarter</label>
-                        <select name="quarter" class="form-select">
-                            <option value="FA25">Fall 2025</option>
-                            <option value="WI26">Winter 2026</option>
-                            <option value="SP26">Spring 2026</option>
-                        </select>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-class')">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create Class</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-class')">Cancel</button>
-                    <button type="submit" class="btn btn--primary">Create Class</button>
-                </div>
+                </section>
             </form>
         </div>
     </div>

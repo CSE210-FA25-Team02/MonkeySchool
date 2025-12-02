@@ -3,7 +3,7 @@
  * code/src/utils/htmx-templates/classes-templates.js
  */
 
-import { escapeHtml } from "../html-templates.js";
+import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
 
 /**
  * Render the Class Detail Page (Tabs + Content).
@@ -204,7 +204,7 @@ export function renderClassList(classes) {
             ${classCardsHTML}
             ${createCardHTML}
         </div>
-        ${createClassForm()}
+        ${createClassForm(getUpcomingQuarters())}
     `;
 }
 
@@ -216,7 +216,9 @@ export function renderClassList(classes) {
  */
 export function createClassForm(upcomingQuarters = []) {
   const options = upcomingQuarters.length
-    ? upcomingQuarters.map((q) => `<option value="${q}">${q}</option>`).join("")
+    ? upcomingQuarters
+        .map((q) => `<option value="${q.code}">${q.full}</option>`)
+        .join("")
     : `
             <option value="FA25">Fall 2025</option>
             <option value="WI26">Winter 2026</option>
@@ -233,27 +235,36 @@ export function createClassForm(upcomingQuarters = []) {
                 </button>
             </div>
             <form 
-                hx-post="/classes" 
+                hx-post="/classes/create" 
                 hx-target="#main-content" 
                 hx-swap="innerHTML"
                 onsubmit="window.closeModal('modal-create-class')"
             >
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Class Name</label>
-                        <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                <section id="modal-create-class-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Class Name</label>
+                            <input type="text" name="name" class="form-input" placeholder="e.g. CSE 210: Software Engineering" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quarter</label>
+                            <select name="quarter" class="form-select">
+                                ${options}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <select name="location" class="form-select">
+                                <option value="In Person">In Person</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Quarter</label>
-                        <select name="quarter" class="form-select">
-                            ${options}
-                        </select>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn--secondary" onclick="window.closeModal('modal-create-class')">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Create Class</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn--secondary" onclick="window.closeModal('modal-create-class')">Cancel</button>
-                    <button type="submit" class="btn btn--primary">Create Class</button>
-                </div>
+                </section>
             </form>
         </div>
     </div>
@@ -275,12 +286,12 @@ export function displayInvite(inviteUrl) {
             <p style="color: var(--color-text-muted); margin-bottom: 16px;">Share this invite link with your students:</p>
             <div style="display: flex; gap: 8px; margin-bottom: 16px;">
                 <input type="text" readonly value="${escapeHtml(inviteUrl)}" id="invite-url-input" class="form-input" style="flex: 1; font-size: 12px;" onclick="this.select()">
-                <button class="btn btn--secondary" id="copy-invite-btn" onclick="copyInviteUrl()">
+                <button type="button" class="btn btn--secondary" id="copy-invite-btn" onclick="copyInviteUrl()">
                     <i class="fa-solid fa-copy"></i> Copy
                 </button>
             </div>
             <div style="display: flex; gap: 8px; justify-content: center;">
-                <button class="btn btn--secondary" onclick="closeModal('modal-create-class')">Close</button>
+                <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-class'); window.location.reload();">Close</button>
                 <a href="/classes/my-classes" class="btn btn--primary">
                     <i class="fa-solid fa-arrow-right"></i> View My Classes
                 </a>

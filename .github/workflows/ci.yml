@@ -35,14 +35,14 @@ jobs:
         run: cd code && npm install
 
       - name: Check formatting
-        run: cd code && npx prettier --check "src/**/*.js"
+        run: npx prettier --check "**/*.js"
 
       - name: Lint
         run: cd code && npm run lint
 
       - name: Generate JSDoc Documentation
         run: cd code && npm run docs
-        
+
       - name: Test
         run: |
           cat > code/.env.test << EOF

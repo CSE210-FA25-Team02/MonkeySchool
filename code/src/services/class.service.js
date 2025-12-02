@@ -22,13 +22,15 @@ function generateInviteCode() {
  * @param {Object} params Class creation
  * @param {string} params.name Class name
  * @param {string} params.quarter Academic quarter (e.g., "FA24")
+ * @param {string} params.location Location (e.g., "In Person" or "Online")
  * @returns {Promise<Object>} Created class record
  */
-export async function createClass({ name, quarter }) {
+export async function createClass({ name, quarter, location }) {
   return prisma.class.create({
     data: {
       name,
       quarter,
+      location,
       inviteCode: generateInviteCode(),
     },
   });
@@ -108,7 +110,17 @@ export async function getClassesByUserId(userId) {
       userId,
     },
     include: {
-      class: true,
+      class: {
+        include: {
+          _count: {
+            select: {
+              members: {
+                where: { role: "STUDENT" },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -119,6 +131,8 @@ export async function getClassesByUserId(userId) {
     inviteCode: cr.class.inviteCode,
     createdAt: cr.class.createdAt,
     role: cr.role,
+    location: cr.class.location,
+    studentCount: cr.class._count.members,
   }));
 }
 
