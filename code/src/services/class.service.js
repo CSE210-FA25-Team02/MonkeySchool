@@ -137,6 +137,54 @@ export async function getClassesByUserId(userId) {
 }
 
 /**
+ * Get classes for a user where their role is STUDENT only.
+ * Single DB query filtering at database level using classrole.role = 'STUDENT'.
+ * This avoids N+1 queries and filters in application code.
+ * 
+ * SQL equivalent:
+ * SELECT c.* FROM classes c
+ * JOIN class_roles cr ON cr.classId = c.id
+ * WHERE cr.userId = :userId AND cr.role = 'STUDENT'
+ * 
+ * @param {string} userId User ID
+ * @returns {Promise<Array>} Array of class objects where user is a student
+ */
+export async function getStudentCoursesByUserId(userId) {
+  // Single query filtering at DB level - no application-level filtering
+  // Query starts from Class and joins ClassRole with role = 'STUDENT' filter
+  const classes = await prisma.class.findMany({
+    where: {
+      members: {
+        some: {
+          userId: userId,
+          role: "STUDENT", // Enum value - exact match required
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      quarter: true,
+      inviteCode: true,
+      createdAt: true,
+      location: true,
+    },
+  });
+
+  // Return classes with role explicitly set to STUDENT
+  // (no additional filtering needed - DB query already filtered)
+  return classes.map((klass) => ({
+    id: klass.id,
+    name: klass.name,
+    quarter: klass.quarter,
+    inviteCode: klass.inviteCode,
+    createdAt: klass.createdAt,
+    role: "STUDENT", // User's role in these classes
+    location: klass.location,
+  }));
+}
+
+/**
  * Delete a class by ID.
  * Note: Deleting class will also delete ClassRole + Group + GroupRole via cascades if configured.
  * @param {string} id Class ID

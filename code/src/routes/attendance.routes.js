@@ -37,6 +37,13 @@ router.post(
   asyncHandler(attendanceController.submitAttendance),
 );
 
+// Mark attendance with course selection (student only, HTMX)
+router.post(
+  "/mark",
+  submitRateLimiter,
+  asyncHandler(attendanceController.markAttendance),
+);
+
 // Note: Course and session records pages are now handled in app.js as page routes
 // They are no longer API routes
 
