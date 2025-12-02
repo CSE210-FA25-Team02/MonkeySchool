@@ -121,7 +121,6 @@ window.openCreateSessionModal = (classId) => {
 window.handleCreateSession = async (event) => {
   event.preventDefault();
   
-  const form = event.target;
   const submitBtn = document.getElementById("session-submit-btn");
   const errorDiv = document.getElementById("session-form-error");
   
@@ -181,7 +180,7 @@ window.handleCreateSession = async (event) => {
       // Format: YYYY-MM-DDTHH:MM:00
       endTimeISO = `${date}T${endTime}:00`;
     }
-  } catch (error) {
+  } catch {
     showError("Invalid date or time format");
     return;
   }
@@ -231,8 +230,8 @@ window.handleCreateSession = async (event) => {
     }
     
     // Success - close modal and update table
-    closeModal("modal-create-session");
-    showToast("Success", "Session created successfully!", "success");
+    window.closeModal("modal-create-session");
+    window.showToast("Success", "Session created successfully!", "success");
     
     // Add new session to the table
     addSessionToTable(data, classId);
@@ -346,7 +345,6 @@ function addSessionToTable(session, classId) {
     : "10:00 AM";
   
   const sessionCode = "---- ----"; // New sessions don't have codes yet
-  const sessionStatus = "expired"; // New sessions are not active
   const sessionId = session.id;
   
   // Create table row HTML with proper dropdown structure

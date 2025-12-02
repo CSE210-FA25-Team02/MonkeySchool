@@ -660,9 +660,6 @@ export const startPoll = asyncHandler(async (req, res) => {
     userId,
   );
 
-  // Format code with space
-  const formattedCode = poll.code.slice(0, 4) + " " + poll.code.slice(4);
-
   // Get updated session data for rendering
   const updatedSession = await courseSessionService.getCourseSessionById(sessionId);
   

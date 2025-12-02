@@ -862,7 +862,7 @@ function renderLivePollModal() {
  * @returns {string} HTML string
  */
 export function renderSessionRecordsPage(data) {
-  const { sessionId, sessionName, courseId, courseName, students, attendance } = data;
+  const { sessionName, courseName, students, attendance } = data;
   
   // Create a map of attendance records by student ID
   const attendanceMap = new Map();
@@ -1192,13 +1192,17 @@ export {
  * @returns {string} HTML string
  */
 export function renderStudentAttendanceRecordsPage(data) {
-  const { courseId, courseName, userId, userName, sessions, attendancePercentage } = data;
+  const { courseName, sessions, attendancePercentage } = data;
   
   // Calculate circumference for circle (radius = 70, so circumference = 2 * PI * 70)
   const circumference = 2 * Math.PI * 70;
   const offset = circumference - (attendancePercentage / 100) * circumference;
   
-  // Format session date for display
+  /**
+   * Format session date for display
+   * @param {Date|string} date - Date to format
+   * @returns {string} Formatted date string
+   */
   const formatSessionDate = (date) => {
     const d = new Date(date);
     return d.toLocaleDateString("en-US", {
@@ -1354,9 +1358,13 @@ export function renderStudentAttendanceRecordsPage(data) {
  * @returns {string} HTML string
  */
 export function displayCourseRecordsPage(data) {
-  const { courseId, courseName, sessions, students } = data;
+  const { courseName, sessions, students } = data;
 
-  // Format session date for display
+  /**
+   * Format session date for display
+   * @param {Date|string} date - Date to format
+   * @returns {string} Formatted date string
+   */
   const formatSessionDate = (date) => {
     const d = new Date(date);
     return d.toLocaleDateString("en-US", {
@@ -1366,13 +1374,21 @@ export function displayCourseRecordsPage(data) {
     });
   };
 
-  // Format session header (name and date)
+  /**
+   * Format session header (name and date)
+   * @param {Object} session - Session object with name and date
+   * @returns {string} Formatted HTML string
+   */
   const formatSessionHeader = (session) => {
     const dateStr = formatSessionDate(session.date);
     return `${escapeHtml(session.name)}<br><span style="font-size: var(--text-xs); color: var(--color-text-muted); font-weight: normal;">${dateStr}</span>`;
   };
 
-  // Calculate attendance percentage for a student
+  /**
+   * Calculate attendance percentage for a student
+   * @param {Object} student - Student object with sessionAttendance
+   * @returns {number} Attendance percentage (0-100)
+   */
   const calculateAttendancePercentage = (student) => {
     const totalSessions = sessions.length;
     if (totalSessions === 0) return 0;
