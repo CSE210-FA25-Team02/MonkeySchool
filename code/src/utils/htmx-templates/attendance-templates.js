@@ -895,7 +895,7 @@ export function renderSessionRecordsPage(data) {
         </div>
       </div>
 
-      <div class="bento-card span-4" style="margin-bottom: var(--space-6);">
+      <div class="bento-card span-4" style="margin-bottom: var(--space-6); width: 100%;">
         <div class="card-header">
           <div class="card-title">Attendance Overview</div>
         </div>
@@ -964,12 +964,12 @@ export function renderSessionRecordsPage(data) {
         </div>
       </div>
 
-      <div class="bento-card span-4">
+      <div class="bento-card span-4" style="width: 100%;">
         <div class="card-header">
           <div class="card-title">Student Records</div>
         </div>
-        <div class="card-content">
-          <table class="data-table">
+        <div class="card-content" style="width: 100%;">
+          <table class="data-table" style="width: 100%;">
             <thead>
               <tr>
                 <th>Student Name</th>
@@ -1424,12 +1424,12 @@ export function displayCourseRecordsPage(data) {
         </div>
       </div>
 
-      <div class="bento-card span-4">
+      <div class="bento-card span-4" style="width: 100%;">
         <div class="card-header">
           <div class="card-title">Student Attendance Overview</div>
         </div>
-        <div class="card-content" style="overflow-x: auto;">
-          <table class="data-table" style="min-width: 100%;">
+        <div class="card-content" style="overflow-x: auto; width: 100%;">
+          <table class="data-table" style="width: 100%; min-width: 100%;">
             <thead>
               <tr>
                 <th style="position: sticky; left: 0; background: var(--color-bg-surface); z-index: 10; min-width: 200px;">Student Name</th>
@@ -1473,9 +1473,22 @@ export function displayCourseRecordsPage(data) {
     </div>
 
     <style>
+      /* Ensure table container takes full width */
+      .bento-card.span-4 {
+        width: 100%;
+        max-width: 100%;
+      }
+      
       /* Ensure table is responsive with horizontal scroll */
       .card-content {
         max-width: 100%;
+        width: 100%;
+      }
+      
+      /* Ensure table takes full available width */
+      .data-table {
+        width: 100%;
+        min-width: 100%;
       }
       
       /* Sticky header for better UX when scrolling horizontally */

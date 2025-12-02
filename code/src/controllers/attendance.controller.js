@@ -319,6 +319,10 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   const { renderSessionRecordsPage } = await import(
     "../utils/htmx-templates/attendance-templates.js"
   );
+  const { createMainContentWrapper } = await import(
+    "../utils/html-templates.js"
+  );
+  
   const html = renderSessionRecordsPage({
     sessionId,
     sessionName: session.name,
@@ -338,7 +342,16 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   });
 
   if (isHtmxRequest) {
-    res.send(html);
+    // For HTMX requests, wrap content with header and content-canvas structure
+    const wrappedContent = createMainContentWrapper(
+      `${session.name} - Attendance Records`,
+      html,
+      {
+        user: req.user,
+        breadcrumbPath: "Dashboard / Attendance / Records",
+      },
+    );
+    res.send(wrappedContent);
   } else {
     // For direct navigation, use createBaseLayout
     const fullPage = createBaseLayout(
