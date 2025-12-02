@@ -12,9 +12,242 @@ import { escapeHtml } from "../html-templates.js";
  * Render weekly availability page
  * @param {Object} user - Current user (for greeting)
  * @param {Array} userAvailability - User's existing availability records
+ * @param {Array} groupsAvailability - User's groups and their availability
  * @returns {string} HTML string
  */
-export function renderAvailabilityPage(user, userAvailability = []) {
+/**
+ * Render just the group availability sections
+ * @param {Array} groupsAvailability - User's groups and their availability
+ * @returns {string} HTML string for group sections
+ */
+export function renderGroupAvailabilitySections(groupsAvailability = []) {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const timeSlots = [
+    "8:00 AM",
+    "8:30 AM", 
+    "9:00 AM",
+    "9:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "12:00 PM",
+    "12:30 PM",
+    "1:00 PM",
+    "1:30 PM",
+    "2:00 PM", 
+    "2:30 PM",
+    "3:00 PM",
+    "3:30 PM",
+    "4:00 PM",
+    "4:30 PM",
+    "5:00 PM",
+    "5:30 PM",
+    "6:00 PM",
+    "6:30 PM",
+    "7:00 PM",
+    "7:30 PM",
+    "8:00 PM",
+  ];
+
+  /**
+   * Convert 12h time format to 24h format
+   * @param {string} time12h - Time in 12h format (e.g., "9:00 AM")
+   * @returns {string} Time in 24h format (e.g., "09:00")
+   */
+  const convertToTime24h = (time12h) => {
+    const [time, period] = time12h.split(' ');
+    const [hours, minutes] = time.split(':');
+    let hour24 = parseInt(hours);
+    
+    if (period === 'PM' && hour24 !== 12) {
+      hour24 += 12;
+    } else if (period === 'AM' && hour24 === 12) {
+      hour24 = 0;
+    }
+    
+    return `${hour24.toString().padStart(2, '0')}:${minutes}`;
+  };
+
+  /**
+   * Calculate availability count for a time slot across all group members
+   * @param {Array} members - Group members with their availability
+   * @param {number} dayIndex - Day of week index (0-6)
+   * @param {string} timeSlot - Time slot (e.g., "9:00 AM")
+   * @returns {Object} {available, total, availableNames} count and available member names
+   */
+  const getGroupTimeSlotAvailability = (members, dayIndex, timeSlot) => {
+    const time24h = convertToTime24h(timeSlot);
+    let available = 0;
+    const total = members.length;
+    const availableNames = [];
+
+    members.forEach(member => {
+      const isAvailable = member.availability.some(avail => {
+        if (avail.dayOfWeek !== dayIndex) return false;
+        return time24h >= avail.startTime && time24h < avail.endTime;
+      });
+      if (isAvailable) {
+        available++;
+        availableNames.push(member.name);
+      }
+    });
+
+    return { available, total, availableNames };
+  };
+
+  /**
+   * Get CSS class for availability intensity
+   * @param {number} available - Number of people available
+   * @param {number} total - Total number of people
+   * @returns {string} CSS class name
+   */
+  const getAvailabilityIntensityClass = (available, total) => {
+    if (available === 0) return '';
+    const intensity = Math.ceil((available / total) * 5); // 1-5 scale
+    return `group-availability--intensity-${intensity}`;
+  };
+
+  /**
+   * Render a single group availability section
+   * @param {Object} group - Group data with members
+   * @returns {string} HTML string for group section
+   */
+  const renderGroupAvailabilitySection = (group) => {
+    const sectionId = `group-${group.id}`;
+    const sectionTitle = `${escapeHtml(group.class.name)}-${escapeHtml(group.name)} Weekly Availability`;
+    
+    const tableHeader = `
+      <thead>
+        <tr>
+          <th class="group-availability-cell group-availability-cell--time">Time</th>
+          ${days
+            .map(
+              (day) => `
+            <th class="group-availability-cell group-availability-cell--day">
+              ${escapeHtml(day)}
+            </th>`,
+            )
+            .join("")}
+        </tr>
+      </thead>
+    `;
+
+    const tableBody = `
+      <tbody>
+        ${timeSlots
+          .map((time) => {
+            const cells = days
+              .map((_, dayIdx) => {
+                const { available, total, availableNames } = getGroupTimeSlotAvailability(group.members, dayIdx, time);
+                const intensityClass = getAvailabilityIntensityClass(available, total);
+                const classes = [
+                  "group-availability-cell",
+                  "group-availability-cell--slot",
+                  intensityClass
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+                
+                const namesDisplay = availableNames.length > 0 ? availableNames.join(', ') : '';
+                const shortNames = availableNames.length > 0 ? 
+                  (availableNames.length <= 2 ? namesDisplay : `${availableNames[0]}+${availableNames.length - 1}`) : '';
+                
+                return `
+                  <td 
+                    class="${classes}" 
+                    title="${available}/${total} available"
+                    data-available="${available}"
+                    data-total="${total}"
+                    data-available-names="${escapeHtml(namesDisplay)}"
+                  >
+                    ${availableNames.length > 0 ? `<span class="available-names">${escapeHtml(shortNames)}</span>` : ''}
+                  </td>
+                `;
+              })
+              .join("");
+
+            return `
+              <tr>
+                <th class="group-availability-cell group-availability-cell--time">
+                  ${escapeHtml(time)}
+                </th>
+                ${cells}
+              </tr>
+            `;
+          })
+          .join("")}
+      </tbody>
+    `;
+
+    return `
+      <div class="group-availability-section" data-group-id="${escapeHtml(group.id)}">
+        <div class="card-header group-availability-header">
+          <div class="card-title">
+            <i class="fas fa-users"></i>
+            <span>${sectionTitle}</span>
+          </div>
+          <button 
+            type="button" 
+            class="group-availability-toggle"
+            onclick="toggleGroupAvailability('${escapeHtml(group.id)}')"
+            aria-expanded="false"
+            aria-controls="${sectionId}-content"
+          >
+            <i class="fas fa-chevron-up"></i>
+          </button>
+        </div>
+        <div 
+          id="${sectionId}-content" 
+          class="group-availability-content"
+          style="display: none;"
+        >
+          <div class="group-availability-members">
+            <p class="group-availability-members-text">
+              <strong>Members (${group.members.length}):</strong>
+              ${group.members.map(member => escapeHtml(member.name)).join(', ')}
+            </p>
+          </div>
+          <div class="group-availability-grid-wrapper">
+            <table class="group-availability-grid">
+              ${tableHeader}
+              ${tableBody}
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  return groupsAvailability.length > 0 ? `
+    <div id="group-availability-sections" class="group-availability-sections">
+      <div class="group-availability-sections-header">
+        <h2>Group Availability</h2>
+        <p class="group-availability-subtitle">
+          See when your team members are available for meetings.
+        </p>
+      </div>
+      ${groupsAvailability.map(group => renderGroupAvailabilitySection(group)).join('')}
+    </div>
+  ` : '<div id="group-availability-sections"></div>';
+}
+
+/**
+ * Render complete availability page with personal and group availability
+ * @param {Object} user - Current user (for greeting)
+ * @param {Array} userAvailability - User's existing availability records
+ * @param {Array} groupsAvailability - User's groups and their availability
+ * @returns {string} HTML string for complete availability page
+ */
+export function renderAvailabilityPage(user, userAvailability = [], groupsAvailability = []) {
   const displayName = escapeHtml(user?.name || "Student");
 
   const days = [
@@ -174,7 +407,7 @@ export function renderAvailabilityPage(user, userAvailability = []) {
   const toolbar = `
     <div class="card-header availability-header">
       <div class="card-title">
-        <i class="fa-regular fa-calendar"></i>
+        <i class="fas fa-calendar"></i>
         <span>My Weekly Availability</span>
       </div>
       <div style="display:flex; align-items: center; gap: var(--space-3);">
@@ -390,6 +623,63 @@ export function renderAvailabilityPage(user, userAvailability = []) {
       }
 
       // Debug function to help troubleshoot availability grid issues
+      // Function to update group availability sections in real-time
+      window.updateGroupAvailabilitySections = function() {
+        const groupContainer = document.getElementById('group-availability-sections');
+        if (!groupContainer) {
+          console.warn('Group availability sections container not found');
+          return;
+        }
+
+        console.log('Updating group availability sections...');
+        
+        // Show loading indicator
+        groupContainer.classList.add('loading');
+        
+        // Fetch updated group data
+        fetch('/availability/groups', {
+          method: 'GET',
+          headers: {
+            'HX-Request': 'true'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch updated group availability');
+          }
+          return response.text();
+        })
+        .then(html => {
+          // Store currently expanded groups to restore state
+          const expandedGroups = JSON.parse(localStorage.getItem('expandedGroups') || '[]');
+          
+          // Update content
+          groupContainer.outerHTML = html;
+          
+          // Restore expanded state after a brief delay to ensure DOM is updated
+          setTimeout(() => {
+            if (window.initializeGroupStates) {
+              window.initializeGroupStates();
+            }
+            console.log('Group availability sections updated successfully');
+          }, 50);
+        })
+        .catch(error => {
+          console.error('Failed to update group availability:', error);
+          if (window.showToast) {
+            window.showToast("Update failed", "Could not refresh group availability. Please reload the page.", "warn");
+          }
+        })
+        .finally(() => {
+          // Remove loading state
+          const newContainer = document.getElementById('group-availability-sections');
+          if (newContainer) {
+            newContainer.classList.remove('loading');
+          }
+        });
+      };
+
+      // Debug function to help troubleshoot availability grid issues
       window.debugAvailabilityGrid = function() {
         console.group('Availability Grid Debug Information');
         
@@ -482,6 +772,9 @@ export function renderAvailabilityPage(user, userAvailability = []) {
           
           console.log('Availability saved successfully'); // Debug log
           
+          // Update group availability sections in real-time
+          updateGroupAvailabilitySections();
+          
           if (window.showToast) {
             window.showToast("Availability saved", "Your weekly availability has been updated.", "success");
           }
@@ -520,6 +813,67 @@ export function renderAvailabilityPage(user, userAvailability = []) {
     </script>
   `;
 
+  // Group availability sections
+  const groupSections = renderGroupAvailabilitySections(groupsAvailability);
+
+  const groupAvailabilityScripts = groupsAvailability.length > 0 ? `
+    <script>
+      // Group availability toggle functionality
+      window.toggleGroupAvailability = function(groupId) {
+        const content = document.getElementById('group-' + groupId + '-content');
+        const toggle = document.querySelector('[data-group-id="' + groupId + '"] .group-availability-toggle');
+        const icon = toggle.querySelector('i');
+        
+        if (content.style.display === 'none') {
+          content.style.display = 'block';
+          toggle.setAttribute('aria-expanded', 'true');
+          icon.className = 'fas fa-chevron-down';
+          
+          // Save expanded state
+          const expandedGroups = JSON.parse(localStorage.getItem('expandedGroups') || '[]');
+          if (!expandedGroups.includes(groupId)) {
+            expandedGroups.push(groupId);
+            localStorage.setItem('expandedGroups', JSON.stringify(expandedGroups));
+          }
+        } else {
+          content.style.display = 'none';
+          toggle.setAttribute('aria-expanded', 'false');
+          icon.className = 'fas fa-chevron-up';
+          
+          // Save collapsed state
+          const expandedGroups = JSON.parse(localStorage.getItem('expandedGroups') || '[]');
+          const index = expandedGroups.indexOf(groupId);
+          if (index > -1) {
+            expandedGroups.splice(index, 1);
+            localStorage.setItem('expandedGroups', JSON.stringify(expandedGroups));
+          }
+        }
+      };
+
+      // Initialize group states from localStorage
+      window.initializeGroupStates = function() {
+        const expandedGroups = JSON.parse(localStorage.getItem('expandedGroups') || '[]');
+        expandedGroups.forEach(groupId => {
+          const content = document.getElementById('group-' + groupId + '-content');
+          const toggle = document.querySelector('[data-group-id="' + groupId + '"] .group-availability-toggle');
+          if (content && toggle) {
+            content.style.display = 'block';
+            toggle.setAttribute('aria-expanded', 'true');
+            const icon = toggle.querySelector('i');
+            if (icon) icon.className = 'fas fa-chevron-down';
+          }
+        });
+      };
+
+      // Initialize group states after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeGroupStates);
+      } else {
+        initializeGroupStates();
+      }
+    </script>
+  ` : '';
+
   return `
     ${header}
     <div class="availability-card">
@@ -540,6 +894,8 @@ export function renderAvailabilityPage(user, userAvailability = []) {
         </div>
       </div>
     </div>
+    ${groupSections}
     ${scriptHelpers}
+    ${groupAvailabilityScripts}
   `;
 }

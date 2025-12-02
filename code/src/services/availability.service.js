@@ -223,3 +223,81 @@ export function convertSlotsToRanges(slotsGrid) {
 
   return ranges;
 }
+
+/**
+ * Get user's groups with class information
+ * @param {string} userId 
+ * @returns {Promise<Array>} Array of groups with class info
+ */
+export async function getUserGroups(userId) {
+  return await prisma.groupRole.findMany({
+    where: { userId },
+    include: {
+      group: {
+        include: {
+          class: true
+        }
+      }
+    }
+  });
+}
+
+/**
+ * Get all members of a group with their availability
+ * @param {string} groupId 
+ * @returns {Promise<Object>} Group info with members and their availability
+ */
+export async function getGroupAvailability(groupId) {
+  const group = await prisma.group.findUnique({
+    where: { id: groupId },
+    include: {
+      class: true,
+      members: {
+        include: {
+          user: {
+            include: {
+              availability: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!group) {
+    throw new Error("Group not found");
+  }
+
+  return {
+    id: group.id,
+    name: group.name,
+    class: {
+      id: group.class.id,
+      name: group.class.name
+    },
+    members: group.members.map(member => ({
+      id: member.user.id,
+      name: member.user.name,
+      role: member.role,
+      availability: member.user.availability
+    }))
+  };
+}
+
+/**
+ * Get availability for multiple groups
+ * @param {string} userId 
+ * @returns {Promise<Array>} Array of group availability data
+ */
+export async function getUserGroupsAvailability(userId) {
+  const userGroups = await getUserGroups(userId);
+  
+  const groupsAvailability = await Promise.all(
+    userGroups.map(async (userGroup) => {
+      const groupAvailability = await getGroupAvailability(userGroup.group.id);
+      return groupAvailability;
+    })
+  );
+
+  return groupsAvailability;
+}

@@ -266,4 +266,469 @@ defineFeature(feature, test => {
       expect(lastError).toBe(expectedError);
     });
   });
+
+  test("User's availability update reflects immediately in group calendar", ({ given, and, when, then }) => {
+    let testClass, testGroup, groupAvailability;
+
+    given(/^a user with email "alice@example.com" exists$/, async () => {
+      if (users["alice@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "alice@example.com",
+          name: "alice",
+          preferredName: "alice"
+        }
+      });
+      users["alice@example.com"] = user;
+    });
+
+    and(/^a user with email "bob@example.com" exists$/, async () => {
+      if (users["bob@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "bob@example.com",
+          name: "bob",
+          preferredName: "bob"
+        }
+      });
+      users["bob@example.com"] = user;
+    });
+
+    and(/^a class named "CSE 210" exists$/, async () => {
+      testClass = await prisma.class.create({
+        data: {
+          name: "CSE 210"
+        }
+      });
+    });
+
+    and(/^a group named "Team Alpha" exists in class "CSE 210"$/, async () => {
+      testGroup = await prisma.group.create({
+        data: {
+          name: "Team Alpha",
+          classId: testClass.id
+        }
+      });
+    });
+
+    and(/^Alice is a member of group "Team Alpha"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["alice@example.com"].id,
+          groupId: testGroup.id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Bob is a member of group "Team Alpha"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["bob@example.com"].id,
+          groupId: testGroup.id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Alice has availability for Monday from "09:00" to "12:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["alice@example.com"].id,
+        getDayNumber("Monday"),
+        "09:00",
+        "12:00"
+      );
+    });
+
+    and(/^Bob has availability for Monday from "10:00" to "14:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["bob@example.com"].id,
+        getDayNumber("Monday"),
+        "10:00",
+        "14:00"
+      );
+    });
+
+    when(/^Alice requests group "Team Alpha" availability$/, async () => {
+      groupAvailability = await availabilityService.getGroupAvailability(testGroup.id);
+    });
+
+    then(/^Alice should be shown as available on Monday from "09:00" to "12:00"$/, () => {
+      const aliceMember = groupAvailability.members.find(m => m.name === 'alice');
+      expect(aliceMember).toBeDefined();
+      const dayAvail = aliceMember.availability.filter(a => a.dayOfWeek === getDayNumber("Monday"));
+      expect(dayAvail).toHaveLength(1);
+      expect(dayAvail[0].startTime).toBe("09:00");
+      expect(dayAvail[0].endTime).toBe("12:00");
+    });
+
+    when(/^Alice updates her availability for Monday from "11:00" to "15:00"$/, async () => {
+      // Delete existing availability and add new one (simulating update)
+      await prisma.availability.deleteMany({
+        where: {
+          userId: users["alice@example.com"].id,
+          dayOfWeek: getDayNumber("Monday")
+        }
+      });
+      
+      await availabilityService.addUserAvailability(
+        users["alice@example.com"].id,
+        getDayNumber("Monday"),
+        "11:00",
+        "15:00"
+      );
+    });
+
+    and(/^Alice requests group "Team Alpha" availability again$/, async () => {
+      groupAvailability = await availabilityService.getGroupAvailability(testGroup.id);
+    });
+
+    then(/^Alice should be shown as available on Monday from "11:00" to "15:00"$/, () => {
+      const aliceMember = groupAvailability.members.find(m => m.name === 'alice');
+      expect(aliceMember).toBeDefined();
+      const dayAvail = aliceMember.availability.filter(a => a.dayOfWeek === getDayNumber("Monday"));
+      expect(dayAvail).toHaveLength(1);
+      expect(dayAvail[0].startTime).toBe("11:00");
+      expect(dayAvail[0].endTime).toBe("15:00");
+    });
+
+    and(/^Bob should still be available on Monday from "10:00" to "14:00"$/, () => {
+      const bobMember = groupAvailability.members.find(m => m.name === 'bob');
+      expect(bobMember).toBeDefined();
+      const dayAvail = bobMember.availability.filter(a => a.dayOfWeek === getDayNumber("Monday"));
+      expect(dayAvail).toHaveLength(1);
+      expect(dayAvail[0].startTime).toBe("10:00");
+      expect(dayAvail[0].endTime).toBe("14:00");
+    });
+  });
+
+  test("User can view multiple groups they belong to", ({ given, and, when, then }) => {
+    let testClass, testGroups = {}, allGroupsAvailability;
+
+    given(/^a user with email "alice@example.com" exists$/, async () => {
+      if (users["alice@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "alice@example.com",
+          name: "alice",
+          preferredName: "alice"
+        }
+      });
+      users["alice@example.com"] = user;
+    });
+
+    and(/^a user with email "bob@example.com" exists$/, async () => {
+      if (users["bob@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "bob@example.com",
+          name: "bob",
+          preferredName: "bob"
+        }
+      });
+      users["bob@example.com"] = user;
+    });
+
+    and(/^a user with email "charlie@example.com" exists$/, async () => {
+      if (users["charlie@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "charlie@example.com",
+          name: "charlie",
+          preferredName: "charlie"
+        }
+      });
+      users["charlie@example.com"] = user;
+    });
+
+    and(/^a class named "CSE 210" exists$/, async () => {
+      testClass = await prisma.class.create({
+        data: {
+          name: "CSE 210"
+        }
+      });
+    });
+
+    and(/^a group named "Team Alpha" exists in class "CSE 210"$/, async () => {
+      testGroups["Team Alpha"] = await prisma.group.create({
+        data: {
+          name: "Team Alpha",
+          classId: testClass.id
+        }
+      });
+    });
+
+    and(/^a group named "Team Beta" exists in class "CSE 210"$/, async () => {
+      testGroups["Team Beta"] = await prisma.group.create({
+        data: {
+          name: "Team Beta",
+          classId: testClass.id
+        }
+      });
+    });
+
+    and(/^Alice is a member of group "Team Alpha"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["alice@example.com"].id,
+          groupId: testGroups["Team Alpha"].id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Alice is a member of group "Team Beta"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["alice@example.com"].id,
+          groupId: testGroups["Team Beta"].id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Bob is a member of group "Team Alpha"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["bob@example.com"].id,
+          groupId: testGroups["Team Alpha"].id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Charlie is a member of group "Team Beta"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["charlie@example.com"].id,
+          groupId: testGroups["Team Beta"].id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Alice has availability for Monday from "09:00" to "12:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["alice@example.com"].id,
+        getDayNumber("Monday"),
+        "09:00",
+        "12:00"
+      );
+    });
+
+    and(/^Bob has availability for Tuesday from "10:00" to "14:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["bob@example.com"].id,
+        getDayNumber("Tuesday"),
+        "10:00",
+        "14:00"
+      );
+    });
+
+    and(/^Charlie has availability for Wednesday from "13:00" to "17:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["charlie@example.com"].id,
+        getDayNumber("Wednesday"),
+        "13:00",
+        "17:00"
+      );
+    });
+
+    when(/^Alice requests all her group availability$/, async () => {
+      allGroupsAvailability = await availabilityService.getUserGroupsAvailability(users["alice@example.com"].id);
+    });
+
+    then(/^she should see 2 groups$/, () => {
+      expect(allGroupsAvailability).toHaveLength(2);
+    });
+
+    and(/^group "Team Alpha" should have 2 members$/, () => {
+      const group = allGroupsAvailability.find(g => g.name === "Team Alpha");
+      expect(group).toBeDefined();
+      expect(group.members).toHaveLength(2);
+    });
+
+    and(/^group "Team Beta" should have 2 members$/, () => {
+      const group = allGroupsAvailability.find(g => g.name === "Team Beta");
+      expect(group).toBeDefined();
+      expect(group.members).toHaveLength(2);
+    });
+  });
+
+  test("Group availability shows correct overlap counts", ({ given, and, when, then }) => {
+    let testClass, testGroup, groupAvailability;
+
+    given(/^a user with email "alice@example.com" exists$/, async () => {
+      if (users["alice@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "alice@example.com",
+          name: "alice",
+          preferredName: "alice"
+        }
+      });
+      users["alice@example.com"] = user;
+    });
+
+    and(/^a user with email "bob@example.com" exists$/, async () => {
+      if (users["bob@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "bob@example.com",
+          name: "bob",
+          preferredName: "bob"
+        }
+      });
+      users["bob@example.com"] = user;
+    });
+
+    and(/^a user with email "charlie@example.com" exists$/, async () => {
+      if (users["charlie@example.com"]) return;
+      const user = await prisma.user.create({
+        data: {
+          email: "charlie@example.com",
+          name: "charlie",
+          preferredName: "charlie"
+        }
+      });
+      users["charlie@example.com"] = user;
+    });
+
+    and(/^a class named "CSE 210" exists$/, async () => {
+      testClass = await prisma.class.create({
+        data: {
+          name: "CSE 210"
+        }
+      });
+    });
+
+    and(/^a group named "Team Alpha" exists in class "CSE 210"$/, async () => {
+      testGroup = await prisma.group.create({
+        data: {
+          name: "Team Alpha",
+          classId: testClass.id
+        }
+      });
+    });
+
+    and(/^Alice is a member of group "Team Alpha"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["alice@example.com"].id,
+          groupId: testGroup.id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Bob is a member of group "Team Alpha"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["bob@example.com"].id,
+          groupId: testGroup.id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Charlie is a member of group "Team Alpha"$/, async () => {
+      await prisma.groupRole.create({
+        data: {
+          userId: users["charlie@example.com"].id,
+          groupId: testGroup.id,
+          role: "MEMBER"
+        }
+      });
+    });
+
+    and(/^Alice has availability for Monday from "09:00" to "13:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["alice@example.com"].id,
+        getDayNumber("Monday"),
+        "09:00",
+        "13:00"
+      );
+    });
+
+    and(/^Bob has availability for Monday from "10:00" to "14:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["bob@example.com"].id,
+        getDayNumber("Monday"),
+        "10:00",
+        "14:00"
+      );
+    });
+
+    and(/^Charlie has availability for Monday from "11:00" to "15:00"$/, async () => {
+      await availabilityService.addUserAvailability(
+        users["charlie@example.com"].id,
+        getDayNumber("Monday"),
+        "11:00",
+        "15:00"
+      );
+    });
+
+    when(/^Alice checks group availability for Monday at "10:30"$/, async () => {
+      groupAvailability = await availabilityService.getGroupAvailability(testGroup.id);
+      
+      // Convert time to 24h format and count available members
+      const time24h = "10:30";
+      let availableCount = 0;
+      groupAvailability.members.forEach(member => {
+        const isAvailable = member.availability.some(avail => {
+          if (avail.dayOfWeek !== getDayNumber("Monday")) return false;
+          return time24h >= avail.startTime && time24h < avail.endTime;
+        });
+        if (isAvailable) availableCount++;
+      });
+      
+      lastResult = availableCount;
+    });
+
+    then(/^2 members should be available at that time$/, () => {
+      expect(lastResult).toBe(2);
+    });
+
+    when(/^Alice checks group availability for Monday at "11:30"$/, async () => {
+      // Re-fetch to ensure fresh data (though not needed in this test case)
+      groupAvailability = await availabilityService.getGroupAvailability(testGroup.id);
+      
+      const time24h = "11:30";
+      let availableCount = 0;
+      groupAvailability.members.forEach(member => {
+        const isAvailable = member.availability.some(avail => {
+          if (avail.dayOfWeek !== getDayNumber("Monday")) return false;
+          return time24h >= avail.startTime && time24h < avail.endTime;
+        });
+        if (isAvailable) availableCount++;
+      });
+      
+      lastResult = availableCount;
+    });
+
+    then(/^3 members should be available at that time$/, () => {
+      expect(lastResult).toBe(3);
+    });
+
+    when(/^Alice checks group availability for Monday at "08:30"$/, async () => {
+      groupAvailability = await availabilityService.getGroupAvailability(testGroup.id);
+      
+      const time24h = "08:30";
+      let availableCount = 0;
+      groupAvailability.members.forEach(member => {
+        const isAvailable = member.availability.some(avail => {
+          if (avail.dayOfWeek !== getDayNumber("Monday")) return false;
+          return time24h >= avail.startTime && time24h < avail.endTime;
+        });
+        if (isAvailable) availableCount++;
+      });
+      
+      lastResult = availableCount;
+    });
+
+    then(/^0 members should be available at that time$/, () => {
+      expect(lastResult).toBe(0);
+    });
+  });
+
 });

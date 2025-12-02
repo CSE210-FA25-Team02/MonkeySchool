@@ -33,3 +33,58 @@ Feature: Availability Management
     And Alice has availability for Monday from "09:00" to "11:00"
     When Bob tries to delete Alice's Monday availability
     Then the request should fail with error "Permission denied"
+
+  Scenario: User's availability update reflects immediately in group calendar
+    Given a user with email "alice@example.com" exists
+    And a user with email "bob@example.com" exists
+    And a class named "CSE 210" exists
+    And a group named "Team Alpha" exists in class "CSE 210"
+    And Alice is a member of group "Team Alpha"
+    And Bob is a member of group "Team Alpha"
+    And Alice has availability for Monday from "09:00" to "12:00"
+    And Bob has availability for Monday from "10:00" to "14:00"
+    When Alice requests group "Team Alpha" availability
+    Then Alice should be shown as available on Monday from "09:00" to "12:00"
+    When Alice updates her availability for Monday from "11:00" to "15:00"
+    And Alice requests group "Team Alpha" availability again
+    Then Alice should be shown as available on Monday from "11:00" to "15:00"
+    And Bob should still be available on Monday from "10:00" to "14:00"
+
+  Scenario: User can view multiple groups they belong to
+    Given a user with email "alice@example.com" exists
+    And a user with email "bob@example.com" exists
+    And a user with email "charlie@example.com" exists
+    And a class named "CSE 210" exists
+    And a group named "Team Alpha" exists in class "CSE 210"
+    And a group named "Team Beta" exists in class "CSE 210"
+    And Alice is a member of group "Team Alpha"
+    And Alice is a member of group "Team Beta"
+    And Bob is a member of group "Team Alpha"
+    And Charlie is a member of group "Team Beta"
+    And Alice has availability for Monday from "09:00" to "12:00"
+    And Bob has availability for Tuesday from "10:00" to "14:00"
+    And Charlie has availability for Wednesday from "13:00" to "17:00"
+    When Alice requests all her group availability
+    Then she should see 2 groups
+    And group "Team Alpha" should have 2 members
+    And group "Team Beta" should have 2 members
+
+  Scenario: Group availability shows correct overlap counts
+    Given a user with email "alice@example.com" exists
+    And a user with email "bob@example.com" exists
+    And a user with email "charlie@example.com" exists
+    And a class named "CSE 210" exists
+    And a group named "Team Alpha" exists in class "CSE 210"
+    And Alice is a member of group "Team Alpha"
+    And Bob is a member of group "Team Alpha"
+    And Charlie is a member of group "Team Alpha"
+    And Alice has availability for Monday from "09:00" to "13:00"
+    And Bob has availability for Monday from "10:00" to "14:00"
+    And Charlie has availability for Monday from "11:00" to "15:00"
+    When Alice checks group availability for Monday at "10:30"
+    Then 2 members should be available at that time
+    When Alice checks group availability for Monday at "11:30"
+    Then 3 members should be available at that time
+    When Alice checks group availability for Monday at "08:30"
+    Then 0 members should be available at that time
+

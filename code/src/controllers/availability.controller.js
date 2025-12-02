@@ -10,7 +10,8 @@ import { createBaseLayout } from "../utils/html-templates.js";
 import { renderAvailabilityPage } from "../utils/htmx-templates/availability-templates.js";
 import { 
   getUserAvailability, 
-  setUserWeeklyAvailability
+  setUserWeeklyAvailability,
+  getUserGroupsAvailability
 } from "../services/availability.service.js";
 
 /**
@@ -24,8 +25,11 @@ export const getAvailabilityPage = asyncHandler(async (req, res) => {
 
   // Load user's existing availability
   const userAvailability = await getUserAvailability(user.id);
+  
+  // Load user's groups and their availability
+  const groupsAvailability = await getUserGroupsAvailability(user.id);
 
-  const html = renderAvailabilityPage(user, userAvailability);
+  const html = renderAvailabilityPage(user, userAvailability, groupsAvailability);
 
   if (isHtmx) {
     res.send(html);
@@ -33,6 +37,24 @@ export const getAvailabilityPage = asyncHandler(async (req, res) => {
     const fullPage = createBaseLayout("Availability", html, { user });
     res.send(fullPage);
   }
+});
+
+/**
+ * Get Group Availability Sections Only  
+ * Route: GET /availability/groups
+ * Auth: requireAuth
+ */
+export const getGroupAvailabilitySections = asyncHandler(async (req, res) => {
+  const user = req.user;
+  
+  // Load user's groups and their availability
+  const groupsAvailability = await getUserGroupsAvailability(user.id);
+
+  // Use the same template function but just for groups
+  const { renderGroupAvailabilitySections } = await import("../utils/htmx-templates/availability-templates.js");
+  const groupSections = renderGroupAvailabilitySections(groupsAvailability);
+
+  res.send(groupSections);
 });
 
 /**
