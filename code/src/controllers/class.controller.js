@@ -85,6 +85,14 @@ export const renderClassPage = asyncHandler(async (req, res) => {
     directory.class = klass;
   }
 
+  // Class Information
+  const studentCount = klass.members.filter((m) => m.role === "STUDENT").length;
+
+  const classInfo = {
+    ...klass,
+    studentCount,
+  };
+
   // Render page
   const content = renderDirectoryTemplate(
     directory || {
@@ -95,7 +103,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       groups: [],
     },
   );
-  const pageHtml = renderClassDetail(klass, "directory", content);
+  const pageHtml = renderClassDetail(classInfo, "directory", content);
 
   const isHtmx = req.headers["hx-request"];
   if (isHtmx) {
@@ -172,7 +180,7 @@ export const getUserClasses = asyncHandler(async (req, res) => {
  * TODO: In production, restrict to isProf === true
  */
 export const createClass = asyncHandler(async (req, res) => {
-  const { name, quarter } = req.body;
+  const { name, quarter, location } = req.body;
   const userId = req.user.id;
 
   // TODO: Uncomment for production to restrict to professors only
@@ -190,6 +198,7 @@ export const createClass = asyncHandler(async (req, res) => {
     klass = await classService.createClass({
       name,
       quarter,
+      location,
     });
   } catch (err) {
     console.error("Error creating class:", err);

@@ -3,6 +3,7 @@ model Class {
   name       String       // e.g., "CSE 210 - Fall 2025"
   inviteCode String       @unique @default(uuid()) // Used to join the class
   quarter    String?      // Optional: FA25 / WI26 / SP26, etc.
+  location   String?      // Optional: In Person / Remote
   createdAt  DateTime     @default(now())
 
   // A class has many users enrolled

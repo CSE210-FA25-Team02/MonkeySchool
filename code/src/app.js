@@ -17,6 +17,11 @@ import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
 import { requireAuth } from "./middleware/auth.js";
+import {
+  getAttendancePage,
+  getSessionRecordsPage,
+  getCourseRecordsPage,
+} from "./controllers/attendance.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

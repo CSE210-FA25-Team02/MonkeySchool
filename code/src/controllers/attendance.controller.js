@@ -15,6 +15,7 @@ import {
 // Note: attendance-templates.js exports are imported dynamically where needed
 import { env } from "../config/env.js";
 
+
 /**
  * Create an attendance poll for a session
  * Auth: professor (must teach the class)

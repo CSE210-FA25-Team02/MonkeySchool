@@ -24,7 +24,7 @@ defineFeature(feature, (test) => {
       /^I create a user with name "(.*)" and email "(.*)"$/,
       async (name, email) => {
         context.response = await request.post("/users").send({ name, email });
-      }
+      },
     );
 
     then(/^a user with email "(.*)" should exist$/, async (email) => {
@@ -42,7 +42,7 @@ defineFeature(feature, (test) => {
       /^a user with name "(.*)" and email "(.*)" exists$/,
       async (name, email) => {
         context.user = await userService.createUser({ name, email });
-      }
+      },
     );
 
     when(/^I update the user "(.*)" name to "(.*)"$/, async (_, newName) => {

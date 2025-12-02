@@ -12,19 +12,19 @@ export async function assignProfessors(professors, classes) {
     ...classes.slice(0, 4).map((cls) =>
       prisma.classRole.create({
         data: { userId: professors[0].id, classId: cls.id, role: "PROFESSOR" },
-      })
+      }),
     ),
     // Prof Smith teaches 4 classes
     ...classes.slice(4, 8).map((cls) =>
       prisma.classRole.create({
         data: { userId: professors[1].id, classId: cls.id, role: "PROFESSOR" },
-      })
+      }),
     ),
     // Prof Johnson teaches 4 classes
     ...classes.slice(8, 12).map((cls) =>
       prisma.classRole.create({
         data: { userId: professors[2].id, classId: cls.id, role: "PROFESSOR" },
-      })
+      }),
     ),
   ]);
 
@@ -42,8 +42,8 @@ export async function assignUserRoles(users, classes) {
     classes.slice(0, 8).map((cls) =>
       prisma.classRole.create({
         data: { userId: users[0].id, classId: cls.id, role: "TA" },
-      })
-    )
+      }),
+    ),
   );
 
   // User 2: TA in 3 classes
@@ -64,12 +64,12 @@ export async function assignUserRoles(users, classes) {
     ...classes.slice(0, 3).map((cls) =>
       prisma.classRole.create({
         data: { userId: users[2].id, classId: cls.id, role: "TUTOR" },
-      })
+      }),
     ),
     ...classes.slice(3, 5).map((cls) =>
       prisma.classRole.create({
         data: { userId: users[3].id, classId: cls.id, role: "TUTOR" },
-      })
+      }),
     ),
   ]);
 
@@ -78,8 +78,8 @@ export async function assignUserRoles(users, classes) {
     classes.slice(0, 5).map((cls) =>
       prisma.classRole.create({
         data: { userId: users[4].id, classId: cls.id, role: "STUDENT" },
-      })
-    )
+      }),
+    ),
   );
 
   // Users 6-20: Students distributed across classes
@@ -99,7 +99,7 @@ export async function assignUserRoles(users, classes) {
               classId: classes[randomClassIdx].id,
               role: "STUDENT",
             },
-          })
+          }),
         );
       }
     }
@@ -160,4 +160,3 @@ export async function createGroupsAndRoles(users, classes) {
 
   console.log("Groups created");
 }
-

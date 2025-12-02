@@ -278,6 +278,7 @@ export function formatDate(dateString, lang = "en") {
  */
 export function getUpcomingQuarters(count = 8) {
   const quarters = ["WI", "SP", "SU", "FA"];
+  const quarterNames = { WI: "Winter", SP: "Spring", SU: "Summer", FA: "Fall" };
   const currDate = new Date();
   const currYear = currDate.getFullYear();
   const currMonth = currDate.getMonth();
@@ -292,7 +293,9 @@ export function getUpcomingQuarters(count = 8) {
 
   for (let i = 0; i < count; i++) {
     const shortYear = yearIndex % 100;
-    quarterList.push(`${quarters[qIndex]}${shortYear}`);
+    const code = `${quarters[qIndex]}${shortYear}`;
+    const full = `${quarterNames[quarters[qIndex]]} ${yearIndex}`;
+    quarterList.push({ code, full });
     qIndex++;
 
     if (qIndex === quarters.length) {
