@@ -30,6 +30,7 @@ export function renderProfilePage(user, activity = []) {
   const linkedin = user?.linkedin || "";
 
   return `
+  <div id="profile-page-root">
     <div class="container" style="max-width: 1000px;">
       <!-- Profile Header Card -->
       <div class="profile-header-card">
@@ -116,6 +117,7 @@ export function renderProfilePage(user, activity = []) {
 
     <!-- Edit Profile Modal -->
     ${renderEditProfileModal(user)}
+    </div>
   `;
 }
 
@@ -200,7 +202,7 @@ function renderEditProfileModal(user) {
         </div>
         <form 
           hx-put="/users/profile"
-          hx-target="#main-content"
+          hx-target="#profile-page-root"
           hx-swap="innerHTML"
           onsubmit="closeModal('modal-edit-profile')"
         >
