@@ -115,6 +115,118 @@ export async function submitAttendance(code, studentId) {
 }
 
 /**
+ * Submit attendance for a student using a poll code with course validation
+ * Validates that the poll belongs to a session in the selected course
+ * @param {string} code - 8-digit attendance code
+ * @param {string} courseId - ID of the course the student selected
+ * @param {string} studentId - User ID of student
+ * @returns {Promise<Object>} Created attendance record
+ * @throws {NotFoundError} If poll not found, expired, or doesn't match course
+ * @throws {ForbiddenError} If student not enrolled
+ * @throws {ConflictError} If already marked attendance
+ */
+export async function submitAttendanceWithCourse(code, courseId, studentId) {
+  // Use transaction to ensure atomicity
+  return prisma.$transaction(async (tx) => {
+    // Find active poll by code
+    const now = new Date();
+    const poll = await tx.attendancePoll.findFirst({
+      where: {
+        code,
+        active: true,
+        expiresAt: {
+          gt: now,
+        },
+      },
+      include: {
+        session: {
+          include: {
+            class: true,
+          },
+        },
+      },
+    });
+
+    if (!poll) {
+      // Check if poll exists but is expired
+      const expiredPoll = await tx.attendancePoll.findFirst({
+        where: {
+          code,
+        },
+        include: {
+          session: {
+            include: {
+              class: true,
+            },
+          },
+        },
+      });
+      if (expiredPoll) {
+        throw new GoneError("Code expired");
+      }
+      throw new NotFoundError("Invalid code");
+    }
+
+    // Validate that the poll's session belongs to the selected course
+    if (poll.session.classId !== courseId) {
+      throw new NotFoundError("Code does not belong to the selected course");
+    }
+
+    // Check if student is enrolled in the class
+    const enrolled = await isStudentEnrolled(studentId, poll.session.classId);
+    if (!enrolled) {
+      throw new ForbiddenError("Not enrolled in course");
+    }
+
+    // Check if already marked (using unique constraint)
+    const existing = await tx.attendanceRecord.findUnique({
+      where: {
+        student_session_unique: {
+          studentId,
+          sessionId: poll.sessionId,
+        },
+      },
+    });
+
+    if (existing) {
+      // Return existing record as idempotent success
+      return await tx.attendanceRecord.findUnique({
+        where: {
+          id: existing.id,
+        },
+        include: {
+          session: {
+            include: {
+              class: true,
+            },
+          },
+          poll: true,
+        },
+      });
+    }
+
+    // Create attendance record
+    const record = await tx.attendanceRecord.create({
+      data: {
+        studentId,
+        sessionId: poll.sessionId,
+        pollId: poll.id,
+      },
+      include: {
+        session: {
+          include: {
+            class: true,
+          },
+        },
+        poll: true,
+      },
+    });
+
+    return record;
+  });
+}
+
+/**
  * Get all attendance records for a session
  * @param {string} sessionId - ID of the course session
  * @returns {Promise<Array>} Array of attendance records for the session
@@ -471,4 +583,71 @@ export async function getStudentAttendanceGroupedByCourse(studentId) {
   return Array.from(courseMap.values()).sort((a, b) =>
     a.courseName.localeCompare(b.courseName),
   );
+}
+
+/**
+ * Get student attendance records for a specific course
+ * Returns sessions with attendance status for a specific student
+ * @param {string} courseId - ID of the course
+ * @param {string} studentId - User ID of the student
+ * @returns {Promise<Object>} Student attendance data for the course
+ */
+export async function getStudentCourseAttendance(courseId, studentId) {
+  // Get all sessions for the course
+  const sessions = await prisma.courseSession.findMany({
+    where: {
+      classId: courseId,
+    },
+    select: {
+      id: true,
+      name: true,
+      date: true,
+      startTime: true,
+    },
+    orderBy: {
+      date: "asc", // Order by date ascending for chronological display
+    },
+  });
+
+  // Get all attendance records for this student in this course
+  const sessionIds = sessions.map((s) => s.id);
+  const records = await prisma.attendanceRecord.findMany({
+    where: {
+      studentId,
+      sessionId: {
+        in: sessionIds,
+      },
+    },
+    select: {
+      sessionId: true,
+      markedAt: true,
+    },
+  });
+
+  // Create a set of session IDs where student is present
+  const presentSessionIds = new Set(records.map((r) => r.sessionId));
+
+  // Build sessions with attendance status
+  const sessionsWithStatus = sessions.map((session) => ({
+    id: session.id,
+    name: session.name,
+    date: session.date,
+    startTime: session.startTime,
+    isPresent: presentSessionIds.has(session.id),
+  }));
+
+  // Calculate attendance percentage
+  const totalSessions = sessions.length;
+  const presentCount = presentSessionIds.size;
+  const attendancePercentage = totalSessions > 0 
+    ? Math.round((presentCount / totalSessions) * 100)
+    : 0;
+
+  return {
+    courseId,
+    sessions: sessionsWithStatus,
+    attendancePercentage,
+    totalSessions,
+    presentCount,
+  };
 }

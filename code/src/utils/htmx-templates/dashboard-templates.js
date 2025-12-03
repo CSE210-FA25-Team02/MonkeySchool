@@ -179,6 +179,7 @@ function renderRecentClassesList(classes) {
 /**
  * Render the dashboard-level Create Class modal.
  *
+ * @param {Array} [upcomingQuarters=[]] - List of upcoming quarters
  * @returns {string} HTML string
  */
 export function createCreateClassModal(upcomingQuarters = []) {

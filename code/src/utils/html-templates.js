@@ -238,6 +238,90 @@ export function createSuccessMessage(message) {
 }
 
 /**
+ * Creates the main content wrapper for HTMX responses
+ * This ensures HTMX responses have the same structure as full page loads
+ * @param {string} title Page title text
+ * @param {string} content HTML string to inject into the content area
+ * @param {object} [options={}] Optional configuration
+ * @param {object} [options.user=null] User object for header display
+ * @param {string} [options.breadcrumbPath] Optional breadcrumb path (e.g., "Dashboard / Attendance")
+ * @returns {string} HTML string for the main content area (header + content-canvas)
+ */
+export function createMainContentWrapper(title, content, options = {}) {
+  const {
+    user = null,
+    breadcrumbPath = null,
+  } = options;
+
+  // Derive simple user display data for header pill
+  const displayName = escapeHtml(user?.name || "User");
+  const initials =
+    displayName
+      .split(" ")
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "U";
+
+  // Build breadcrumbs
+  let breadcrumbs = '<a href="/">Dashboard</a>';
+  if (breadcrumbPath) {
+    const parts = breadcrumbPath.split(" / ");
+    parts.forEach((part, index) => {
+      if (index < parts.length - 1) {
+        // Not the last part - make it a link
+        const href = part === "Dashboard" ? "/" : `/${part.toLowerCase()}`;
+        breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <a href="${href}">${escapeHtml(part)}</a>`;
+      } else {
+        // Last part - current page
+        breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <span class="current">${escapeHtml(part)}</span>`;
+      }
+    });
+  } else {
+    breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <span class="current">${escapeHtml(title)}</span>`;
+  }
+
+  // Check if content already has a container wrapper
+  // If it starts with <div class="container">, we'll use it as-is
+  // Otherwise, wrap it in a container
+  const trimmedContent = content.trim();
+  const hasContainer = trimmedContent.startsWith('<div class="container">') || 
+                       trimmedContent.startsWith("<div class=\"container\">");
+  
+  let finalContent;
+  if (hasContainer) {
+    // Content already has container, use it directly
+    finalContent = content;
+  } else {
+    // Wrap content in container
+    finalContent = `<div class="container">${content}</div>`;
+  }
+
+  return `
+    <header class="top-bar">
+        <div class="breadcrumbs">
+            ${breadcrumbs}
+        </div>
+        
+        <div class="top-actions">
+            <!-- User Profile Pill -->
+            <a href="/users/profile" class="user-pill" style="text-decoration: none; color: inherit;">
+                <div class="user-avatar">
+                    ${initials}
+                </div>
+                <span class="user-name">${displayName}</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="content-canvas">
+        ${finalContent}
+    </div>
+  `;
+}
+
+/**
  * Utility functions
  * @param {string|null|undefined} text Input text to escape
  * @returns {string} Escaped HTML string

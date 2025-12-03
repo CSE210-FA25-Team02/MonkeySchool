@@ -33,6 +33,17 @@ export const submitAttendanceSchema = z.object({
 });
 
 /**
+ * Schema for marking attendance with course selection
+ */
+export const markAttendanceSchema = z.object({
+  courseId: z.string().min(1, "Course selection is required"),
+  code: z
+    .string()
+    .transform((val) => val.replace(/\s/g, "")) // Strip spaces first
+    .refine((val) => /^\d{8}$/.test(val), "Code must be exactly 8 digits"),
+});
+
+/**
  * Schema for creating a course session
  */
 export const createCourseSessionSchema = z.object({
