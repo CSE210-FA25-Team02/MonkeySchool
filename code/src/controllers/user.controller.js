@@ -93,16 +93,15 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
  * Update User Profile
  */
 export const updateUserProfile = asyncHandler(async (req, res) => {
-  // eslint-disable-next-line no-unused-vars
   const userId = req.user.id;
   const { name, pronouns, bio, github } = req.body;
 
-    const updateData = {
+  const updateData = {
     name: name || req.user.name,
     pronouns,
     bio,
     github,
-  }
+  };
   const updatedUser = await userService.updateUser(userId, updateData);
 
   const content = renderProfilePage(updatedUser, []);
