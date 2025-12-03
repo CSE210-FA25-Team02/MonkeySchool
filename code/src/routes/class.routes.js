@@ -100,4 +100,15 @@ router.delete(
   asyncHandler(classController.deleteClass),
 );
 
+// ============================================
+// ROLE MANAGEMENT ROUTES
+// ============================================
+
+// Change member role (Professor only)
+router.put(
+  "/:classId/members/:userId/role",
+  requireAuth,
+  asyncHandler(classController.changeMemberRole),
+);
+
 export default router;
