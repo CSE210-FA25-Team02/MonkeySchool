@@ -112,7 +112,7 @@ export function renderSchedulePage(
   currentDate = new Date(),
   dbEvents = [],
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   const classId = classInfo.id;
   const className = escapeHtml(classInfo.name);
@@ -140,7 +140,7 @@ export function renderSchedulePage(
     const dayEnd = new Date(displayDate);
     dayEnd.setHours(23, 59, 59, 999);
     displayEvents = allEvents.filter(
-      (e) => e.start >= displayDate && e.start <= dayEnd,
+      (e) => e.start >= displayDate && e.start <= dayEnd
     );
   }
 
@@ -441,6 +441,8 @@ export function renderSchedulePage(
  * @param {string} view - 'week' or 'day'
  * @param {Date} currentDate - Current date for the view
  * @param {Array} dbEvents - Array of database event objects
+ * @param {Array<string>} [allowedEventTypes=[]] - Array of allowed event type values for the current user
+ * @param {Object} [groupsData={}] - Groups data for the modal (allGroups, isGroupLeader, leaderGroupId)
  * @returns {string} HTML string
  */
 export function renderScheduleWrapper(
@@ -449,52 +451,13 @@ export function renderScheduleWrapper(
   currentDate = new Date(),
   dbEvents = [],
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   return `
     <div id="schedule-wrapper">
       ${renderSchedulePage(classInfo, view, currentDate, dbEvents, allowedEventTypes, groupsData)}
     </div>
   `;
-}
-
-/**
- * Get allowed event types based on user role and group leader status
- * Returns DB enum values (COURSE_LECTURE, etc.)
- * @param {string|null} classRole - User's class role (PROFESSOR, TA, TUTOR, STUDENT, or null)
- * @param {boolean} isGroupLeader - Whether user is a group leader in this class
- * @returns {Array<string>} Array of allowed event type DB enum values
- */
-function getAllowedEventTypes(classRole, isGroupLeader) {
-  // Professor, TA, Tutor, and Group Leader can all create GROUP_MEETING
-  // Professor or TA can create all event types including COURSE_DISCUSSION and GROUP_MEETING
-  if (classRole === "PROFESSOR" || classRole === "TA") {
-    return [
-      "COURSE_LECTURE",
-      "COURSE_OFFICE_HOUR",
-      "COURSE_DISCUSSION",
-      "GROUP_MEETING",
-      "OTHER",
-    ];
-  }
-
-  // Tutor can create office hours, discussion, meeting, and other (no lecture)
-  if (classRole === "TUTOR") {
-    return [
-      "COURSE_OFFICE_HOUR",
-      "COURSE_DISCUSSION",
-      "GROUP_MEETING",
-      "OTHER",
-    ];
-  }
-
-  // Group leaders (who are not Professor/TA/Tutor) can only create group meetings
-  if (isGroupLeader) {
-    return ["GROUP_MEETING"];
-  }
-
-  // Any other role (STUDENT or no role) - no event types allowed
-  return [];
 }
 
 /**
@@ -511,7 +474,7 @@ function renderEventTypeOptions(allowedTypes) {
   return allowedTypes
     .map(
       (type) =>
-        `<option value="${escapeHtml(type)}">${escapeHtml(getEventTypeLabel(type))}</option>`,
+        `<option value="${escapeHtml(type)}">${escapeHtml(getEventTypeLabel(type))}</option>`
     )
     .join("");
 }
@@ -526,7 +489,7 @@ function renderEventTypeOptions(allowedTypes) {
 function renderGroupOptions(
   groups = [],
   isGroupLeader = false,
-  leaderGroupId = null,
+  leaderGroupId = null
 ) {
   if (groups.length === 0) {
     return '<option value="">No groups available</option>';
@@ -546,7 +509,7 @@ function renderGroupOptions(
     groups
       .map(
         (group) =>
-          `<option value="${escapeHtml(group.id)}">${escapeHtml(group.name)}</option>`,
+          `<option value="${escapeHtml(group.id)}">${escapeHtml(group.name)}</option>`
       )
       .join("")
   );
@@ -565,7 +528,7 @@ function renderCreateEventModal(
   classId,
   minDate = null,
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   // Calculate PST today if not provided
   if (!minDate) {
@@ -794,8 +757,7 @@ function renderCreateEventModal(
 export function renderEventDetailModal(
   event,
   classInfo,
-  allowedEventTypes = [],
-  groupsData = {},
+  allowedEventTypes = []
 ) {
   if (!event) {
     return `
@@ -821,7 +783,7 @@ export function renderEventDetailModal(
   const eventId = escapeHtml(event.id);
   const title = escapeHtml(event.title || "Untitled Event");
   const description = escapeHtml(
-    event.description || "No description provided.",
+    event.description || "No description provided."
   );
   const location = escapeHtml(event.location || "");
   const eventType = event.type || "OTHER";
@@ -1074,7 +1036,7 @@ export function renderEditEventModal(
   event,
   classInfo,
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   if (!event) {
     return `
@@ -1153,7 +1115,7 @@ export function renderEditEventModal(
   if (selectedGroupId && groupOptions.includes(`value="${selectedGroupId}"`)) {
     groupOptions = groupOptions.replace(
       `value="${selectedGroupId}"`,
-      `value="${selectedGroupId}" selected`,
+      `value="${selectedGroupId}" selected`
     );
   }
 
@@ -1162,7 +1124,7 @@ export function renderEditEventModal(
   if (eventTypeOptions.includes(`value="${eventType}"`)) {
     finalEventTypeOptions = eventTypeOptions.replace(
       `value="${eventType}"`,
-      `value="${eventType}" selected`,
+      `value="${eventType}" selected`
     );
   }
 
