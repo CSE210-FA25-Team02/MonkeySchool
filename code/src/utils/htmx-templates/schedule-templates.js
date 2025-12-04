@@ -754,6 +754,13 @@ function renderCreateEventModal(
  * @param {Object} groupsData - Groups data
  * @returns {string} HTML string
  */
+/**
+ * Render event detail modal
+ * @param {Object} event - Event object from database
+ * @param {Object} classInfo - Class information
+ * @param {Array<string>} allowedEventTypes - Allowed event types for editing
+ * @returns {string} HTML string
+ */
 export function renderEventDetailModal(
   event,
   classInfo,

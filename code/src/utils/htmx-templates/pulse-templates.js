@@ -7,6 +7,8 @@ import { escapeHtml } from "../html-templates.js";
 
 /**
  * Get emoji for pulse value
+ * @param {number} value - Pulse value (1-5)
+ * @returns {string} Emoji string
  */
 function getPulseEmoji(value) {
   const emojis = {
@@ -21,6 +23,8 @@ function getPulseEmoji(value) {
 
 /**
  * Format date for display
+ * @param {string} dateStr - Date string in YYYY-MM-DD format
+ * @returns {string} Formatted date string
  */
 function formatDate(dateStr) {
   const date = new Date(dateStr + "T00:00:00");
@@ -33,6 +37,8 @@ function formatDate(dateStr) {
 
 /**
  * Format date as short (MM/DD)
+ * @param {string} dateStr - Date string in YYYY-MM-DD format
+ * @returns {string} Formatted short date string
  */
 function formatDateShort(dateStr) {
   const date = new Date(dateStr + "T00:00:00");
@@ -51,6 +57,7 @@ function formatDateShort(dateStr) {
  * @param {Object} data.summaryAverages - {day1, day7, day30}
  * @param {string|null} data.selectedDate - Currently selected date for details
  * @param {Array} data.detailsData - Array of student pulse entries for selected date
+ * @returns {string} HTML string for pulse analytics page
  */
 export function renderPulseAnalyticsPage(data) {
   const {
@@ -209,6 +216,8 @@ export function renderPulseAnalyticsPage(data) {
 
 /**
  * Render summary cards
+ * @param {Object} summaryAverages - Object with day1, day7, day30 average pulse values
+ * @returns {string} HTML string for summary cards
  */
 function renderSummaryCards(summaryAverages) {
   const { day1 = null, day7 = null, day30 = null } = summaryAverages;
@@ -240,6 +249,10 @@ function renderSummaryCards(summaryAverages) {
 
 /**
  * Render range filter buttons
+ * @param {string} classId - Class ID
+ * @param {number} currentRange - Current time range (1, 7, or 30)
+ * @param {string|null} selectedDate - Currently selected date for details
+ * @returns {string} HTML string for range buttons
  */
 function renderRangeButtons(classId, currentRange, selectedDate = null) {
   const ranges = [
@@ -274,6 +287,11 @@ function renderRangeButtons(classId, currentRange, selectedDate = null) {
 
 /**
  * Render chart container
+ * @param {string} classId - Class ID
+ * @param {number} range - Current time range (1, 7, or 30)
+ * @param {Array} analyticsData - Array of {date, averagePulse, count}
+ * @param {string|null} selectedDate - Currently selected date for details
+ * @returns {string} HTML string for chart container
  */
 function renderChartContainer(classId, range, analyticsData, selectedDate = null) {
   if (analyticsData.length === 0) {
@@ -300,6 +318,11 @@ function renderChartContainer(classId, range, analyticsData, selectedDate = null
 
 /**
  * Render SVG line chart
+ * @param {string} classId - Class ID
+ * @param {number} range - Current time range (1, 7, or 30)
+ * @param {Array} data - Array of {date, averagePulse, count}
+ * @param {string|null} selectedDate - Currently selected date for details
+ * @returns {string} HTML string for SVG chart
  */
 function renderLineChart(classId, range, data, selectedDate = null) {
   const width = 800;
@@ -421,6 +444,10 @@ function renderLineChart(classId, range, data, selectedDate = null) {
 
 /**
  * Render details table
+ * @param {string} classId - Class ID
+ * @param {string|null} selectedDate - Currently selected date for details
+ * @param {Array} detailsData - Array of student pulse entries for selected date
+ * @returns {string} HTML string for details table
  */
 function renderDetailsTable(classId, selectedDate, detailsData) {
   if (!selectedDate) {
@@ -457,9 +484,6 @@ function renderDetailsTable(classId, selectedDate, detailsData) {
     )
     .join("");
 
-  // Get current range from the page (default to 7 if not available)
-  const currentRange = 7; // This will be replaced by the script
-
   return `
     <div style="background: var(--color-bg-surface); border-radius: var(--radius-lg); overflow: hidden;">
       <div style="padding: var(--space-4); border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
@@ -492,6 +516,10 @@ function renderDetailsTable(classId, selectedDate, detailsData) {
 
 /**
  * Render chart partial (for HTMX updates)
+ * @param {string} classId - Class ID
+ * @param {number} range - Current time range (1, 7, or 30)
+ * @param {Array} analyticsData - Array of {date, averagePulse, count}
+ * @returns {string} HTML string for chart container
  */
 export function renderChartPartial(classId, range, analyticsData) {
   return renderChartContainer(classId, range, analyticsData);
@@ -499,6 +527,10 @@ export function renderChartPartial(classId, range, analyticsData) {
 
 /**
  * Render details table partial (for HTMX updates)
+ * @param {string} classId - Class ID
+ * @param {string|null} selectedDate - Currently selected date for details
+ * @param {Array} detailsData - Array of student pulse entries for selected date
+ * @returns {string} HTML string for details table
  */
 export function renderDetailsPartial(classId, selectedDate, detailsData) {
   return renderDetailsTable(classId, selectedDate, detailsData);

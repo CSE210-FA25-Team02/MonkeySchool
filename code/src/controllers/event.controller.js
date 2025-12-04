@@ -54,7 +54,7 @@ function mapUITypeToDB(uiType) {
  * @returns {Date} Date object representing the PST time (stored as UTC)
  */
 function convertToPST(dateStr, timeStr) {
-  // Parse date and time components
+  // Parse date components
   const [year, month, day] = dateStr.split("-").map(Number);
 
   // Create a date string in the format: YYYY-MM-DDTHH:MM:00
@@ -115,7 +115,7 @@ export const createEvent = asyncHandler(async (req, res) => {
   // Validate required fields
   if (!title || !type || !date || !startTime || !endTime || !classId) {
     throw new BadRequestError(
-      "Missing required fields: title, type, date, startTime, endTime, classId",
+      "Missing required fields: title, type, date, startTime, endTime, classId"
     );
   }
 
@@ -323,7 +323,7 @@ export const createEvent = asyncHandler(async (req, res) => {
       weekStart,
       weekEnd,
       userId,
-      userClassRole,
+      userClassRole
     );
 
     // Render updated schedule wrapper (for HTMX targeting)
@@ -333,7 +333,7 @@ export const createEvent = asyncHandler(async (req, res) => {
       currentDate,
       events,
       allowedEventTypes,
-      groupsData,
+      groupsData
     );
 
     // Return HTML fragment that replaces the target element and closes modal
@@ -390,7 +390,7 @@ export const getEvent = asyncHandler(async (req, res) => {
   // Get user's permissions for this event
   const userClassRole = await classRoleService.getClassRole(
     userId,
-    event.classId,
+    event.classId
   );
   const isGroupLeader = event.groupId
     ? await prisma.groupRole.findFirst({
@@ -412,14 +412,14 @@ export const getEvent = asyncHandler(async (req, res) => {
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (classRoleType === "TUTOR") {
       allowedEventTypes.push(
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
@@ -483,7 +483,7 @@ export const getEventEditForm = asyncHandler(async (req, res) => {
   // Get user's permissions for this event
   const userClassRole = await classRoleService.getClassRole(
     userId,
-    event.classId,
+    event.classId
   );
   const isGroupLeader = event.groupId
     ? await prisma.groupRole.findFirst({
@@ -505,14 +505,14 @@ export const getEventEditForm = asyncHandler(async (req, res) => {
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (classRoleType === "TUTOR") {
       allowedEventTypes.push(
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
@@ -541,7 +541,7 @@ export const getEventEditForm = asyncHandler(async (req, res) => {
     event,
     klass,
     allowedEventTypes,
-    groupsData,
+    groupsData
   );
 
   const isHtmx = req.headers["hx-request"];
@@ -599,7 +599,7 @@ export const updateEvent = asyncHandler(async (req, res) => {
   // Validate required fields
   if (!title || !type || !date || !startTime || !endTime) {
     throw new BadRequestError(
-      "Title, type, date, start time, and end time are required",
+      "Title, type, date, start time, and end time are required"
     );
   }
 
@@ -664,7 +664,7 @@ export const updateEvent = asyncHandler(async (req, res) => {
   // Get user's class role and groups data for rendering
   const userClassRole = await classRoleService.getClassRole(
     userId,
-    existingEvent.classId,
+    existingEvent.classId
   );
   const isGroupLeader = groupId
     ? await prisma.groupRole.findFirst({
@@ -698,14 +698,14 @@ export const updateEvent = asyncHandler(async (req, res) => {
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (classRoleType === "TUTOR") {
       allowedEventTypes.push(
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
@@ -732,7 +732,7 @@ export const updateEvent = asyncHandler(async (req, res) => {
     weekStart,
     weekEnd,
     userId,
-    userClassRole,
+    userClassRole
   );
 
   // Return updated schedule
@@ -742,7 +742,7 @@ export const updateEvent = asyncHandler(async (req, res) => {
     currentDate,
     events,
     allowedEventTypes,
-    groupsData,
+    groupsData
   );
 
   const isHtmx = req.headers["hx-request"];
@@ -785,7 +785,7 @@ export const deleteEvent = asyncHandler(async (req, res) => {
   const canEdit = await eventService.canUserModifyEvent(userId, id);
   if (!canEdit) {
     throw new BadRequestError(
-      "You do not have permission to delete this event",
+      "You do not have permission to delete this event"
     );
   }
 
@@ -800,7 +800,7 @@ export const deleteEvent = asyncHandler(async (req, res) => {
   // Get user's class role and groups data for rendering
   const userClassRole = await classRoleService.getClassRole(
     userId,
-    existingEvent.classId,
+    existingEvent.classId
   );
   const isGroupLeader = existingEvent.groupId
     ? await prisma.groupRole.findFirst({
@@ -834,14 +834,14 @@ export const deleteEvent = asyncHandler(async (req, res) => {
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (classRoleType === "TUTOR") {
       allowedEventTypes.push(
         "COURSE_OFFICE_HOUR",
         "COURSE_DISCUSSION",
         "GROUP_MEETING",
-        "OTHER",
+        "OTHER"
       );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
@@ -868,7 +868,7 @@ export const deleteEvent = asyncHandler(async (req, res) => {
     weekStart,
     weekEnd,
     userId,
-    userClassRole,
+    userClassRole
   );
 
   // Return updated schedule
@@ -878,7 +878,7 @@ export const deleteEvent = asyncHandler(async (req, res) => {
     currentDate,
     events,
     allowedEventTypes,
-    groupsData,
+    groupsData
   );
 
   const isHtmx = req.headers["hx-request"];

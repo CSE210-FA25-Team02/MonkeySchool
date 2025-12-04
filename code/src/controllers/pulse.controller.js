@@ -99,7 +99,7 @@ export const getPulse = asyncHandler(async (req, res) => {
     // This will be handled by a separate route handler for clarity
     // For now, return student endpoint behavior
     // The analytics page route will be separate: /classes/:id/pulse/analytics/page
-  } catch (error) {
+  } catch {
     // User is not an instructor, treat as student request
     const pulseEntry = await pulseService.getTodayPulse(userId, classId);
     res.status(200).json({
@@ -210,7 +210,7 @@ export const renderPulseAnalytics = asyncHandler(async (req, res) => {
     try {
       const details = await pulseService.getPulseDetails(classId, selectedDate);
       detailsData = details;
-    } catch (error) {
+    } catch {
       // Invalid date or no data - ignore
       detailsData = [];
     }
