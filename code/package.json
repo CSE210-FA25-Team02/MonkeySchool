@@ -5,8 +5,9 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "dev": "export $(grep -v '^#' .env | xargs) && nodemon src/server.js",
-    "start": "export $(grep -v '^#' .env | xargs) && node src/server.js",
+    "generate-static": "node scripts/generate-static-files.js",
+    "dev": "npm run generate-static && export $(grep -v '^#' .env | xargs) && node src/server.js",
+    "start": "npm run generate-static && export $(grep -v '^#' .env | xargs) && node src/server.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",

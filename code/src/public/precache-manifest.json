@@ -1,0 +1,21 @@
+[
+  "/",
+  "/index.html",
+  "/css/components/class-list.css",
+  "/css/components/classes-modal.css",
+  "/css/components/login.css",
+  "/css/components/navbar.css",
+  "/css/components/profile-page.css",
+  "/css/files.json",
+  "/css/main.css",
+  "/js/app.js",
+  "/js/components/Footer.js",
+  "/js/components/Header.js",
+  "/js/components/NavBar.js",
+  "/js/components/SubMenu.js",
+  "/js/config/colors.js",
+  "/js/config/dependencies.md",
+  "/js/config/navigationConfig.js",
+  "/js/config/routesConfig.js",
+  "/js/files.json"
+]

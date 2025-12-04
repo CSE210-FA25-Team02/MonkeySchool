@@ -43,4 +43,21 @@ export default defineConfig([
       "jsdoc/require-returns": "off",
     },
   },
+  // Service Worker environment
+  {
+    files: ["src/public/sw.js"],
+    languageOptions: {
+      globals: {
+        self: "readonly",
+        caches: "readonly",
+        location: "readonly",
+        clients: "readonly",
+      },
+    },
+    rules: {
+      "jsdoc/require-jsdoc": "off",
+      "jsdoc/require-param": "off",
+      "jsdoc/require-returns": "off",
+    },
+  },
 ]);
