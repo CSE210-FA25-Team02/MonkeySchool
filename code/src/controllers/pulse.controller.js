@@ -157,7 +157,9 @@ export const getPulseDetails = asyncHandler(async (req, res) => {
   const { date } = req.query;
 
   if (!date) {
-    throw new BadRequestError("Date parameter is required (format: YYYY-MM-DD)");
+    throw new BadRequestError(
+      "Date parameter is required (format: YYYY-MM-DD)",
+    );
   }
 
   // Check permissions
@@ -237,4 +239,3 @@ export const renderPulseAnalytics = asyncHandler(async (req, res) => {
 
   res.send(content);
 });
-

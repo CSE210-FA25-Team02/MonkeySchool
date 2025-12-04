@@ -64,11 +64,7 @@ router.post(
 );
 
 // Get today's pulse entry
-router.get(
-  "/:id/pulse",
-  requireAuth,
-  asyncHandler(pulseController.getPulse),
-);
+router.get("/:id/pulse", requireAuth, asyncHandler(pulseController.getPulse));
 
 // Get today's pulse entry (alternative endpoint)
 router.get(

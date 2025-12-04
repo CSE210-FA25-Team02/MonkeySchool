@@ -70,8 +70,17 @@ export function renderPulseAnalyticsPage(data) {
   } = data;
 
   const summaryCards = renderSummaryCards(summaryAverages);
-  const chartContainer = renderChartContainer(classInfo.id, range, analyticsData, selectedDate);
-  const detailsTable = renderDetailsTable(classInfo.id, selectedDate, detailsData);
+  const chartContainer = renderChartContainer(
+    classInfo.id,
+    range,
+    analyticsData,
+    selectedDate,
+  );
+  const detailsTable = renderDetailsTable(
+    classInfo.id,
+    selectedDate,
+    detailsData,
+  );
 
   return `
     <div class="pulse-analytics-container">
@@ -293,7 +302,12 @@ function renderRangeButtons(classId, currentRange, selectedDate = null) {
  * @param {string|null} selectedDate - Currently selected date for details
  * @returns {string} HTML string for chart container
  */
-function renderChartContainer(classId, range, analyticsData, selectedDate = null) {
+function renderChartContainer(
+  classId,
+  range,
+  analyticsData,
+  selectedDate = null,
+) {
   if (analyticsData.length === 0) {
     return `
       <div style="text-align: center; padding: var(--space-8); color: var(--color-text-muted);">
@@ -351,7 +365,8 @@ function renderLineChart(classId, range, data, selectedDate = null) {
     points.length > 0
       ? points
           .map(
-            (p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`,
+            (p, i) =>
+              `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`,
           )
           .join(" ")
       : "";
@@ -366,9 +381,7 @@ function renderLineChart(classId, range, data, selectedDate = null) {
   const gridLines = [];
   for (let i = 1; i <= 5; i++) {
     const y =
-      padding.top +
-      chartHeight -
-      ((i - minPulse) / pulseRange) * chartHeight;
+      padding.top + chartHeight - ((i - minPulse) / pulseRange) * chartHeight;
     gridLines.push(
       `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="var(--color-border)" stroke-width="1" opacity="0.3" />`,
     );
@@ -411,10 +424,9 @@ function renderLineChart(classId, range, data, selectedDate = null) {
       
       <!-- Data points (clickable) -->
       ${points
-        .map(
-          (p) => {
-            const isSelected = selectedDate === p.date;
-            return `
+        .map((p) => {
+          const isSelected = selectedDate === p.date;
+          return `
         <circle
           cx="${p.x}"
           cy="${p.y}"
@@ -429,8 +441,7 @@ function renderLineChart(classId, range, data, selectedDate = null) {
         />
         <title>${formatDate(p.date)}: ${p.averagePulse.toFixed(2)} (${p.count} responses)</title>
       `;
-          },
-        )
+        })
         .join("")}
       
       <!-- Date labels -->
@@ -535,4 +546,3 @@ export function renderChartPartial(classId, range, analyticsData) {
 export function renderDetailsPartial(classId, selectedDate, detailsData) {
   return renderDetailsTable(classId, selectedDate, detailsData);
 }
-

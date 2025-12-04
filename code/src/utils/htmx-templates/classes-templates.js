@@ -11,7 +11,7 @@ import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
  * @param {string} [classId=''] - Class ID for data attribute
  * @returns {string} HTML string
  */
-export function renderPulseSuccess(pulseValue, classId = '') {
+export function renderPulseSuccess(pulseValue, classId = "") {
   const emojis = {
     1: "😞",
     2: "😐",
@@ -186,7 +186,11 @@ export function renderClassDetail(
   content = "",
   options = {},
 ) {
-  const { isStudent = false, currentPulse = null, isInstructor = false } = options;
+  const {
+    isStudent = false,
+    currentPulse = null,
+    isInstructor = false,
+  } = options;
   return `
         <!-- Class Banner -->
         <div class="class-banner" style="background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%); border-radius: var(--radius-lg); padding: var(--space-8); color: white; margin-bottom: var(--space-6); position: relative; overflow: hidden; min-height: 200px; padding-bottom: 100px;">
@@ -220,7 +224,9 @@ export function renderClassDetail(
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
                Attendance <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px; margin-left: 4px;"></i>
             </a>
-            ${isInstructor ? `
+            ${
+              isInstructor
+                ? `
             <a href="/classes/${classInfo.id}/pulse/page" 
                hx-get="/classes/${classInfo.id}/pulse/page?range=7"
                hx-target="#tab-content"
@@ -228,7 +234,9 @@ export function renderClassDetail(
                style="padding: var(--space-3) 0; color: ${activeTab === "pulse" ? "var(--color-brand-deep)" : "var(--color-text-muted)"}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === "pulse" ? "var(--color-accent-gold)" : "transparent"}; cursor: pointer; text-decoration: none;">
                Pulse
             </a>
-            ` : ""}
+            `
+                : ""
+            }
             <a href="/classes/${classInfo.id}/groups"
                class="tab-item ${activeTab === "groups" ? "active" : ""}"
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">

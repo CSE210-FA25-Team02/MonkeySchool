@@ -67,7 +67,9 @@ function getDateNDaysAgo(daysAgo) {
  * @returns {Promise<number>} Number of pulse entries created
  */
 export async function createPulseEntries() {
-  console.log("Creating 100 pulse entries for Advanced Software Engineering and Project Management...");
+  console.log(
+    "Creating 100 pulse entries for Advanced Software Engineering and Project Management...",
+  );
 
   // Find the specific class
   const targetClass = await prisma.class.findFirst({
@@ -78,7 +80,9 @@ export async function createPulseEntries() {
   });
 
   if (!targetClass) {
-    console.log("Advanced Software Engineering and Project Management class not found. Skipping pulse entry creation.");
+    console.log(
+      "Advanced Software Engineering and Project Management class not found. Skipping pulse entry creation.",
+    );
     return 0;
   }
 
@@ -95,7 +99,9 @@ export async function createPulseEntries() {
   });
 
   if (studentRoles.length === 0) {
-    console.log("No students found in Advanced Software Engineering and Project Management. Skipping pulse entry creation.");
+    console.log(
+      "No students found in Advanced Software Engineering and Project Management. Skipping pulse entry creation.",
+    );
     return 0;
   }
 
@@ -222,4 +228,3 @@ function seededRandom(seed) {
     return state / m;
   };
 }
-

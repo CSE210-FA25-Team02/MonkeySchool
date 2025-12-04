@@ -18,7 +18,11 @@ export async function assignProfessors(professors, classes) {
           },
         },
         update: { role: "PROFESSOR" },
-        create: { userId: professors[0].id, classId: cls.id, role: "PROFESSOR" },
+        create: {
+          userId: professors[0].id,
+          classId: cls.id,
+          role: "PROFESSOR",
+        },
       }),
     ),
     // Prof Smith teaches 4 classes
@@ -31,7 +35,11 @@ export async function assignProfessors(professors, classes) {
           },
         },
         update: { role: "PROFESSOR" },
-        create: { userId: professors[1].id, classId: cls.id, role: "PROFESSOR" },
+        create: {
+          userId: professors[1].id,
+          classId: cls.id,
+          role: "PROFESSOR",
+        },
       }),
     ),
     // Prof Johnson teaches 4 classes
@@ -44,7 +52,11 @@ export async function assignProfessors(professors, classes) {
           },
         },
         update: { role: "PROFESSOR" },
-        create: { userId: professors[2].id, classId: cls.id, role: "PROFESSOR" },
+        create: {
+          userId: professors[2].id,
+          classId: cls.id,
+          role: "PROFESSOR",
+        },
       }),
     ),
   ]);

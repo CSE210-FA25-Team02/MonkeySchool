@@ -95,9 +95,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
   };
 
   // Check if current user is a student or instructor in this class
-  const userRole = klass.members.find(
-    (m) => m.userId === req.user.id,
-  );
+  const userRole = klass.members.find((m) => m.userId === req.user.id);
   const isStudent = userRole?.role === "STUDENT";
   const isInstructor =
     userRole?.role === "PROFESSOR" ||

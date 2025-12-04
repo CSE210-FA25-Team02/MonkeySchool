@@ -2,10 +2,7 @@
 // code/src/services/pulse.service.js
 
 import { prisma } from "../lib/prisma.js";
-import {
-  BadRequestError,
-  ForbiddenError,
-} from "../utils/api-error.js";
+import { BadRequestError, ForbiddenError } from "../utils/api-error.js";
 
 /**
  * Check if user is a student in the class
@@ -33,45 +30,45 @@ function getTodayDate() {
   const pstNow = new Date().toLocaleString("en-US", {
     timeZone: "America/Los_Angeles",
   });
-  
+
   // Create a date object from the PST string
   const pstDate = new Date(pstNow);
-  
+
   // Extract year, month, day in PST
   const year = pstDate.getFullYear();
   const month = pstDate.getMonth();
   const day = pstDate.getDate();
-  
+
   // Create a new date at midnight PST
   // We need to create this as a UTC date that represents midnight PST
   // PST is UTC-8, PDT is UTC-7
   // We'll use a date string with PST offset
   const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-  
+
   // Check if DST is in effect (2nd Sunday in March to 1st Sunday in November)
   const dateObj = new Date(year, month, day);
   const march = new Date(year, 2, 1); // March 1
   const november = new Date(year, 10, 1); // November 1
-  
+
   // Find 2nd Sunday in March
   const marchDay = march.getDay();
   const secondSundayMarch = 14 - marchDay; // Days to add to get to 2nd Sunday
-  
+
   // Find 1st Sunday in November
   const novDay = november.getDay();
   const firstSundayNov = 7 - novDay; // Days to add to get to 1st Sunday
-  
+
   const dstStart = new Date(year, 2, secondSundayMarch);
   const dstEnd = new Date(year, 10, firstSundayNov);
-  
+
   const isDST = dateObj >= dstStart && dateObj < dstEnd;
-  
+
   // Use appropriate offset: -07:00 for PDT, -08:00 for PST
   const offset = isDST ? "-07:00" : "-08:00";
-  
+
   // Create date at midnight PST/PDT
   const pstMidnight = new Date(`${dateStr}T00:00:00${offset}`);
-  
+
   return pstMidnight;
 }
 
@@ -313,4 +310,3 @@ export async function getAveragePulse(classId, range) {
 
   return result._avg.value ? parseFloat(result._avg.value.toFixed(2)) : null;
 }
-
