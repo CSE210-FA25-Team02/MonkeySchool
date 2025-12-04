@@ -1,0 +1,414 @@
+/* =========================================
+   Availability Planning Page
+   ========================================= */
+
+.availability-card {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.availability-card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 3fr);
+  gap: var(--space-8);
+  align-items: flex-start;
+}
+
+.availability-card__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.availability-greeting {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+}
+
+.availability-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  max-width: 360px;
+}
+
+.availability-header {
+  align-items: center;
+}
+
+.availability-helper-text {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.availability-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.availability-legend__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.availability-legend__swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.availability-legend__swatch--active {
+  background: rgba(27, 106, 89, 0.2);
+  border-color: var(--color-brand-medium);
+}
+
+.availability-legend__swatch--inactive {
+  background: var(--color-bg-canvas);
+}
+
+.availability-grid-wrapper {
+  background: var(--color-bg-canvas);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.03);
+  overflow: auto;
+}
+
+.availability-grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--text-xs);
+}
+
+.availability-grid th,
+.availability-grid td {
+  border: 1px solid var(--color-border-subtle);
+}
+
+.availability-cell {
+  padding: 8px 6px;
+  text-align: center;
+  background: var(--color-bg-surface);
+  min-height: 32px;
+  vertical-align: middle;
+}
+
+.availability-cell--time {
+  background: var(--color-bg-canvas);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  width: 80px;
+}
+
+.availability-cell--day {
+  background: var(--color-bg-canvas);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-main);
+}
+
+.availability-cell--slot {
+  cursor: pointer;
+  background: var(--color-bg-surface);
+  transition: background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  min-width: 60px;
+  position: relative;
+}
+
+.availability-cell--slot:hover {
+  background: rgba(27, 106, 89, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(27, 106, 89, 0.2);
+}
+
+.availability-cell--slot:focus {
+  outline: 2px solid var(--color-brand-medium);
+  outline-offset: -2px;
+}
+
+.availability-cell--active {
+  background: rgba(27, 106, 89, 0.25);
+  box-shadow: inset 0 0 0 2px var(--color-brand-medium);
+}
+
+.availability-cell--active:hover {
+  background: rgba(27, 106, 89, 0.3);
+}
+
+@media (max-width: 960px) {
+  .availability-card__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   Group Availability Sections  
+   ========================================= */
+
+.group-availability-sections {
+  margin-top: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.group-availability-sections-header h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
+  margin-bottom: var(--space-2);
+}
+
+.group-availability-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.group-availability-section {
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.group-availability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.group-availability-header .card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-main);
+  font-weight: var(--weight-medium);
+}
+
+.group-availability-toggle {
+  background: none;
+  border: none;
+  padding: var(--space-2);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.group-availability-toggle:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-main);
+}
+
+.group-availability-toggle i {
+  transition: transform var(--transition-fast);
+}
+
+.group-availability-content {
+  padding: var(--space-6);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.group-availability-members {
+  margin-bottom: var(--space-4);
+}
+
+.group-availability-members-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.group-availability-grid-wrapper {
+  background: var(--color-bg-canvas);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.03);
+  overflow: auto;
+}
+
+.group-availability-grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--text-xs);
+}
+
+.group-availability-grid th,
+.group-availability-grid td {
+  border: 1px solid var(--color-border-subtle);
+}
+
+.group-availability-cell {
+  padding: 8px 6px;
+  text-align: center;
+  background: var(--color-bg-surface);
+  min-height: 32px;
+  vertical-align: middle;
+  position: relative;
+}
+
+.group-availability-cell--time {
+  background: var(--color-bg-canvas);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  width: 80px;
+}
+
+.group-availability-cell--day {
+  background: var(--color-bg-canvas);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-main);
+}
+
+.group-availability-cell--slot {
+  background: var(--color-bg-surface);
+  min-width: 60px;
+  cursor: default;
+}
+
+/* Green intensity levels for group availability */
+.group-availability--intensity-1 {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.group-availability--intensity-2 {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.group-availability--intensity-3 {
+  background: rgba(34, 197, 94, 0.4);
+}
+
+.group-availability--intensity-4 {
+  background: rgba(34, 197, 94, 0.55);
+}
+
+.group-availability--intensity-5 {
+  background: rgba(34, 197, 94, 0.7);
+}
+
+/* Enhanced tooltips for group availability cells */
+.group-availability-cell--slot {
+  position: relative;
+}
+
+.group-availability-cell--slot:hover {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  cursor: default;
+}
+
+/* Tooltip styles */
+.group-availability-cell--slot[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 200px;
+  text-align: center;
+}
+
+/* Enhanced tooltip with names */
+.group-availability-cell--slot[data-available-names]:not([data-available-names=""]):hover::after {
+  content: attr(title) "\A" attr(data-available-names);
+  white-space: pre-line;
+  max-width: 250px;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.group-availability-cell--slot[title]:hover::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: -5px;
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Names overlay for available people */
+.group-availability-cell--slot .available-names {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+  font-size: 9px;
+  padding: 1px 3px;
+  border-radius: 2px;
+  max-width: calc(100% - 4px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: none;
+  z-index: 10;
+}
+
+.group-availability-cell--slot:hover .available-names {
+  display: block;
+}
+
+/* Loading state for group sections */
+.group-availability-sections.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.group-availability-sections.loading::before {
+  content: "Updating...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-brand-medium);
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .group-availability-sections {
+    margin-top: var(--space-6);
+  }
+  
+  .group-availability-header {
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .group-availability-content {
+    padding: var(--space-4);
+  }
+}
+
+

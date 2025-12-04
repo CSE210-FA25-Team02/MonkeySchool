@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - Monkey School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/shell.css">
+    <link rel="stylesheet" href="css/components/bento.css">
+    <link rel="stylesheet" href="css/components/modal.css">
+    <link rel="stylesheet" href="css/components/toast.css">
+    <link rel="stylesheet" href="css/pages/attendance.css">
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Sidebar (Shared) -->
+        <aside class="sidebar">
+            <div class="brand-mark">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item" title="Dashboard">
+                    <i class="fa-solid fa-grip-vertical nav-icon"></i>
+                </a>
+                <a href="my-classes.html" class="nav-item" title="My Classes">
+                    <i class="fa-solid fa-book-open nav-icon"></i>
+                </a>
+                <a href="attendance.html" class="nav-item active" title="Attendance">
+                    <i class="fa-solid fa-clipboard-user nav-icon"></i>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="breadcrumbs">
+                    <a href="index.html">Dashboard</a>
+                    <span style="color: var(--color-text-muted)">/</span>
+                    <span class="current">Attendance</span>
+                </div>
+
+                <!-- Role Switcher for Demo -->
+                <div class="role-switcher">
+                    <button class="btn-role active" onclick="switchRole('professor')">Professor View</button>
+                    <button class="btn-role" onclick="switchRole('student')">Student View</button>
+                </div>
+
+                <div class="user-pill">
+                    <div class="user-avatar">ZZ</div>
+                    <span class="user-name">Zihan Zhou</span>
+                </div>
+            </header>
+
+            <div class="content-canvas">
+                <div class="container">
+
+                    <!-- ========================================= -->
+                    <!-- PROFESSOR VIEW SECTION                    -->
+                    <!-- ========================================= -->
+                    <div id="view-professor" class="view-section active">
+                        <div class="page-header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+                            <h1 style="font-size: var(--text-2xl); color: var(--color-brand-deep); font-weight: bold;">
+                                Course Attendance</h1>
+                        </div>
+
+                        <!-- Course 1: CSE 210 -->
+                        <div class="bento-card span-4" style="margin-bottom: var(--space-6);">
+                            <div class="card-header" onclick="toggleCourse('cse210')" style="cursor: pointer;">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-chevron-down" id="icon-cse210"></i>
+                                    CSE 210: Software Engineering
+                                    <span class="badge badge-soft">FA25</span>
+                                </div>
+                                <div class="card-action">
+                                    <button class="btn btn--primary btn--small"
+                                        onclick="event.stopPropagation(); openModal('modal-create-session')">
+                                        + New Session
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="content-cse210" class="course-content">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Session Name</th>
+                                            <th>Date / Time</th>
+                                            <th>Code</th>
+                                            <th>Status</th>
+                                            <th style="text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Week 5: Design Patterns</strong></td>
+                                            <td>Nov 23, 2025 • 10:00 AM</td>
+                                            <td class="font-mono">8392 1045</td>
+                                            <td><span class="status-pill status-active">Active</span></td>
+                                            <td class="actions-cell">
+                                                <button class="btn-icon" title="View Live Poll"
+                                                    onclick="openLivePoll('8392 1045')"><i
+                                                        class="fa-solid fa-tower-broadcast"></i></button>
+                                                <button class="btn-icon" title="View Records"><i
+                                                        class="fa-solid fa-list"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Week 4: Architecture</td>
+                                            <td>Nov 16, 2025 • 10:00 AM</td>
+                                            <td class="font-mono">9921 0034</td>
+                                            <td><span class="status-pill status-expired">Expired</span></td>
+                                            <td class="actions-cell">
+                                                <button class="btn-icon" title="View Records"><i
+                                                        class="fa-solid fa-list"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Course 2: CSE 110 -->
+                        <div class="bento-card span-4">
+                            <div class="card-header" onclick="toggleCourse('cse110')" style="cursor: pointer;">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-chevron-right" id="icon-cse110"></i>
+                                    CSE 110: Software Engineering (Undergrad)
+                                </div>
+                                <div class="card-action">
+                                    <button class="btn btn--primary btn--small"
+                                        onclick="event.stopPropagation(); openModal('modal-create-session')">
+                                        + New Session
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="content-cse110" class="course-content" style="display: none;">
+                                <div
+                                    style="padding: var(--space-4); text-align: center; color: var(--color-text-muted);">
+                                    No active sessions. Create one to start taking attendance.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================= -->
+                    <!-- STUDENT VIEW SECTION                      -->
+                    <!-- ========================================= -->
+                    <div id="view-student" class="view-section" style="display: none;">
+                        <div class="attendance-student-grid">
+
+                            <!-- Code Input Card -->
+                            <div class="bento-card span-2">
+                                <div class="card-header">
+                                    <div class="card-title"><i class="fa-solid fa-qrcode"></i> Mark Attendance</div>
+                                </div>
+                                <div class="card-content"
+                                    style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                                    <div id="student-input-form">
+                                        <p style="color: var(--color-text-muted); margin-bottom: var(--space-4);">Enter
+                                            the 8-digit code provided by your professor.</p>
+                                        <div class="input-code-wrapper">
+                                            <input type="text" class="big-input" placeholder="0000 0000" maxlength="9"
+                                                id="attendance-code-input">
+                                        </div>
+                                        <button class="btn btn--primary btn--full"
+                                            onclick="submitAttendanceCode()">Submit Code</button>
+                                    </div>
+
+                                    <!-- Success State (Hidden) -->
+                                    <div id="student-success-msg"
+                                        style="display: none; text-align: center; animation: fadeIn 0.5s;">
+                                        <div class="success-icon-lg"><i class="fa-solid fa-check"></i></div>
+                                        <h3 style="color: var(--color-brand-deep);">You're Checked In!</h3>
+                                        <p class="text-muted">CSE 210 • Week 5: Design Patterns</p>
+                                        <p class="text-muted small">Marked at 10:42 AM</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- History Card -->
+                            <div class="bento-card span-2 row-span-2">
+                                <div class="card-header">
+                                    <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
+                                </div>
+                                <div class="history-list">
+                                    <!-- Group: CSE 210 -->
+                                    <div class="history-group">
+                                        <div class="history-group-header">CSE 210 (92%)</div>
+                                        <div class="history-item">
+                                            <div class="history-date">Nov 16</div>
+                                            <div class="history-details">
+                                                <div class="history-title">Week 4: Architecture</div>
+                                                <div class="history-time">10:05 AM</div>
+                                            </div>
+                                            <div class="status-badge status-present">Present</div>
+                                        </div>
+                                        <div class="history-item">
+                                            <div class="history-date">Nov 09</div>
+                                            <div class="history-details">
+                                                <div class="history-title">Week 3: Agile Methods</div>
+                                                <div class="history-time">10:02 AM</div>
+                                            </div>
+                                            <div class="status-badge status-present">Present</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Group: CSE 202 -->
+                                    <div class="history-group">
+                                        <div class="history-group-header">CSE 202 (85%)</div>
+                                        <div class="history-item">
+                                            <div class="history-date">Nov 22</div>
+                                            <div class="history-details">
+                                                <div class="history-title">Dynamic Programming</div>
+                                                <div class="history-time">--:--</div>
+                                            </div>
+                                            <div class="status-badge status-absent">Absent</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- MODALS                                    -->
+    <!-- ========================================= -->
+
+    <!-- Create Session Modal -->
+    <div id="modal-create-session" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Session</h3>
+                <button class="btn-close" onclick="closeModal('modal-create-session')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Session Name</label>
+                    <input type="text" class="form-input" placeholder="e.g. Week 6: Testing Strategies">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input">
+                </div>
+                <div class="form-group" style="display: flex; gap: 12px;">
+                    <div style="flex: 1;">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-input">
+                    </div>
+                    <div style="flex: 1;">
+                        <label class="form-label">End Time</label>
+                        <input type="time" class="form-input">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--secondary" onclick="closeModal('modal-create-session')">Cancel</button>
+                <button class="btn btn--primary"
+                    onclick="closeModal('modal-create-session'); showToast('Session Created', 'Week 6 session has been added.', 'success')">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Poll Modal (Fullscreen Overlay) -->
+    <div id="modal-live-poll" class="modal-overlay live-poll-overlay">
+        <div class="live-poll-card">
+            <div class="live-header">
+                <span class="live-badge">
+                    <div class="pulsing-dot"></div> LIVE SESSION
+                </span>
+                <button class="btn-close-white" onclick="closeModal('modal-live-poll')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+
+            <div class="live-code-container">
+                <div class="live-code">8392 1045</div>
+                <div class="live-timer-ring">
+                    <svg class="progress-ring" width="120" height="120">
+                        <circle class="progress-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="52"
+                            cx="60" cy="60" />
+                    </svg>
+                    <span class="live-time">04:32</span>
+                </div>
+            </div>
+
+            <div class="live-stats-row">
+                <div class="stat-box">
+                    <div class="stat-val">42</div>
+                    <div class="stat-lbl">Present</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val">86%</div>
+                    <div class="stat-lbl">Attendance Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // === Demo Specific Logic ===
+
+        // Role Switcher
+        function switchRole(role) {
+            document.querySelectorAll('.btn-role').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
+
+            if (role === 'professor') {
+                document.querySelector('button[onclick*="professor"]').classList.add('active');
+                document.getElementById('view-professor').style.display = 'block';
+            } else {
+                document.querySelector('button[onclick*="student"]').classList.add('active');
+                document.getElementById('view-student').style.display = 'block';
+            }
+        }
+
+        // Toggle Course Pane
+        function toggleCourse(courseId) {
+            const content = document.getElementById('content-' + courseId);
+            const icon = document.getElementById('icon-' + courseId);
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.className = 'fa-solid fa-chevron-down';
+            } else {
+                content.style.display = 'none';
+                icon.className = 'fa-solid fa-chevron-right';
+            }
+        }
+
+        // Student Submit Simulation
+        function submitAttendanceCode() {
+            const input = document.getElementById('attendance-code-input');
+            if (input.value.length < 8) {
+                showToast('Invalid Code', 'Please enter a valid 8-digit code.', 'error');
+                return;
+            }
+
+            // Simulate loading
+            document.getElementById('student-input-form').style.opacity = '0.5';
+            setTimeout(() => {
+                document.getElementById('student-input-form').style.display = 'none';
+                document.getElementById('student-success-msg').style.display = 'block';
+                showToast('Success', 'Attendance marked successfully!', 'success');
+            }, 800);
+        }
+
+        // Open Live Poll
+        function openLivePoll(code) {
+            openModal('modal-live-poll');
+        }
+    </script>
+</body>
+
+</html>

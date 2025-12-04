@@ -11,7 +11,7 @@ import { prisma } from "../lib/prisma.js";
  * @param {string} groupId - Group ID for context (optional)
  * @returns {Promise<boolean>} True if user has permission
  */
-async function canUserCreateEventType(
+export async function canUserCreateEventType(
   userId,
   eventType,
   classId,
@@ -27,8 +27,15 @@ async function canUserCreateEventType(
 
   if (!classRole) return false;
 
-  // Check group leader permission if it's a GROUP_MEETING
+  // Check permission for GROUP_MEETING events
+  // Allowed: Professor, TA, Tutor, or Group Leader
   if (eventType === "GROUP_MEETING") {
+    // Check if user is Professor, TA, or Tutor
+    if (["PROFESSOR", "TA", "TUTOR"].includes(classRole.role)) {
+      return true;
+    }
+
+    // Check if user is a group leader
     if (groupId) {
       // If checking for a specific group, check if user is leader of that group
       const groupRole = await prisma.groupRole.findFirst({
@@ -55,12 +62,14 @@ async function canUserCreateEventType(
   }
 
   // Check course-related event permissions
-  if (
-    ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION"].includes(
-      eventType,
-    )
-  ) {
+  if (["COURSE_LECTURE", "COURSE_OFFICE_HOUR"].includes(eventType)) {
+    // Only Professor and TA can create lectures and office hours
     return ["PROFESSOR", "TA"].includes(classRole.role);
+  }
+
+  if (eventType === "COURSE_DISCUSSION") {
+    // Professor, TA, and Tutor can create discussions
+    return ["PROFESSOR", "TA", "TUTOR"].includes(classRole.role);
   }
 
   // OTHER events can be created by anyone in the class
@@ -77,7 +86,7 @@ async function canUserCreateEventType(
  * @param {string} eventId - Event ID
  * @returns {Promise<boolean>} True if user has permission
  */
-async function canUserModifyEvent(userId, eventId) {
+export async function canUserModifyEvent(userId, eventId) {
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     include: {
@@ -270,6 +279,85 @@ export async function deleteEvent(id, userId) {
 export async function getEventsByClassId(classId) {
   return prisma.event.findMany({
     where: { classId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          preferredName: true,
+          email: true,
+        },
+      },
+      group: true,
+    },
+    orderBy: {
+      startTime: "asc",
+    },
+  });
+}
+
+/**
+ * Get events for a specific class within a date range
+ * @param {string} classId - Class ID
+ * @param {Date} weekStart - Start of the date range (inclusive)
+ * @param {Date} weekEnd - End of the date range (exclusive)
+ * @param {string} [userId] - Optional user ID for filtering (students only see their group's meetings)
+ * @param {string} [userClassRole] - Optional user's class role (STUDENT, PROFESSOR, TA, TUTOR)
+ * @returns {Promise<Array>} Array of events for the class within the date range
+ */
+export async function getEventsByClassIdAndDateRange(
+  classId,
+  weekStart,
+  weekEnd,
+  userId = null,
+  userClassRole = null,
+) {
+  // Build where clause
+  const whereClause = {
+    classId,
+    startTime: {
+      gte: weekStart,
+      lt: weekEnd,
+    },
+  };
+
+  // If user is a STUDENT, filter GROUP_MEETING events to only show their group's meetings
+  if (userClassRole === "STUDENT" && userId) {
+    // Find the student's group in this class
+    const studentGroupRole = await prisma.groupRole.findFirst({
+      where: {
+        userId,
+        group: {
+          classId,
+        },
+      },
+      select: {
+        groupId: true,
+      },
+    });
+
+    if (studentGroupRole) {
+      // Student is in a group - only show their group's meetings and all non-group events
+      whereClause.OR = [
+        // Show all non-group events (no groupId)
+        { groupId: null },
+        // Show GROUP_MEETING events for their group
+        {
+          type: "GROUP_MEETING",
+          groupId: studentGroupRole.groupId,
+        },
+        // Show all non-GROUP_MEETING events (even if they have a groupId, which shouldn't happen)
+        { type: { not: "GROUP_MEETING" } },
+      ];
+    } else {
+      // Student is not in any group - only show non-group events
+      whereClause.groupId = null;
+    }
+  }
+  // For PROFESSOR, TA, TUTOR, or no role - show all events (no filtering)
+
+  return prisma.event.findMany({
+    where: whereClause,
     include: {
       user: {
         select: {

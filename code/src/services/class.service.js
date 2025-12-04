@@ -22,13 +22,15 @@ function generateInviteCode() {
  * @param {Object} params Class creation
  * @param {string} params.name Class name
  * @param {string} params.quarter Academic quarter (e.g., "FA24")
+ * @param {string} params.location Location (e.g., "In Person" or "Online")
  * @returns {Promise<Object>} Created class record
  */
-export async function createClass({ name, quarter }) {
+export async function createClass({ name, quarter, location }) {
   return prisma.class.create({
     data: {
       name,
       quarter,
+      location,
       inviteCode: generateInviteCode(),
     },
   });
@@ -108,7 +110,17 @@ export async function getClassesByUserId(userId) {
       userId,
     },
     include: {
-      class: true,
+      class: {
+        include: {
+          _count: {
+            select: {
+              members: {
+                where: { role: "STUDENT" },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -119,6 +131,56 @@ export async function getClassesByUserId(userId) {
     inviteCode: cr.class.inviteCode,
     createdAt: cr.class.createdAt,
     role: cr.role,
+    location: cr.class.location,
+    studentCount: cr.class._count.members,
+  }));
+}
+
+/**
+ * Get classes for a user where their role is STUDENT only.
+ * Single DB query filtering at database level using classrole.role = 'STUDENT'.
+ * This avoids N+1 queries and filters in application code.
+ *
+ * SQL equivalent:
+ * SELECT c.* FROM classes c
+ * JOIN class_roles cr ON cr.classId = c.id
+ * WHERE cr.userId = :userId AND cr.role = 'STUDENT'
+ *
+ * @param {string} userId User ID
+ * @returns {Promise<Array>} Array of class objects where user is a student
+ */
+export async function getStudentCoursesByUserId(userId) {
+  // Single query filtering at DB level - no application-level filtering
+  // Query starts from Class and joins ClassRole with role = 'STUDENT' filter
+  const classes = await prisma.class.findMany({
+    where: {
+      members: {
+        some: {
+          userId: userId,
+          role: "STUDENT", // Enum value - exact match required
+        },
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      quarter: true,
+      inviteCode: true,
+      createdAt: true,
+      location: true,
+    },
+  });
+
+  // Return classes with role explicitly set to STUDENT
+  // (no additional filtering needed - DB query already filtered)
+  return classes.map((klass) => ({
+    id: klass.id,
+    name: klass.name,
+    quarter: klass.quarter,
+    inviteCode: klass.inviteCode,
+    createdAt: klass.createdAt,
+    role: "STUDENT", // User's role in these classes
+    location: klass.location,
   }));
 }
 

@@ -23,7 +23,20 @@ export function createBaseLayout(title, content, options = {}) {
     charset = "UTF-8",
     viewport = "width=device-width, initial-scale=1.0",
     description = "Student Management System",
+    user = null,
   } = options;
+
+  // Derive simple user display data for header pill
+  const displayName = escapeHtml(user?.name || "User");
+  const initials =
+    displayName
+      .split(" ")
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "U";
+
   return `
 <!DOCTYPE html>
 <html lang="${lang}" dir="${dir}">
@@ -31,7 +44,6 @@ export function createBaseLayout(title, content, options = {}) {
     <meta charset="${charset}">
     <meta name="viewport" content="${viewport}">
     <meta name="description" content="${description}">
-    <title>${escapeHtml(title)} - Monkey School</title>
     <title>${escapeHtml(title)} - Monkey School</title>
     
     <!-- HTMX Library -->
@@ -45,91 +57,266 @@ export function createBaseLayout(title, content, options = {}) {
           crossorigin="anonymous" 
           referrerpolicy="no-referrer" />
     
-    <!-- Application Styles -->
-    <link rel="stylesheet" href="/css/navbar.css">
-    <link rel="stylesheet" href="/css/main.css">
-    
+    <!-- Design System Styles -->
+    <link rel="stylesheet" href="/css/tokens.css">
+    <link rel="stylesheet" href="/css/shell.css">
+    <link rel="stylesheet" href="/css/components/bento.css">
+    <link rel="stylesheet" href="/css/components/modal.css">
+    <link rel="stylesheet" href="/css/components/toast.css">
+    <!-- Page Specific Styles -->
+    <link rel="stylesheet" href="/css/pages/class-list.css">
+    <link rel="stylesheet" href="/css/pages/profile.css">
+    <link rel="stylesheet" href="/css/pages/availability.css">
+    <link rel="stylesheet" href="/css/pages/schedule.css">
+    <!-- Legacy support for specific pages until migrated -->
+    <link rel="stylesheet" href="/css/pages/attendance.css">
+
     <!-- Application Scripts -->
     <script type="module" src="/js/app.js" defer></script>
 </head>
 <body>
-    <!-- Skip to main content for screen readers -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    
-    <!-- Navigation Bar (Left Fixed) -->
-    <div id="navbar" class="navbar"></div>
-    
-    <!-- Sub-Menu (Collapsible Side Menu) -->
-    <div id="submenu" class="submenu"></div>
-    
-    <!-- Header (Top Bar) -->
-    <header id="header" class="header" role="banner">
-        <div class="container">
-            <div class="header__content">
-                <div class="header__left"></div>
-                <div class="header__right"></div>
+    <div class="app-shell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-mark">
+                <i class="fa-solid fa-graduation-cap"></i>
             </div>
-            <h1 class="header__title">
-                <a href="/" class="header__link">Student Management System</a>
-            </h1>
-        </div>
-    </header>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item ${title === "Dashboard" ? "active" : ""}" title="Dashboard">
+                    <i class="fa-solid fa-grip-vertical nav-icon"></i>
+                </a>
+                <a href="/classes" class="nav-item ${title === "Classes" ? "active" : ""}" title="My Classes">
+                    <i class="fa-solid fa-book-open nav-icon"></i>
+                </a>
+                <a href="/attendance" class="nav-item ${title === "Attendance" ? "active" : ""}" title="Attendance">
+                    <i class="fa-solid fa-clipboard-user nav-icon"></i>
+                </a>
+                <a href="/availability" class="nav-item ${title === "Availability" ? "active" : ""}" title="My Groups">
+                    <i class="fa-solid fa-users-rectangle nav-icon"></i>
+                </a>
+                <a href="/users/profile" class="nav-item ${title === "Profile" ? "active" : ""}" title="Settings">
+                    <i class="fa-solid fa-gear nav-icon"></i>
+                </a>
+            </nav>
+            
+            <div style="margin-top: auto; padding-bottom: 24px;">
+                <button 
+                    type="button" 
+                    class="nav-item" 
+                    title="Logout" 
+                    style="background:none; border:none; cursor:pointer; width: 48px; height: 48px;"
+                    onclick="openModal('modal-logout')"
+                >
+                    <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i>
+                </button>
+            </div>
+        </aside>
 
-    <main id="main-content" class="main" role="main" tabindex="-1">
-        <div class="container">
-            ${content}
-        </div>
-    </main>
+        <!-- Main Content Canvas -->
+        <main class="main-content" id="main-content">
+            <header class="top-bar">
+                <div class="breadcrumbs">
+                    <a href="/">Dashboard</a>
+                    <span style="color: var(--color-text-muted)">/</span>
+                    <span class="current">${escapeHtml(title)}</span>
+                </div>
+                
+                <div class="top-actions">
+                     <!-- User Profile Pill -->
+                    <a href="/users/profile" class="user-pill" style="text-decoration: none; color: inherit;">
+                        <div class="user-avatar">
+                             ${initials}
+                        </div>
+                        <span class="user-name">${displayName}</span>
+                    </a>
+                </div>
+            </header>
 
-    <footer id="footer" class="footer" role="contentinfo"></footer>
+            <div class="content-canvas">
+                <div class="container">
+                    ${content}
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Logout Confirmation Modal -->
+    <div id="modal-logout" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Sign out</h3>
+          <button class="btn-close" onclick="closeModal('modal-logout')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="margin-bottom: 8px;">Are you sure you want to log out?</p>
+          <p style="font-size: 12px; color: var(--color-text-muted);">
+            You can sign back in anytime using your UCSD email.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button 
+            type="button" 
+            class="btn btn--secondary" 
+            onclick="closeModal('modal-logout')"
+          >
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn btn--primary"
+            onclick="handleLogoutConfirm()"
+          >
+            Log out
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.handleLogoutConfirm = function () {
+        // Close modal immediately for snappy UX
+        if (typeof closeModal === "function") {
+          closeModal("modal-logout");
+        }
+
+        // Prefer HTMX for partial swap if available
+        if (typeof htmx !== "undefined") {
+          htmx.ajax("GET", "/auth/logout", { target: "body", swap: "outerHTML" });
+        } else {
+          window.location.href = "/auth/logout";
+        }
+      };
+    </script>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
 </body>
 </html>
   `;
 }
 
 /**
- * Creates an error message component
+ * Creates an error message component (Toast style)
  * @param {string} message Error message
  * @param {Array|null} [errors=null] List of error items
  * @returns {string} HTML string for error message
  */
 export function createErrorMessage(message, errors = null) {
+  const details = errors ? errors.join(", ") : "";
+  // We return a script that triggers the toast because HTMX often injects this HTML
   return `
-<div class="alert alert--error" role="alert" aria-live="assertive">
-    <h2 class="alert__title">Error</h2>
-    <p class="alert__message">${escapeHtml(message)}</p>
-    ${
-      errors
-        ? `
-    <details class="alert__details">
-        <summary>Error Details</summary>
-        <ul class="alert__list">
-            ${errors
-              .map(
-                (error) => `
-                <li class="alert__item">${escapeHtml(error)}</li>
-            `,
-              )
-              .join("")}
-        </ul>
-    </details>
-    `
-        : ""
-    }
-</div>`;
+    <div class="alert alert--error" role="alert">
+        <strong>Error:</strong> ${escapeHtml(message)}
+        ${details ? `<br><small>${escapeHtml(details)}</small>` : ""}
+    </div>
+    <script>
+        if (window.showToast) {
+            window.showToast('Error', '${escapeHtml(message)}', 'error');
+        }
+    </script>
+  `;
 }
 
 /**
- * Creates a success message component
+ * Creates a success message component (Toast style)
  * @param {string} message Success message
  * @returns {string} HTML string for success message
  */
 export function createSuccessMessage(message) {
   return `
-<div class="alert alert--success" role="alert" aria-live="polite">
-    <h2 class="alert__title">Success</h2>
-    <p class="alert__message">${escapeHtml(message)}</p>
-</div>`;
+    <div class="alert alert--success" role="alert">
+        ${escapeHtml(message)}
+    </div>
+    <script>
+        if (window.showToast) {
+            window.showToast('Success', '${escapeHtml(message)}', 'success');
+        }
+    </script>
+  `;
+}
+
+/**
+ * Creates the main content wrapper for HTMX responses
+ * This ensures HTMX responses have the same structure as full page loads
+ * @param {string} title Page title text
+ * @param {string} content HTML string to inject into the content area
+ * @param {object} [options={}] Optional configuration
+ * @param {object} [options.user=null] User object for header display
+ * @param {string} [options.breadcrumbPath] Optional breadcrumb path (e.g., "Dashboard / Attendance")
+ * @returns {string} HTML string for the main content area (header + content-canvas)
+ */
+export function createMainContentWrapper(title, content, options = {}) {
+  const { user = null, breadcrumbPath = null } = options;
+
+  // Derive simple user display data for header pill
+  const displayName = escapeHtml(user?.name || "User");
+  const initials =
+    displayName
+      .split(" ")
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "U";
+
+  // Build breadcrumbs
+  let breadcrumbs = '<a href="/">Dashboard</a>';
+  if (breadcrumbPath) {
+    const parts = breadcrumbPath.split(" / ");
+    parts.forEach((part, index) => {
+      if (index < parts.length - 1) {
+        // Not the last part - make it a link
+        const href = part === "Dashboard" ? "/" : `/${part.toLowerCase()}`;
+        breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <a href="${href}">${escapeHtml(part)}</a>`;
+      } else {
+        // Last part - current page
+        breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <span class="current">${escapeHtml(part)}</span>`;
+      }
+    });
+  } else {
+    breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <span class="current">${escapeHtml(title)}</span>`;
+  }
+
+  // Check if content already has a container wrapper
+  // If it starts with <div class="container">, we'll use it as-is
+  // Otherwise, wrap it in a container
+  const trimmedContent = content.trim();
+  const hasContainer =
+    trimmedContent.startsWith('<div class="container">') ||
+    trimmedContent.startsWith('<div class="container">');
+
+  let finalContent;
+  if (hasContainer) {
+    // Content already has container, use it directly
+    finalContent = content;
+  } else {
+    // Wrap content in container
+    finalContent = `<div class="container">${content}</div>`;
+  }
+
+  return `
+    <header class="top-bar">
+        <div class="breadcrumbs">
+            ${breadcrumbs}
+        </div>
+        
+        <div class="top-actions">
+            <!-- User Profile Pill -->
+            <a href="/users/profile" class="user-pill" style="text-decoration: none; color: inherit;">
+                <div class="user-avatar">
+                    ${initials}
+                </div>
+                <span class="user-name">${displayName}</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="content-canvas">
+        ${finalContent}
+    </div>
+  `;
 }
 
 /**
@@ -173,6 +360,7 @@ export function formatDate(dateString, lang = "en") {
  */
 export function getUpcomingQuarters(count = 8) {
   const quarters = ["WI", "SP", "SU", "FA"];
+  const quarterNames = { WI: "Winter", SP: "Spring", SU: "Summer", FA: "Fall" };
   const currDate = new Date();
   const currYear = currDate.getFullYear();
   const currMonth = currDate.getMonth();
@@ -187,7 +375,9 @@ export function getUpcomingQuarters(count = 8) {
 
   for (let i = 0; i < count; i++) {
     const shortYear = yearIndex % 100;
-    quarterList.push(`${quarters[qIndex]}${shortYear}`);
+    const code = `${quarters[qIndex]}${shortYear}`;
+    const full = `${quarterNames[quarters[qIndex]]} ${yearIndex}`;
+    quarterList.push({ code, full });
     qIndex++;
 
     if (qIndex === quarters.length) {

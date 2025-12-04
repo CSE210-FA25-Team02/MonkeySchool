@@ -6,7 +6,6 @@ import * as classService from "../services/class.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError, ForbiddenError } from "../utils/api-error.js";
 import { createCourseSessionSchema } from "../validators/attendance.validator.js";
-import { createSessionForm } from "../utils/htmx-templates/attendance-templates.js";
 
 /**
  * Create a new course session
@@ -274,6 +273,9 @@ export const getSessionForm = asyncHandler(async (req, res) => {
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create sessions");
   }
+
+  const { createSessionForm } =
+    await import("../utils/htmx-templates/attendance-templates.js");
   const formHtml = createSessionForm(classId);
   res.send(formHtml);
 });

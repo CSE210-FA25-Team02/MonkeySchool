@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Monkey School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/shell.css">
+    <link rel="stylesheet" href="css/components/notification.css">
+    <link rel="stylesheet" href="css/components/toast.css">
+    <link rel="stylesheet" href="css/components/modal.css">
+    <link rel="stylesheet" href="css/pages/profile.css">
+</head>
+
+<body>
+    <div class="app-shell">
+        <!-- Floating Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-mark">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item" title="Dashboard">
+                    <i class="fa-solid fa-grip-vertical nav-icon"></i>
+                </a>
+                <a href="my-classes.html" class="nav-item" title="My Classes">
+                    <i class="fa-solid fa-book-open nav-icon"></i>
+                </a>
+                <a href="class.html" class="nav-item" title="Schedule">
+                    <i class="fa-regular fa-calendar nav-icon"></i>
+                </a>
+                <a href="groups.html" class="nav-item" title="My Groups">
+                    <i class="fa-solid fa-users-rectangle nav-icon"></i>
+                </a>
+                <a href="#" class="nav-item active" title="Settings">
+                    <i class="fa-solid fa-gear nav-icon"></i>
+                </a>
+            </nav>
+
+            <div style="margin-top: auto; padding-bottom: 24px;">
+                <a href="login.html" class="nav-item" title="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket nav-icon"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Canvas -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="breadcrumbs">
+                    <a href="index.html">Dashboard</a>
+                    <span style="color: var(--color-text-muted)">/</span>
+                    <span class="current">Profile</span>
+                </div>
+
+                <div class="top-actions">
+                    <div style="position: relative;">
+                        <button id="trigger-notif" class="nav-item" title="Notifications">
+                            <i class="fa-regular fa-bell nav-icon"></i>
+                        </button>
+                        <!-- Notification Panel (Same as index) -->
+                        <div id="notif-panel" class="notification-panel">
+                            <div class="notif-header">
+                                <div class="notif-title">Notifications 🍌</div>
+                                <span class="notif-mark-read">Mark all read</span>
+                            </div>
+                            <div class="notif-list">
+                                <div class="notif-item unread">
+                                    <div class="notif-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                                    <div class="notif-content">
+                                        <div class="notif-text"><strong>Prof. Gary</strong> posted a new announcement.
+                                        </div>
+                                        <div class="notif-time">10 min ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-pill">
+                        <div class="user-avatar">ZZ</div>
+                        <span class="user-name">Zihan Zhou</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="content-canvas">
+                <div class="container" style="max-width: 1000px;">
+
+                    <!-- Profile Header -->
+                    <div class="profile-header-card">
+                        <div class="profile-avatar-xl">
+                            ZZ
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name-row">
+                                <div class="profile-name">Zihan Zhou</div>
+                                <div class="profile-pronouns">he/him</div>
+                            </div>
+                            <div class="profile-bio">
+                                Software Engineering student at UCSD. Passionate about web development and bananas. 🐒
+                            </div>
+                            <div class="profile-socials">
+                                <a href="#" class="social-link"><i class="fa-brands fa-github"></i> zihanzhou</a>
+                                <a href="#" class="social-link"><i class="fa-brands fa-linkedin"></i> zihan-zhou</a>
+                                <a href="#" class="social-link"><i class="fa-regular fa-envelope"></i>
+                                    zihan@ucsd.edu</a>
+                            </div>
+                        </div>
+                        <button onclick="openModal('modal-edit-profile')"
+                            style="position: absolute; top: 24px; right: 24px; border: 1px solid var(--color-border-subtle); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; color: var(--color-text-muted); z-index: 10; cursor: pointer;">
+                            <i class="fa-solid fa-pencil"></i> Edit
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6);">
+
+                        <!-- Left Col -->
+                        <div>
+                            <!-- Stats -->
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-card-val">94%</div>
+                                    <div class="stat-card-label">Attendance</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-val">42</div>
+                                    <div class="stat-card-label">Punches</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-val">5</div>
+                                    <div class="stat-card-label">Badges</div>
+                                </div>
+                            </div>
+
+                            <!-- Activity Stream -->
+                            <div class="activity-section">
+                                <div class="activity-header">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> Activity History
+                                </div>
+                                <div class="timeline">
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot punch"><i class="fa-solid fa-fingerprint"></i></div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Punched in for <strong>CSE 210</strong></div>
+                                            <div class="timeline-meta">Today, 9:58 AM</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot post"><i class="fa-solid fa-comment"></i></div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Commented on Group Discussion</div>
+                                            <div class="timeline-meta">Yesterday, 4:30 PM</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot punch"><i class="fa-solid fa-fingerprint"></i></div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Punched out from <strong>CSE 202</strong></div>
+                                            <div class="timeline-meta">Yesterday, 2:00 PM</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Col: Settings Form -->
+                        <div class="activity-section">
+                            <div class="activity-header">
+                                <i class="fa-solid fa-gear"></i> Settings
+                            </div>
+                            <form
+                                onsubmit="event.preventDefault(); showToast('Success', 'Preferences saved.', 'success');">
+                                <div class="form-group" style="margin-bottom: 16px;">
+                                    <label
+                                        style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px;">Timezone</label>
+                                    <select
+                                        style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                                        <option>Pacific Time (US & Canada)</option>
+                                        <option>UTC</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 16px;">
+                                    <label
+                                        style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px;">Email
+                                        Notifications</label>
+                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                        <input type="checkbox" checked> Class Announcements
+                                    </div>
+                                    <div
+                                        style="display: flex; align-items: center; gap: 8px; font-size: 14px; margin-top: 4px;">
+                                        <input type="checkbox" checked> Group Messages
+                                    </div>
+                                </div>
+                                <button
+                                    style="width: 100%; background: var(--color-brand-deep); color: white; padding: 8px; border-radius: 8px; font-weight: bold;">Save
+                                    Preferences</button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Edit Profile Modal -->
+    <div id="modal-edit-profile" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Profile</h3>
+                <button class="btn-close" onclick="closeModal('modal-edit-profile')">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-profile">
+                    <div class="form-group">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-input" name="name" value="Zihan Zhou">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pronouns</label>
+                        <input type="text" class="form-input" name="pronouns" value="he/him">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bio</label>
+                        <textarea class="form-input" name="bio" rows="3"
+                            style="resize: none;">Software Engineering student at UCSD. Passionate about web development and bananas. 🐒</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Github Username</label>
+                        <input type="text" class="form-input" name="github" value="zihanzhou">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-edit-profile')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

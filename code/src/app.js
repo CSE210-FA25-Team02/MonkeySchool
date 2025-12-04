@@ -4,8 +4,6 @@
  * Configures Express app with middleware and routes for HTMX responses
  */
 
-// code/src/app.js
-
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -51,6 +49,8 @@ export function createApp() {
             "https://unpkg.com", // For HTMX CDN
             "https://cdn.jsdelivr.net", // Alternative CDN
           ],
+          // Allow inline event handlers like onclick, onsubmit, etc.
+          scriptSrcAttr: ["'unsafe-inline'"],
           styleSrc: [
             "'self'",
             "'unsafe-inline'", // For dynamic styling
@@ -111,8 +111,17 @@ export function createApp() {
   app.use(cookieParser());
 
   // Body parsing
-  app.use(express.json({ limit: "10mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+  app.use(
+    express.json({
+      limit: "10mb",
+    }),
+  );
+  app.use(
+    express.urlencoded({
+      extended: true,
+      limit: "10mb",
+    }),
+  );
 
   // Compression
   app.use(compression());
@@ -128,33 +137,15 @@ export function createApp() {
   app.set("view engine", "ejs");
   app.set("views", path.join(__dirname, "views"));
 
-  // Health check (returns HTML for HTMX compatibility)
-  app.get("/", requireAuth, (req, res) => {
-    // If not authenticated, redirect to /login
-    if (!req.user) {
-      return res.redirect("/login");
-    }
-    const isHtmxRequest = req.headers["hx-request"];
-    if (isHtmxRequest) {
-      res.send(`
-        <div class="health-status">
-          <h2>System Status</h2>
-          <p>✅ Express + Prisma API is running</p>
-          <p>📅 Version: 1.0.0</p>
-          <p>🌍 Environment: ${env.NODE_ENV}</p>
-        </div>
-      `);
-    } else {
-      res.sendFile(path.join(__dirname, "public", "index.html"));
-    }
+  // Dashboard - requires authentication
+  app.get("/", requireAuth, async (req, res, next) => {
+    const { getDashboard } =
+      await import("./controllers/dashboard.controller.js");
+    return getDashboard(req, res, next);
   });
 
   // Serve login page
   app.get("/login", (req, res) => {
-    // If already authenticated, redirect to home
-    if (req.user) {
-      return res.redirect("/");
-    }
     res.sendFile(path.join(__dirname, "public", "login.html"));
   });
 
@@ -165,7 +156,41 @@ export function createApp() {
     // getAttendancePage is already wrapped with asyncHandler, so it handles errors
     return getAttendancePage(req, res, next);
   });
+
+  // Get new poll form (HTMX)
+  app.get(
+    "/course/:courseId/session/:sessionId/poll/new",
+    requireAuth,
+    async (req, res, next) => {
+      const { getNewPollForm } =
+        await import("./controllers/attendance.controller.js");
+      return getNewPollForm(req, res, next);
+    },
+  );
+
+  // Start poll (HTMX)
+  app.post(
+    "/course/:courseId/session/:sessionId/poll/start",
+    requireAuth,
+    async (req, res, next) => {
+      const { startPoll } =
+        await import("./controllers/attendance.controller.js");
+      return startPoll(req, res, next);
+    },
+  );
+
   // Session-wise attendance records page (professor only)
+  app.get(
+    "/course/:courseId/session/:sessionId/records",
+    requireAuth,
+    async (req, res, next) => {
+      const { getSessionRecordsPage } =
+        await import("./controllers/attendance.controller.js");
+      return getSessionRecordsPage(req, res, next);
+    },
+  );
+
+  // Legacy route for backward compatibility
   app.get(
     "/attendance/course/session/:sessionId/records",
     requireAuth,
@@ -175,6 +200,42 @@ export function createApp() {
   );
 
   // Course-wise attendance records page (professor only)
+  app.get("/course/:courseId/records", requireAuth, async (req, res, next) => {
+    const { getCourseRecordsPage } =
+      await import("./controllers/attendance.controller.js");
+    return getCourseRecordsPage(req, res, next);
+  });
+
+  // Student attendance records page for a specific course
+  app.get(
+    "/course/:courseId/user/:userId/records",
+    requireAuth,
+    async (req, res, next) => {
+      const { getStudentCourseRecordsPage } =
+        await import("./controllers/attendance.controller.js");
+      return getStudentCourseRecordsPage(req, res, next);
+    },
+  );
+
+  // API: Get courses for a user (where user is a student)
+  app.get("/api/user/:userId/courses", requireAuth, async (req, res, next) => {
+    const { getUserCourses } =
+      await import("./controllers/attendance.controller.js");
+    return getUserCourses(req, res, next);
+  });
+
+  // API: Get attendance records for a student in a course (JSON)
+  app.get(
+    "/api/course/:courseId/user/:userId/records",
+    requireAuth,
+    async (req, res, next) => {
+      const { getStudentCourseRecords } =
+        await import("./controllers/attendance.controller.js");
+      return getStudentCourseRecords(req, res, next);
+    },
+  );
+
+  // Legacy route for backward compatibility
   app.get(
     "/attendance/course/:courseId/records",
     requireAuth,
