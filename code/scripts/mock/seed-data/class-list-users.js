@@ -9,22 +9,28 @@ export async function createUsers() {
   console.log("Creating users...");
 
   const professors = await Promise.all([
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { email: "tpowell@ucsd.edu" },
+      update: {},
+      create: {
         email: "tpowell@ucsd.edu",
         name: "Prof. Powell",
         pronouns: "he/him",
       },
     }),
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { email: "jsmith@ucsd.edu" },
+      update: {},
+      create: {
         email: "jsmith@ucsd.edu",
         name: "Prof. Smith",
         pronouns: "she/her",
       },
     }),
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { email: "mjohnson@ucsd.edu" },
+      update: {},
+      create: {
         email: "mjohnson@ucsd.edu",
         name: "Prof. Johnson",
         pronouns: "they/them",
@@ -36,8 +42,10 @@ export async function createUsers() {
     Array.from({
       length: 20,
     }).map((_, i) =>
-      prisma.user.create({
-        data: {
+      prisma.user.upsert({
+        where: { email: `user${i + 1}@ucsd.edu` },
+        update: {},
+        create: {
           email: `user${i + 1}@ucsd.edu`,
           name: `User ${i + 1}`,
           pronouns: "they/them",

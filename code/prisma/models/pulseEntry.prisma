@@ -1,0 +1,24 @@
+model PulseEntry {
+  id      String @id @default(cuid())
+  value   Int    // Pulse value: 1-5
+  date    DateTime @db.Date // Date of the pulse entry (date only, no time)
+  
+  userId  String
+  classId String
+  
+  user  User  @relation("UserPulseEntries", fields: [userId], references: [id], onDelete: Cascade)
+  class Class  @relation("ClassPulseEntries", fields: [classId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Enforce one pulse per student per class per day
+  @@unique([userId, classId, date], name: "user_class_date_unique")
+  
+  // Indexes for fast querying
+  @@index([classId, date]) // For aggregated queries by class and date
+  @@index([userId, classId]) // For user's pulse history in a class
+  @@index([date]) // For time-based queries (last 1 day, 1 week, 1 month)
+  @@map("pulse_entries")
+}
+

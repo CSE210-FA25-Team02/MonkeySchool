@@ -30,14 +30,27 @@ export async function createClasses() {
   console.log("Creating classes...");
 
   const classes = await Promise.all(
-    classesData.map((data) =>
-      prisma.class.create({
+    classesData.map(async (data) => {
+      // Check if class already exists
+      const existing = await prisma.class.findFirst({
+        where: {
+          name: data.name,
+          quarter: data.quarter,
+        },
+      });
+
+      if (existing) {
+        return existing;
+      }
+
+      // Create if it doesn't exist
+      return prisma.class.create({
         data: {
           name: data.name,
           quarter: data.quarter,
         },
-      }),
-    ),
+      });
+    }),
   );
 
   console.log(`Created ${classes.length} classes`);

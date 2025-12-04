@@ -21,5 +21,8 @@ model Class {
   // Events created for this class
   events Event[]
 
+  // Pulse check entries for this class
+  pulseEntries PulseEntry[] @relation("ClassPulseEntries")
+
   @@map("classes")
 }

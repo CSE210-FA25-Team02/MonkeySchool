@@ -19,6 +19,7 @@
 
 import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
+import * as pulseService from "../services/pulse.service.js";
 import {
   getUpcomingQuarters,
   createBaseLayout,
@@ -93,6 +94,29 @@ export const renderClassPage = asyncHandler(async (req, res) => {
     studentCount,
   };
 
+  // Check if current user is a student or instructor in this class
+  const userRole = klass.members.find(
+    (m) => m.userId === req.user.id,
+  );
+  const isStudent = userRole?.role === "STUDENT";
+  const isInstructor =
+    userRole?.role === "PROFESSOR" ||
+    userRole?.role === "TA" ||
+    userRole?.role === "TUTOR";
+
+  // Fetch current pulse if student
+  let currentPulse = null;
+  if (isStudent) {
+    try {
+      const pulseEntry = await pulseService.getTodayPulse(req.user.id, id);
+      currentPulse = pulseEntry ? pulseEntry.value : null;
+    } catch (error) {
+      // Silently fail if there's an error (e.g., service not ready)
+      // UI will handle fetching via API call
+      console.debug("Could not fetch pulse for page render:", error.message);
+    }
+  }
+
   // Render page
   const content = renderDirectoryTemplate(
     directory || {
@@ -103,7 +127,11 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       groups: [],
     },
   );
-  const pageHtml = renderClassDetail(classInfo, "directory", content);
+  const pageHtml = renderClassDetail(classInfo, "directory", content, {
+    isStudent,
+    currentPulse,
+    isInstructor,
+  });
 
   const isHtmx = req.headers["hx-request"];
   if (isHtmx) {

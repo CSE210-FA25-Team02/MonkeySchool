@@ -6,22 +6,190 @@
 import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
 
 /**
+ * Render the Pulse Check success state (after submission)
+ * @param {number} pulseValue - Pulse value (1-5)
+ * @param {string} [classId=''] - Class ID for data attribute
+ * @returns {string} HTML string
+ */
+export function renderPulseSuccess(pulseValue, classId = '') {
+  const emojis = {
+    1: "😞",
+    2: "😐",
+    3: "🙂",
+    4: "😃",
+    5: "🤩",
+  };
+  const emoji = emojis[pulseValue] || "🙂";
+
+  return `
+    <div id="pulse-check-container" class="pulse-check-widget pulse-success-state" data-class-id="${classId}">
+      <div class="pulse-status">
+        <div class="pulse-status-emoji" style="font-size: 32px; margin-bottom: 8px;">${emoji}</div>
+        <div class="pulse-status-text" style="font-size: 12px; font-weight: bold; text-align: center; opacity: 0.95;">
+          Pulse posted for today!
+        </div>
+        <div class="pulse-status-subtext" style="font-size: 10px; opacity: 0.8; margin-top: 4px; text-align: center;">
+          You selected ${emoji} today.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render the Pulse Check UI component (for students only)
+ * @param {string} classId - Class ID
+ * @param {number|null} currentPulse - Current pulse value (1-5) or null if not submitted
+ * @returns {string} HTML string
+ */
+export function renderPulseCheck(classId, currentPulse = null) {
+  // If pulse already exists, show success state instead of emoji bar
+  if (currentPulse !== null && currentPulse >= 1 && currentPulse <= 5) {
+    return renderPulseSuccess(currentPulse, classId);
+  }
+  const emojis = [
+    { value: 1, emoji: "😞" },
+    { value: 2, emoji: "😐" },
+    { value: 3, emoji: "🙂" },
+    { value: 4, emoji: "😃" },
+    { value: 5, emoji: "🤩" },
+  ];
+
+  const emojiButtons = emojis
+    .map(
+      (item) => `
+      <button
+        type="button"
+        class="pulse-emoji-btn ${currentPulse === item.value ? "pulse-selected" : ""}"
+        data-pulse-value="${item.value}"
+        hx-post="/classes/${classId}/pulse"
+        hx-vals='{"pulse": ${item.value}}'
+        hx-target="#pulse-check-container"
+        hx-swap="outerHTML"
+        hx-trigger="click"
+        hx-headers='{"Accept": "text/html"}'
+        aria-label="Pulse ${item.value}"
+        style="background: ${currentPulse === item.value ? "rgba(255, 255, 255, 0.3)" : "rgba(255, 255, 255, 0.15)"}; border: 2px solid ${currentPulse === item.value ? "rgba(255, 255, 255, 0.8)" : "rgba(255, 255, 255, 0.3)"}; border-radius: var(--radius-full); width: 48px; height: 48px; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px);"
+        onmouseover="this.style.transform='scale(1.15)'; this.style.background='rgba(255, 255, 255, 0.25)'"
+        onmouseout="if (!this.classList.contains('pulse-selected')) { this.style.transform='scale(1)'; this.style.background='rgba(255, 255, 255, 0.15)'; }"
+        onclick="this.style.transform='scale(0.95)'"
+      >
+        ${item.emoji}
+      </button>
+    `,
+    )
+    .join("");
+
+  return `
+    <div id="pulse-check-container" class="pulse-check-widget" data-class-id="${classId}">
+      <div style="font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; margin-bottom: 4px;">Pulse Check</div>
+      <div class="pulse-emoji-container">
+        ${emojiButtons}
+      </div>
+    </div>
+    <script>
+      (function() {
+        // Function to update pulse UI
+        function updatePulseUI(pulseValue) {
+          const container = document.getElementById('pulse-check-container');
+          if (!container) return;
+          
+          container.querySelectorAll('.pulse-emoji-btn').forEach(btn => {
+            const btnValue = parseInt(btn.getAttribute('data-pulse-value'));
+            if (btnValue === pulseValue) {
+              btn.classList.add('pulse-selected');
+            } else {
+              btn.classList.remove('pulse-selected');
+            }
+          });
+        }
+
+        // Fetch current pulse on page load (fallback if server didn't fetch it)
+        // Note: Server-side rendering should handle this, but this is a fallback
+        const classId = '${classId}';
+        const container = document.getElementById('pulse-check-container');
+        
+        // Only fetch if we're showing the emoji bar (not success state)
+        if (container && !container.classList.contains('pulse-success-state')) {
+          fetch('/classes/' + classId + '/pulse', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+          })
+          .then(res => {
+            if (res.ok) {
+              return res.json();
+            }
+            throw new Error('Not found');
+          })
+          .then(data => {
+            if (data && data.pulse) {
+              // Replace emoji bar with success state
+              const emojis = { 1: '😞', 2: '😐', 3: '🙂', 4: '😃', 5: '🤩' };
+              const emoji = emojis[data.pulse] || '🙂';
+              container.outerHTML = \`
+                <div id="pulse-check-container" class="pulse-check-widget pulse-success-state" data-class-id="\${classId}">
+                  <div class="pulse-status">
+                    <div class="pulse-status-emoji" style="font-size: 32px; margin-bottom: 8px;">\${emoji}</div>
+                    <div class="pulse-status-text" style="font-size: 12px; font-weight: bold; text-align: center; opacity: 0.95;">
+                      Pulse posted for today!
+                    </div>
+                    <div class="pulse-status-subtext" style="font-size: 10px; opacity: 0.8; margin-top: 4px; text-align: center;">
+                      You selected \${emoji} today.
+                    </div>
+                  </div>
+                </div>
+              \`;
+            }
+          })
+          .catch(err => {
+            // Silently fail - server-side should have handled this
+            console.debug('Pulse check: using server-rendered state');
+          });
+        }
+
+        // Handle HTMX after-swap event to show toast after successful submission
+        document.body.addEventListener('htmx:afterSwap', function(event) {
+          const target = event.detail.target;
+          if (target && target.id === 'pulse-check-container') {
+            // Check if we're now showing the success state
+            if (target.classList.contains('pulse-success-state')) {
+              // Extract emoji from the success message
+              const emojiElement = target.querySelector('.pulse-status-emoji');
+              const emoji = emojiElement ? emojiElement.textContent.trim() : '🙂';
+              
+              if (window.showToast) {
+                window.showToast('Pulse saved', 'You selected ' + emoji + ' today.', 'success');
+              }
+            }
+          }
+        });
+      })();
+    </script>
+  `;
+}
+
+/**
  * Render the Class Detail Page (Tabs + Content).
  * Matches demo/class.html layout.
  *
  * @param {Object} classInfo - Class data
  * @param {string} [activeTab='directory'] - Currently active tab
  * @param {string} [content=''] - HTML content for the active tab
+ * @param {Object} [options={}] - Additional options
+ * @param {boolean} [options.isStudent=false] - Whether current user is a student
+ * @param {number|null} [options.currentPulse=null] - Current pulse value if student
  * @returns {string} HTML string
  */
 export function renderClassDetail(
   classInfo,
   activeTab = "directory",
   content = "",
+  options = {},
 ) {
+  const { isStudent = false, currentPulse = null, isInstructor = false } = options;
   return `
         <!-- Class Banner -->
-        <div class="class-banner" style="background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%); border-radius: var(--radius-lg); padding: var(--space-8); color: white; margin-bottom: var(--space-6); position: relative; overflow: hidden;">
+        <div class="class-banner" style="background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%); border-radius: var(--radius-lg); padding: var(--space-8); color: white; margin-bottom: var(--space-6); position: relative; overflow: hidden; min-height: 200px; padding-bottom: 100px;">
             <div class="class-header-content" style="position: relative; z-index: 1;">
                 <span class="class-code" style="font-family: var(--font-mono); background: rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: var(--radius-full); font-size: var(--text-sm); display: inline-block; margin-bottom: var(--space-4); backdrop-filter: blur(4px);">${escapeHtml(classInfo.code || "CLASS")}</span>
                 <h1 class="class-title" style="font-size: var(--text-3xl); font-weight: var(--weight-bold); margin-bottom: var(--space-2);">${escapeHtml(classInfo.name)}</h1>
@@ -31,6 +199,7 @@ export function renderClassDetail(
                     <div class="class-meta-item"><i class="fa-solid fa-users"></i> ${classInfo.studentCount || 0} Students</div>
                 </div>
             </div>
+            ${isStudent ? renderPulseCheck(classInfo.id, currentPulse) : ""}
             <!-- Quick Punch Action -->
             <button id="class-punch-btn" style="position: absolute; right: 32px; bottom: 32px; background: var(--color-accent-gold); color: var(--color-brand-deep); padding: 12px 24px; border-radius: var(--radius-full); font-weight: bold; box-shadow: var(--shadow-lg); border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s;">
                 <i class="fa-solid fa-fingerprint"></i> Punch In
@@ -51,6 +220,15 @@ export function renderClassDetail(
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
                Attendance <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px; margin-left: 4px;"></i>
             </a>
+            ${isInstructor ? `
+            <a href="/classes/${classInfo.id}/pulse/page" 
+               hx-get="/classes/${classInfo.id}/pulse/page?range=7"
+               hx-target="#tab-content"
+               class="tab-item ${activeTab === "pulse" ? "active" : ""}" 
+               style="padding: var(--space-3) 0; color: ${activeTab === "pulse" ? "var(--color-brand-deep)" : "var(--color-text-muted)"}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === "pulse" ? "var(--color-accent-gold)" : "transparent"}; cursor: pointer; text-decoration: none;">
+               Pulse
+            </a>
+            ` : ""}
             <a href="/classes/${classInfo.id}/groups"
                class="tab-item ${activeTab === "groups" ? "active" : ""}"
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">

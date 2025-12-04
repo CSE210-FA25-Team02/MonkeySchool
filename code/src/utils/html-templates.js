@@ -63,6 +63,7 @@ export function createBaseLayout(title, content, options = {}) {
     <link rel="stylesheet" href="/css/components/bento.css">
     <link rel="stylesheet" href="/css/components/modal.css">
     <link rel="stylesheet" href="/css/components/toast.css">
+    <link rel="stylesheet" href="/css/components/pulse-check.css">
     <!-- Page Specific Styles -->
     <link rel="stylesheet" href="/css/pages/class-list.css">
     <link rel="stylesheet" href="/css/pages/profile.css">

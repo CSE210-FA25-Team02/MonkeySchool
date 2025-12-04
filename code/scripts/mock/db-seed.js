@@ -9,6 +9,7 @@ import {
 } from "./seed-data/class-list-class-roles.js";
 
 import { createDefaultCategories } from "./seed-data/activity-list.js";
+import { createPulseEntries } from "./seed-data/pulse-entries.js";
 
 async function main() {
   console.log("Seeding database with multiple classes...");
@@ -30,6 +31,9 @@ async function main() {
 
   // Create default activity categories
   await createDefaultCategories();
+
+  // Create pulse entries for the last 30 days
+  await createPulseEntries();
 
   // Summary
   console.log("\nSeed complete!");

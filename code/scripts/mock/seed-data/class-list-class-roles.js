@@ -10,20 +10,41 @@ export async function assignProfessors(professors, classes) {
   await Promise.all([
     // Prof Powell teaches 4 classes
     ...classes.slice(0, 4).map((cls) =>
-      prisma.classRole.create({
-        data: { userId: professors[0].id, classId: cls.id, role: "PROFESSOR" },
+      prisma.classRole.upsert({
+        where: {
+          user_class_unique: {
+            userId: professors[0].id,
+            classId: cls.id,
+          },
+        },
+        update: { role: "PROFESSOR" },
+        create: { userId: professors[0].id, classId: cls.id, role: "PROFESSOR" },
       }),
     ),
     // Prof Smith teaches 4 classes
     ...classes.slice(4, 8).map((cls) =>
-      prisma.classRole.create({
-        data: { userId: professors[1].id, classId: cls.id, role: "PROFESSOR" },
+      prisma.classRole.upsert({
+        where: {
+          user_class_unique: {
+            userId: professors[1].id,
+            classId: cls.id,
+          },
+        },
+        update: { role: "PROFESSOR" },
+        create: { userId: professors[1].id, classId: cls.id, role: "PROFESSOR" },
       }),
     ),
     // Prof Johnson teaches 4 classes
     ...classes.slice(8, 12).map((cls) =>
-      prisma.classRole.create({
-        data: { userId: professors[2].id, classId: cls.id, role: "PROFESSOR" },
+      prisma.classRole.upsert({
+        where: {
+          user_class_unique: {
+            userId: professors[2].id,
+            classId: cls.id,
+          },
+        },
+        update: { role: "PROFESSOR" },
+        create: { userId: professors[2].id, classId: cls.id, role: "PROFESSOR" },
       }),
     ),
   ]);
@@ -40,35 +61,77 @@ export async function assignUserRoles(users, classes) {
   // User 1: TA in 8 classes (for testing multiple classes display)
   await Promise.all(
     classes.slice(0, 8).map((cls) =>
-      prisma.classRole.create({
-        data: { userId: users[0].id, classId: cls.id, role: "TA" },
+      prisma.classRole.upsert({
+        where: {
+          user_class_unique: {
+            userId: users[0].id,
+            classId: cls.id,
+          },
+        },
+        update: { role: "TA" },
+        create: { userId: users[0].id, classId: cls.id, role: "TA" },
       }),
     ),
   );
 
   // User 2: TA in 3 classes
   await Promise.all([
-    prisma.classRole.create({
-      data: { userId: users[1].id, classId: classes[0].id, role: "TA" },
+    prisma.classRole.upsert({
+      where: {
+        user_class_unique: {
+          userId: users[1].id,
+          classId: classes[0].id,
+        },
+      },
+      update: { role: "TA" },
+      create: { userId: users[1].id, classId: classes[0].id, role: "TA" },
     }),
-    prisma.classRole.create({
-      data: { userId: users[1].id, classId: classes[8].id, role: "TA" },
+    prisma.classRole.upsert({
+      where: {
+        user_class_unique: {
+          userId: users[1].id,
+          classId: classes[8].id,
+        },
+      },
+      update: { role: "TA" },
+      create: { userId: users[1].id, classId: classes[8].id, role: "TA" },
     }),
-    prisma.classRole.create({
-      data: { userId: users[1].id, classId: classes[9].id, role: "TA" },
+    prisma.classRole.upsert({
+      where: {
+        user_class_unique: {
+          userId: users[1].id,
+          classId: classes[9].id,
+        },
+      },
+      update: { role: "TA" },
+      create: { userId: users[1].id, classId: classes[9].id, role: "TA" },
     }),
   ]);
 
   // User 3-4: Tutors in various classes
   await Promise.all([
     ...classes.slice(0, 3).map((cls) =>
-      prisma.classRole.create({
-        data: { userId: users[2].id, classId: cls.id, role: "TUTOR" },
+      prisma.classRole.upsert({
+        where: {
+          user_class_unique: {
+            userId: users[2].id,
+            classId: cls.id,
+          },
+        },
+        update: { role: "TUTOR" },
+        create: { userId: users[2].id, classId: cls.id, role: "TUTOR" },
       }),
     ),
     ...classes.slice(3, 5).map((cls) =>
-      prisma.classRole.create({
-        data: { userId: users[3].id, classId: cls.id, role: "TUTOR" },
+      prisma.classRole.upsert({
+        where: {
+          user_class_unique: {
+            userId: users[3].id,
+            classId: cls.id,
+          },
+        },
+        update: { role: "TUTOR" },
+        create: { userId: users[3].id, classId: cls.id, role: "TUTOR" },
       }),
     ),
   ]);
@@ -76,8 +139,15 @@ export async function assignUserRoles(users, classes) {
   // User 5: Student in 5 classes (for testing multiple classes)
   await Promise.all(
     classes.slice(0, 5).map((cls) =>
-      prisma.classRole.create({
-        data: { userId: users[4].id, classId: cls.id, role: "STUDENT" },
+      prisma.classRole.upsert({
+        where: {
+          user_class_unique: {
+            userId: users[4].id,
+            classId: cls.id,
+          },
+        },
+        update: { role: "STUDENT" },
+        create: { userId: users[4].id, classId: cls.id, role: "STUDENT" },
       }),
     ),
   );
@@ -93,8 +163,15 @@ export async function assignUserRoles(users, classes) {
       if (!assignedClasses.has(randomClassIdx)) {
         assignedClasses.add(randomClassIdx);
         studentAssignments.push(
-          prisma.classRole.create({
-            data: {
+          prisma.classRole.upsert({
+            where: {
+              user_class_unique: {
+                userId: users[i].id,
+                classId: classes[randomClassIdx].id,
+              },
+            },
+            update: { role: "STUDENT" },
+            create: {
               userId: users[i].id,
               classId: classes[randomClassIdx].id,
               role: "STUDENT",
@@ -115,46 +192,114 @@ export async function assignUserRoles(users, classes) {
 export async function createGroupsAndRoles(users, classes) {
   console.log("Creating groups...");
 
-  const group1 = await prisma.group.create({
-    data: { name: "Team Alpha", classId: classes[0].id },
+  // Find or create groups
+  let group1 = await prisma.group.findFirst({
+    where: { name: "Team Alpha", classId: classes[0].id },
   });
-  const group2 = await prisma.group.create({
-    data: { name: "Team Beta", classId: classes[0].id },
+  if (!group1) {
+    group1 = await prisma.group.create({
+      data: { name: "Team Alpha", classId: classes[0].id },
+    });
+  }
+
+  let group2 = await prisma.group.findFirst({
+    where: { name: "Team Beta", classId: classes[0].id },
   });
+  if (!group2) {
+    group2 = await prisma.group.create({
+      data: { name: "Team Beta", classId: classes[0].id },
+    });
+  }
 
   // Assign group leaders
   await Promise.all([
-    prisma.groupRole.create({
-      data: { userId: users[4].id, groupId: group1.id, role: "LEADER" },
+    prisma.groupRole.upsert({
+      where: {
+        user_group_unique: {
+          userId: users[4].id,
+          groupId: group1.id,
+        },
+      },
+      update: { role: "LEADER" },
+      create: { userId: users[4].id, groupId: group1.id, role: "LEADER" },
     }),
-    prisma.groupRole.create({
-      data: { userId: users[5].id, groupId: group2.id, role: "LEADER" },
+    prisma.groupRole.upsert({
+      where: {
+        user_group_unique: {
+          userId: users[5].id,
+          groupId: group2.id,
+        },
+      },
+      update: { role: "LEADER" },
+      create: { userId: users[5].id, groupId: group2.id, role: "LEADER" },
     }),
   ]);
 
   // Assign group members
   await Promise.all([
-    prisma.groupRole.create({
-      data: { userId: users[6].id, groupId: group1.id, role: "MEMBER" },
+    prisma.groupRole.upsert({
+      where: {
+        user_group_unique: {
+          userId: users[6].id,
+          groupId: group1.id,
+        },
+      },
+      update: { role: "MEMBER" },
+      create: { userId: users[6].id, groupId: group1.id, role: "MEMBER" },
     }),
-    prisma.groupRole.create({
-      data: { userId: users[7].id, groupId: group1.id, role: "MEMBER" },
+    prisma.groupRole.upsert({
+      where: {
+        user_group_unique: {
+          userId: users[7].id,
+          groupId: group1.id,
+        },
+      },
+      update: { role: "MEMBER" },
+      create: { userId: users[7].id, groupId: group1.id, role: "MEMBER" },
     }),
-    prisma.groupRole.create({
-      data: { userId: users[8].id, groupId: group2.id, role: "MEMBER" },
+    prisma.groupRole.upsert({
+      where: {
+        user_group_unique: {
+          userId: users[8].id,
+          groupId: group2.id,
+        },
+      },
+      update: { role: "MEMBER" },
+      create: { userId: users[8].id, groupId: group2.id, role: "MEMBER" },
     }),
-    prisma.groupRole.create({
-      data: { userId: users[9].id, groupId: group2.id, role: "MEMBER" },
+    prisma.groupRole.upsert({
+      where: {
+        user_group_unique: {
+          userId: users[9].id,
+          groupId: group2.id,
+        },
+      },
+      update: { role: "MEMBER" },
+      create: { userId: users[9].id, groupId: group2.id, role: "MEMBER" },
     }),
   ]);
 
   // Assign group supervisors
   await Promise.all([
-    prisma.groupSupervisor.create({
-      data: { userId: users[0].id, groupId: group1.id },
+    prisma.groupSupervisor.upsert({
+      where: {
+        user_group_supervisor_unique: {
+          userId: users[0].id,
+          groupId: group1.id,
+        },
+      },
+      update: {},
+      create: { userId: users[0].id, groupId: group1.id },
     }),
-    prisma.groupSupervisor.create({
-      data: { userId: users[1].id, groupId: group2.id },
+    prisma.groupSupervisor.upsert({
+      where: {
+        user_group_supervisor_unique: {
+          userId: users[1].id,
+          groupId: group2.id,
+        },
+      },
+      update: {},
+      create: { userId: users[1].id, groupId: group2.id },
     }),
   ]);
 

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as classController from "../controllers/class.controller.js";
+import * as pulseController from "../controllers/pulse.controller.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/authorize.js";
@@ -24,7 +25,59 @@ router.get(
   asyncHandler(classController.renderUserClasses),
 );
 
-// Class Detail Page
+// ============================================
+// PULSE ANALYTICS ROUTES (require auth, instructors only)
+// These routes must come BEFORE student pulse routes to avoid conflicts
+// ============================================
+
+// Render pulse analytics page (instructor view)
+router.get(
+  "/:id/pulse/page",
+  requireAuth,
+  asyncHandler(pulseController.renderPulseAnalytics),
+);
+
+// Get pulse analytics data (JSON)
+router.get(
+  "/:id/pulse/analytics",
+  requireAuth,
+  asyncHandler(pulseController.getPulseAnalytics),
+);
+
+// Get pulse details for a specific date (JSON)
+router.get(
+  "/:id/pulse/details",
+  requireAuth,
+  asyncHandler(pulseController.getPulseDetails),
+);
+
+// ============================================
+// PULSE CHECK ROUTES (require auth, students only)
+// These routes must come BEFORE /:id route to avoid conflicts
+// ============================================
+
+// Submit or update pulse entry
+router.post(
+  "/:id/pulse",
+  requireAuth,
+  asyncHandler(pulseController.submitPulse),
+);
+
+// Get today's pulse entry
+router.get(
+  "/:id/pulse",
+  requireAuth,
+  asyncHandler(pulseController.getPulse),
+);
+
+// Get today's pulse entry (alternative endpoint)
+router.get(
+  "/:id/pulse/today",
+  requireAuth,
+  asyncHandler(pulseController.getTodayPulse),
+);
+
+// Class Detail Page (must come after pulse routes)
 router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
 
 // Class Directory (HTMX partial)
