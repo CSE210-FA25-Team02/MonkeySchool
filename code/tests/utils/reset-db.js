@@ -6,6 +6,7 @@ export async function resetDatabase() {
   await prisma.attendanceRecord.deleteMany();
   await prisma.attendancePoll.deleteMany();
   await prisma.courseSession.deleteMany();
+  await prisma.event.deleteMany();
   await prisma.activity.deleteMany();
   await prisma.activityCategory.deleteMany();
   await prisma.groupSupervisor.deleteMany();
