@@ -142,7 +142,9 @@ export const renderClassSchedule = asyncHandler(async (req, res) => {
   const isHtmx = req.headers["hx-request"];
   if (isHtmx) {
     // For HTMX requests, wrap in schedule-wrapper for targeting
-    const { renderScheduleWrapper } = await import("../utils/htmx-templates/schedule-templates.js");
+    const { renderScheduleWrapper } = await import(
+      "../utils/htmx-templates/schedule-templates.js"
+    );
     const wrappedContent = renderScheduleWrapper(
       klass,
       view,
@@ -155,9 +157,13 @@ export const renderClassSchedule = asyncHandler(async (req, res) => {
   } else {
     // Wrap content in schedule-wrapper for consistency
     const wrappedContent = `<div id="schedule-wrapper">${content}</div>`;
-    const fullPage = createBaseLayout(`${klass.name} - Schedule`, wrappedContent, {
-      user: req.user,
-    });
+    const fullPage = createBaseLayout(
+      `${klass.name} - Schedule`,
+      wrappedContent,
+      {
+        user: req.user,
+      },
+    );
     res.send(fullPage);
   }
 });

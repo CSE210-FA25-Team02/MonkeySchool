@@ -6,19 +6,20 @@ import { prisma } from "../lib/prisma.js";
 export const TIME_SLOTS = [];
 for (let hour = 8; hour <= 20; hour++) {
   TIME_SLOTS.push(`${hour.toString().padStart(2, "0")}:00`);
-  if (hour < 20) { // Don't add :30 for 8 PM (20:00)
+  if (hour < 20) {
+    // Don't add :30 for 8 PM (20:00)
     TIME_SLOTS.push(`${hour.toString().padStart(2, "0")}:30`);
   }
 }
 
 export const DAYS_OF_WEEK = [
   "Sunday",
-  "Monday", 
+  "Monday",
   "Tuesday",
   "Wednesday",
-  "Thursday", 
+  "Thursday",
   "Friday",
-  "Saturday"
+  "Saturday",
 ];
 
 /**
@@ -31,7 +32,7 @@ export function isValidTime(time) {
   const [hours, minutes] = time.split(":").map(Number);
   if (hours < 8 || hours > 20) return false;
   if (minutes !== 0 && minutes !== 30) return false;
-  
+
   return TIME_SLOTS.includes(time);
 }
 
@@ -46,13 +47,18 @@ export function isValidDayOfWeek(dayOfWeek) {
 
 /**
  * Add user availability for a time range
- * @param {string} userId 
- * @param {number} dayOfWeek 
- * @param {string} startTime 
- * @param {string} endTime 
+ * @param {string} userId
+ * @param {number} dayOfWeek
+ * @param {string} startTime
+ * @param {string} endTime
  * @returns {Promise<Object>}
  */
-export async function addUserAvailability(userId, dayOfWeek, startTime, endTime) {
+export async function addUserAvailability(
+  userId,
+  dayOfWeek,
+  startTime,
+  endTime,
+) {
   if (!isValidDayOfWeek(dayOfWeek)) {
     throw new Error(`Invalid dayOfWeek: ${dayOfWeek}. Must be 0-6.`);
   }
@@ -72,20 +78,20 @@ export async function addUserAvailability(userId, dayOfWeek, startTime, endTime)
       dayOfWeek,
       startTime,
       endTime,
-      isAvailable: true
-    }
+      isAvailable: true,
+    },
   });
 }
 
 /**
  * Delete user availability
- * @param {string} availabilityId 
+ * @param {string} availabilityId
  * @param {string} userId - For permission check
  * @returns {Promise<Object>}
  */
 export async function deleteUserAvailability(availabilityId, userId) {
   const availability = await prisma.availability.findUnique({
-    where: { id: availabilityId }
+    where: { id: availabilityId },
   });
 
   if (!availability) {
@@ -97,28 +103,25 @@ export async function deleteUserAvailability(availabilityId, userId) {
   }
 
   return await prisma.availability.delete({
-    where: { id: availabilityId }
+    where: { id: availabilityId },
   });
 }
 
 /**
  * Get all availability for a user
- * @param {string} userId 
+ * @param {string} userId
  * @returns {Promise<Array>}
  */
 export async function getUserAvailability(userId) {
   return await prisma.availability.findMany({
     where: { userId },
-    orderBy: [
-      { dayOfWeek: "asc" },
-      { startTime: "asc" }
-    ]
+    orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
   });
 }
 
 /**
  * Set complete weekly availability for a user (replaces existing)
- * @param {string} userId 
+ * @param {string} userId
  * @param {Array} availabilityRanges - Array of {dayOfWeek, startTime, endTime}
  * @returns {Promise<Array>}
  */
@@ -143,22 +146,22 @@ export async function setUserWeeklyAvailability(userId, availabilityRanges) {
   return await prisma.$transaction(async (tx) => {
     // Delete existing availability
     await tx.availability.deleteMany({
-      where: { userId }
+      where: { userId },
     });
 
     // Create new availability records
     const newRecords = await Promise.all(
-      availabilityRanges.map(range =>
+      availabilityRanges.map((range) =>
         tx.availability.create({
           data: {
             userId,
             dayOfWeek: range.dayOfWeek,
             startTime: range.startTime,
             endTime: range.endTime,
-            isAvailable: true
-          }
-        })
-      )
+            isAvailable: true,
+          },
+        }),
+      ),
     );
 
     return newRecords;
@@ -201,7 +204,7 @@ export function convertSlotsToRanges(slotsGrid) {
         ranges.push({
           dayOfWeek,
           startTime: rangeStart,
-          endTime: endTime
+          endTime: endTime,
         });
         rangeStart = slot;
       }
@@ -216,7 +219,7 @@ export function convertSlotsToRanges(slotsGrid) {
       ranges.push({
         dayOfWeek,
         startTime: rangeStart,
-        endTime: endTime
+        endTime: endTime,
       });
     }
   }
@@ -226,7 +229,7 @@ export function convertSlotsToRanges(slotsGrid) {
 
 /**
  * Get user's groups with class information
- * @param {string} userId 
+ * @param {string} userId
  * @returns {Promise<Array>} Array of groups with class info
  */
 export async function getUserGroups(userId) {
@@ -235,16 +238,16 @@ export async function getUserGroups(userId) {
     include: {
       group: {
         include: {
-          class: true
-        }
-      }
-    }
+          class: true,
+        },
+      },
+    },
   });
 }
 
 /**
  * Get all members of a group with their availability
- * @param {string} groupId 
+ * @param {string} groupId
  * @returns {Promise<Object>} Group info with members and their availability
  */
 export async function getGroupAvailability(groupId) {
@@ -256,12 +259,12 @@ export async function getGroupAvailability(groupId) {
         include: {
           user: {
             include: {
-              availability: true
-            }
-          }
-        }
-      }
-    }
+              availability: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!group) {
@@ -273,30 +276,30 @@ export async function getGroupAvailability(groupId) {
     name: group.name,
     class: {
       id: group.class.id,
-      name: group.class.name
+      name: group.class.name,
     },
-    members: group.members.map(member => ({
+    members: group.members.map((member) => ({
       id: member.user.id,
       name: member.user.name,
       role: member.role,
-      availability: member.user.availability
-    }))
+      availability: member.user.availability,
+    })),
   };
 }
 
 /**
  * Get availability for multiple groups
- * @param {string} userId 
+ * @param {string} userId
  * @returns {Promise<Array>} Array of group availability data
  */
 export async function getUserGroupsAvailability(userId) {
   const userGroups = await getUserGroups(userId);
-  
+
   const groupsAvailability = await Promise.all(
     userGroups.map(async (userGroup) => {
       const groupAvailability = await getGroupAvailability(userGroup.group.id);
       return groupAvailability;
-    })
+    }),
   );
 
   return groupsAvailability;

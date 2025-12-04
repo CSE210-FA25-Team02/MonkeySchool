@@ -248,10 +248,7 @@ export function createSuccessMessage(message) {
  * @returns {string} HTML string for the main content area (header + content-canvas)
  */
 export function createMainContentWrapper(title, content, options = {}) {
-  const {
-    user = null,
-    breadcrumbPath = null,
-  } = options;
+  const { user = null, breadcrumbPath = null } = options;
 
   // Derive simple user display data for header pill
   const displayName = escapeHtml(user?.name || "User");
@@ -286,9 +283,10 @@ export function createMainContentWrapper(title, content, options = {}) {
   // If it starts with <div class="container">, we'll use it as-is
   // Otherwise, wrap it in a container
   const trimmedContent = content.trim();
-  const hasContainer = trimmedContent.startsWith('<div class="container">') || 
-                       trimmedContent.startsWith("<div class=\"container\">");
-  
+  const hasContainer =
+    trimmedContent.startsWith('<div class="container">') ||
+    trimmedContent.startsWith('<div class="container">');
+
   let finalContent;
   if (hasContainer) {
     // Content already has container, use it directly

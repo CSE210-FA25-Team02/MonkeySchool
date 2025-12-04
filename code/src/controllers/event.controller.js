@@ -10,7 +10,12 @@ import { BadRequestError, NotFoundError } from "../utils/api-error.js";
 import * as eventService from "../services/event.service.js";
 import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
-import { renderSchedulePage, renderScheduleWrapper, renderEventDetailModal, renderEditEventModal } from "../utils/htmx-templates/schedule-templates.js";
+import {
+  renderSchedulePage,
+  renderScheduleWrapper,
+  renderEventDetailModal,
+  renderEditEventModal,
+} from "../utils/htmx-templates/schedule-templates.js";
 import { escapeHtml } from "../utils/html-templates.js";
 import { prisma } from "../lib/prisma.js";
 
@@ -109,16 +114,8 @@ export const createEvent = asyncHandler(async (req, res) => {
     throw new BadRequestError("Authentication required");
   }
 
-  const {
-    title,
-    type,
-    date,
-    startTime,
-    endTime,
-    location,
-    classId,
-    group,
-  } = req.body;
+  const { title, type, date, startTime, endTime, location, classId, group } =
+    req.body;
 
   // Validate required fields
   if (!title || !type || !date || !startTime || !endTime || !classId) {
@@ -396,23 +393,39 @@ export const getEvent = asyncHandler(async (req, res) => {
   }
 
   // Get user's permissions for this event
-  const userClassRole = await classRoleService.getClassRole(userId, event.classId);
-  const isGroupLeader = event.groupId ? await prisma.groupRole.findFirst({
-    where: {
-      userId,
-      groupId: event.groupId,
-      role: "LEADER",
-    },
-  }) : false;
+  const userClassRole = await classRoleService.getClassRole(
+    userId,
+    event.classId,
+  );
+  const isGroupLeader = event.groupId
+    ? await prisma.groupRole.findFirst({
+        where: {
+          userId,
+          groupId: event.groupId,
+          role: "LEADER",
+        },
+      })
+    : false;
 
   // Determine allowed event types for editing
   const allowedEventTypes = [];
   if (userClassRole) {
     const classRoleType = userClassRole.role;
     if (classRoleType === "PROFESSOR" || classRoleType === "TA") {
-      allowedEventTypes.push("COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_LECTURE",
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (classRoleType === "TUTOR") {
-      allowedEventTypes.push("COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
     } else {
@@ -473,23 +486,39 @@ export const getEventEditForm = asyncHandler(async (req, res) => {
   }
 
   // Get user's permissions for this event
-  const userClassRole = await classRoleService.getClassRole(userId, event.classId);
-  const isGroupLeader = event.groupId ? await prisma.groupRole.findFirst({
-    where: {
-      userId,
-      groupId: event.groupId,
-      role: "LEADER",
-    },
-  }) : false;
+  const userClassRole = await classRoleService.getClassRole(
+    userId,
+    event.classId,
+  );
+  const isGroupLeader = event.groupId
+    ? await prisma.groupRole.findFirst({
+        where: {
+          userId,
+          groupId: event.groupId,
+          role: "LEADER",
+        },
+      })
+    : false;
 
   // Determine allowed event types for editing
   const allowedEventTypes = [];
   if (userClassRole) {
     const classRoleType = userClassRole.role;
     if (classRoleType === "PROFESSOR" || classRoleType === "TA") {
-      allowedEventTypes.push("COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_LECTURE",
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (classRoleType === "TUTOR") {
-      allowedEventTypes.push("COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
     } else {
@@ -513,7 +542,12 @@ export const getEventEditForm = asyncHandler(async (req, res) => {
   };
 
   // Render edit event modal
-  const modalHtml = renderEditEventModal(event, klass, allowedEventTypes, groupsData);
+  const modalHtml = renderEditEventModal(
+    event,
+    klass,
+    allowedEventTypes,
+    groupsData,
+  );
 
   const isHtmx = req.headers["hx-request"];
   if (isHtmx) {
@@ -556,15 +590,32 @@ export const updateEvent = asyncHandler(async (req, res) => {
   }
 
   // Parse request body
-  const { title, description, location, type, date, startTime, endTime, group } = req.body;
+  const {
+    title,
+    description,
+    location,
+    type,
+    date,
+    startTime,
+    endTime,
+    group,
+  } = req.body;
 
   // Validate required fields
   if (!title || !type || !date || !startTime || !endTime) {
-    throw new BadRequestError("Title, type, date, start time, and end time are required");
+    throw new BadRequestError(
+      "Title, type, date, start time, and end time are required",
+    );
   }
 
   // Validate event type
-  const validTypes = ["COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER"];
+  const validTypes = [
+    "COURSE_LECTURE",
+    "COURSE_OFFICE_HOUR",
+    "COURSE_DISCUSSION",
+    "GROUP_MEETING",
+    "OTHER",
+  ];
   if (!validTypes.includes(type)) {
     throw new BadRequestError("Invalid event type");
   }
@@ -576,7 +627,7 @@ export const updateEvent = asyncHandler(async (req, res) => {
       throw new BadRequestError("Group is required for group meetings");
     }
     groupId = group;
-    
+
     // Verify group exists and belongs to the class
     const groupRecord = await prisma.group.findFirst({
       where: {
@@ -614,16 +665,21 @@ export const updateEvent = asyncHandler(async (req, res) => {
 
   // Fetch class info for rendering
   const klass = await classService.getClassById(existingEvent.classId);
-  
+
   // Get user's class role and groups data for rendering
-  const userClassRole = await classRoleService.getClassRole(userId, existingEvent.classId);
-  const isGroupLeader = groupId ? await prisma.groupRole.findFirst({
-    where: {
-      userId,
-      groupId,
-      role: "LEADER",
-    },
-  }) : false;
+  const userClassRole = await classRoleService.getClassRole(
+    userId,
+    existingEvent.classId,
+  );
+  const isGroupLeader = groupId
+    ? await prisma.groupRole.findFirst({
+        where: {
+          userId,
+          groupId,
+          role: "LEADER",
+        },
+      })
+    : false;
 
   const groupsForClass = await prisma.group.findMany({
     where: { classId: existingEvent.classId },
@@ -642,9 +698,20 @@ export const updateEvent = asyncHandler(async (req, res) => {
   if (userClassRole) {
     const classRoleType = userClassRole.role;
     if (classRoleType === "PROFESSOR" || classRoleType === "TA") {
-      allowedEventTypes.push("COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_LECTURE",
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (classRoleType === "TUTOR") {
-      allowedEventTypes.push("COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
     } else {
@@ -722,7 +789,9 @@ export const deleteEvent = asyncHandler(async (req, res) => {
   // Check permissions - use canUserModifyEvent for edit/delete operations
   const canEdit = await eventService.canUserModifyEvent(userId, id);
   if (!canEdit) {
-    throw new BadRequestError("You do not have permission to delete this event");
+    throw new BadRequestError(
+      "You do not have permission to delete this event",
+    );
   }
 
   // Delete event
@@ -732,16 +801,21 @@ export const deleteEvent = asyncHandler(async (req, res) => {
 
   // Fetch class info for rendering
   const klass = await classService.getClassById(existingEvent.classId);
-  
+
   // Get user's class role and groups data for rendering
-  const userClassRole = await classRoleService.getClassRole(userId, existingEvent.classId);
-  const isGroupLeader = existingEvent.groupId ? await prisma.groupRole.findFirst({
-    where: {
-      userId,
-      groupId: existingEvent.groupId,
-      role: "LEADER",
-    },
-  }) : false;
+  const userClassRole = await classRoleService.getClassRole(
+    userId,
+    existingEvent.classId,
+  );
+  const isGroupLeader = existingEvent.groupId
+    ? await prisma.groupRole.findFirst({
+        where: {
+          userId,
+          groupId: existingEvent.groupId,
+          role: "LEADER",
+        },
+      })
+    : false;
 
   const groupsForClass = await prisma.group.findMany({
     where: { classId: existingEvent.classId },
@@ -760,9 +834,20 @@ export const deleteEvent = asyncHandler(async (req, res) => {
   if (userClassRole) {
     const classRoleType = userClassRole.role;
     if (classRoleType === "PROFESSOR" || classRoleType === "TA") {
-      allowedEventTypes.push("COURSE_LECTURE", "COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_LECTURE",
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (classRoleType === "TUTOR") {
-      allowedEventTypes.push("COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER");
+      allowedEventTypes.push(
+        "COURSE_OFFICE_HOUR",
+        "COURSE_DISCUSSION",
+        "GROUP_MEETING",
+        "OTHER",
+      );
     } else if (isGroupLeader) {
       allowedEventTypes.push("GROUP_MEETING", "OTHER");
     } else {
@@ -821,4 +906,3 @@ export const deleteEvent = asyncHandler(async (req, res) => {
     });
   }
 });
-

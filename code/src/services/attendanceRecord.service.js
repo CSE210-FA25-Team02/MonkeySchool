@@ -639,9 +639,8 @@ export async function getStudentCourseAttendance(courseId, studentId) {
   // Calculate attendance percentage
   const totalSessions = sessions.length;
   const presentCount = presentSessionIds.size;
-  const attendancePercentage = totalSessions > 0 
-    ? Math.round((presentCount / totalSessions) * 100)
-    : 0;
+  const attendancePercentage =
+    totalSessions > 0 ? Math.round((presentCount / totalSessions) * 100) : 0;
 
   return {
     courseId,

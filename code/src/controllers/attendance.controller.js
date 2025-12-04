@@ -51,7 +51,7 @@ export const createPoll = asyncHandler(async (req, res) => {
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create attendance polls");
@@ -61,7 +61,7 @@ export const createPoll = asyncHandler(async (req, res) => {
   const poll = await attendancePollService.createAttendancePoll(
     sessionId,
     durationMinutes,
-    userId
+    userId,
   );
 
   const isHtmxRequest = req.headers["hx-request"];
@@ -205,7 +205,7 @@ export const markAttendance = asyncHandler(async (req, res) => {
     const record = await attendanceRecordService.submitAttendanceWithCourse(
       code,
       courseId,
-      userId
+      userId,
     );
 
     const isHtmxRequest = req.headers["hx-request"];
@@ -280,7 +280,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user.isProf;
   if (!isProfessor && !isAdmin) {
@@ -350,7 +350,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
       {
         user: req.user,
         breadcrumbPath: "Dashboard / Attendance / Records",
-      }
+      },
     );
     res.send(wrappedContent);
   } else {
@@ -358,7 +358,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
     const fullPage = createBaseLayout(
       `${session.name} - Attendance Records`,
       html,
-      { user: req.user }
+      { user: req.user },
     );
     res.send(fullPage);
   }
@@ -380,7 +380,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user.isProf;
   if (!isProfessor && !isAdmin) {
@@ -415,7 +415,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
       {
         user: req.user,
         breadcrumbPath: "Dashboard / Attendance / Records",
-      }
+      },
     );
     res.send(wrappedContent);
   } else {
@@ -423,7 +423,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
     const fullPage = createBaseLayout(
       `${klass.name} - Attendance Records`,
       content,
-      { user: req.user }
+      { user: req.user },
     );
     res.send(fullPage);
   }
@@ -446,7 +446,7 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user.isProf; // Simple admin check - adjust as needed
   if (!isProfessor && !isAdmin) {
@@ -521,7 +521,7 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   const isAdmin = req.user.isProf; // Simple admin check
   if (!isProfessor && !isAdmin) {
@@ -609,7 +609,7 @@ export const getNewPollForm = asyncHandler(async (req, res) => {
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create attendance polls");
@@ -622,7 +622,7 @@ export const getNewPollForm = asyncHandler(async (req, res) => {
   const formHtml = createStartAttendanceModal(
     sessionId,
     courseId,
-    defaultDuration
+    defaultDuration,
   );
   res.send(formHtml);
 });
@@ -665,7 +665,7 @@ export const startPoll = asyncHandler(async (req, res) => {
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create attendance polls");
@@ -675,7 +675,7 @@ export const startPoll = asyncHandler(async (req, res) => {
   const poll = await attendancePollService.createAttendancePoll(
     sessionId,
     durationMinutes,
-    userId
+    userId,
   );
 
   // Get updated session data for rendering
@@ -736,7 +736,7 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can view code status");
@@ -769,7 +769,7 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR"
+    (member) => member.userId === userId && member.role === "PROFESSOR",
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can view course attendance");
@@ -808,7 +808,7 @@ export const getUserCourses = asyncHandler(async (req, res) => {
   // Get user's classes where they are a student
   const userClasses = await classService.getClassesByUserId(userId);
   const studentClasses = userClasses.filter(
-    (c) => c.role === "STUDENT" || c.role === "TA" || c.role === "TUTOR"
+    (c) => c.role === "STUDENT" || c.role === "TA" || c.role === "TUTOR",
   );
 
   const courses = studentClasses.map((klass) => ({
@@ -842,7 +842,7 @@ export const getStudentCourseRecords = asyncHandler(async (req, res) => {
     }
 
     const isEnrolled = klass.members.some(
-      (member) => member.userId === currentUserId
+      (member) => member.userId === currentUserId,
     );
     const isAdmin = req.user.isProf;
 
@@ -858,7 +858,7 @@ export const getStudentCourseRecords = asyncHandler(async (req, res) => {
   }
 
   const targetUserEnrolled = klass.members.some(
-    (member) => member.userId === userId
+    (member) => member.userId === userId,
   );
   if (!targetUserEnrolled) {
     throw new ForbiddenError("User is not enrolled in this course");
@@ -906,7 +906,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
     }
 
     const isEnrolled = klass.members.some(
-      (member) => member.userId === currentUserId
+      (member) => member.userId === currentUserId,
     );
     const isAdmin = req.user.isProf;
 
@@ -922,7 +922,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
   }
 
   const targetUserEnrolled = klass.members.some(
-    (member) => member.userId === userId
+    (member) => member.userId === userId,
   );
   if (!targetUserEnrolled) {
     throw new ForbiddenError("User is not enrolled in this course");
@@ -963,7 +963,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
       {
         user: req.user,
         breadcrumbPath: "Dashboard / Attendance / Records",
-      }
+      },
     );
     res.send(wrappedContent);
   } else {
@@ -971,7 +971,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
     const fullPage = createBaseLayout(
       `${klass.name} - Attendance Records`,
       html,
-      { user: req.user }
+      { user: req.user },
     );
     res.send(fullPage);
   }
@@ -995,7 +995,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
   const userClasses = await classService.getClassesByUserId(userId);
   // Include PROFESSOR, TA, and TUTOR roles for professor view
   const professorClasses = userClasses.filter(
-    (c) => c.role === "PROFESSOR" || c.role === "TA" || c.role === "TUTOR"
+    (c) => c.role === "PROFESSOR" || c.role === "TA" || c.role === "TUTOR",
   );
 
   // Prepare professor courses (if user is a professor)
@@ -1004,7 +1004,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
     professorCourses = await Promise.all(
       professorClasses.map(async (klass) => {
         const sessions = await courseSessionService.getSessionsByClassId(
-          klass.id
+          klass.id,
         );
         return {
           id: klass.id.replace(/-/g, ""),
@@ -1042,7 +1042,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
             };
           }),
         };
-      })
+      }),
     );
   }
 
@@ -1068,7 +1068,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       groupedAttendance.map(async (g) => {
         // Get all sessions for this course to calculate attendance rate
         const courseSessions = await courseSessionService.getSessionsByClassId(
-          g.courseId
+          g.courseId,
         );
         const totalSessions = courseSessions.length;
         const attendedSessions = g.attendances.length;
@@ -1095,7 +1095,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
             status: r.status || "present",
           })),
         };
-      })
+      }),
     );
   }
 
@@ -1117,7 +1117,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       hasProfessorCourses,
       hasStudentCourses,
       hasAttendanceRecords,
-    }
+    },
   );
 
   if (isHtmxRequest) {

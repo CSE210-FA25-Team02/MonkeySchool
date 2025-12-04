@@ -21,11 +21,11 @@ import { escapeHtml } from "../html-templates.js";
  * @returns {string} HTML string
  */
 export function renderAttendancePage(
-  user, 
-  professorCourses = [], 
-  studentCourses = [], 
+  user,
+  professorCourses = [],
+  studentCourses = [],
   studentHistory = [],
-  emptyStateFlags = {}
+  emptyStateFlags = {},
 ) {
   const {
     hasProfessorCourses = false,
@@ -354,12 +354,16 @@ export function renderAttendancePage(
  * @param {number} [durationMinutes] - Poll duration in minutes (only for new signature)
  * @returns {string} HTML string for the start-attendance modal
  */
-export function createStartAttendanceModal(sessionId, courseIdOrDuration, durationMinutes) {
+export function createStartAttendanceModal(
+  sessionId,
+  courseIdOrDuration,
+  durationMinutes,
+) {
   // Handle both new signature (sessionId, courseId, durationMinutes) and legacy (sessionId, durationMinutes)
   let courseId;
   let duration;
-  
-  if (typeof courseIdOrDuration === 'string') {
+
+  if (typeof courseIdOrDuration === "string") {
     // New signature: (sessionId, courseId, durationMinutes)
     courseId = courseIdOrDuration;
     duration = durationMinutes;
@@ -368,13 +372,15 @@ export function createStartAttendanceModal(sessionId, courseIdOrDuration, durati
     courseId = null;
     duration = courseIdOrDuration;
   }
-  
-  const formAction = courseId 
+
+  const formAction = courseId
     ? `/course/${escapeHtml(courseId)}/session/${escapeHtml(sessionId)}/poll/start`
     : `/attendance/poll/create`;
-  const formTarget = courseId ? `#session-row-${escapeHtml(sessionId)}` : '#main-content';
-  const formSwap = courseId ? 'outerHTML' : 'innerHTML';
-  
+  const formTarget = courseId
+    ? `#session-row-${escapeHtml(sessionId)}`
+    : "#main-content";
+  const formSwap = courseId ? "outerHTML" : "innerHTML";
+
   return `
     <div id="modal-start-attendance" class="modal-overlay open">
       <div class="modal-card">
@@ -390,7 +396,7 @@ export function createStartAttendanceModal(sessionId, courseIdOrDuration, durati
           hx-swap="${formSwap}"
           hx-on::after-request="closeModal('modal-start-attendance'); document.getElementById('dialog').innerHTML = '';"
         >
-          ${courseId ? '' : `<input type="hidden" name="sessionId" value="${escapeHtml(sessionId)}">`}
+          ${courseId ? "" : `<input type="hidden" name="sessionId" value="${escapeHtml(sessionId)}">`}
           <div class="modal-body">
             <div class="form-group">
               <label class="form-label">Expiry Time (minutes)</label>
@@ -537,7 +543,7 @@ function renderSessionRow(session, courseId) {
   const statusClass =
     session.status === "active" ? "status-active" : "status-expired";
   const statusLabel = session.status === "active" ? "Active" : "Expired";
-  
+
   // Calculate time remaining if active
   let timeRemaining = "";
   let expiresAtTimestamp = "";
@@ -614,7 +620,13 @@ function renderEmptySessions() {
  * @param {boolean} hasAttendanceRecords - Whether user has any attendance records
  * @returns {string} HTML string
  */
-function renderStudentView(history, courses = [], userId = null, hasStudentCourses = false, hasAttendanceRecords = false) {
+function renderStudentView(
+  history,
+  courses = [],
+  userId = null,
+  hasStudentCourses = false,
+  hasAttendanceRecords = false,
+) {
   return `
     <div class="attendance-student-grid">
       <!-- Code Input Card -->
@@ -635,17 +647,21 @@ function renderStudentView(history, courses = [], userId = null, hasStudentCours
           <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
         </div>
         <div class="history-list">
-          ${hasStudentCourses && hasAttendanceRecords && history.length > 0
-            ? history.map((group) => renderHistoryGroup(group)).join("")
-            : `<div class="empty-state">
+          ${
+            hasStudentCourses && hasAttendanceRecords && history.length > 0
+              ? history.map((group) => renderHistoryGroup(group)).join("")
+              : `<div class="empty-state">
                 <p>No attendance records available.</p>
-              </div>`}
+              </div>`
+          }
         </div>
       </div>
     </div>
 
     <!-- Course Cards Section (New Feature) -->
-    ${courses && courses.length > 0 ? `
+    ${
+      courses && courses.length > 0
+        ? `
       <div style="margin-top: var(--space-6);">
         <div class="page-header" style="margin-bottom: var(--space-4);">
           <h2 style="font-size: var(--text-xl); color: var(--color-brand-deep); font-weight: bold;">
@@ -656,7 +672,9 @@ function renderStudentView(history, courses = [], userId = null, hasStudentCours
           ${courses.map((course) => renderStudentCourseCard(course, userId)).join("")}
         </div>
       </div>
-    ` : ""}
+    `
+        : ""
+    }
   `;
 }
 
@@ -670,7 +688,9 @@ function renderStudentView(history, courses = [], userId = null, hasStudentCours
 function renderStudentCourseCard(course, userId) {
   // userId should always be provided, but handle gracefully if not
   if (!userId) {
-    console.warn("renderStudentCourseCard: userId not provided, cannot create attendance link");
+    console.warn(
+      "renderStudentCourseCard: userId not provided, cannot create attendance link",
+    );
     return `
       <div class="bento-card" style="display: flex; flex-direction: column;">
         <div class="card-header">
@@ -851,7 +871,7 @@ function renderLivePollModal() {
 
 /**
  * Render session records page with attendance data and percentage circle
- * 
+ *
  * @param {Object} data - Records page data
  * @param {string} data.sessionId - Session ID
  * @param {string} data.sessionName - Session name
@@ -863,22 +883,23 @@ function renderLivePollModal() {
  */
 export function renderSessionRecordsPage(data) {
   const { sessionName, courseName, students, attendance } = data;
-  
+
   // Create a map of attendance records by student ID
   const attendanceMap = new Map();
-  attendance.forEach(record => {
+  attendance.forEach((record) => {
     attendanceMap.set(record.studentId, record);
   });
-  
+
   // Calculate attendance percentage
   const totalStudents = students.length;
   const presentCount = attendance.length;
-  const attendancePercentage = totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
-  
+  const attendancePercentage =
+    totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
+
   // Calculate circumference for circle (radius = 50, so circumference = 2 * PI * 50 = 314.16)
   const circumference = 2 * Math.PI * 50;
   const offset = circumference - (attendancePercentage / 100) * circumference;
-  
+
   return `
     <div class="container">
       <div class="page-header" style="margin-bottom: var(--space-6);">
@@ -979,21 +1000,25 @@ export function renderSessionRecordsPage(data) {
               </tr>
             </thead>
             <tbody>
-              ${students.map(student => {
-                const record = attendanceMap.get(student.id);
-                const status = record ? 'Present' : 'Absent';
-                const statusClass = record ? 'status-present' : 'status-absent';
-                const timestamp = record && record.markedAt 
-                  ? new Date(record.markedAt).toLocaleString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })
-                  : '--';
-                
-                return `
+              ${students
+                .map((student) => {
+                  const record = attendanceMap.get(student.id);
+                  const status = record ? "Present" : "Absent";
+                  const statusClass = record
+                    ? "status-present"
+                    : "status-absent";
+                  const timestamp =
+                    record && record.markedAt
+                      ? new Date(record.markedAt).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "--";
+
+                  return `
                   <tr>
                     <td><strong>${escapeHtml(student.name)}</strong></td>
                     <td>${escapeHtml(student.email || student.id)}</td>
@@ -1003,7 +1028,8 @@ export function renderSessionRecordsPage(data) {
                     </td>
                   </tr>
                 `;
-              }).join('')}
+                })
+                .join("")}
             </tbody>
           </table>
         </div>
@@ -1073,11 +1099,15 @@ export function renderStudentAttendanceForm({
       Select your course and enter the 8-digit code provided by your professor.
     </p>
     
-    ${error ? `
+    ${
+      error
+        ? `
       <div class="alert alert--error" role="alert" style="margin-bottom: var(--space-4);">
         <strong>Error:</strong> ${escapeHtml(error)}
       </div>
-    ` : ""}
+    `
+        : ""
+    }
     
     <form 
       id="attendance-mark-form"
@@ -1095,11 +1125,15 @@ export function renderStudentAttendanceForm({
           required
         >
           <option value="">-- Select a course --</option>
-          ${courses.map((course) => `
+          ${courses
+            .map(
+              (course) => `
             <option value="${escapeHtml(course.id)}" ${selectedCourseId === course.id ? "selected" : ""}>
               ${escapeHtml(course.name)}${course.quarter ? ` (${escapeHtml(course.quarter)})` : ""}
             </option>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </select>
       </div>
       
@@ -1181,7 +1215,7 @@ export {
 /**
  * Render student attendance records page for a specific course
  * Shows attendance percentage circle, attendance table, and back button
- * 
+ *
  * @param {Object} data - Records page data
  * @param {string} data.courseId - Course/class ID
  * @param {string} data.courseName - Course name
@@ -1193,11 +1227,11 @@ export {
  */
 export function renderStudentAttendanceRecordsPage(data) {
   const { courseName, sessions, attendancePercentage } = data;
-  
+
   // Calculate circumference for circle (radius = 70, so circumference = 2 * PI * 70)
   const circumference = 2 * Math.PI * 70;
   const offset = circumference - (attendancePercentage / 100) * circumference;
-  
+
   /**
    * Format session date for display
    * @param {Date|string} date - Date to format
@@ -1287,26 +1321,34 @@ export function renderStudentAttendanceRecordsPage(data) {
               </tr>
             </thead>
             <tbody>
-              ${sessions.length > 0 ? sessions.map((session) => {
-                const isPresent = session.isPresent || false;
-                return `
+              ${
+                sessions.length > 0
+                  ? sessions
+                      .map((session) => {
+                        const isPresent = session.isPresent || false;
+                        return `
                   <tr>
                     <td><strong>${escapeHtml(session.name)}</strong></td>
                     <td>${escapeHtml(formatSessionDate(session.date))}</td>
                     <td style="text-align: center; font-size: var(--text-lg);">
-                      ${isPresent 
-                        ? '<span style="color: var(--color-status-success);">✔️</span>' 
-                        : '<span style="color: var(--color-status-error);">❌</span>'}
+                      ${
+                        isPresent
+                          ? '<span style="color: var(--color-status-success);">✔️</span>'
+                          : '<span style="color: var(--color-status-error);">❌</span>'
+                      }
                     </td>
                   </tr>
                 `;
-              }).join("") : `
+                      })
+                      .join("")
+                  : `
                 <tr>
                   <td colspan="3" style="text-align: center; color: var(--color-text-muted); padding: var(--space-4);">
                     No sessions found for this course.
                   </td>
                 </tr>
-              `}
+              `
+              }
             </tbody>
           </table>
         </div>
@@ -1392,14 +1434,14 @@ export function displayCourseRecordsPage(data) {
   const calculateAttendancePercentage = (student) => {
     const totalSessions = sessions.length;
     if (totalSessions === 0) return 0;
-    
+
     let presentCount = 0;
     sessions.forEach((session) => {
       if (student.sessionAttendance[session.id]) {
         presentCount++;
       }
     });
-    
+
     return Math.round((presentCount / totalSessions) * 100);
   };
 
@@ -1433,18 +1475,24 @@ export function displayCourseRecordsPage(data) {
             <thead>
               <tr>
                 <th style="position: sticky; left: 0; background: var(--color-bg-surface); z-index: 10; min-width: 200px;">Student Name</th>
-                ${sessions.map((session) => `
+                ${sessions
+                  .map(
+                    (session) => `
                   <th style="min-width: 150px; text-align: center; white-space: nowrap;">
                     ${formatSessionHeader(session)}
                   </th>
-                `).join("")}
+                `,
+                  )
+                  .join("")}
                 <th style="min-width: 120px; text-align: center;">Attendance %</th>
               </tr>
             </thead>
             <tbody>
-              ${students.map((student) => {
-                const attendancePercentage = calculateAttendancePercentage(student);
-                return `
+              ${students
+                .map((student) => {
+                  const attendancePercentage =
+                    calculateAttendancePercentage(student);
+                  return `
                   <tr>
                     <td style="position: sticky; left: 0; background: var(--color-bg-surface); z-index: 10;">
                       <strong>${escapeHtml(student.name)}</strong>
@@ -1452,20 +1500,24 @@ export function displayCourseRecordsPage(data) {
                         ${escapeHtml(student.email)}
                       </div>
                     </td>
-                    ${sessions.map((session) => {
-                      const isPresent = !!student.sessionAttendance[session.id];
-                      return `
+                    ${sessions
+                      .map((session) => {
+                        const isPresent =
+                          !!student.sessionAttendance[session.id];
+                        return `
                         <td style="text-align: center; font-size: var(--text-lg);">
                           ${isPresent ? '<span style="color: var(--color-status-success);">✔️</span>' : '<span style="color: var(--color-status-error);">❌</span>'}
                         </td>
                       `;
-                    }).join("")}
+                      })
+                      .join("")}
                     <td style="text-align: center; font-weight: bold; color: var(--color-brand-deep);">
                       ${attendancePercentage}%
                     </td>
                   </tr>
                 `;
-              }).join("")}
+                })
+                .join("")}
             </tbody>
           </table>
         </div>

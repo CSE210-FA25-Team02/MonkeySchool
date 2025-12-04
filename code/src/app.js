@@ -157,7 +157,7 @@ export function createApp() {
     // getAttendancePage is already wrapped with asyncHandler, so it handles errors
     return getAttendancePage(req, res, next);
   });
-  
+
   // Get new poll form (HTMX)
   app.get(
     "/course/:courseId/session/:sessionId/poll/new",
@@ -169,7 +169,7 @@ export function createApp() {
       return getNewPollForm(req, res, next);
     },
   );
-  
+
   // Start poll (HTMX)
   app.post(
     "/course/:courseId/session/:sessionId/poll/start",
@@ -181,7 +181,7 @@ export function createApp() {
       return startPoll(req, res, next);
     },
   );
-  
+
   // Session-wise attendance records page (professor only)
   app.get(
     "/course/:courseId/session/:sessionId/records",
@@ -193,7 +193,7 @@ export function createApp() {
       return getSessionRecordsPage(req, res, next);
     },
   );
-  
+
   // Legacy route for backward compatibility
   app.get(
     "/attendance/course/session/:sessionId/records",
@@ -204,16 +204,12 @@ export function createApp() {
   );
 
   // Course-wise attendance records page (professor only)
-  app.get(
-    "/course/:courseId/records",
-    requireAuth,
-    async (req, res, next) => {
-      const { getCourseRecordsPage } = await import(
-        "./controllers/attendance.controller.js"
-      );
-      return getCourseRecordsPage(req, res, next);
-    },
-  );
+  app.get("/course/:courseId/records", requireAuth, async (req, res, next) => {
+    const { getCourseRecordsPage } = await import(
+      "./controllers/attendance.controller.js"
+    );
+    return getCourseRecordsPage(req, res, next);
+  });
 
   // Student attendance records page for a specific course
   app.get(
@@ -228,16 +224,12 @@ export function createApp() {
   );
 
   // API: Get courses for a user (where user is a student)
-  app.get(
-    "/api/user/:userId/courses",
-    requireAuth,
-    async (req, res, next) => {
-      const { getUserCourses } = await import(
-        "./controllers/attendance.controller.js"
-      );
-      return getUserCourses(req, res, next);
-    },
-  );
+  app.get("/api/user/:userId/courses", requireAuth, async (req, res, next) => {
+    const { getUserCourses } = await import(
+      "./controllers/attendance.controller.js"
+    );
+    return getUserCourses(req, res, next);
+  });
 
   // API: Get attendance records for a student in a course (JSON)
   app.get(

@@ -480,7 +480,12 @@ function getAllowedEventTypes(classRole, isGroupLeader) {
 
   // Tutor can create office hours, discussion, meeting, and other (no lecture)
   if (classRole === "TUTOR") {
-    return ["COURSE_OFFICE_HOUR", "COURSE_DISCUSSION", "GROUP_MEETING", "OTHER"];
+    return [
+      "COURSE_OFFICE_HOUR",
+      "COURSE_DISCUSSION",
+      "GROUP_MEETING",
+      "OTHER",
+    ];
   }
 
   // Group leaders (who are not Professor/TA/Tutor) can only create group meetings
@@ -518,7 +523,11 @@ function renderEventTypeOptions(allowedTypes) {
  * @param {string|null} leaderGroupId - ID of the group the user leads (if leader)
  * @returns {string} HTML string for select options
  */
-function renderGroupOptions(groups = [], isGroupLeader = false, leaderGroupId = null) {
+function renderGroupOptions(
+  groups = [],
+  isGroupLeader = false,
+  leaderGroupId = null,
+) {
   if (groups.length === 0) {
     return '<option value="">No groups available</option>';
   }
@@ -782,7 +791,12 @@ function renderCreateEventModal(
  * @param {Object} groupsData - Groups data
  * @returns {string} HTML string
  */
-export function renderEventDetailModal(event, classInfo, allowedEventTypes = [], groupsData = {}) {
+export function renderEventDetailModal(
+  event,
+  classInfo,
+  allowedEventTypes = [],
+  groupsData = {},
+) {
   if (!event) {
     return `
       <div id="event-detail-content" class="modal-card">
@@ -806,35 +820,39 @@ export function renderEventDetailModal(event, classInfo, allowedEventTypes = [],
 
   const eventId = escapeHtml(event.id);
   const title = escapeHtml(event.title || "Untitled Event");
-  const description = escapeHtml(event.description || "No description provided.");
+  const description = escapeHtml(
+    event.description || "No description provided.",
+  );
   const location = escapeHtml(event.location || "");
   const eventType = event.type || "OTHER";
   const eventTypeLabel = getEventTypeLabel(eventType);
-  
+
   // Format dates
   const startDate = new Date(event.startTime);
   const endDate = new Date(event.endTime);
-  const startDateStr = startDate.toLocaleDateString("en-US", { 
-    weekday: "long", 
-    year: "numeric", 
-    month: "long", 
+  const startDateStr = startDate.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
     day: "numeric",
-    timeZone: "America/Los_Angeles"
+    timeZone: "America/Los_Angeles",
   });
-  const startTimeStr = startDate.toLocaleTimeString("en-US", { 
-    hour: "numeric", 
+  const startTimeStr = startDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
     minute: "2-digit",
-    timeZone: "America/Los_Angeles"
+    timeZone: "America/Los_Angeles",
   });
-  const endTimeStr = endDate.toLocaleTimeString("en-US", { 
-    hour: "numeric", 
+  const endTimeStr = endDate.toLocaleTimeString("en-US", {
+    hour: "numeric",
     minute: "2-digit",
-    timeZone: "America/Los_Angeles"
+    timeZone: "America/Los_Angeles",
   });
-  
+
   const className = escapeHtml(classInfo?.name || "Unknown Class");
   const groupName = event.group ? escapeHtml(event.group.name) : null;
-  const creatorName = event.user ? escapeHtml(event.user.preferredName || event.user.name || "Unknown") : "Unknown";
+  const creatorName = event.user
+    ? escapeHtml(event.user.preferredName || event.user.name || "Unknown")
+    : "Unknown";
 
   return `
     <div id="event-detail-content" class="modal-card" style="max-width: 600px;">
@@ -866,28 +884,36 @@ export function renderEventDetailModal(event, classInfo, allowedEventTypes = [],
               <span class="event-type-badge ${getEventTypeClass(eventType)}">${eventTypeLabel}</span>
             </div>
           </div>
-          ${location ? `
+          ${
+            location
+              ? `
           <div class="event-detail-item">
             <div class="event-detail-label">
               <i class="fa-solid fa-location-dot"></i> Location
             </div>
             <div class="event-detail-value">${location}</div>
           </div>
-          ` : ""}
+          `
+              : ""
+          }
           <div class="event-detail-item">
             <div class="event-detail-label">
               <i class="fa-solid fa-book"></i> Course
             </div>
             <div class="event-detail-value">${className}</div>
           </div>
-          ${groupName ? `
+          ${
+            groupName
+              ? `
           <div class="event-detail-item">
             <div class="event-detail-label">
               <i class="fa-solid fa-users"></i> Group
             </div>
             <div class="event-detail-value">${groupName}</div>
           </div>
-          ` : ""}
+          `
+              : ""
+          }
           <div class="event-detail-item">
             <div class="event-detail-label">
               <i class="fa-solid fa-user"></i> Created By
@@ -906,7 +932,9 @@ export function renderEventDetailModal(event, classInfo, allowedEventTypes = [],
         <button type="button" class="btn btn--secondary" onclick="closeModal('modal-event-detail')">
           Close
         </button>
-        ${allowedEventTypes.includes(eventType) ? `
+        ${
+          allowedEventTypes.includes(eventType)
+            ? `
         <button type="button" class="btn btn--primary" onclick="openEditEventModal('${eventId}')">
           <i class="fa-solid fa-edit"></i> Edit
         </button>
@@ -918,7 +946,9 @@ export function renderEventDetailModal(event, classInfo, allowedEventTypes = [],
         >
           <i class="fa-solid fa-trash"></i> Delete
         </button>
-        ` : ""}
+        `
+            : ""
+        }
       </div>
     </div>
     <style>
@@ -1040,7 +1070,12 @@ export function renderEventDetailModal(event, classInfo, allowedEventTypes = [],
  * @param {Object} groupsData - Groups data
  * @returns {string} HTML string
  */
-export function renderEditEventModal(event, classInfo, allowedEventTypes = [], groupsData = {}) {
+export function renderEditEventModal(
+  event,
+  classInfo,
+  allowedEventTypes = [],
+  groupsData = {},
+) {
   if (!event) {
     return `
       <div id="event-detail-content" class="modal-card">
@@ -1068,31 +1103,33 @@ export function renderEditEventModal(event, classInfo, allowedEventTypes = [], g
   const description = escapeHtml(event.description || "");
   const location = escapeHtml(event.location || "");
   const eventType = event.type || "OTHER";
-  
+
   // Format dates for form inputs
   const startDate = new Date(event.startTime);
   const endDate = new Date(event.endTime);
-  
+
   // Get PST date/time strings
-  const dateStr = startDate.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "America/Los_Angeles"
-  }).split("/");
+  const dateStr = startDate
+    .toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "America/Los_Angeles",
+    })
+    .split("/");
   const formattedDate = `${dateStr[2]}-${dateStr[0].padStart(2, "0")}-${dateStr[1].padStart(2, "0")}`;
-  
+
   const startTimeStr = startDate.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "America/Los_Angeles"
+    timeZone: "America/Los_Angeles",
   });
   const endTimeStr = endDate.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "America/Los_Angeles"
+    timeZone: "America/Los_Angeles",
   });
 
   // Calculate PST today for min date
@@ -1111,24 +1148,24 @@ export function renderEditEventModal(event, classInfo, allowedEventTypes = [], g
   const leaderGroupId = groupsData.leaderGroupId || null;
   let groupOptions = renderGroupOptions(groups, isGroupLeader, leaderGroupId);
   const selectedGroupId = event.groupId || "";
-  
+
   // Mark selected group
   if (selectedGroupId && groupOptions.includes(`value="${selectedGroupId}"`)) {
     groupOptions = groupOptions.replace(
       `value="${selectedGroupId}"`,
-      `value="${selectedGroupId}" selected`
+      `value="${selectedGroupId}" selected`,
     );
   }
-  
+
   // Mark selected event type
   let finalEventTypeOptions = eventTypeOptions;
   if (eventTypeOptions.includes(`value="${eventType}"`)) {
     finalEventTypeOptions = eventTypeOptions.replace(
       `value="${eventType}"`,
-      `value="${eventType}" selected`
+      `value="${eventType}" selected`,
     );
   }
-  
+
   const isGroupDropdownDisabled = isGroupLeader && leaderGroupId !== null;
 
   return `

@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 window.openCreateSessionModal = (classId) => {
   const modal = document.getElementById("modal-create-session");
   const classIdInput = document.getElementById("session-class-id");
-  
+
   if (modal && classIdInput) {
     classIdInput.value = classId;
     // Reset form
@@ -108,7 +108,7 @@ window.openCreateSessionModal = (classId) => {
       errorDiv.textContent = "";
     }
     modal.classList.add("open");
-    
+
     // Initialize form validations
     initializeSessionForm();
   }
@@ -120,53 +120,53 @@ window.openCreateSessionModal = (classId) => {
  */
 window.handleCreateSession = async (event) => {
   event.preventDefault();
-  
+
   const submitBtn = document.getElementById("session-submit-btn");
   const errorDiv = document.getElementById("session-form-error");
-  
+
   // Get form values
   const classId = document.getElementById("session-class-id").value;
   const name = document.getElementById("session-name").value.trim();
   const date = document.getElementById("session-date").value;
   const startTime = document.getElementById("session-start-time").value;
   const endTime = document.getElementById("session-end-time").value;
-  
+
   // Clear previous errors
   if (errorDiv) {
     errorDiv.style.display = "none";
     errorDiv.textContent = "";
   }
-  
+
   // Validation
   if (!name) {
     showError("Session name is required");
     return;
   }
-  
+
   if (!date) {
     showError("Date is required");
     return;
   }
-  
+
   // Validate end time is after start time
   if (startTime && endTime && endTime <= startTime) {
     showError("End time must be after start time");
     return;
   }
-  
+
   // Convert date and time to proper format
   // The backend expects:
   // - date: YYYY-MM-DD string
   // - startTime/endTime: ISO datetime strings OR HH:MM format (backend will combine with date)
-  
+
   // For simplicity and to avoid timezone issues, we'll send:
   // - date: YYYY-MM-DD (as-is from input)
   // - startTime/endTime: ISO datetime strings constructed from date + time
-  
+
   let dateISO = date; // Already in YYYY-MM-DD format
   let startTimeISO = null;
   let endTimeISO = null;
-  
+
   try {
     // Combine date with time if provided
     // Create ISO string: YYYY-MM-DDTHH:MM:00 (in local time, no timezone)
@@ -175,7 +175,7 @@ window.handleCreateSession = async (event) => {
       // Format: YYYY-MM-DDTHH:MM:00
       startTimeISO = `${date}T${startTime}:00`;
     }
-    
+
     if (endTime) {
       // Format: YYYY-MM-DDTHH:MM:00
       endTimeISO = `${date}T${endTime}:00`;
@@ -184,28 +184,28 @@ window.handleCreateSession = async (event) => {
     showError("Invalid date or time format");
     return;
   }
-  
+
   // Prepare request body
   const body = {
     classId: classId,
     name: name,
     date: dateISO,
   };
-  
+
   if (startTimeISO) {
     body.startTime = startTimeISO;
   }
-  
+
   if (endTimeISO) {
     body.endTime = endTimeISO;
   }
-  
+
   // Disable submit button
   if (submitBtn) {
     submitBtn.disabled = true;
     submitBtn.textContent = "Creating...";
   }
-  
+
   try {
     // Make API call
     const response = await fetch("/course-sessions", {
@@ -215,12 +215,13 @@ window.handleCreateSession = async (event) => {
       },
       body: JSON.stringify(body),
     });
-    
+
     const data = await response.json();
-    
+
     if (!response.ok) {
       // Handle error response
-      const errorMessage = data.error || data.details || "Failed to create session";
+      const errorMessage =
+        data.error || data.details || "Failed to create session";
       showError(errorMessage);
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -228,14 +229,13 @@ window.handleCreateSession = async (event) => {
       }
       return;
     }
-    
+
     // Success - close modal and update table
     window.closeModal("modal-create-session");
     window.showToast("Success", "Session created successfully!", "success");
-    
+
     // Add new session to the table
     addSessionToTable(data, classId);
-    
   } catch (error) {
     console.error("Error creating session:", error);
     showError("Network error. Please try again.");
@@ -265,38 +265,40 @@ function initializeSessionForm() {
   const dateInput = document.getElementById("session-date");
   const startTimeInput = document.getElementById("session-start-time");
   const endTimeInput = document.getElementById("session-end-time");
-  
+
   if (!dateInput) return;
-  
+
   // Disable past dates based on PST timezone
-  const pstDate = new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles" });
+  const pstDate = new Date().toLocaleString("en-US", {
+    timeZone: "America/Los_Angeles",
+  });
   const today = new Date(pstDate);
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, "0");
   const dd = String(today.getDate()).padStart(2, "0");
   dateInput.min = yyyy + "-" + mm + "-" + dd;
-  
+
   // Validate end time is after start time
   function validateSessionTimes() {
     if (!startTimeInput || !endTimeInput) return;
-    
+
     const startTime = startTimeInput.value;
     const endTime = endTimeInput.value;
-    
+
     if (startTime && endTime && endTime <= startTime) {
       endTimeInput.setCustomValidity("End time must be after start time");
     } else {
       endTimeInput.setCustomValidity("");
     }
   }
-  
+
   // Add event listeners for time validation (only if not already added)
   if (startTimeInput && !startTimeInput.dataset.validationAdded) {
     startTimeInput.addEventListener("change", validateSessionTimes);
     startTimeInput.addEventListener("input", validateSessionTimes);
     startTimeInput.dataset.validationAdded = "true";
   }
-  
+
   if (endTimeInput && !endTimeInput.dataset.validationAdded) {
     endTimeInput.addEventListener("change", validateSessionTimes);
     endTimeInput.addEventListener("input", validateSessionTimes);
@@ -313,40 +315,44 @@ function addSessionToTable(session, classId) {
   // Find the course card that matches this classId
   // The classId in the course object might be stored differently
   // We need to find the table that belongs to this class
-  
+
   // Try to find the table by looking for the course card
   // The course.id is classId without dashes, so we need to match
   const courseIdWithoutDashes = classId.replace(/-/g, "");
-  
+
   // Find the course content div
-  const courseContent = document.getElementById(`content-${courseIdWithoutDashes}`);
+  const courseContent = document.getElementById(
+    `content-${courseIdWithoutDashes}`,
+  );
   if (!courseContent) {
     // If we can't find it, refresh the page or reload the attendance section
     // For now, we'll just show a success message
     return;
   }
-  
+
   // Check if there's already a table or empty state
   const existingTable = courseContent.querySelector(".data-table");
-  const emptyState = courseContent.querySelector("div[style*='text-align: center']");
-  
+  const emptyState = courseContent.querySelector(
+    "div[style*='text-align: center']",
+  );
+
   // Format session data for display
   const sessionDate = new Date(session.date).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
-  
+
   const sessionTime = session.startTime
     ? new Date(session.startTime).toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
       })
     : "10:00 AM";
-  
+
   const sessionCode = "---- ----"; // New sessions don't have codes yet
   const sessionId = session.id;
-  
+
   // Create table row HTML with proper dropdown structure
   const rowHTML = `
     <tr id="session-row-${escapeHtml(sessionId)}">
@@ -382,7 +388,7 @@ function addSessionToTable(session, classId) {
       </td>
     </tr>
   `;
-  
+
   if (existingTable) {
     // Add row to existing table
     const tbody = existingTable.querySelector("tbody");

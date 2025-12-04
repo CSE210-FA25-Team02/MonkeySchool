@@ -8,10 +8,10 @@
 import { asyncHandler } from "../utils/async-handler.js";
 import { createBaseLayout } from "../utils/html-templates.js";
 import { renderAvailabilityPage } from "../utils/htmx-templates/availability-templates.js";
-import { 
-  getUserAvailability, 
+import {
+  getUserAvailability,
   setUserWeeklyAvailability,
-  getUserGroupsAvailability
+  getUserGroupsAvailability,
 } from "../services/availability.service.js";
 
 /**
@@ -25,11 +25,15 @@ export const getAvailabilityPage = asyncHandler(async (req, res) => {
 
   // Load user's existing availability
   const userAvailability = await getUserAvailability(user.id);
-  
+
   // Load user's groups and their availability
   const groupsAvailability = await getUserGroupsAvailability(user.id);
 
-  const html = renderAvailabilityPage(user, userAvailability, groupsAvailability);
+  const html = renderAvailabilityPage(
+    user,
+    userAvailability,
+    groupsAvailability,
+  );
 
   if (isHtmx) {
     res.send(html);
@@ -40,18 +44,20 @@ export const getAvailabilityPage = asyncHandler(async (req, res) => {
 });
 
 /**
- * Get Group Availability Sections Only  
+ * Get Group Availability Sections Only
  * Route: GET /availability/groups
  * Auth: requireAuth
  */
 export const getGroupAvailabilitySections = asyncHandler(async (req, res) => {
   const user = req.user;
-  
+
   // Load user's groups and their availability
   const groupsAvailability = await getUserGroupsAvailability(user.id);
 
   // Use the same template function but just for groups
-  const { renderGroupAvailabilitySections } = await import("../utils/htmx-templates/availability-templates.js");
+  const { renderGroupAvailabilitySections } = await import(
+    "../utils/htmx-templates/availability-templates.js"
+  );
   const groupSections = renderGroupAvailabilitySections(groupsAvailability);
 
   res.send(groupSections);
@@ -67,39 +73,41 @@ export const saveUserAvailability = asyncHandler(async (req, res) => {
   const { availability } = req.body;
 
   try {
-    console.log('=== SAVE AVAILABILITY DEBUG ===');
-    console.log('Raw availability data:', availability);
-    console.log('User ID:', user.id);
-    
+    console.log("=== SAVE AVAILABILITY DEBUG ===");
+    console.log("Raw availability data:", availability);
+    console.log("User ID:", user.id);
+
     // Parse availability data from frontend
     const availabilityRanges = JSON.parse(availability);
-    console.log('Parsed availability ranges:', JSON.stringify(availabilityRanges, null, 2));
-    
+    console.log(
+      "Parsed availability ranges:",
+      JSON.stringify(availabilityRanges, null, 2),
+    );
+
     // Validate that it's an array
     if (!Array.isArray(availabilityRanges)) {
       return res.status(400).json({
-        error: "Invalid availability data format"
+        error: "Invalid availability data format",
       });
     }
 
-    console.log('About to save to database...');
+    console.log("About to save to database...");
     // Save to database
     await setUserWeeklyAvailability(user.id, availabilityRanges);
-    console.log('Successfully saved to database!');
+    console.log("Successfully saved to database!");
 
     const isHtmx = !!req.headers["hx-request"];
     if (isHtmx) {
       res.status(200).send(""); // HTMX expects empty response on success
     } else {
-      res.status(200).json({ 
-        success: true, 
-        message: "Availability saved successfully" 
+      res.status(200).json({
+        success: true,
+        message: "Availability saved successfully",
       });
     }
-
   } catch (error) {
     console.error("Error saving availability:", error);
-    
+
     const isHtmx = !!req.headers["hx-request"];
     if (isHtmx) {
       res.status(500).send(`
@@ -110,7 +118,7 @@ export const saveUserAvailability = asyncHandler(async (req, res) => {
     } else {
       res.status(500).json({
         error: "Failed to save availability",
-        details: error.message
+        details: error.message,
       });
     }
   }

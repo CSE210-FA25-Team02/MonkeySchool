@@ -26,11 +26,7 @@ router.post(
 );
 
 // Get event by ID
-router.get(
-  "/events/:id",
-  requireAuth,
-  asyncHandler(eventController.getEvent),
-);
+router.get("/events/:id", requireAuth, asyncHandler(eventController.getEvent));
 
 // Get event edit form
 router.get(

@@ -7,7 +7,6 @@
 
 import { escapeHtml } from "../html-templates.js";
 
-
 /**
  * Render weekly availability page
  * @param {Object} user - Current user (for greeting)
@@ -32,7 +31,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
   ];
   const timeSlots = [
     "8:00 AM",
-    "8:30 AM", 
+    "8:30 AM",
     "9:00 AM",
     "9:30 AM",
     "10:00 AM",
@@ -43,7 +42,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
     "12:30 PM",
     "1:00 PM",
     "1:30 PM",
-    "2:00 PM", 
+    "2:00 PM",
     "2:30 PM",
     "3:00 PM",
     "3:30 PM",
@@ -64,17 +63,17 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
    * @returns {string} Time in 24h format (e.g., "09:00")
    */
   const convertToTime24h = (time12h) => {
-    const [time, period] = time12h.split(' ');
-    const [hours, minutes] = time.split(':');
+    const [time, period] = time12h.split(" ");
+    const [hours, minutes] = time.split(":");
     let hour24 = parseInt(hours);
-    
-    if (period === 'PM' && hour24 !== 12) {
+
+    if (period === "PM" && hour24 !== 12) {
       hour24 += 12;
-    } else if (period === 'AM' && hour24 === 12) {
+    } else if (period === "AM" && hour24 === 12) {
       hour24 = 0;
     }
-    
-    return `${hour24.toString().padStart(2, '0')}:${minutes}`;
+
+    return `${hour24.toString().padStart(2, "0")}:${minutes}`;
   };
 
   /**
@@ -90,8 +89,8 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
     const total = members.length;
     const availableNames = [];
 
-    members.forEach(member => {
-      const isAvailable = member.availability.some(avail => {
+    members.forEach((member) => {
+      const isAvailable = member.availability.some((avail) => {
         if (avail.dayOfWeek !== dayIndex) return false;
         return time24h >= avail.startTime && time24h < avail.endTime;
       });
@@ -111,7 +110,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
    * @returns {string} CSS class name
    */
   const getAvailabilityIntensityClass = (available, total) => {
-    if (available === 0) return '';
+    if (available === 0) return "";
     const intensity = Math.ceil((available / total) * 5); // 1-5 scale
     return `group-availability--intensity-${intensity}`;
   };
@@ -124,7 +123,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
   const renderGroupAvailabilitySection = (group) => {
     const sectionId = `group-${group.id}`;
     const sectionTitle = `${escapeHtml(group.class.name)}-${escapeHtml(group.name)} Weekly Availability`;
-    
+
     const tableHeader = `
       <thead>
         <tr>
@@ -147,20 +146,29 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
           .map((time) => {
             const cells = days
               .map((_, dayIdx) => {
-                const { available, total, availableNames } = getGroupTimeSlotAvailability(group.members, dayIdx, time);
-                const intensityClass = getAvailabilityIntensityClass(available, total);
+                const { available, total, availableNames } =
+                  getGroupTimeSlotAvailability(group.members, dayIdx, time);
+                const intensityClass = getAvailabilityIntensityClass(
+                  available,
+                  total,
+                );
                 const classes = [
                   "group-availability-cell",
                   "group-availability-cell--slot",
-                  intensityClass
+                  intensityClass,
                 ]
                   .filter(Boolean)
                   .join(" ");
-                
-                const namesDisplay = availableNames.length > 0 ? availableNames.join(', ') : '';
-                const shortNames = availableNames.length > 0 ? 
-                  (availableNames.length <= 2 ? namesDisplay : `${availableNames[0]}+${availableNames.length - 1}`) : '';
-                
+
+                const namesDisplay =
+                  availableNames.length > 0 ? availableNames.join(", ") : "";
+                const shortNames =
+                  availableNames.length > 0
+                    ? availableNames.length <= 2
+                      ? namesDisplay
+                      : `${availableNames[0]}+${availableNames.length - 1}`
+                    : "";
+
                 return `
                   <td 
                     class="${classes}" 
@@ -169,7 +177,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
                     data-total="${total}"
                     data-available-names="${escapeHtml(namesDisplay)}"
                   >
-                    ${availableNames.length > 0 ? `<span class="available-names">${escapeHtml(shortNames)}</span>` : ''}
+                    ${availableNames.length > 0 ? `<span class="available-names">${escapeHtml(shortNames)}</span>` : ""}
                   </td>
                 `;
               })
@@ -213,7 +221,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
           <div class="group-availability-members">
             <p class="group-availability-members-text">
               <strong>Members (${group.members.length}):</strong>
-              ${group.members.map(member => escapeHtml(member.name)).join(', ')}
+              ${group.members.map((member) => escapeHtml(member.name)).join(", ")}
             </p>
           </div>
           <div class="group-availability-grid-wrapper">
@@ -227,7 +235,8 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
     `;
   };
 
-  return groupsAvailability.length > 0 ? `
+  return groupsAvailability.length > 0
+    ? `
     <div id="group-availability-sections" class="group-availability-sections">
       <div class="group-availability-sections-header">
         <h2>Group Availability</h2>
@@ -235,9 +244,10 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
           See when your team members are available for meetings.
         </p>
       </div>
-      ${groupsAvailability.map(group => renderGroupAvailabilitySection(group)).join('')}
+      ${groupsAvailability.map((group) => renderGroupAvailabilitySection(group)).join("")}
     </div>
-  ` : '<div id="group-availability-sections"></div>';
+  `
+    : '<div id="group-availability-sections"></div>';
 }
 
 /**
@@ -247,7 +257,11 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
  * @param {Array} groupsAvailability - User's groups and their availability
  * @returns {string} HTML string for complete availability page
  */
-export function renderAvailabilityPage(user, userAvailability = [], groupsAvailability = []) {
+export function renderAvailabilityPage(
+  user,
+  userAvailability = [],
+  groupsAvailability = [],
+) {
   const displayName = escapeHtml(user?.name || "Student");
 
   const days = [
@@ -261,7 +275,7 @@ export function renderAvailabilityPage(user, userAvailability = [], groupsAvaila
   ];
   const timeSlots = [
     "8:00 AM",
-    "8:30 AM", 
+    "8:30 AM",
     "9:00 AM",
     "9:30 AM",
     "10:00 AM",
@@ -272,7 +286,7 @@ export function renderAvailabilityPage(user, userAvailability = [], groupsAvaila
     "12:30 PM",
     "1:00 PM",
     "1:30 PM",
-    "2:00 PM", 
+    "2:00 PM",
     "2:30 PM",
     "3:00 PM",
     "3:30 PM",
@@ -296,8 +310,8 @@ export function renderAvailabilityPage(user, userAvailability = [], groupsAvaila
   const isTimeSlotAvailable = (dayIndex, timeSlot) => {
     // Convert display time to 24h format
     const time24h = convertToTime24h(timeSlot);
-    
-    return userAvailability.some(avail => {
+
+    return userAvailability.some((avail) => {
       if (avail.dayOfWeek !== dayIndex) return false;
       return time24h >= avail.startTime && time24h < avail.endTime;
     });
@@ -309,17 +323,17 @@ export function renderAvailabilityPage(user, userAvailability = [], groupsAvaila
    * @returns {string} Time in 24h format (e.g., "09:00")
    */
   const convertToTime24h = (time12h) => {
-    const [time, period] = time12h.split(' ');
-    const [hours, minutes] = time.split(':');
+    const [time, period] = time12h.split(" ");
+    const [hours, minutes] = time.split(":");
     let hour24 = parseInt(hours);
-    
-    if (period === 'PM' && hour24 !== 12) {
+
+    if (period === "PM" && hour24 !== 12) {
       hour24 += 12;
-    } else if (period === 'AM' && hour24 === 12) {
+    } else if (period === "AM" && hour24 === 12) {
       hour24 = 0;
     }
-    
-    return `${hour24.toString().padStart(2, '0')}:${minutes}`;
+
+    return `${hour24.toString().padStart(2, "0")}:${minutes}`;
   };
 
   const header = `
@@ -816,7 +830,9 @@ export function renderAvailabilityPage(user, userAvailability = [], groupsAvaila
   // Group availability sections
   const groupSections = renderGroupAvailabilitySections(groupsAvailability);
 
-  const groupAvailabilityScripts = groupsAvailability.length > 0 ? `
+  const groupAvailabilityScripts =
+    groupsAvailability.length > 0
+      ? `
     <script>
       // Group availability toggle functionality
       window.toggleGroupAvailability = function(groupId) {
@@ -872,7 +888,8 @@ export function renderAvailabilityPage(user, userAvailability = [], groupsAvaila
         initializeGroupStates();
       }
     </script>
-  ` : '';
+  `
+      : "";
 
   return `
     ${header}

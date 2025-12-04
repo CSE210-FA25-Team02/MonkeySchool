@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth.js";
 import { asyncHandler } from "../utils/async-handler.js";
-import { 
-  getAvailabilityPage, 
+import {
+  getAvailabilityPage,
   saveUserAvailability,
-  getGroupAvailabilitySections
+  getGroupAvailabilitySections,
 } from "../controllers/availability.controller.js";
 
 const router = Router();
