@@ -88,7 +88,8 @@ defineFeature(feature, (test) => {
     given(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)"$/,
       async (eventTitle, eventType, className, creatorName) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         context.event = await prisma.event.create({
           data: {
             title: eventTitle,
@@ -134,13 +135,19 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test("View event details as student (read-only)", ({ given, when, and, then }) => {
+  test("View event details as student (read-only)", ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     // Include Background step definitions
     defineBackgroundSteps({ given, and });
     given(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)"$/,
       async (eventTitle, eventType, className, creatorName) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         context.event = await prisma.event.create({
           data: {
             title: eventTitle,
@@ -173,12 +180,16 @@ defineFeature(feature, (test) => {
 
     and(/^the modal should not have an "(.*)" button$/, (buttonText) => {
       // Student should not see edit/delete buttons for events they can't modify
-      const hasEditButton = context.response.text.includes('onclick="openEditEventModal');
+      const hasEditButton = context.response.text.includes(
+        'onclick="openEditEventModal',
+      );
       expect(hasEditButton).toBe(false);
     });
 
     and(/^the modal should not have a "(.*)" button$/, (buttonText) => {
-      const hasDeleteButton = context.response.text.includes('onclick="deleteEvent');
+      const hasDeleteButton = context.response.text.includes(
+        'onclick="deleteEvent',
+      );
       expect(hasDeleteButton).toBe(false);
     });
   });
@@ -189,7 +200,8 @@ defineFeature(feature, (test) => {
     given(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)"$/,
       async (eventTitle, eventType, className, creatorName) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         context.event = await prisma.event.create({
           data: {
             title: eventTitle,
@@ -220,12 +232,15 @@ defineFeature(feature, (test) => {
       }
     });
 
-    then(/^I should see an edit form with the event details pre-filled$/, () => {
-      expect(context.response.status).toBe(200);
-      expect(context.response.text).toContain("Edit Event");
-      expect(context.response.text).toContain('id="edit-event-form"');
-      expect(context.response.text).toContain(context.event.title);
-    });
+    then(
+      /^I should see an edit form with the event details pre-filled$/,
+      () => {
+        expect(context.response.status).toBe(200);
+        expect(context.response.text).toContain("Edit Event");
+        expect(context.response.text).toContain('id="edit-event-form"');
+        expect(context.response.text).toContain(context.event.title);
+      },
+    );
 
     when(/^I update the event title to "(.*)"$/, async (newTitle) => {
       context.newTitle = newTitle;
@@ -234,7 +249,10 @@ defineFeature(feature, (test) => {
     when(/^I submit the edit form$/, async () => {
       const eventDate = new Date(context.event.startTime);
       const dateStr = eventDate.toISOString().split("T")[0];
-      const startTimeStr = eventDate.toTimeString().split(" ")[0].substring(0, 5);
+      const startTimeStr = eventDate
+        .toTimeString()
+        .split(" ")[0]
+        .substring(0, 5);
       const endTimeStr = new Date(context.event.endTime)
         .toTimeString()
         .split(" ")[0]
@@ -254,12 +272,15 @@ defineFeature(feature, (test) => {
         .set("HX-Request", "true");
     });
 
-    then(/^the event should be updated with title "(.*)"$/, async (newTitle) => {
-      const updatedEvent = await prisma.event.findUnique({
-        where: { id: context.event.id },
-      });
-      expect(updatedEvent.title).toBe(newTitle);
-    });
+    then(
+      /^the event should be updated with title "(.*)"$/,
+      async (newTitle) => {
+        const updatedEvent = await prisma.event.findUnique({
+          where: { id: context.event.id },
+        });
+        expect(updatedEvent.title).toBe(newTitle);
+      },
+    );
 
     and(/^the calendar should refresh to show the updated event$/, () => {
       expect(context.response.status).toBe(200);
@@ -274,7 +295,8 @@ defineFeature(feature, (test) => {
     given(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)"$/,
       async (eventTitle, eventType, className, creatorName) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         context.event = await prisma.event.create({
           data: {
             title: eventTitle,
@@ -318,19 +340,29 @@ defineFeature(feature, (test) => {
       expect(context.response.status).toBe(200);
       expect(context.response.text).toContain("schedule-wrapper");
       // The deleted event title should not appear in the calendar content (check schedule-day-events, not scripts)
-      const calendarContent = context.response.text.match(/schedule-day-events[\s\S]*?<\/div>/g) || [];
-      const hasEvent = calendarContent.some(content => content.includes("Lecture 1"));
+      const calendarContent =
+        context.response.text.match(/schedule-day-events[\s\S]*?<\/div>/g) ||
+        [];
+      const hasEvent = calendarContent.some((content) =>
+        content.includes("Lecture 1"),
+      );
       expect(hasEvent).toBe(false);
     });
   });
 
-  test("Student cannot edit professor's event", ({ given, when, and, then }) => {
+  test("Student cannot edit professor's event", ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     // Include Background step definitions
     defineBackgroundSteps({ given, and });
     given(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)"$/,
       async (eventTitle, eventType, className, creatorName) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         context.event = await prisma.event.create({
           data: {
             title: eventTitle,
@@ -368,13 +400,19 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test("Student cannot delete professor's event", ({ given, when, and, then }) => {
+  test("Student cannot delete professor's event", ({
+    given,
+    when,
+    and,
+    then,
+  }) => {
     // Include Background step definitions
     defineBackgroundSteps({ given, and });
     given(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)"$/,
       async (eventTitle, eventType, className, creatorName) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         context.event = await prisma.event.create({
           data: {
             title: eventTitle,
@@ -416,14 +454,17 @@ defineFeature(feature, (test) => {
   test("Group leader can edit group meeting", ({ given, and, when, then }) => {
     // Include Background step definitions
     defineBackgroundSteps({ given, and });
-    given(/^a group "(.*)" exists for class "(.*)"$/, async (groupName, className) => {
-      context.group = await prisma.group.create({
-        data: {
-          name: groupName,
-          classId: context.klass.id,
-        },
-      });
-    });
+    given(
+      /^a group "(.*)" exists for class "(.*)"$/,
+      async (groupName, className) => {
+        context.group = await prisma.group.create({
+          data: {
+            name: groupName,
+            classId: context.klass.id,
+          },
+        });
+      },
+    );
 
     and(/^"(.*)" is a leader of "(.*)"$/, async (userName, groupName) => {
       await prisma.groupRole.create({
@@ -438,7 +479,8 @@ defineFeature(feature, (test) => {
     and(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" and group "(.*)" created by "(.*)"$/,
       async (eventTitle, eventType, className, groupName, creatorName) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         context.event = await prisma.event.create({
           data: {
             title: eventTitle,
@@ -489,7 +531,10 @@ defineFeature(feature, (test) => {
     when(/^I submit the edit form$/, async () => {
       const eventDate = new Date(context.event.startTime);
       const dateStr = eventDate.toISOString().split("T")[0];
-      const startTimeStr = eventDate.toTimeString().split(" ")[0].substring(0, 5);
+      const startTimeStr = eventDate
+        .toTimeString()
+        .split(" ")[0]
+        .substring(0, 5);
       const endTimeStr = new Date(context.event.endTime)
         .toTimeString()
         .split(" ")[0]
@@ -510,21 +555,30 @@ defineFeature(feature, (test) => {
         .set("HX-Request", "true");
     });
 
-    then(/^the event should be updated with title "(.*)"$/, async (newTitle) => {
-      const updatedEvent = await prisma.event.findUnique({
-        where: { id: context.event.id },
-      });
-      expect(updatedEvent.title).toBe(newTitle);
-    });
+    then(
+      /^the event should be updated with title "(.*)"$/,
+      async (newTitle) => {
+        const updatedEvent = await prisma.event.findUnique({
+          where: { id: context.event.id },
+        });
+        expect(updatedEvent.title).toBe(newTitle);
+      },
+    );
   });
 
-  test("Calendar displays events for current week", ({ given, and, when, then }) => {
+  test("Calendar displays events for current week", ({
+    given,
+    and,
+    when,
+    then,
+  }) => {
     // Include Background step definitions
     defineBackgroundSteps({ given, and });
     given(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)" on "(.*)"$/,
       async (eventTitle, eventType, className, creatorName, dateStr) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         const eventDate = new Date(dateStr + "T10:00:00Z");
         context.event = await prisma.event.create({
           data: {
@@ -543,7 +597,8 @@ defineFeature(feature, (test) => {
     and(
       /^an event "(.*)" of type "(.*)" exists for class "(.*)" created by "(.*)" on "(.*)"$/,
       async (eventTitle, eventType, className, creatorName, dateStr) => {
-        const user = creatorName === "Dr. Smith" ? context.professor : context.student;
+        const user =
+          creatorName === "Dr. Smith" ? context.professor : context.student;
         const eventDate = new Date(dateStr + "T10:00:00Z");
         await prisma.event.create({
           data: {
@@ -563,7 +618,9 @@ defineFeature(feature, (test) => {
       /^I view the calendar for class "(.*)" for the week starting "(.*)"$/,
       async (className, weekStartStr) => {
         context.response = await request
-          .get(`/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`)
+          .get(
+            `/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`,
+          )
           .set("Cookie", `auth_token=${context.token}`);
       },
     );
@@ -586,7 +643,9 @@ defineFeature(feature, (test) => {
       /^I view the calendar for class "(.*)" for the week starting "(.*)"$/,
       async (className, weekStartStr) => {
         context.response = await request
-          .get(`/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`)
+          .get(
+            `/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`,
+          )
           .set("Cookie", `auth_token=${context.token}`);
       },
     );
@@ -624,12 +683,15 @@ defineFeature(feature, (test) => {
   test("Create event via calendar", ({ given, when, then, and }) => {
     // Include Background step definitions
     defineBackgroundSteps({ given, and });
-    when(/^I click "Create Event" on the calendar for class "(.*)"$/, async (className) => {
-      // This would typically be a frontend action, but we can test the form rendering
-      context.response = await request
-        .get(`/classes/${context.klass.id}/schedule`)
-        .set("Cookie", `auth_token=${context.token}`);
-    });
+    when(
+      /^I click "Create Event" on the calendar for class "(.*)"$/,
+      async (className) => {
+        // This would typically be a frontend action, but we can test the form rendering
+        context.response = await request
+          .get(`/classes/${context.klass.id}/schedule`)
+          .set("Cookie", `auth_token=${context.token}`);
+      },
+    );
 
     then(/^I should see a create event form$/, () => {
       expect(context.response.status).toBe(200);
@@ -640,21 +702,23 @@ defineFeature(feature, (test) => {
     when(/^I fill in the event form with:$/, async (dataTable) => {
       context.formData = {};
       // jest-cucumber passes dataTable as an array of objects: [{Field: "Title", Value: "New Lecture"}, ...]
-      const rows = Array.isArray(dataTable) ? dataTable : (dataTable.rawTable || []);
-      
+      const rows = Array.isArray(dataTable)
+        ? dataTable
+        : dataTable.rawTable || [];
+
       const fieldMap = {
-        "title": "title",
-        "type": "type",
-        "date": "date",
-        "starttime": "startTime",
-        "endtime": "endTime",
-        "location": "location",
-        "description": "description",
+        title: "title",
+        type: "type",
+        date: "date",
+        starttime: "startTime",
+        endtime: "endTime",
+        location: "location",
+        description: "description",
       };
-      
+
       rows.forEach((row) => {
         // Handle object format {Field: "...", Value: "..."}
-        if (typeof row === 'object' && row !== null && !Array.isArray(row)) {
+        if (typeof row === "object" && row !== null && !Array.isArray(row)) {
           const fieldKey = (row.Field || "").toLowerCase().replace(/\s+/g, "");
           const value = row.Value;
           if (fieldKey && value !== undefined) {
@@ -708,6 +772,4 @@ defineFeature(feature, (test) => {
       expect(context.response.text).toContain(context.formData.title);
     });
   });
-
 });
-
