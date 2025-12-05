@@ -48,13 +48,16 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
   const currentUser = req.user;
 
   // Check if current user is a professor in this class
-  const currentUserRole = await classRoleService.getClassRole(currentUser.id, classId);
-  if (!currentUserRole || currentUserRole.role !== 'PROFESSOR') {
+  const currentUserRole = await classRoleService.getClassRole(
+    currentUser.id,
+    classId,
+  );
+  if (!currentUserRole || currentUserRole.role !== "PROFESSOR") {
     return res.status(403).send("Only professors can change member roles.");
   }
 
   // Validate role
-  const validRoles = ['STUDENT', 'TUTOR', 'TA', 'PROFESSOR'];
+  const validRoles = ["STUDENT", "TUTOR", "TA", "PROFESSOR"];
   if (!validRoles.includes(role)) {
     return res.status(400).send("Invalid role specified.");
   }
@@ -66,13 +69,23 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
   }
 
   // Prevent last professor from demoting themselves
-  if (userId === currentUser.id && currentUserRole.role === 'PROFESSOR' && role !== 'PROFESSOR') {
+  if (
+    userId === currentUser.id &&
+    currentUserRole.role === "PROFESSOR" &&
+    role !== "PROFESSOR"
+  ) {
     // Count total professors in the class
     const allClassMembers = await classRoleService.getRoster(classId);
-    const professorCount = allClassMembers.filter(member => member.role === 'PROFESSOR').length;
+    const professorCount = allClassMembers.filter(
+      (member) => member.role === "PROFESSOR",
+    ).length;
 
     if (professorCount === 1) {
-      return res.status(400).send("Cannot demote yourself - you are the only professor in this class. Assign another professor first.");
+      return res
+        .status(400)
+        .send(
+          "Cannot demote yourself - you are the only professor in this class. Assign another professor first.",
+        );
     }
   }
 
@@ -80,7 +93,7 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
   await classRoleService.upsertClassRole({
     userId,
     classId,
-    role
+    role,
   });
 
   // Get updated directory and return new content
@@ -93,7 +106,7 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
       groups: [],
       studentsWithoutGroup: [],
     },
-    currentUser
+    currentUser,
   );
 
   res.send(content);

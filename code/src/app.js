@@ -139,8 +139,9 @@ export function createApp() {
 
   // Dashboard - requires authentication
   app.get("/", requireAuth, async (req, res, next) => {
-    const { getDashboard } =
-      await import("./controllers/dashboard.controller.js");
+    const { getDashboard } = await import(
+      "./controllers/dashboard.controller.js"
+    );
     return getDashboard(req, res, next);
   });
 
@@ -162,8 +163,9 @@ export function createApp() {
     "/course/:courseId/session/:sessionId/poll/new",
     requireAuth,
     async (req, res, next) => {
-      const { getNewPollForm } =
-        await import("./controllers/attendance.controller.js");
+      const { getNewPollForm } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getNewPollForm(req, res, next);
     },
   );
@@ -173,8 +175,9 @@ export function createApp() {
     "/course/:courseId/session/:sessionId/poll/start",
     requireAuth,
     async (req, res, next) => {
-      const { startPoll } =
-        await import("./controllers/attendance.controller.js");
+      const { startPoll } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return startPoll(req, res, next);
     },
   );
@@ -184,8 +187,9 @@ export function createApp() {
     "/course/:courseId/session/:sessionId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getSessionRecordsPage } =
-        await import("./controllers/attendance.controller.js");
+      const { getSessionRecordsPage } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getSessionRecordsPage(req, res, next);
     },
   );
@@ -201,8 +205,9 @@ export function createApp() {
 
   // Course-wise attendance records page (professor only)
   app.get("/course/:courseId/records", requireAuth, async (req, res, next) => {
-    const { getCourseRecordsPage } =
-      await import("./controllers/attendance.controller.js");
+    const { getCourseRecordsPage } = await import(
+      "./controllers/attendance.controller.js"
+    );
     return getCourseRecordsPage(req, res, next);
   });
 
@@ -211,16 +216,18 @@ export function createApp() {
     "/course/:courseId/user/:userId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getStudentCourseRecordsPage } =
-        await import("./controllers/attendance.controller.js");
+      const { getStudentCourseRecordsPage } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getStudentCourseRecordsPage(req, res, next);
     },
   );
 
   // API: Get courses for a user (where user is a student)
   app.get("/api/user/:userId/courses", requireAuth, async (req, res, next) => {
-    const { getUserCourses } =
-      await import("./controllers/attendance.controller.js");
+    const { getUserCourses } = await import(
+      "./controllers/attendance.controller.js"
+    );
     return getUserCourses(req, res, next);
   });
 
@@ -229,8 +236,9 @@ export function createApp() {
     "/api/course/:courseId/user/:userId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getStudentCourseRecords } =
-        await import("./controllers/attendance.controller.js");
+      const { getStudentCourseRecords } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getStudentCourseRecords(req, res, next);
     },
   );

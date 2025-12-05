@@ -265,10 +265,16 @@ export function renderClassDetail(
 export function renderClassDirectory(data, user = null) {
   if (!data) return "";
 
-  const { professors = [], tas = [], tutors = [], groups = [], studentsWithoutGroup = [] } = data;
+  const {
+    professors = [],
+    tas = [],
+    tutors = [],
+    groups = [],
+    studentsWithoutGroup = [],
+  } = data;
 
   // Check if current user is a professor in THIS class (not globally)
-  const isProf = user ? professors.some(prof => prof.id === user.id) : false;
+  const isProf = user ? professors.some((prof) => prof.id === user.id) : false;
 
   /**
    * Generate role options for dropdown with protection logic
@@ -279,24 +285,29 @@ export function renderClassDirectory(data, user = null) {
    * @returns {string} HTML for role options
    */
   function generateRoleOptions(person, classId, user, professorCount) {
-    const isLastProfessor = professorCount === 1 && person.role === 'PROFESSOR';
+    const isLastProfessor = professorCount === 1 && person.role === "PROFESSOR";
     const isSelf = person.id === user?.id;
     const cannotDemoteSelf = isLastProfessor && isSelf;
 
     const roles = [
-      { value: 'STUDENT', label: 'Student' },
-      { value: 'TUTOR', label: 'Tutor' },
-      { value: 'TA', label: 'TA' },
-      { value: 'PROFESSOR', label: 'Professor' }
+      { value: "STUDENT", label: "Student" },
+      { value: "TUTOR", label: "Tutor" },
+      { value: "TA", label: "TA" },
+      { value: "PROFESSOR", label: "Professor" },
     ];
 
-    return roles.map(role => {
-      const isDisabled = cannotDemoteSelf && role.value !== 'PROFESSOR';
-      const disabledStyle = isDisabled ? 'opacity: 0.5; cursor: not-allowed;' : 'cursor: pointer;';
-      const disabledAttr = isDisabled ? 'disabled' : '';
-      const title = isDisabled ? 'Cannot demote yourself - you are the only professor' : '';
+    return roles
+      .map((role) => {
+        const isDisabled = cannotDemoteSelf && role.value !== "PROFESSOR";
+        const disabledStyle = isDisabled
+          ? "opacity: 0.5; cursor: not-allowed;"
+          : "cursor: pointer;";
+        const disabledAttr = isDisabled ? "disabled" : "";
+        const title = isDisabled
+          ? "Cannot demote yourself - you are the only professor"
+          : "";
 
-      return `
+        return `
         <button class="role-option" 
                 hx-put="/classRoles/${classId}/members/${person.id}/role" 
                 hx-vals='{"role": "${role.value}"}' 
@@ -308,7 +319,8 @@ export function renderClassDirectory(data, user = null) {
           ${role.label}
         </button>
       `;
-    }).join('');
+      })
+      .join("");
   }
 
   /**
@@ -320,16 +332,27 @@ export function renderClassDirectory(data, user = null) {
    * @returns {string} HTML for person card
    */
   function renderPersonCard(person, classId, user, professorCount) {
-    const initials = person.preferredName 
-      ? person.preferredName.split(' ').map(n => n[0]).join('').toUpperCase()
-      : person.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    const initials = person.preferredName
+      ? person.preferredName
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+      : person.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase();
 
     // Role styling
     const roleStyles = {
-      PROFESSOR: { bg: '#FEF3C7', color: '#D97706' },
-      TA: { bg: '#E0F2FE', color: '#0284C7' },
-      TUTOR: { bg: '#F3E8FF', color: '#9333EA' },
-      STUDENT: { bg: 'var(--color-bg-canvas)', color: 'var(--color-text-muted)' }
+      PROFESSOR: { bg: "#FEF3C7", color: "#D97706" },
+      TA: { bg: "#E0F2FE", color: "#0284C7" },
+      TUTOR: { bg: "#F3E8FF", color: "#9333EA" },
+      STUDENT: {
+        bg: "var(--color-bg-canvas)",
+        color: "var(--color-text-muted)",
+      },
     };
     const style = roleStyles[person.role] || roleStyles.STUDENT;
 
@@ -343,11 +366,13 @@ export function renderClassDirectory(data, user = null) {
           <div class="member-email" style="font-size: var(--text-sm); color: var(--color-text-muted);">${escapeHtml(person.email)}</div>
           <div class="member-role">
             <span class="role-badge" style="background: ${style.bg}; color: ${style.color}; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">
-              ${person.role === 'PROFESSOR' ? 'Professor' : person.role === 'TA' ? 'TA' : person.role === 'TUTOR' ? 'Tutor' : 'Student'}
+              ${person.role === "PROFESSOR" ? "Professor" : person.role === "TA" ? "TA" : person.role === "TUTOR" ? "Tutor" : "Student"}
             </span>
           </div>
         </div>
-        ${isProf ? `
+        ${
+          isProf
+            ? `
           <div class="role-management" style="position: absolute; top: 8px; right: 8px;">
             <button class="role-change-btn" 
                     onclick="toggleRoleDropdown('${person.id}')" 
@@ -359,15 +384,17 @@ export function renderClassDirectory(data, user = null) {
               ${generateRoleOptions(person, classId, user, professorCount)}
             </div>
           </div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
     `;
   }
 
-  const classId = data.class?.id || '';
+  const classId = data.class?.id || "";
   const professorCount = professors.length;
 
-  let html = '';
+  let html = "";
 
   // Professors Section
   if (professors.length > 0) {
@@ -379,7 +406,7 @@ export function renderClassDirectory(data, user = null) {
           </div>
         </div>
         <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-          ${professors.map(prof => renderPersonCard(prof, classId, user, professorCount)).join('')}
+          ${professors.map((prof) => renderPersonCard(prof, classId, user, professorCount)).join("")}
         </div>
       </div>
     `;
@@ -395,7 +422,7 @@ export function renderClassDirectory(data, user = null) {
           </div>
         </div>
         <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-          ${tas.map(ta => renderPersonCard(ta, classId, user, professorCount)).join('')}
+          ${tas.map((ta) => renderPersonCard(ta, classId, user, professorCount)).join("")}
         </div>
       </div>
     `;
@@ -411,7 +438,7 @@ export function renderClassDirectory(data, user = null) {
           </div>
         </div>
         <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-          ${tutors.map(tutor => renderPersonCard(tutor, classId, user, professorCount)).join('')}
+          ${tutors.map((tutor) => renderPersonCard(tutor, classId, user, professorCount)).join("")}
         </div>
       </div>
     `;
@@ -427,20 +454,31 @@ export function renderClassDirectory(data, user = null) {
           </div>
         </div>
         <div class="groups-container" style="display: flex; flex-direction: column; gap: var(--space-6);">
-          ${groups.map(group => `
+          ${groups
+            .map(
+              (group) => `
             <div class="group-section" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);">
               <div class="group-header" style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-bg-canvas);">
                 <div class="group-name" style="font-weight: var(--weight-bold); font-size: var(--text-lg);">${escapeHtml(group.name)}</div>
                 <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${group.members.length} members</span>
               </div>
               <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-                ${group.members.map(member => {
-                  const memberWithRole = { ...member, role: 'STUDENT' };
-                  return renderPersonCard(memberWithRole, classId, user, professorCount);
-                }).join('')}
+                ${group.members
+                  .map((member) => {
+                    const memberWithRole = { ...member, role: "STUDENT" };
+                    return renderPersonCard(
+                      memberWithRole,
+                      classId,
+                      user,
+                      professorCount,
+                    );
+                  })
+                  .join("")}
               </div>
             </div>
-          `).join('')}
+          `,
+            )
+            .join("")}
         </div>
       </div>
     `;
@@ -456,7 +494,7 @@ export function renderClassDirectory(data, user = null) {
           </div>
         </div>
         <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-          ${studentsWithoutGroup.map(student => renderPersonCard(student, classId, user, professorCount)).join('')}
+          ${studentsWithoutGroup.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
         </div>
       </div>
     `;

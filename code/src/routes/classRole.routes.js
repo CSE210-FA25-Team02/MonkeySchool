@@ -5,12 +5,11 @@ import { requireAuth } from "../middleware/auth.js";
 
 const router = Router({ mergeParams: true });
 
-
 // Change member role (Professor only)
 router.put(
-    "/:classId/members/:userId/role",
-    requireAuth,
-    asyncHandler(classRoleController.changeMemberRole),
-  );
+  "/:classId/members/:userId/role",
+  requireAuth,
+  asyncHandler(classRoleController.changeMemberRole),
+);
 
 export default router;
