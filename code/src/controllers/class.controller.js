@@ -124,6 +124,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
+    req.user,
   );
   const pageHtml = renderClassDetail(classInfo, "directory", content, {
     isStudent,
@@ -155,6 +156,7 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
+    req.user,
   );
   res.send(content);
 });

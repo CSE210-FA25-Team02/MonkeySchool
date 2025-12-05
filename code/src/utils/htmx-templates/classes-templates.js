@@ -258,64 +258,286 @@ export function renderClassDetail(
 
 /**
  * Render the class directory content (Tab Content)
- * @param {Object} data
+ * @param {Object} data Directory data with professors, tas, tutors, groups, and studentsWithoutGroup
+ * @param {Object} [user] Current user object with isProf property
  * @returns {string} HTML
  */
-// eslint-disable-next-line no-unused-vars
-export function renderClassDirectory(data) {
-  // Mock implementation of Directory Tab content (as seen in demo/class.html)
-  return `
-        <!-- Teaching Staff -->
-        <div class="directory-section" style="margin-bottom: var(--space-8);">
-            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-                <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
-                    Teaching Staff <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">2</span>
-                </div>
-            </div>
-            <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-                <!-- Mock Staff Cards -->
-                <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm);">
-                    <div class="member-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                        GG
-                    </div>
-                    <div class="member-info">
-                        <div class="member-name" style="font-weight: bold;">Gary Gillespie</div>
-                        <div class="member-role"><span class="role-badge role-prof" style="background: #FEF3C7; color: #D97706; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">Professor</span></div>
-                    </div>
-                </div>
-                 <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm);">
-                    <div class="member-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: #E0F2FE; color: #0284C7; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                        TA
-                    </div>
-                    <div class="member-info">
-                        <div class="member-name" style="font-weight: bold;">Teaching Assistant</div>
-                        <div class="member-role"><span class="role-badge role-ta" style="background: #E0F2FE; color: #0284C7; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">TA</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+export function renderClassDirectory(data, user = null) {
+  if (!data) return "";
 
-        <!-- Students -->
-        <div class="directory-section">
-             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-                <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
-                    Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">48</span>
-                </div>
-            </div>
-            <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-                <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm);">
-                    <div class="member-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: var(--color-bg-canvas); color: var(--color-text-muted); display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                        ST
-                    </div>
-                    <div class="member-info">
-                        <div class="member-name" style="font-weight: bold;">Student Name</div>
-                        <div class="member-role"><span class="role-badge role-student" style="background: var(--color-bg-canvas); color: var(--color-text-muted); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">Student</span></div>
-                    </div>
-                </div>
-                 <!-- More mock students -->
-            </div>
+  const {
+    professors = [],
+    tas = [],
+    tutors = [],
+    groups = [],
+    studentsWithoutGroup = [],
+  } = data;
+
+  // Check if current user is a professor in THIS class (not globally)
+  const isProf = user ? professors.some((prof) => prof.id === user.id) : false;
+
+  /**
+   * Generate role options for dropdown with protection logic
+   * @param {Object} person Person data
+   * @param {string} classId Class ID
+   * @param {Object} user Current user
+   * @param {number} professorCount Total professors in class
+   * @returns {string} HTML for role options
+   */
+  function generateRoleOptions(person, classId, user, professorCount) {
+    const isLastProfessor = professorCount === 1 && person.role === "PROFESSOR";
+    const isSelf = person.id === user?.id;
+    const cannotDemoteSelf = isLastProfessor && isSelf;
+
+    const roles = [
+      { value: "STUDENT", label: "Student" },
+      { value: "TUTOR", label: "Tutor" },
+      { value: "TA", label: "TA" },
+      { value: "PROFESSOR", label: "Professor" },
+    ];
+
+    return roles
+      .map((role) => {
+        const isDisabled = cannotDemoteSelf && role.value !== "PROFESSOR";
+        const disabledStyle = isDisabled
+          ? "opacity: 0.5; cursor: not-allowed;"
+          : "cursor: pointer;";
+        const disabledAttr = isDisabled ? "disabled" : "";
+        const title = isDisabled
+          ? "Cannot demote yourself - you are the only professor"
+          : "";
+
+        return `
+        <button class="role-option" 
+                hx-put="/classRoles/${classId}/members/${person.id}/role" 
+                hx-vals='{"role": "${role.value}"}' 
+                hx-target="#tab-content" 
+                hx-swap="innerHTML"
+                ${disabledAttr}
+                title="${title}"
+                style="width: 100%; padding: 8px 12px; border: none; background: none; text-align: left; font-size: var(--text-sm); ${disabledStyle}">
+          ${role.label}
+        </button>
+      `;
+      })
+      .join("");
+  }
+
+  /**
+   * Helper function to render a person card with optional role management
+   * @param {Object} person Person data
+   * @param {string} classId Class ID for role change requests
+   * @param {Object} user Current user object
+   * @param {number} professorCount Total number of professors in the class
+   * @returns {string} HTML for person card
+   */
+  function renderPersonCard(person, classId, user, professorCount) {
+    const initials = person.preferredName
+      ? person.preferredName
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+      : person.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase();
+
+    // Role styling
+    const roleStyles = {
+      PROFESSOR: { bg: "#FEF3C7", color: "#D97706" },
+      TA: { bg: "#E0F2FE", color: "#0284C7" },
+      TUTOR: { bg: "#F3E8FF", color: "#9333EA" },
+      STUDENT: {
+        bg: "var(--color-bg-canvas)",
+        color: "var(--color-text-muted)",
+      },
+    };
+    const style = roleStyles[person.role] || roleStyles.STUDENT;
+
+    return `
+      <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm); position: relative;">
+        <div class="member-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: ${style.bg}; color: ${style.color}; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+          ${escapeHtml(initials)}
         </div>
-     `;
+        <div class="member-info" style="flex: 1;">
+          <div class="member-name" style="font-weight: bold;">${escapeHtml(person.preferredName || person.name)}</div>
+          <div class="member-email" style="font-size: var(--text-sm); color: var(--color-text-muted);">${escapeHtml(person.email)}</div>
+          <div class="member-role">
+            <span class="role-badge" style="background: ${style.bg}; color: ${style.color}; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;">
+              ${person.role === "PROFESSOR" ? "Professor" : person.role === "TA" ? "TA" : person.role === "TUTOR" ? "Tutor" : "Student"}
+            </span>
+          </div>
+        </div>
+        ${
+          isProf
+            ? `
+          <div class="role-management" style="position: absolute; top: 8px; right: 8px;">
+            <button class="role-change-btn" 
+                    onclick="toggleRoleDropdown('${person.id}')" 
+                    style="background: none; border: none; color: var(--color-text-muted); padding: 4px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                    title="Change role">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+            <div id="role-dropdown-${person.id}" class="role-dropdown" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid var(--color-bg-canvas); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 10; min-width: 120px;">
+              ${generateRoleOptions(person, classId, user, professorCount)}
+            </div>
+          </div>
+        `
+            : ""
+        }
+      </div>
+    `;
+  }
+
+  const classId = data.class?.id || "";
+  const professorCount = professors.length;
+
+  let html = "";
+
+  // Professors Section
+  if (professors.length > 0) {
+    html += `
+      <div class="directory-section" style="margin-bottom: var(--space-8);">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+          <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
+            Professors <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${professors.length}</span>
+          </div>
+        </div>
+        <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
+          ${professors.map((prof) => renderPersonCard(prof, classId, user, professorCount)).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // TAs Section
+  if (tas.length > 0) {
+    html += `
+      <div class="directory-section" style="margin-bottom: var(--space-8);">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+          <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
+            Teaching Assistants <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${tas.length}</span>
+          </div>
+        </div>
+        <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
+          ${tas.map((ta) => renderPersonCard(ta, classId, user, professorCount)).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // Tutors Section
+  if (tutors.length > 0) {
+    html += `
+      <div class="directory-section" style="margin-bottom: var(--space-8);">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+          <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
+            Tutors <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${tutors.length}</span>
+          </div>
+        </div>
+        <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
+          ${tutors.map((tutor) => renderPersonCard(tutor, classId, user, professorCount)).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // Groups Section
+  if (groups.length > 0) {
+    html += `
+      <div class="directory-section" style="margin-bottom: var(--space-8);">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+          <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
+            Groups <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${groups.length}</span>
+          </div>
+        </div>
+        <div class="groups-container" style="display: flex; flex-direction: column; gap: var(--space-6);">
+          ${groups
+            .map(
+              (group) => `
+            <div class="group-section" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);">
+              <div class="group-header" style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-bg-canvas);">
+                <div class="group-name" style="font-weight: var(--weight-bold); font-size: var(--text-lg);">${escapeHtml(group.name)}</div>
+                <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${group.members.length} members</span>
+              </div>
+              <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
+                ${group.members
+                  .map((member) => {
+                    const memberWithRole = { ...member, role: "STUDENT" };
+                    return renderPersonCard(
+                      memberWithRole,
+                      classId,
+                      user,
+                      professorCount,
+                    );
+                  })
+                  .join("")}
+              </div>
+            </div>
+          `,
+            )
+            .join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // Students Without Group Section
+  if (studentsWithoutGroup.length > 0) {
+    html += `
+      <div class="directory-section">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+          <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
+            Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${studentsWithoutGroup.length}</span>
+          </div>
+        </div>
+        <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
+          ${studentsWithoutGroup.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  // Add JavaScript for dropdown functionality
+  html += `
+    <script>
+      function toggleRoleDropdown(userId) {
+        // Close all other dropdowns first
+        document.querySelectorAll('.role-dropdown').forEach(dropdown => {
+          if (dropdown.id !== 'role-dropdown-' + userId) {
+            dropdown.style.display = 'none';
+          }
+        });
+        
+        // Toggle the clicked dropdown
+        const dropdown = document.getElementById('role-dropdown-' + userId);
+        if (dropdown) {
+          dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+      }
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', function(event) {
+        if (!event.target.closest('.role-management')) {
+          document.querySelectorAll('.role-dropdown').forEach(dropdown => {
+            dropdown.style.display = 'none';
+          });
+        }
+      });
+      // Style dropdown options on hover
+      document.querySelectorAll('.role-option').forEach(option => {
+        option.addEventListener('mouseenter', function() {
+          this.style.background = 'var(--color-bg-canvas)';
+        });
+        option.addEventListener('mouseleave', function() {
+          this.style.background = 'none';
+        });
+      });
+    </script>
+  `;
+
+  return html;
 }
 
 /**
