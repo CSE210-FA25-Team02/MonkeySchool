@@ -97,7 +97,11 @@ defineFeature(feature, (test) => {
     }
   }
 
-  test("Professor successfully promotes a student to TA", ({ given, when, then }) => {
+  test("Professor successfully promotes a student to TA", ({
+    given,
+    when,
+    then,
+  }) => {
     given(/^I am logged in as "(.*)"$/, async (email) => {
       await setupTestData();
       expect(context.user.email).toBe(email);
@@ -105,13 +109,19 @@ defineFeature(feature, (test) => {
       context.user = context.user; // Ensure context.user is set for auth
     });
 
-    given(/^there is a class "(.*)" with invite code "(.*)"$/, (className, inviteCode) => {
-      expect(context.class.name).toBe(className);
-      expect(context.class.inviteCode).toBe(inviteCode);
-    });
+    given(
+      /^there is a class "(.*)" with invite code "(.*)"$/,
+      (className, inviteCode) => {
+        expect(context.class.name).toBe(className);
+        expect(context.class.inviteCode).toBe(inviteCode);
+      },
+    );
 
     given(/^I am a professor in the class$/, async () => {
-      const role = await classRoleService.getClassRole(context.user.id, context.class.id);
+      const role = await classRoleService.getClassRole(
+        context.user.id,
+        context.class.id,
+      );
       expect(role.role).toBe("PROFESSOR");
     });
 
@@ -128,17 +138,21 @@ defineFeature(feature, (test) => {
     });
 
     given(/^I am on the class directory page$/, async () => {
-      context.response = await request.get(`/classes/${context.class.id}/directory`);
+      context.response = await request.get(
+        `/classes/${context.class.id}/directory`,
+      );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
     });
 
     when(/^I click the role management button for student "(.*)"$/, (email) => {
-      const student = context.students.find(s => s.email === email);
+      const student = context.students.find((s) => s.email === email);
       expect(student).toBeDefined();
 
       // Verify the role management button exists
-      const button = context.dom.window.document.querySelector(`button[onclick="toggleRoleDropdown('${student.id}')"]`);
+      const button = context.dom.window.document.querySelector(
+        `button[onclick="toggleRoleDropdown('${student.id}')"]`,
+      );
       expect(button).toBeTruthy();
     });
 
@@ -158,45 +172,63 @@ defineFeature(feature, (test) => {
       expect(context.response.status).toBe(200);
 
       // Verify in database
-      const updatedRole = await classRoleService.getClassRole(context.students[0].id, context.class.id);
+      const updatedRole = await classRoleService.getClassRole(
+        context.students[0].id,
+        context.class.id,
+      );
       expect(updatedRole.role).toBe("TA");
     });
 
     then(/^the student's role badge should show "(.*)"$/, (roleText) => {
       // Find all role badges and look for the one that shows "TA"
-      const roleBadges = context.dom.window.document.querySelectorAll('.role-badge');
-      const taRoleBadge = Array.from(roleBadges).find(badge => badge.textContent.trim() === roleText);
+      const roleBadges =
+        context.dom.window.document.querySelectorAll(".role-badge");
+      const taRoleBadge = Array.from(roleBadges).find(
+        (badge) => badge.textContent.trim() === roleText,
+      );
       expect(taRoleBadge).toBeTruthy();
       expect(taRoleBadge.textContent.trim()).toBe(roleText);
     });
 
     then(/^the "(.*)" section count should decrease by (\d+)$/, () => {
       // Verify count badges exist
-      const countBadges = context.dom.window.document.querySelectorAll('.count-badge');
+      const countBadges =
+        context.dom.window.document.querySelectorAll(".count-badge");
       expect(countBadges.length).toBeGreaterThan(0);
     });
 
     then(/^the "(.*)" section count should increase by (\d+)$/, () => {
       // Verify count badges exist
-      const countBadges = context.dom.window.document.querySelectorAll('.count-badge');
+      const countBadges =
+        context.dom.window.document.querySelectorAll(".count-badge");
       expect(countBadges.length).toBeGreaterThan(0);
     });
   });
 
-  test("Professor successfully demotes a TA to student", ({ given, when, then }) => {
+  test("Professor successfully demotes a TA to student", ({
+    given,
+    when,
+    then,
+  }) => {
     given(/^I am logged in as "(.*)"$/, async (email) => {
       await setupTestData();
       expect(context.user.email).toBe(email);
       context.user = context.user; // Ensure context.user is set for auth
     });
 
-    given(/^there is a class "(.*)" with invite code "(.*)"$/, (className, inviteCode) => {
-      expect(context.class.name).toBe(className);
-      expect(context.class.inviteCode).toBe(inviteCode);
-    });
+    given(
+      /^there is a class "(.*)" with invite code "(.*)"$/,
+      (className, inviteCode) => {
+        expect(context.class.name).toBe(className);
+        expect(context.class.inviteCode).toBe(inviteCode);
+      },
+    );
 
     given(/^I am a professor in the class$/, async () => {
-      const role = await classRoleService.getClassRole(context.user.id, context.class.id);
+      const role = await classRoleService.getClassRole(
+        context.user.id,
+        context.class.id,
+      );
       expect(role.role).toBe("PROFESSOR");
     });
 
@@ -213,7 +245,9 @@ defineFeature(feature, (test) => {
     });
 
     given(/^I am on the class directory page$/, async () => {
-      context.response = await request.get(`/classes/${context.class.id}/directory`);
+      context.response = await request.get(
+        `/classes/${context.class.id}/directory`,
+      );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
     });
@@ -221,7 +255,9 @@ defineFeature(feature, (test) => {
     when(/^I click the role management button for TA "(.*)"$/, (email) => {
       expect(context.ta.email).toBe(email);
 
-      const button = context.dom.window.document.querySelector(`button[onclick="toggleRoleDropdown('${context.ta.id}')"]`);
+      const button = context.dom.window.document.querySelector(
+        `button[onclick="toggleRoleDropdown('${context.ta.id}')"]`,
+      );
       expect(button).toBeTruthy();
     });
 
@@ -238,43 +274,61 @@ defineFeature(feature, (test) => {
     then(/^the TA should be moved to the "(.*)" section$/, async () => {
       expect(context.response.status).toBe(200);
 
-      const updatedRole = await classRoleService.getClassRole(context.ta.id, context.class.id);
+      const updatedRole = await classRoleService.getClassRole(
+        context.ta.id,
+        context.class.id,
+      );
       expect(updatedRole.role).toBe("STUDENT");
     });
 
     then(/^the person's role badge should show "(.*)"$/, (roleText) => {
       // Find all role badges and look for the one that shows the expected role
-      const roleBadges = context.dom.window.document.querySelectorAll('.role-badge');
-      const expectedRoleBadge = Array.from(roleBadges).find(badge => badge.textContent.trim() === roleText);
+      const roleBadges =
+        context.dom.window.document.querySelectorAll(".role-badge");
+      const expectedRoleBadge = Array.from(roleBadges).find(
+        (badge) => badge.textContent.trim() === roleText,
+      );
       expect(expectedRoleBadge).toBeTruthy();
       expect(expectedRoleBadge.textContent.trim()).toBe(roleText);
     });
 
     then(/^the "(.*)" section count should decrease by (\d+)$/, () => {
-      const countBadges = context.dom.window.document.querySelectorAll('.count-badge');
+      const countBadges =
+        context.dom.window.document.querySelectorAll(".count-badge");
       expect(countBadges.length).toBeGreaterThan(0);
     });
 
     then(/^the "(.*)" section count should increase by (\d+)$/, () => {
-      const countBadges = context.dom.window.document.querySelectorAll('.count-badge');
+      const countBadges =
+        context.dom.window.document.querySelectorAll(".count-badge");
       expect(countBadges.length).toBeGreaterThan(0);
     });
   });
 
-  test("Professor successfully demotes themselves when multiple professors exist", ({ given, when, then }) => {
+  test("Professor successfully demotes themselves when multiple professors exist", ({
+    given,
+    when,
+    then,
+  }) => {
     given(/^I am logged in as "(.*)"$/, async (email) => {
       await setupTestData();
       expect(context.user.email).toBe(email);
       context.user = context.user; // Ensure context.user is set for auth
     });
 
-    given(/^there is a class "(.*)" with invite code "(.*)"$/, (className, inviteCode) => {
-      expect(context.class.name).toBe(className);
-      expect(context.class.inviteCode).toBe(inviteCode);
-    });
+    given(
+      /^there is a class "(.*)" with invite code "(.*)"$/,
+      (className, inviteCode) => {
+        expect(context.class.name).toBe(className);
+        expect(context.class.inviteCode).toBe(inviteCode);
+      },
+    );
 
     given(/^I am a professor in the class$/, async () => {
-      const role = await classRoleService.getClassRole(context.user.id, context.class.id);
+      const role = await classRoleService.getClassRole(
+        context.user.id,
+        context.class.id,
+      );
       expect(role.role).toBe("PROFESSOR");
     });
 
@@ -291,23 +345,27 @@ defineFeature(feature, (test) => {
     });
 
     given(/^I am on the class directory page$/, async () => {
-      context.response = await request.get(`/classes/${context.class.id}/directory`);
+      context.response = await request.get(
+        `/classes/${context.class.id}/directory`,
+      );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
     });
 
     given(/^there are (\d+) professors in the class$/, async (count) => {
       const professors = await prisma.classRole.findMany({
-        where: { 
+        where: {
           classId: context.class.id,
-          role: "PROFESSOR"
+          role: "PROFESSOR",
         },
       });
       expect(professors.length).toBe(parseInt(count));
     });
 
     when(/^I click the role management button for myself$/, () => {
-      const button = context.dom.window.document.querySelector(`button[onclick="toggleRoleDropdown('${context.user.id}')"]`);
+      const button = context.dom.window.document.querySelector(
+        `button[onclick="toggleRoleDropdown('${context.user.id}')"]`,
+      );
       expect(button).toBeTruthy();
     });
 
@@ -324,43 +382,61 @@ defineFeature(feature, (test) => {
     then(/^I should be moved to the "(.*)" section$/, async () => {
       expect(context.response.status).toBe(200);
 
-      const updatedRole = await classRoleService.getClassRole(context.user.id, context.class.id);
+      const updatedRole = await classRoleService.getClassRole(
+        context.user.id,
+        context.class.id,
+      );
       expect(updatedRole.role).toBe("STUDENT");
     });
 
     then(/^my role badge should show "(.*)"$/, (roleText) => {
       // Find all role badges and look for the one that shows the expected role
-      const roleBadges = context.dom.window.document.querySelectorAll('.role-badge');
-      const expectedRoleBadge = Array.from(roleBadges).find(badge => badge.textContent.trim() === roleText);
+      const roleBadges =
+        context.dom.window.document.querySelectorAll(".role-badge");
+      const expectedRoleBadge = Array.from(roleBadges).find(
+        (badge) => badge.textContent.trim() === roleText,
+      );
       expect(expectedRoleBadge).toBeTruthy();
       expect(expectedRoleBadge.textContent.trim()).toBe(roleText);
     });
 
     then(/^the "(.*)" section count should decrease by (\d+)$/, () => {
-      const countBadges = context.dom.window.document.querySelectorAll('.count-badge');
+      const countBadges =
+        context.dom.window.document.querySelectorAll(".count-badge");
       expect(countBadges.length).toBeGreaterThan(0);
     });
 
     then(/^the "(.*)" section count should increase by (\d+)$/, () => {
-      const countBadges = context.dom.window.document.querySelectorAll('.count-badge');
+      const countBadges =
+        context.dom.window.document.querySelectorAll(".count-badge");
       expect(countBadges.length).toBeGreaterThan(0);
     });
   });
 
-  test("Professor cannot demote themselves when they are the only professor", ({ given, when, then }) => {
+  test("Professor cannot demote themselves when they are the only professor", ({
+    given,
+    when,
+    then,
+  }) => {
     given(/^I am logged in as "(.*)"$/, async (email) => {
       await setupTestData();
       expect(context.user.email).toBe(email);
       context.user = context.user; // Ensure context.user is set for auth
     });
 
-    given(/^there is a class "(.*)" with invite code "(.*)"$/, (className, inviteCode) => {
-      expect(context.class.name).toBe(className);
-      expect(context.class.inviteCode).toBe(inviteCode);
-    });
+    given(
+      /^there is a class "(.*)" with invite code "(.*)"$/,
+      (className, inviteCode) => {
+        expect(context.class.name).toBe(className);
+        expect(context.class.inviteCode).toBe(inviteCode);
+      },
+    );
 
     given(/^I am a professor in the class$/, async () => {
-      const role = await classRoleService.getClassRole(context.user.id, context.class.id);
+      const role = await classRoleService.getClassRole(
+        context.user.id,
+        context.class.id,
+      );
       expect(role.role).toBe("PROFESSOR");
     });
 
@@ -377,7 +453,9 @@ defineFeature(feature, (test) => {
     });
 
     given(/^I am on the class directory page$/, async () => {
-      context.response = await request.get(`/classes/${context.class.id}/directory`);
+      context.response = await request.get(
+        `/classes/${context.class.id}/directory`,
+      );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
     });
@@ -392,9 +470,9 @@ defineFeature(feature, (test) => {
 
     given(/^I am now the only professor in the class$/, async () => {
       const professors = await prisma.classRole.findMany({
-        where: { 
+        where: {
           classId: context.class.id,
-          role: "PROFESSOR"
+          role: "PROFESSOR",
         },
       });
       expect(professors.length).toBe(1);
@@ -403,50 +481,76 @@ defineFeature(feature, (test) => {
 
     when(/^I click the role management button for myself$/, async () => {
       // Refresh page to get updated dropdown state
-      context.response = await request.get(`/classes/${context.class.id}/directory`);
+      context.response = await request.get(
+        `/classes/${context.class.id}/directory`,
+      );
       context.dom = new JSDOM(context.response.text);
 
-      const button = context.dom.window.document.querySelector(`button[onclick="toggleRoleDropdown('${context.user.id}')"]`);
+      const button = context.dom.window.document.querySelector(
+        `button[onclick="toggleRoleDropdown('${context.user.id}')"]`,
+      );
       expect(button).toBeTruthy();
     });
 
     then(/^the "(.*)", "(.*)", and "(.*)" options should be disabled$/, () => {
       // Look specifically for the current user's dropdown options
-      const userDropdown = context.dom.window.document.querySelector(`#role-dropdown-${context.user.id}`);
+      const userDropdown = context.dom.window.document.querySelector(
+        `#role-dropdown-${context.user.id}`,
+      );
       expect(userDropdown).toBeTruthy();
-      const disabledButtons = userDropdown.querySelectorAll('.role-option[disabled]');
+      const disabledButtons = userDropdown.querySelectorAll(
+        ".role-option[disabled]",
+      );
       expect(disabledButtons.length).toBeGreaterThanOrEqual(3);
     });
 
     then(/^the disabled options should show tooltip "(.*)"$/, (tooltipText) => {
-      const userDropdown = context.dom.window.document.querySelector(`#role-dropdown-${context.user.id}`);
-      const disabledButton = userDropdown.querySelector('.role-option[disabled]');
-      expect(disabledButton.getAttribute('title')).toBe(tooltipText);
+      const userDropdown = context.dom.window.document.querySelector(
+        `#role-dropdown-${context.user.id}`,
+      );
+      const disabledButton = userDropdown.querySelector(
+        ".role-option[disabled]",
+      );
+      expect(disabledButton.getAttribute("title")).toBe(tooltipText);
     });
 
     then(/^only the "(.*)" option should be enabled$/, (roleText) => {
-      const userDropdown = context.dom.window.document.querySelector(`#role-dropdown-${context.user.id}`);
+      const userDropdown = context.dom.window.document.querySelector(
+        `#role-dropdown-${context.user.id}`,
+      );
       expect(userDropdown).toBeTruthy();
-      const enabledButtons = userDropdown.querySelectorAll('.role-option:not([disabled])');
+      const enabledButtons = userDropdown.querySelectorAll(
+        ".role-option:not([disabled])",
+      );
       expect(enabledButtons.length).toBe(1);
       expect(enabledButtons[0].textContent.trim()).toContain(roleText);
     });
   });
 
-  test("System prevents professor from demoting themselves via API when they are the only professor", ({ given, when, then }) => {
+  test("System prevents professor from demoting themselves via API when they are the only professor", ({
+    given,
+    when,
+    then,
+  }) => {
     given(/^I am logged in as "(.*)"$/, async (email) => {
       await setupTestData();
       expect(context.user.email).toBe(email);
       context.user = context.user; // Ensure context.user is set for auth
     });
 
-    given(/^there is a class "(.*)" with invite code "(.*)"$/, (className, inviteCode) => {
-      expect(context.class.name).toBe(className);
-      expect(context.class.inviteCode).toBe(inviteCode);
-    });
+    given(
+      /^there is a class "(.*)" with invite code "(.*)"$/,
+      (className, inviteCode) => {
+        expect(context.class.name).toBe(className);
+        expect(context.class.inviteCode).toBe(inviteCode);
+      },
+    );
 
     given(/^I am a professor in the class$/, async () => {
-      const role = await classRoleService.getClassRole(context.user.id, context.class.id);
+      const role = await classRoleService.getClassRole(
+        context.user.id,
+        context.class.id,
+      );
       expect(role.role).toBe("PROFESSOR");
     });
 
@@ -466,7 +570,9 @@ defineFeature(feature, (test) => {
     when(/^I attempt to change my role to "(.*)" via API$/, async (role) => {
       try {
         context.response = await request
-          .put(`/classRoles/${context.class.id}/members/${context.user.id}/role`)
+          .put(
+            `/classRoles/${context.class.id}/members/${context.user.id}/role`,
+          )
           .send({ role: role.toUpperCase() });
 
         context.apiError = context.response.text;
@@ -481,7 +587,10 @@ defineFeature(feature, (test) => {
     });
 
     then(/^my role should remain "(.*)"$/, async (role) => {
-      const currentRole = await classRoleService.getClassRole(context.user.id, context.class.id);
+      const currentRole = await classRoleService.getClassRole(
+        context.user.id,
+        context.class.id,
+      );
       expect(currentRole.role).toBe(role.toUpperCase());
     });
 
@@ -490,5 +599,4 @@ defineFeature(feature, (test) => {
       expect(true).toBe(true); // This is verified by the role check above
     });
   });
-
 });
