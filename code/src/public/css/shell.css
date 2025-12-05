@@ -1,5 +1,7 @@
 /* Base Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -101,7 +103,7 @@ button {
 
 /* Active Indicator (Gold Pill) */
 .nav-item.active::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -16px; /* Outside the item, on the edge of sidebar */
   top: 50%;
@@ -227,6 +229,7 @@ button {
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   color: var(--color-text-main);
+  margin-right: 10px;
 }
 
 .user-avatar {
@@ -243,4 +246,3 @@ button {
   line-height: 1;
   padding-top: 1px;
 }
-
