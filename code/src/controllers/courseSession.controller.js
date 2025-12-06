@@ -117,7 +117,7 @@ export const createCourseSession = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create sessions");
@@ -147,7 +147,7 @@ export const createCourseSession = asyncHandler(async (req, res) => {
  */
 export const getCourseSession = asyncHandler(async (req, res) => {
   const session = await courseSessionService.getCourseSessionById(
-    req.params.id,
+    req.params.id
   );
   if (!session) {
     throw new NotFoundError("Session not found");
@@ -172,7 +172,7 @@ export const getTodaySessions = asyncHandler(async (req, res) => {
   const today = new Date();
   const sessions = await courseSessionService.getSessionsByClassIdAndDate(
     classId,
-    today,
+    today
   );
   res.json(sessions);
 });
@@ -188,7 +188,7 @@ export const updateCourseSession = asyncHandler(async (req, res) => {
 
   // Get session to check ownership
   const session = await courseSessionService.getCourseSessionById(
-    req.params.id,
+    req.params.id
   );
   if (!session) {
     throw new NotFoundError("Session not found");
@@ -197,7 +197,7 @@ export const updateCourseSession = asyncHandler(async (req, res) => {
   // Check if user is professor
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can update sessions");
@@ -213,7 +213,7 @@ export const updateCourseSession = asyncHandler(async (req, res) => {
 
   const updated = await courseSessionService.updateCourseSession(
     req.params.id,
-    validation.data,
+    validation.data
   );
   res.json(updated);
 });
@@ -228,7 +228,7 @@ export const deleteCourseSession = asyncHandler(async (req, res) => {
   }
 
   const session = await courseSessionService.getCourseSessionById(
-    req.params.id,
+    req.params.id
   );
   if (!session) {
     throw new NotFoundError("Session not found");
@@ -237,7 +237,7 @@ export const deleteCourseSession = asyncHandler(async (req, res) => {
   // Check if user is professor
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can delete sessions");
@@ -268,7 +268,7 @@ export const getSessionForm = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create sessions");

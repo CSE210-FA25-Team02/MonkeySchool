@@ -71,7 +71,7 @@ export async function getOrCreateUser(profile) {
   const isAllowed = await isEmailAllowed(email);
   if (!isAllowed) {
     throw new Error(
-      "Email not authorized. Only UCSD emails or whitelisted external emails are allowed.",
+      "Email not authorized. Only UCSD emails or whitelisted external emails are allowed."
     );
   }
 

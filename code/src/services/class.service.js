@@ -13,7 +13,7 @@ function generateInviteCode() {
     {
       length: 8,
     },
-    () => chars[Math.floor(Math.random() * chars.length)],
+    () => chars[Math.floor(Math.random() * chars.length)]
   ).join("");
 }
 
@@ -306,8 +306,8 @@ export async function getClassDirectory(id) {
         // Check if student is in any group
         const isInGroup = classData.groups.some((group) =>
           group.members.some(
-            (groupMember) => groupMember.userId === member.userId,
-          ),
+            (groupMember) => groupMember.userId === member.userId
+          )
         );
         if (!isInGroup) {
           studentsWithoutGroup.push(userData);

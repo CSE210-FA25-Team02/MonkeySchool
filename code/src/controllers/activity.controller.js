@@ -127,7 +127,7 @@ export const getActivityDropdown = asyncHandler(async (req, res) => {
         <option value="${a.id}">
             ${new Date(a.startTime).toLocaleDateString()} - ${a.class.name} - ${a.category.name}
         </option>
-    `,
+    `
     )
     .join("");
 
@@ -203,7 +203,7 @@ export const loadActivityFields = asyncHandler(async (req, res) => {
 
   if (!classId) {
     return res.send(
-      "<div id='activity-fields'>Error: No class selected.</div>",
+      "<div id='activity-fields'>Error: No class selected.</div>"
     );
   }
 

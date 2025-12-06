@@ -9,14 +9,14 @@ const router = Router();
 router.get(
   "/profile",
   requireAuth,
-  asyncHandler(userController.renderUserProfilePage),
+  asyncHandler(userController.renderUserProfilePage)
 );
 
 // Profile link field (legacy main-branch endpoint)
 router.get(
   "/profile/link-field",
   requireAuth,
-  asyncHandler(userController.renderProfileLinkField),
+  asyncHandler(userController.renderProfileLinkField)
 );
 
 // Update Profile
