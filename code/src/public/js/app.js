@@ -322,7 +322,7 @@ function addSessionToTable(session, classId) {
 
   // Find the course content div
   const courseContent = document.getElementById(
-    `content-${courseIdWithoutDashes}`,
+    `content-${courseIdWithoutDashes}`
   );
   if (!courseContent) {
     // If we can't find it, refresh the page or reload the attendance section
@@ -333,7 +333,7 @@ function addSessionToTable(session, classId) {
   // Check if there's already a table or empty state
   const existingTable = courseContent.querySelector(".data-table");
   const emptyState = courseContent.querySelector(
-    "div[style*='text-align: center']",
+    "div[style*='text-align: center']"
   );
 
   // Format session data for display

@@ -112,7 +112,7 @@ export function renderSchedulePage(
   currentDate = new Date(),
   dbEvents = [],
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   const classId = classInfo.id;
   const className = escapeHtml(classInfo.name);
@@ -140,7 +140,7 @@ export function renderSchedulePage(
     const dayEnd = new Date(displayDate);
     dayEnd.setHours(23, 59, 59, 999);
     displayEvents = allEvents.filter(
-      (e) => e.start >= displayDate && e.start <= dayEnd,
+      (e) => e.start >= displayDate && e.start <= dayEnd
     );
   }
 
@@ -451,7 +451,7 @@ export function renderScheduleWrapper(
   currentDate = new Date(),
   dbEvents = [],
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   return `
     <div id="schedule-wrapper">
@@ -474,7 +474,7 @@ function renderEventTypeOptions(allowedTypes) {
   return allowedTypes
     .map(
       (type) =>
-        `<option value="${escapeHtml(type)}">${escapeHtml(getEventTypeLabel(type))}</option>`,
+        `<option value="${escapeHtml(type)}">${escapeHtml(getEventTypeLabel(type))}</option>`
     )
     .join("");
 }
@@ -489,7 +489,7 @@ function renderEventTypeOptions(allowedTypes) {
 function renderGroupOptions(
   groups = [],
   isGroupLeader = false,
-  leaderGroupId = null,
+  leaderGroupId = null
 ) {
   if (groups.length === 0) {
     return '<option value="">No groups available</option>';
@@ -509,7 +509,7 @@ function renderGroupOptions(
     groups
       .map(
         (group) =>
-          `<option value="${escapeHtml(group.id)}">${escapeHtml(group.name)}</option>`,
+          `<option value="${escapeHtml(group.id)}">${escapeHtml(group.name)}</option>`
       )
       .join("")
   );
@@ -528,7 +528,7 @@ function renderCreateEventModal(
   classId,
   minDate = null,
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   // Calculate PST today if not provided
   if (!minDate) {
@@ -764,7 +764,7 @@ function renderCreateEventModal(
 export function renderEventDetailModal(
   event,
   classInfo,
-  allowedEventTypes = [],
+  allowedEventTypes = []
 ) {
   if (!event) {
     return `
@@ -790,7 +790,7 @@ export function renderEventDetailModal(
   const eventId = escapeHtml(event.id);
   const title = escapeHtml(event.title || "Untitled Event");
   const description = escapeHtml(
-    event.description || "No description provided.",
+    event.description || "No description provided."
   );
   const location = escapeHtml(event.location || "");
   const eventType = event.type || "OTHER";
@@ -1043,7 +1043,7 @@ export function renderEditEventModal(
   event,
   classInfo,
   allowedEventTypes = [],
-  groupsData = {},
+  groupsData = {}
 ) {
   if (!event) {
     return `
@@ -1122,7 +1122,7 @@ export function renderEditEventModal(
   if (selectedGroupId && groupOptions.includes(`value="${selectedGroupId}"`)) {
     groupOptions = groupOptions.replace(
       `value="${selectedGroupId}"`,
-      `value="${selectedGroupId}" selected`,
+      `value="${selectedGroupId}" selected`
     );
   }
 
@@ -1131,7 +1131,7 @@ export function renderEditEventModal(
   if (eventTypeOptions.includes(`value="${eventType}"`)) {
     finalEventTypeOptions = eventTypeOptions.replace(
       `value="${eventType}"`,
-      `value="${eventType}" selected`,
+      `value="${eventType}" selected`
     );
   }
 

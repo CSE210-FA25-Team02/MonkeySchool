@@ -23,14 +23,14 @@ router.get(
 router.put(
   "/profile",
   requireAuth,
-  asyncHandler(userController.updateUserProfile),
+  asyncHandler(userController.updateUserProfile)
 );
 
 // Update Settings
 router.post(
   "/settings",
   requireAuth,
-  asyncHandler(userController.updateUserSettings),
+  asyncHandler(userController.updateUserSettings)
 );
 
 // JSON API

@@ -174,7 +174,7 @@ function renderActivityTimeline(activity) {
           <div class="timeline-meta">${escapeHtml(item.time)}</div>
         </div>
       </div>
-    `,
+    `
     )
     .join("");
 }

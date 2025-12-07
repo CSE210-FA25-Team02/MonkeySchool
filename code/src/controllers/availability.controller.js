@@ -32,7 +32,7 @@ export const getAvailabilityPage = asyncHandler(async (req, res) => {
   const html = renderAvailabilityPage(
     user,
     userAvailability,
-    groupsAvailability,
+    groupsAvailability
   );
 
   if (isHtmx) {
@@ -55,8 +55,9 @@ export const getGroupAvailabilitySections = asyncHandler(async (req, res) => {
   const groupsAvailability = await getUserGroupsAvailability(user.id);
 
   // Use the same template function but just for groups
-  const { renderGroupAvailabilitySections } =
-    await import("../utils/htmx-templates/availability-templates.js");
+  const { renderGroupAvailabilitySections } = await import(
+    "../utils/htmx-templates/availability-templates.js"
+  );
   const groupSections = renderGroupAvailabilitySections(groupsAvailability);
 
   res.send(groupSections);
@@ -80,7 +81,7 @@ export const saveUserAvailability = asyncHandler(async (req, res) => {
     const availabilityRanges = JSON.parse(availability);
     console.log(
       "Parsed availability ranges:",
-      JSON.stringify(availabilityRanges, null, 2),
+      JSON.stringify(availabilityRanges, null, 2)
     );
 
     // Validate that it's an array

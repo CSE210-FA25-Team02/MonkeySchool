@@ -41,7 +41,7 @@ router.post(
 router.post(
   "/mark",
   submitRateLimiter,
-  asyncHandler(attendanceController.markAttendance),
+  asyncHandler(attendanceController.markAttendance)
 );
 
 // Note: Course and session records pages are now handled in app.js as page routes

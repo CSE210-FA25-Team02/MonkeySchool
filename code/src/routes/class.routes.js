@@ -22,7 +22,7 @@ router.get("/", (req, res) => {
 router.get(
   "/my-classes",
   requireAuth,
-  asyncHandler(classController.renderUserClasses),
+  asyncHandler(classController.renderUserClasses)
 );
 
 // ============================================
@@ -34,21 +34,21 @@ router.get(
 router.get(
   "/:id/pulse/page",
   requireAuth,
-  asyncHandler(pulseController.renderPulseAnalytics),
+  asyncHandler(pulseController.renderPulseAnalytics)
 );
 
 // Get pulse analytics data (JSON)
 router.get(
   "/:id/pulse/analytics",
   requireAuth,
-  asyncHandler(pulseController.getPulseAnalytics),
+  asyncHandler(pulseController.getPulseAnalytics)
 );
 
 // Get pulse details for a specific date (JSON)
 router.get(
   "/:id/pulse/details",
   requireAuth,
-  asyncHandler(pulseController.getPulseDetails),
+  asyncHandler(pulseController.getPulseDetails)
 );
 
 // ============================================
@@ -60,7 +60,7 @@ router.get(
 router.post(
   "/:id/pulse",
   requireAuth,
-  asyncHandler(pulseController.submitPulse),
+  asyncHandler(pulseController.submitPulse)
 );
 
 // Get today's pulse entry
@@ -70,7 +70,7 @@ router.get("/:id/pulse", requireAuth, asyncHandler(pulseController.getPulse));
 router.get(
   "/:id/pulse/today",
   requireAuth,
-  asyncHandler(pulseController.getTodayPulse),
+  asyncHandler(pulseController.getTodayPulse)
 );
 
 // Class Detail Page (must come after pulse routes)
@@ -80,7 +80,7 @@ router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
 router.get(
   "/:id/directory",
   requireAuth,
-  asyncHandler(classController.renderClassDirectory),
+  asyncHandler(classController.renderClassDirectory)
 );
 
 // ============================================
@@ -90,7 +90,7 @@ router.get(
 router.get(
   "/form",
   requireAuth,
-  asyncHandler(classController.renderCreateClassForm),
+  asyncHandler(classController.renderCreateClassForm)
 );
 router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 
@@ -102,21 +102,21 @@ router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
 router.get(
   "/user/classes",
   requireAuth,
-  asyncHandler(classController.getUserClasses),
+  asyncHandler(classController.getUserClasses)
 );
 
 // Get class directory (JSON)
 router.get(
   "/:id/directory/json",
   requireAuth,
-  asyncHandler(classController.getClassDirectory),
+  asyncHandler(classController.getClassDirectory)
 );
 
 // Invite lookup
 router.get(
   "/invite/:code",
   requireAuth,
-  asyncHandler(classController.getClassByInviteCode),
+  asyncHandler(classController.getClassByInviteCode)
 );
 
 // ============================================
@@ -134,7 +134,7 @@ router.put(
     }
     next();
   },
-  asyncHandler(classController.updateClass),
+  asyncHandler(classController.updateClass)
 );
 
 router.delete(
@@ -146,7 +146,7 @@ router.delete(
     }
     next();
   },
-  asyncHandler(classController.deleteClass),
+  asyncHandler(classController.deleteClass)
 );
 
 export default router;

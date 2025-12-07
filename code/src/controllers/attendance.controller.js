@@ -51,7 +51,7 @@ export const createPoll = asyncHandler(async (req, res) => {
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create attendance polls");
@@ -61,7 +61,7 @@ export const createPoll = asyncHandler(async (req, res) => {
   const poll = await attendancePollService.createAttendancePoll(
     sessionId,
     durationMinutes,
-    userId,
+    userId
   );
 
   const isHtmxRequest = req.headers["hx-request"];
@@ -94,8 +94,9 @@ export const submitAttendance = asyncHandler(async (req, res) => {
   if (!validation.success) {
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
-      const { displayAttendanceResult } =
-        await import("../utils/htmx-templates/attendance-templates.js");
+      const { displayAttendanceResult } = await import(
+        "../utils/htmx-templates/attendance-templates.js"
+      );
       const errorHtml = displayAttendanceResult({
         success: false,
         error: "Invalid code format. Please enter an 8-digit code.",
@@ -117,8 +118,9 @@ export const submitAttendance = asyncHandler(async (req, res) => {
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
       // Import display function
-      const { displayAttendanceResult } =
-        await import("../utils/htmx-templates/attendance-templates.js");
+      const { displayAttendanceResult } = await import(
+        "../utils/htmx-templates/attendance-templates.js"
+      );
       const resultHtml = displayAttendanceResult({
         success: true,
         status: "success",
@@ -139,8 +141,9 @@ export const submitAttendance = asyncHandler(async (req, res) => {
     // Error handling is done by the service, but we need to format the response
     const isHtmxRequest = req.headers["hx-request"];
     if (isHtmxRequest) {
-      const { displayAttendanceResult } =
-        await import("../utils/htmx-templates/attendance-templates.js");
+      const { displayAttendanceResult } = await import(
+        "../utils/htmx-templates/attendance-templates.js"
+      );
       const errorHtml = displayAttendanceResult({
         success: false,
         error: error.message || "Failed to submit attendance",
@@ -178,8 +181,9 @@ export const markAttendance = asyncHandler(async (req, res) => {
       const enrolledCourses =
         await classService.getStudentCoursesByUserId(userId);
 
-      const { renderStudentAttendanceForm } =
-        await import("../utils/htmx-templates/attendance-templates.js");
+      const { renderStudentAttendanceForm } = await import(
+        "../utils/htmx-templates/attendance-templates.js"
+      );
       const errorHtml = renderStudentAttendanceForm({
         courses: enrolledCourses,
         selectedCourseId: body.courseId || "",
@@ -201,7 +205,7 @@ export const markAttendance = asyncHandler(async (req, res) => {
     const record = await attendanceRecordService.submitAttendanceWithCourse(
       code,
       courseId,
-      userId,
+      userId
     );
 
     const isHtmxRequest = req.headers["hx-request"];
@@ -211,8 +215,9 @@ export const markAttendance = asyncHandler(async (req, res) => {
         record.markedAt &&
         new Date(record.markedAt).getTime() < Date.now() - 1000; // Marked more than 1 second ago
 
-      const { renderStudentAttendanceSuccess } =
-        await import("../utils/htmx-templates/attendance-templates.js");
+      const { renderStudentAttendanceSuccess } = await import(
+        "../utils/htmx-templates/attendance-templates.js"
+      );
       const resultHtml = renderStudentAttendanceSuccess({
         courseName: record.session.class.name,
         sessionName: record.session.name,
@@ -235,8 +240,9 @@ export const markAttendance = asyncHandler(async (req, res) => {
       const enrolledCourses =
         await classService.getStudentCoursesByUserId(userId);
 
-      const { renderStudentAttendanceForm } =
-        await import("../utils/htmx-templates/attendance-templates.js");
+      const { renderStudentAttendanceForm } = await import(
+        "../utils/htmx-templates/attendance-templates.js"
+      );
       const errorHtml = renderStudentAttendanceForm({
         courses: enrolledCourses,
         selectedCourseId: courseId || "",
@@ -274,7 +280,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user.isProf;
   if (!isProfessor && !isAdmin) {
@@ -311,10 +317,12 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
 
-  const { renderSessionRecordsPage } =
-    await import("../utils/htmx-templates/attendance-templates.js");
-  const { createMainContentWrapper } =
-    await import("../utils/html-templates.js");
+  const { renderSessionRecordsPage } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
+  const { createMainContentWrapper } = await import(
+    "../utils/html-templates.js"
+  );
 
   const html = renderSessionRecordsPage({
     sessionId,
@@ -342,7 +350,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
       {
         user: req.user,
         breadcrumbPath: "Dashboard / Attendance / Records",
-      },
+      }
     );
     res.send(wrappedContent);
   } else {
@@ -350,7 +358,7 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
     const fullPage = createBaseLayout(
       `${session.name} - Attendance Records`,
       html,
-      { user: req.user },
+      { user: req.user }
     );
     res.send(fullPage);
   }
@@ -372,7 +380,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user.isProf;
   if (!isProfessor && !isAdmin) {
@@ -385,10 +393,12 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
 
-  const { displayCourseRecordsPage } =
-    await import("../utils/htmx-templates/attendance-templates.js");
-  const { createMainContentWrapper } =
-    await import("../utils/html-templates.js");
+  const { displayCourseRecordsPage } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
+  const { createMainContentWrapper } = await import(
+    "../utils/html-templates.js"
+  );
 
   const content = displayCourseRecordsPage({
     courseId: klass.id,
@@ -405,7 +415,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
       {
         user: req.user,
         breadcrumbPath: "Dashboard / Attendance / Records",
-      },
+      }
     );
     res.send(wrappedContent);
   } else {
@@ -413,7 +423,7 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
     const fullPage = createBaseLayout(
       `${klass.name} - Attendance Records`,
       content,
-      { user: req.user },
+      { user: req.user }
     );
     res.send(fullPage);
   }
@@ -436,7 +446,7 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user.isProf; // Simple admin check - adjust as needed
   if (!isProfessor && !isAdmin) {
@@ -450,8 +460,9 @@ export const getSessionAttendance = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
-    const { displaySessionAttendance } =
-      await import("../utils/htmx-templates/attendance-templates.js");
+    const { displaySessionAttendance } = await import(
+      "../utils/htmx-templates/attendance-templates.js"
+    );
     const data = {
       sessionId,
       sessionName: session.name,
@@ -510,7 +521,7 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   const isAdmin = req.user.isProf; // Simple admin check
   if (!isProfessor && !isAdmin) {
@@ -522,8 +533,9 @@ export const getCourseAttendanceSummary = asyncHandler(async (req, res) => {
 
   const isHtmxRequest = req.headers["hx-request"];
   if (isHtmxRequest) {
-    const { displayCourseAttendanceSummary } =
-      await import("../utils/htmx-templates/attendance-templates.js");
+    const { displayCourseAttendanceSummary } = await import(
+      "../utils/htmx-templates/attendance-templates.js"
+    );
     const html = displayCourseAttendanceSummary(summary);
     res.send(html);
   } else {
@@ -541,8 +553,9 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
 
   if (isHtmxRequest) {
     // For HTMX requests, return grouped data with collapsible UI
-    const { displayStudentAttendanceGrouped } =
-      await import("../utils/htmx-templates/attendance-templates.js");
+    const { displayStudentAttendanceGrouped } = await import(
+      "../utils/htmx-templates/attendance-templates.js"
+    );
     const groupedAttendance =
       await attendanceRecordService.getStudentAttendanceGroupedByCourse(userId);
     const html = displayStudentAttendanceGrouped({
@@ -573,8 +586,9 @@ export const getAttendancePollForm = asyncHandler(async (req, res) => {
   }
 
   const defaultDuration = env.ATTENDANCE_DEFAULT_DURATION;
-  const { createStartAttendanceModal } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { createStartAttendanceModal } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
   const formHtml = createStartAttendanceModal(sessionId, defaultDuration);
   res.send(formHtml);
 });
@@ -595,19 +609,20 @@ export const getNewPollForm = asyncHandler(async (req, res) => {
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create attendance polls");
   }
 
   const defaultDuration = env.ATTENDANCE_DEFAULT_DURATION;
-  const { createStartAttendanceModal } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { createStartAttendanceModal } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
   const formHtml = createStartAttendanceModal(
     sessionId,
     courseId,
-    defaultDuration,
+    defaultDuration
   );
   res.send(formHtml);
 });
@@ -650,7 +665,7 @@ export const startPoll = asyncHandler(async (req, res) => {
 
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can create attendance polls");
@@ -660,7 +675,7 @@ export const startPoll = asyncHandler(async (req, res) => {
   const poll = await attendancePollService.createAttendancePoll(
     sessionId,
     durationMinutes,
-    userId,
+    userId
   );
 
   // Get updated session data for rendering
@@ -668,8 +683,9 @@ export const startPoll = asyncHandler(async (req, res) => {
     await courseSessionService.getCourseSessionById(sessionId);
 
   // Render updated session row
-  const { renderSessionRow } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { renderSessionRow } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
 
   // Get the latest poll (should be the one we just created)
   const latestPoll =
@@ -720,7 +736,7 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   // Check authorization
   const klass = await classService.getClassById(session.classId);
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can view code status");
@@ -730,8 +746,9 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
   const polls = await attendancePollService.getPollsBySessionId(sessionId);
   const latestPoll = polls.length > 0 ? polls[0] : null;
 
-  const { getCodeStatusFragment } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { getCodeStatusFragment } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
   const html = getCodeStatusFragment(latestPoll);
   res.send(html);
 });
@@ -752,7 +769,7 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
   }
 
   const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+    (member) => member.userId === userId && member.role === "PROFESSOR"
   );
   if (!isProfessor) {
     throw new ForbiddenError("Only professors can view course attendance");
@@ -763,8 +780,9 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
   const wasExpanded = expanded === "true" || expanded === true;
   const isExpanded = !wasExpanded; // Toggle the state
 
-  const { displayCourseItem } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { displayCourseItem } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
   const html = displayCourseItem({
     course: klass,
     sessions,
@@ -790,7 +808,7 @@ export const getUserCourses = asyncHandler(async (req, res) => {
   // Get user's classes where they are a student
   const userClasses = await classService.getClassesByUserId(userId);
   const studentClasses = userClasses.filter(
-    (c) => c.role === "STUDENT" || c.role === "TA" || c.role === "TUTOR",
+    (c) => c.role === "STUDENT" || c.role === "TA" || c.role === "TUTOR"
   );
 
   const courses = studentClasses.map((klass) => ({
@@ -824,7 +842,7 @@ export const getStudentCourseRecords = asyncHandler(async (req, res) => {
     }
 
     const isEnrolled = klass.members.some(
-      (member) => member.userId === currentUserId,
+      (member) => member.userId === currentUserId
     );
     const isAdmin = req.user.isProf;
 
@@ -840,7 +858,7 @@ export const getStudentCourseRecords = asyncHandler(async (req, res) => {
   }
 
   const targetUserEnrolled = klass.members.some(
-    (member) => member.userId === userId,
+    (member) => member.userId === userId
   );
   if (!targetUserEnrolled) {
     throw new ForbiddenError("User is not enrolled in this course");
@@ -888,7 +906,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
     }
 
     const isEnrolled = klass.members.some(
-      (member) => member.userId === currentUserId,
+      (member) => member.userId === currentUserId
     );
     const isAdmin = req.user.isProf;
 
@@ -904,7 +922,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
   }
 
   const targetUserEnrolled = klass.members.some(
-    (member) => member.userId === userId,
+    (member) => member.userId === userId
   );
   if (!targetUserEnrolled) {
     throw new ForbiddenError("User is not enrolled in this course");
@@ -921,10 +939,12 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
     throw new NotFoundError("User not found");
   }
 
-  const { renderStudentAttendanceRecordsPage } =
-    await import("../utils/htmx-templates/attendance-templates.js");
-  const { createMainContentWrapper } =
-    await import("../utils/html-templates.js");
+  const { renderStudentAttendanceRecordsPage } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
+  const { createMainContentWrapper } = await import(
+    "../utils/html-templates.js"
+  );
 
   const html = renderStudentAttendanceRecordsPage({
     courseId: klass.id,
@@ -943,7 +963,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
       {
         user: req.user,
         breadcrumbPath: "Dashboard / Attendance / Records",
-      },
+      }
     );
     res.send(wrappedContent);
   } else {
@@ -951,7 +971,7 @@ export const getStudentCourseRecordsPage = asyncHandler(async (req, res) => {
     const fullPage = createBaseLayout(
       `${klass.name} - Attendance Records`,
       html,
-      { user: req.user },
+      { user: req.user }
     );
     res.send(fullPage);
   }
@@ -967,14 +987,15 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
   const isHtmxRequest = req.headers["hx-request"];
 
   // Import the new unified template
-  const { renderAttendancePage } =
-    await import("../utils/htmx-templates/attendance-templates.js");
+  const { renderAttendancePage } = await import(
+    "../utils/htmx-templates/attendance-templates.js"
+  );
 
   // Get user's classes
   const userClasses = await classService.getClassesByUserId(userId);
   // Include PROFESSOR, TA, and TUTOR roles for professor view
   const professorClasses = userClasses.filter(
-    (c) => c.role === "PROFESSOR" || c.role === "TA" || c.role === "TUTOR",
+    (c) => c.role === "PROFESSOR" || c.role === "TA" || c.role === "TUTOR"
   );
 
   // Prepare professor courses (if user is a professor)
@@ -983,7 +1004,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
     professorCourses = await Promise.all(
       professorClasses.map(async (klass) => {
         const sessions = await courseSessionService.getSessionsByClassId(
-          klass.id,
+          klass.id
         );
         return {
           id: klass.id.replace(/-/g, ""),
@@ -1021,7 +1042,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
             };
           }),
         };
-      }),
+      })
     );
   }
 
@@ -1047,7 +1068,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       groupedAttendance.map(async (g) => {
         // Get all sessions for this course to calculate attendance rate
         const courseSessions = await courseSessionService.getSessionsByClassId(
-          g.courseId,
+          g.courseId
         );
         const totalSessions = courseSessions.length;
         const attendedSessions = g.attendances.length;
@@ -1074,7 +1095,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
             status: r.status || "present",
           })),
         };
-      }),
+      })
     );
   }
 
@@ -1084,8 +1105,9 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
   const hasAttendanceRecords = studentHistory.length > 0;
 
   // Render page with data - pass both professor and student courses separately, plus empty state flags
-  const { createMainContentWrapper } =
-    await import("../utils/html-templates.js");
+  const { createMainContentWrapper } = await import(
+    "../utils/html-templates.js"
+  );
   const content = renderAttendancePage(
     user,
     professorCourses,
@@ -1095,7 +1117,7 @@ export const getAttendancePage = asyncHandler(async (req, res) => {
       hasProfessorCourses,
       hasStudentCourses,
       hasAttendanceRecords,
-    },
+    }
   );
 
   if (isHtmxRequest) {

@@ -133,7 +133,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
               (day) => `
             <th class="group-availability-cell group-availability-cell--day">
               ${escapeHtml(day)}
-            </th>`,
+            </th>`
             )
             .join("")}
         </tr>
@@ -150,7 +150,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
                   getGroupTimeSlotAvailability(group.members, dayIdx, time);
                 const intensityClass = getAvailabilityIntensityClass(
                   available,
-                  total,
+                  total
                 );
                 const classes = [
                   "group-availability-cell",
@@ -260,7 +260,7 @@ export function renderGroupAvailabilitySections(groupsAvailability = []) {
 export function renderAvailabilityPage(
   user,
   userAvailability = [],
-  groupsAvailability = [],
+  groupsAvailability = []
 ) {
   const displayName = escapeHtml(user?.name || "Student");
 
@@ -356,7 +356,7 @@ export function renderAvailabilityPage(
             (day) => `
           <th class="availability-cell availability-cell--day">
             ${escapeHtml(day)}
-          </th>`,
+          </th>`
           )
           .join("")}
       </tr>

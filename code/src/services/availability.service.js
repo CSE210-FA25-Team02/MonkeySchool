@@ -57,7 +57,7 @@ export async function addUserAvailability(
   userId,
   dayOfWeek,
   startTime,
-  endTime,
+  endTime
 ) {
   if (!isValidDayOfWeek(dayOfWeek)) {
     throw new Error(`Invalid dayOfWeek: ${dayOfWeek}. Must be 0-6.`);
@@ -160,8 +160,8 @@ export async function setUserWeeklyAvailability(userId, availabilityRanges) {
             endTime: range.endTime,
             isAvailable: true,
           },
-        }),
-      ),
+        })
+      )
     );
 
     return newRecords;
@@ -299,7 +299,7 @@ export async function getUserGroupsAvailability(userId) {
     userGroups.map(async (userGroup) => {
       const groupAvailability = await getGroupAvailability(userGroup.group.id);
       return groupAvailability;
-    }),
+    })
   );
 
   return groupsAvailability;

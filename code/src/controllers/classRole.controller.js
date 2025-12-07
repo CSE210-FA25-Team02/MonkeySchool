@@ -50,7 +50,7 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
   // Check if current user is a professor in this class
   const currentUserRole = await classRoleService.getClassRole(
     currentUser.id,
-    classId,
+    classId
   );
   if (!currentUserRole || currentUserRole.role !== "PROFESSOR") {
     return res.status(403).send("Only professors can change member roles.");
@@ -77,14 +77,14 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
     // Count total professors in the class
     const allClassMembers = await classRoleService.getRoster(classId);
     const professorCount = allClassMembers.filter(
-      (member) => member.role === "PROFESSOR",
+      (member) => member.role === "PROFESSOR"
     ).length;
 
     if (professorCount === 1) {
       return res
         .status(400)
         .send(
-          "Cannot demote yourself - you are the only professor in this class. Assign another professor first.",
+          "Cannot demote yourself - you are the only professor in this class. Assign another professor first."
         );
     }
   }
@@ -106,7 +106,7 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
       groups: [],
       studentsWithoutGroup: [],
     },
-    currentUser,
+    currentUser
   );
 
   res.send(content);

@@ -92,7 +92,7 @@ export async function submitPulse(userId, classId, pulseValue) {
   const isStudent = await isStudentInClass(userId, classId);
   if (!isStudent) {
     throw new ForbiddenError(
-      "Only students can submit pulse checks. You must be enrolled as a student in this class.",
+      "Only students can submit pulse checks. You must be enrolled as a student in this class."
     );
   }
 
@@ -135,7 +135,7 @@ export async function getTodayPulse(userId, classId) {
   const isStudent = await isStudentInClass(userId, classId);
   if (!isStudent) {
     throw new ForbiddenError(
-      "Only students can view their pulse checks. You must be enrolled as a student in this class.",
+      "Only students can view their pulse checks. You must be enrolled as a student in this class."
     );
   }
 
@@ -186,7 +186,7 @@ export async function ensureUserIsInstructor(userId, classId) {
 
   if (!classRole) {
     throw new ForbiddenError(
-      "Access denied. Only instructors (professor, TA, or tutor) can view pulse analytics.",
+      "Access denied. Only instructors (professor, TA, or tutor) can view pulse analytics."
     );
   }
 

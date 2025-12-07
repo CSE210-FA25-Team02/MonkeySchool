@@ -158,7 +158,7 @@ export const getPulseDetails = asyncHandler(async (req, res) => {
 
   if (!date) {
     throw new BadRequestError(
-      "Date parameter is required (format: YYYY-MM-DD)",
+      "Date parameter is required (format: YYYY-MM-DD)"
     );
   }
 
