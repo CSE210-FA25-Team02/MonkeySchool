@@ -131,3 +131,13 @@ export async function deleteActivity(id) {
     where: { id },
   });
 }
+
+/**
+ * Get or find the "Lecture" activity category
+ * @returns {Promise<Object|null>} The Lecture category or null if not found
+ */
+export async function getLectureCategory() {
+  return prisma.activityCategory.findUnique({
+    where: { name: "Lecture" },
+  });
+}

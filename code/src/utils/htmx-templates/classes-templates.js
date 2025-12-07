@@ -76,7 +76,7 @@ export function renderPulseCheck(classId, currentPulse = null) {
       >
         ${item.emoji}
       </button>
-    `,
+    `
     )
     .join("");
 
@@ -184,7 +184,7 @@ export function renderClassDetail(
   classInfo,
   activeTab = "directory",
   content = "",
-  options = {},
+  options = {}
 ) {
   const {
     isStudent = false,
@@ -205,8 +205,16 @@ export function renderClassDetail(
             </div>
             ${isStudent ? renderPulseCheck(classInfo.id, currentPulse) : ""}
             <!-- Quick Punch Action -->
-            <button id="class-punch-btn" style="position: absolute; right: 32px; bottom: 32px; background: var(--color-accent-gold); color: var(--color-brand-deep); padding: 12px 24px; border-radius: var(--radius-full); font-weight: bold; box-shadow: var(--shadow-lg); border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s;">
-                <i class="fa-solid fa-fingerprint"></i> Punch In
+            <button 
+                id="class-punch-btn-${classInfo.id}" 
+                class="btn-punch-me"
+                style="position: absolute; right: 32px; bottom: 32px; background: var(--color-accent-gold); color: var(--color-brand-deep); padding: 12px 24px; border-radius: var(--radius-full); font-weight: bold; box-shadow: var(--shadow-lg); border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; z-index: 10;"
+                hx-post="/activity/quick-punch"
+                hx-vals='{"classId": "${classInfo.id}"}'
+                hx-swap="none"
+                data-class-id="${classInfo.id}"
+            >
+                <i class="fa-solid fa-fingerprint"></i> Punch me
             </button>
         </div>
 
@@ -253,6 +261,45 @@ export function renderClassDetail(
         <div id="tab-content" class="tab-pane active">
             ${content}
         </div>
+        
+        <script>
+          (function() {
+            // Handle quick punch-in button
+            document.body.addEventListener('htmx:afterRequest', function(event) {
+              const requestPath = event.detail?.pathInfo?.requestPath;
+              const elt = event.detail?.elt;
+              
+              if (requestPath === '/activity/quick-punch' && elt && elt.classList.contains('btn-punch-me')) {
+                const punchBtn = elt;
+                const status = event.detail.xhr?.status;
+                
+                if (status === 201) {
+                  // Show success toast
+                  if (typeof showToast !== 'undefined') {
+                    showToast('Success', 'Punched in for Lecture (1 hour)', 'success');
+                  }
+                  // Update button state
+                  punchBtn.innerHTML = '<i class="fa-solid fa-check"></i> Punched In';
+                  punchBtn.style.background = 'var(--color-status-success)';
+                  punchBtn.style.color = 'white';
+                  punchBtn.disabled = true;
+                  // Reload page after a short delay to show new activity in profile
+                  setTimeout(() => {
+                    if (typeof htmx !== 'undefined') {
+                      htmx.ajax('GET', window.location.pathname, {target: 'body', swap: 'none'});
+                    } else {
+                      window.location.reload();
+                    }
+                  }, 1500);
+                } else if (status && status !== 201) {
+                  if (typeof showToast !== 'undefined') {
+                    showToast('Error', 'Failed to punch in. Please try again.', 'error');
+                  }
+                }
+              }
+            });
+          })();
+        </script>
     `;
 }
 
@@ -470,13 +517,13 @@ export function renderClassDirectory(data, user = null) {
                       memberWithRole,
                       classId,
                       user,
-                      professorCount,
+                      professorCount
                     );
                   })
                   .join("")}
               </div>
             </div>
-          `,
+          `
             )
             .join("")}
         </div>
