@@ -58,16 +58,43 @@ export async function getActivitiesByUserId(userId) {
 }
 
 /**
+ * Map class role to category role
+ * @param {string} classRole - The class role (PROFESSOR, TA, STUDENT, TUTOR)
+ * @returns {string} The corresponding CategoryRole (STUDENT, TA, or ALL)
+ */
+function mapClassRoleToCategoryRole(classRole) {
+  const role = classRole?.toUpperCase();
+
+  // CategoryRole enum: STUDENT, TA, ALL
+  // ClassRole enum: PROFESSOR, TA, STUDENT, TUTOR
+  switch (role) {
+    case "STUDENT":
+      return "STUDENT";
+    case "TA":
+    case "TUTOR":
+      return "TA";
+    case "PROFESSOR":
+      // Professors can see all categories
+      return "ALL";
+    default:
+      // Default to ALL for unknown roles
+      return "ALL";
+  }
+}
+
+/**
  * Get all activity categories
  *
- * @param {string} userRole - The role of the user (e.g., "STUDENT", "TA").
+ * @param {string} userRole - The role of the user (e.g., "PROFESSOR", "TA", "STUDENT", "TUTOR").
  * @returns {Promise<Object[]>} A list of activity categories.
  */
 export async function getAllCategories(userRole) {
   try {
+    const categoryRole = mapClassRoleToCategoryRole(userRole);
+
     const categories = await prisma.activityCategory.findMany({
       where: {
-        OR: [{ role: userRole }, { role: "ALL" }],
+        OR: [{ role: categoryRole }, { role: "ALL" }],
       },
       orderBy: { name: "asc" },
     });

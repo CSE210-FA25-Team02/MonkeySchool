@@ -49,12 +49,22 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
             </div>
         </div>
 
-        <!-- Stats / Punch Card -->
-        <div class="bento-card span-1" style="background: var(--color-brand-light); color: var(--color-brand-deep);">
-            <div class="card-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 32px; margin-bottom: 8px;"><i class="fa-solid fa-fire"></i></div>
-                <div style="font-weight: bold; font-size: 24px;">3 Days</div>
-                <div style="font-size: 12px; opacity: 0.8;">Streak</div>
+        <!-- Activity Punch-In Card -->
+        <div class="bento-card span-1" id="activity-punch-card-container">
+            <div class="card-content" style="padding: 16px;">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 12px;">
+                    <div style="font-size: 24px; color: var(--color-brand-deep);"><i class="fa-solid fa-fingerprint"></i></div>
+                    <div style="font-weight: bold; font-size: 14px; text-align: center; color: var(--color-brand-deep);">Punch In Activity</div>
+                    <button 
+                        class="btn btn--primary btn--full" 
+                        style="justify-content: center; font-size: 12px; padding: 8px 16px;"
+                        hx-get="/activity/new-modal" 
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                    >
+                        <i class="fa-solid fa-plus"></i> New Activity
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -85,6 +95,40 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
     
     <!-- Quick Journal Modal -->
     ${createQuickJournalModal()}
+    
+    <!-- Modal Container for Activity Modals -->
+    <div id="modal-container"></div>
+    
+    <script>
+      // Handle activity modal display - ensure it opens when loaded
+      document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.target.id === 'modal-container') {
+          const modal = document.getElementById('activity-modal');
+          if (modal) {
+            modal.classList.add('open');
+          }
+        }
+        // Ensure modal stays open after any swap inside it
+        if (event.target && event.target.closest && event.target.closest('#activity-modal')) {
+          const modal = document.getElementById('activity-modal');
+          if (modal && !modal.classList.contains('open')) {
+            modal.classList.add('open');
+          }
+        }
+      });
+      
+      // Close modal when clicking outside (delegated event listener)
+      document.addEventListener('click', function(e) {
+        const modal = document.getElementById('activity-modal');
+        if (modal && e.target === modal && modal.classList.contains('open')) {
+          closeModal('activity-modal');
+          const container = document.getElementById('modal-container');
+          if (container) {
+            container.innerHTML = '';
+          }
+        }
+      });
+    </script>
   `;
 }
 
@@ -171,7 +215,7 @@ function renderRecentClassesList(classes) {
                 <a href="/classes/${c.id}" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></a>
             </div>
         </div>
-    `,
+    `
     )
     .join("");
 }

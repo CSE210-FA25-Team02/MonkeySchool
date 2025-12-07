@@ -127,7 +127,7 @@ export const getActivityDropdown = asyncHandler(async (req, res) => {
         <option value="${a.id}">
             ${new Date(a.startTime).toLocaleDateString()} - ${a.class.name} - ${a.category.name}
         </option>
-    `,
+    `
     )
     .join("");
 
@@ -203,15 +203,17 @@ export const loadActivityFields = asyncHandler(async (req, res) => {
 
   if (!classId) {
     return res.send(
-      "<div id='activity-fields'>Error: No class selected.</div>",
+      "<div id='activity-fields'>Error: No class selected.</div>"
     );
   }
 
   const userId = req.user.id;
   const classRole = await getClassRole(userId, classId);
+  console.log("Class Role:", classRole);
   const categories = await activityService.getAllCategories(classRole.role);
+  console.log("Categories:", categories);
 
-  return res.status(201).send(enableActivityFields(categories));
+  return res.status(200).send(enableActivityFields(categories));
 });
 
 /**

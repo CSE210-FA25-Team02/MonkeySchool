@@ -124,36 +124,79 @@ export function renderProfilePage(user, activity = []) {
 /**
  * Render activity timeline on the profile page.
  *
- * @param {Array} activity - Optional list of activity items
+ * @param {Array} activity - List of activity items from database
  * @returns {string} HTML string
  */
 function renderActivityTimeline(activity) {
-  // Mock activity if none provided
-  const items =
-    activity.length > 0
-      ? activity
-      : [
-          {
-            type: "punch",
-            title: "Punched in for <strong>CSE 210</strong>",
-            time: "Today, 9:58 AM",
-          },
-          {
-            type: "post",
-            title: "Commented on Group Discussion",
-            time: "Yesterday, 4:30 PM",
-          },
-          {
-            type: "punch",
-            title: "Punched out from <strong>CSE 202</strong>",
-            time: "Yesterday, 2:00 PM",
-          },
-          {
-            type: "join",
-            title: "Joined <strong>Team Alpha</strong>",
-            time: "Last week",
-          },
-        ];
+  // Format database activities into timeline items
+  let items = [];
+
+  if (activity && activity.length > 0) {
+    items = activity.map((act) => {
+      const startTime = new Date(act.startTime);
+      const endTime = act.endTime ? new Date(act.endTime) : null;
+      const className = act.class?.name || "Unknown Class";
+      const categoryName = act.category?.name || "Activity";
+
+      // Format time display
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const activityDate = new Date(
+        startTime.getFullYear(),
+        startTime.getMonth(),
+        startTime.getDate()
+      );
+
+      let timeDisplay = "";
+      if (activityDate.getTime() === today.getTime()) {
+        timeDisplay = `Today, ${startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+      } else if (activityDate.getTime() === today.getTime() - 86400000) {
+        timeDisplay = `Yesterday, ${startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+      } else {
+        const daysDiff = Math.floor((today - activityDate) / 86400000);
+        if (daysDiff < 7) {
+          timeDisplay = `${daysDiff} days ago, ${startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+        } else {
+          timeDisplay =
+            startTime.toLocaleDateString([], {
+              month: "short",
+              day: "numeric",
+              year:
+                startTime.getFullYear() !== now.getFullYear()
+                  ? "numeric"
+                  : undefined,
+            }) +
+            ", " +
+            startTime.toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+        }
+      }
+
+      // Determine if it's a punch in or punch out
+      const isPunchOut = endTime !== null;
+      const title = isPunchOut
+        ? `Punched out from <strong>${escapeHtml(className)}</strong> - ${escapeHtml(categoryName)}`
+        : `Punched in for <strong>${escapeHtml(className)}</strong> - ${escapeHtml(categoryName)}`;
+
+      return {
+        type: "punch",
+        title: title,
+        time: timeDisplay,
+      };
+    });
+  }
+
+  // If no activities, show empty state
+  if (items.length === 0) {
+    return `
+      <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
+        <p>No activity history yet.</p>
+        <p style="font-size: 12px; margin-top: 8px;">Start by punching in an activity from the dashboard!</p>
+      </div>
+    `;
+  }
 
   const iconMap = {
     punch: "fa-fingerprint",
@@ -174,7 +217,7 @@ function renderActivityTimeline(activity) {
           <div class="timeline-meta">${escapeHtml(item.time)}</div>
         </div>
       </div>
-    `,
+    `
     )
     .join("");
 }
