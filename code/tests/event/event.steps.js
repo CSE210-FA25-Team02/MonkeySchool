@@ -40,7 +40,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.professor);
-      },
+      }
     );
 
     test.given(
@@ -50,7 +50,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token2 = generateToken(context.student);
-      },
+      }
     );
 
     test.given(
@@ -64,7 +64,7 @@ defineFeature(feature, (test) => {
             role: "PROFESSOR",
           },
         });
-      },
+      }
     );
 
     test.and(
@@ -77,7 +77,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      },
+      }
     );
   };
 
@@ -101,7 +101,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(/^I click on the event "(.*)"$/, async (eventTitle) => {
@@ -159,7 +159,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(/^I am logged in as "(.*)"$/, async (userName) => {
@@ -181,14 +181,14 @@ defineFeature(feature, (test) => {
     and(/^the modal should not have an "(.*)" button$/, (buttonText) => {
       // Student should not see edit/delete buttons for events they can't modify
       const hasEditButton = context.response.text.includes(
-        'onclick="openEditEventModal',
+        'onclick="openEditEventModal'
       );
       expect(hasEditButton).toBe(false);
     });
 
     and(/^the modal should not have a "(.*)" button$/, (buttonText) => {
       const hasDeleteButton = context.response.text.includes(
-        'onclick="deleteEvent',
+        'onclick="deleteEvent'
       );
       expect(hasDeleteButton).toBe(false);
     });
@@ -213,7 +213,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(/^I click on the event "(.*)"$/, async (eventTitle) => {
@@ -239,7 +239,7 @@ defineFeature(feature, (test) => {
         expect(context.response.text).toContain("Edit Event");
         expect(context.response.text).toContain('id="edit-event-form"');
         expect(context.response.text).toContain(context.event.title);
-      },
+      }
     );
 
     when(/^I update the event title to "(.*)"$/, async (newTitle) => {
@@ -279,7 +279,7 @@ defineFeature(feature, (test) => {
           where: { id: context.event.id },
         });
         expect(updatedEvent.title).toBe(newTitle);
-      },
+      }
     );
 
     and(/^the calendar should refresh to show the updated event$/, () => {
@@ -308,7 +308,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(/^I click on the event "(.*)"$/, async (eventTitle) => {
@@ -344,7 +344,7 @@ defineFeature(feature, (test) => {
         context.response.text.match(/schedule-day-events[\s\S]*?<\/div>/g) ||
         [];
       const hasEvent = calendarContent.some((content) =>
-        content.includes("Lecture 1"),
+        content.includes("Lecture 1")
       );
       expect(hasEvent).toBe(false);
     });
@@ -374,7 +374,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(/^I am logged in as "(.*)"$/, async (userName) => {
@@ -424,7 +424,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(/^I am logged in as "(.*)"$/, async (userName) => {
@@ -463,7 +463,7 @@ defineFeature(feature, (test) => {
             classId: context.klass.id,
           },
         });
-      },
+      }
     );
 
     and(/^"(.*)" is a leader of "(.*)"$/, async (userName, groupName) => {
@@ -493,7 +493,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(/^I am logged in as "(.*)"$/, async (userName) => {
@@ -562,7 +562,7 @@ defineFeature(feature, (test) => {
           where: { id: context.event.id },
         });
         expect(updatedEvent.title).toBe(newTitle);
-      },
+      }
     );
   });
 
@@ -591,7 +591,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     and(
@@ -611,7 +611,7 @@ defineFeature(feature, (test) => {
             isRecurring: false,
           },
         });
-      },
+      }
     );
 
     when(
@@ -619,10 +619,10 @@ defineFeature(feature, (test) => {
       async (className, weekStartStr) => {
         context.response = await request
           .get(
-            `/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`,
+            `/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`
           )
           .set("Cookie", `auth_token=${context.token}`);
-      },
+      }
     );
 
     then(/^I should see "(.*)" in the calendar$/, (eventTitle) => {
@@ -644,10 +644,10 @@ defineFeature(feature, (test) => {
       async (className, weekStartStr) => {
         context.response = await request
           .get(
-            `/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`,
+            `/classes/${context.klass.id}/schedule?view=week&date=${weekStartStr}`
           )
           .set("Cookie", `auth_token=${context.token}`);
-      },
+      }
     );
 
     then(/^"(.*)" should be displayed as "(.*)"$/, (dateStr, dayName) => {
@@ -690,7 +690,7 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/classes/${context.klass.id}/schedule`)
           .set("Cookie", `auth_token=${context.token}`);
-      },
+      }
     );
 
     then(/^I should see a create event form$/, () => {

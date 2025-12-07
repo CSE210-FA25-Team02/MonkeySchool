@@ -50,7 +50,7 @@ async function main() {
 
   console.log("\nTest URL:");
   console.log(
-    `   http://localhost:3000/classes/my-classes?userId=${users[0].id}`,
+    `   http://localhost:3000/classes/my-classes?userId=${users[0].id}`
   );
 }
 

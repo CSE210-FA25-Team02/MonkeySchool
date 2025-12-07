@@ -50,12 +50,12 @@ export async function createUsers() {
           name: `User ${i + 1}`,
           pronouns: "they/them",
         },
-      }),
-    ),
+      })
+    )
   );
 
   console.log(
-    `Created ${professors.length} professors and ${users.length} users`,
+    `Created ${professors.length} professors and ${users.length} users`
   );
   return {
     professors,

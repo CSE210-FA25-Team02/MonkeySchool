@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast(
       "Profile Updated",
       "Your changes have been saved successfully.",
-      "success",
+      "success"
     );
   };
 
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const createClassBtn = document.getElementById("trigger-create-class");
   if (createClassBtn) {
     createClassBtn.addEventListener("click", () =>
-      openModal("modal-create-class"),
+      openModal("modal-create-class")
     );
   }
 
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast(
           "Punch Successful",
           "You punched in for CSE 210 at " + new Date().toLocaleTimeString(),
-          "success",
+          "success"
         );
       } else {
         // Punch Out State
@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast(
         "Coming Soon",
         "Spotlight Search (Cmd+K) is under construction",
-        "info",
+        "info"
       );
     });
   }

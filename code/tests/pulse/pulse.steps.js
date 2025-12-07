@@ -36,7 +36,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(
@@ -50,7 +50,7 @@ defineFeature(feature, (test) => {
             role: role.toUpperCase(),
           },
         });
-      },
+      }
     );
 
     when(/^the student submits a pulse value of (\d+)$/, async (pulse) => {
@@ -72,7 +72,7 @@ defineFeature(feature, (test) => {
         });
         expect(pulseEntry).not.toBeNull();
         expect(pulseEntry.value).toBe(parseInt(value, 10));
-      },
+      }
     );
 
     and(/^the response should indicate success$/, () => {
@@ -95,7 +95,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(
@@ -109,7 +109,7 @@ defineFeature(feature, (test) => {
             role: role.toUpperCase(),
           },
         });
-      },
+      }
     );
 
     and(
@@ -118,9 +118,9 @@ defineFeature(feature, (test) => {
         await pulseService.submitPulse(
           context.user.id,
           context.klass.id,
-          parseInt(pulse, 10),
+          parseInt(pulse, 10)
         );
-      },
+      }
     );
 
     when(/^the student submits a pulse value of (\d+)$/, async (pulse) => {
@@ -141,7 +141,7 @@ defineFeature(feature, (test) => {
           },
         });
         expect(pulseEntry.value).toBe(parseInt(value, 10));
-      },
+      }
     );
 
     and(/^the response should indicate success$/, () => {
@@ -162,7 +162,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(
@@ -176,7 +176,7 @@ defineFeature(feature, (test) => {
             role: role.toUpperCase(),
           },
         });
-      },
+      }
     );
 
     and(
@@ -185,9 +185,9 @@ defineFeature(feature, (test) => {
         await pulseService.submitPulse(
           context.user.id,
           context.klass.id,
-          parseInt(pulse, 10),
+          parseInt(pulse, 10)
         );
-      },
+      }
     );
 
     when(/^the student retrieves their pulse for today$/, async () => {
@@ -216,7 +216,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(
@@ -230,7 +230,7 @@ defineFeature(feature, (test) => {
             role: role.toUpperCase(),
           },
         });
-      },
+      }
     );
 
     when(/^the student retrieves their pulse for today$/, async () => {
@@ -254,7 +254,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(
@@ -268,7 +268,7 @@ defineFeature(feature, (test) => {
             role: role.toUpperCase(),
           },
         });
-      },
+      }
     );
 
     when(/^the student submits a pulse value of (-?\d+)$/, async (pulse) => {
@@ -337,7 +337,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -356,7 +356,7 @@ defineFeature(feature, (test) => {
           .send({ pulse: parseInt(pulse, 10) })
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should indicate forbidden access$/, () => {
@@ -422,7 +422,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -441,7 +441,7 @@ defineFeature(feature, (test) => {
           .send({ pulse: parseInt(pulse, 10) })
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should indicate forbidden access$/, () => {
@@ -507,7 +507,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -562,7 +562,7 @@ defineFeature(feature, (test) => {
             });
           }
         }
-      },
+      }
     );
 
     when(
@@ -572,7 +572,7 @@ defineFeature(feature, (test) => {
           .get(`/classes/${context.klass.id}/pulse/analytics?range=${range}`)
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should contain analytics data$/, () => {
@@ -602,7 +602,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -652,7 +652,7 @@ defineFeature(feature, (test) => {
             },
           });
         }
-      },
+      }
     );
 
     when(
@@ -662,7 +662,7 @@ defineFeature(feature, (test) => {
           .get(`/classes/${context.klass.id}/pulse/analytics?range=${range}`)
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should contain analytics data$/, () => {
@@ -679,7 +679,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -729,7 +729,7 @@ defineFeature(feature, (test) => {
             },
           });
         }
-      },
+      }
     );
 
     when(
@@ -739,7 +739,7 @@ defineFeature(feature, (test) => {
           .get(`/classes/${context.klass.id}/pulse/analytics?range=${range}`)
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should contain analytics data$/, () => {
@@ -756,7 +756,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -843,7 +843,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -893,7 +893,7 @@ defineFeature(feature, (test) => {
             },
           });
         }
-      },
+      }
     );
 
     when(
@@ -903,7 +903,7 @@ defineFeature(feature, (test) => {
           .get(`/classes/${context.klass.id}/pulse/analytics?range=${range}`)
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should contain analytics data$/, () => {
@@ -929,7 +929,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -953,7 +953,7 @@ defineFeature(feature, (test) => {
           .get(`/classes/${context.klass.id}/pulse/analytics?range=${range}`)
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should indicate an error$/, () => {
@@ -1019,7 +1019,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -1086,7 +1086,7 @@ defineFeature(feature, (test) => {
             date,
           },
         });
-      },
+      }
     );
 
     when(
@@ -1096,7 +1096,7 @@ defineFeature(feature, (test) => {
           .get(`/classes/${context.klass.id}/pulse/details?date=${dateStr}`)
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should contain pulse details$/, () => {
@@ -1126,7 +1126,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -1150,7 +1150,7 @@ defineFeature(feature, (test) => {
           .get(`/classes/${context.klass.id}/pulse/details?date=${dateStr}`)
           .set("Cookie", `auth_token=${context.token}`)
           .set("Accept", "application/json");
-      },
+      }
     );
 
     then(/^the response should indicate an error$/, () => {
@@ -1216,7 +1216,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.instructor);
-      },
+      }
     );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
@@ -1266,7 +1266,7 @@ defineFeature(feature, (test) => {
             },
           });
         }
-      },
+      }
     );
 
     when(/^the instructor requests the pulse analytics page$/, async () => {

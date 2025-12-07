@@ -50,7 +50,7 @@ export async function createClasses() {
           quarter: data.quarter,
         },
       });
-    }),
+    })
   );
 
   console.log(`Created ${classes.length} classes`);
