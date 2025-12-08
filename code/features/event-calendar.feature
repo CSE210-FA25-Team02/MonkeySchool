@@ -92,7 +92,7 @@ Feature: Event Calendar
       | Field      | Value         |
       | Title      | New Lecture   |
       | Type       | COURSE_LECTURE|
-      | Date       | 2025-12-05    |
+      | Date       | 2026-12-10    |
       | Start Time | 10:00         |
       | End Time   | 11:30         |
     And I submit the create event form
