@@ -16,6 +16,7 @@ import courseSessionRoutes from "./courseSession.routes.js";
 import attendanceRoutes from "./attendance.routes.js";
 import availabilityRoutes from "./availability.routes.js";
 import scheduleRoutes from "./schedule.routes.js";
+import workJournalRoutes from "./workJournal.routes.js";
 import { requireAuth } from "../middleware/auth.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import * as classController from "../controllers/class.controller.js";
@@ -33,6 +34,7 @@ router.use("/activity", activityRoutes);
 router.use("/course-sessions", courseSessionRoutes);
 router.use("/attendance", attendanceRoutes);
 router.use("/availability", availabilityRoutes);
+router.use("/work-journals", workJournalRoutes);
 router.use("/", scheduleRoutes);
 router.use("/:quarter/classes", classRoutes);
 router.use("/:quarter/classRoles", classRoleRoutes);
@@ -42,7 +44,7 @@ router.use("/:quarter/classRoles", classRoleRoutes);
 router.get(
   "/invite/:code",
   requireAuth,
-  asyncHandler(classController.joinClassByInviteCode),
+  asyncHandler(classController.joinClassByInviteCode)
 );
 
 export default router;

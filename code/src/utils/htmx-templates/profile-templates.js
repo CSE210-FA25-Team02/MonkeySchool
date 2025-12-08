@@ -12,9 +12,10 @@ import { escapeHtml } from "../html-templates.js";
  * Render the user profile page
  * @param {Object} user - User object
  * @param {Array} activity - Activity history array (optional, for future backend integration)
+ * @param {Array} workJournals - Work journal entries array
  * @returns {string} HTML string
  */
-export function renderProfilePage(user, activity = []) {
+export function renderProfilePage(user, activity = [], workJournals = []) {
   // Defaults for display
   const displayName = user?.name || "Student";
   const initials = displayName
@@ -71,52 +72,32 @@ export function renderProfilePage(user, activity = []) {
           </div>
         </div>
 
-        <!-- Right Col: Settings Form -->
+        <!-- Right Col: Work Journals -->
         <div class="activity-section">
-          <div class="activity-header">
-            <i class="fa-solid fa-gear"></i> Settings
-          </div>
-          <form 
-            hx-post="/users/settings"
-            hx-swap="none"
-            onsubmit="event.preventDefault(); showToast('Success', 'Preferences saved.', 'success');"
-          >
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px;">Timezone</label>
-              <select name="timezone" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
-                <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
-                <option value="UTC">UTC</option>
-                <option value="America/New_York">Eastern Time (US & Canada)</option>
-              </select>
+          <div class="activity-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <i class="fa-solid fa-pen-to-square"></i> Work Journals
             </div>
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px;">Email Notifications</label>
-              <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                <input type="checkbox" name="notify_announcements" checked> Class Announcements
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; margin-top: 4px;">
-                <input type="checkbox" name="notify_messages" checked> Group Messages
-              </div>
-            </div>
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px;">Accessibility</label>
-              <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                <input type="checkbox" name="high_contrast"> High Contrast Mode
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; margin-top: 4px;">
-                <input type="checkbox" name="reduce_motion"> Reduce Motion
-              </div>
-            </div>
-            <button type="submit" style="width: 100%; background: var(--color-brand-deep); color: white; padding: 8px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer;">
-              Save Preferences
+            <button 
+              class="btn btn--primary" 
+              style="padding: 6px 12px; font-size: 12px;"
+              onclick="openModal('modal-create-journal')"
+            >
+              <i class="fa-solid fa-plus"></i> New Entry
             </button>
-          </form>
+          </div>
+          <div id="work-journals-list" style="max-height: 600px; overflow-y: auto;">
+            ${renderWorkJournalsList(workJournals)}
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Edit Profile Modal -->
     ${renderEditProfileModal(user)}
+    
+    <!-- Create Work Journal Modal -->
+    ${renderCreateJournalModal()}
     </div>
   `;
 }
@@ -220,6 +201,222 @@ function renderActivityTimeline(activity) {
     `
     )
     .join("");
+}
+
+/**
+ * Render work journals list
+ *
+ * @param {Array} workJournals - List of work journal entries
+ * @returns {string} HTML string
+ */
+export function renderWorkJournalsList(workJournals) {
+  if (!workJournals || workJournals.length === 0) {
+    return `
+      <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
+        <p>No work journals yet.</p>
+        <p style="font-size: 12px; margin-top: 8px;">Click "New Entry" to create your first journal entry!</p>
+      </div>
+    `;
+  }
+
+  return workJournals
+    .map((journal) => {
+      const createdAt = new Date(journal.createdAt);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const journalDate = new Date(
+        createdAt.getFullYear(),
+        createdAt.getMonth(),
+        createdAt.getDate()
+      );
+
+      let timeDisplay = "";
+      if (journalDate.getTime() === today.getTime()) {
+        timeDisplay = `Today, ${createdAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+      } else if (journalDate.getTime() === today.getTime() - 86400000) {
+        timeDisplay = `Yesterday, ${createdAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+      } else {
+        const daysDiff = Math.floor((today - journalDate) / 86400000);
+        if (daysDiff < 7) {
+          timeDisplay = `${daysDiff} days ago`;
+        } else {
+          timeDisplay = createdAt.toLocaleDateString([], {
+            month: "short",
+            day: "numeric",
+            year:
+              createdAt.getFullYear() !== now.getFullYear()
+                ? "numeric"
+                : undefined,
+          });
+        }
+      }
+
+      const moodEmoji = journal.mood || "";
+      const contentPreview =
+        journal.content.length > 100
+          ? journal.content.substring(0, 100) + "..."
+          : journal.content;
+
+      return `
+        <div class="work-journal-item" style="padding: 12px; border-bottom: 1px solid var(--color-border-subtle);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              ${moodEmoji ? `<span style="font-size: 18px;">${escapeHtml(moodEmoji)}</span>` : ""}
+              <span style="font-size: 11px; color: var(--color-text-muted);">${escapeHtml(timeDisplay)}</span>
+            </div>
+            <button 
+              class="btn btn--secondary" 
+              style="padding: 4px 8px; font-size: 11px;"
+              onclick="deleteJournal('${journal.id}')"
+              title="Delete journal"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+          <div style="font-size: 13px; line-height: 1.5; color: var(--color-text);">
+            ${escapeHtml(contentPreview)}
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+/**
+ * Render Create Work Journal modal
+ *
+ * @returns {string} HTML string
+ */
+function renderCreateJournalModal() {
+  return `
+    <div id="modal-create-journal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Work Journal Entry</h3>
+          <button class="btn-close" onclick="closeModal('modal-create-journal')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <form 
+          hx-post="/work-journals"
+          hx-target="#work-journals-list"
+          hx-swap="innerHTML"
+          hx-on::after-request="if(event.detail.successful) { closeModal('modal-create-journal'); const contentField = document.getElementById('journal-content'); if(contentField) contentField.value = ''; const moodInput = document.getElementById('journal-mood'); if(moodInput) moodInput.value = ''; const modal = document.getElementById('modal-create-journal'); if(modal) { modal.querySelectorAll('.mood-btn').forEach(btn => { btn.classList.remove('btn--primary'); btn.classList.add('btn--secondary'); }); } }"
+          onsubmit="event.preventDefault(); htmx.trigger(this, 'submit');"
+        >
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">What did you work on?</label>
+              <textarea 
+                id="journal-content"
+                name="content" 
+                class="form-input" 
+                rows="4" 
+                placeholder="I implemented the new dashboard UI..."
+                required
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mood</label>
+              <div style="display: flex; gap: 8px;">
+                <button 
+                  type="button" 
+                  class="btn btn--secondary mood-btn" 
+                  data-mood="😊"
+                  style="flex:1"
+                  onclick="selectMood('😊', this)"
+                >😊</button>
+                <button 
+                  type="button" 
+                  class="btn btn--secondary mood-btn" 
+                  data-mood="😐"
+                  style="flex:1"
+                  onclick="selectMood('😐', this)"
+                >😐</button>
+                <button 
+                  type="button" 
+                  class="btn btn--secondary mood-btn" 
+                  data-mood="😫"
+                  style="flex:1"
+                  onclick="selectMood('😫', this)"
+                >😫</button>
+              </div>
+              <input type="hidden" id="journal-mood" name="mood" value="">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-journal')">Cancel</button>
+            <button type="submit" class="btn btn--primary">Save Entry</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      // Make selectMood available globally - ensure it's always defined
+      window.selectMood = function(mood, buttonElement) {
+        const moodInput = document.getElementById('journal-mood');
+        if (!moodInput) {
+          console.warn('journal-mood input not found');
+          return;
+        }
+        
+        moodInput.value = mood;
+        // Reset all mood buttons in the modal
+        const modal = document.getElementById('modal-create-journal');
+        if (modal) {
+          modal.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.classList.remove('btn--primary');
+            btn.classList.add('btn--secondary');
+          });
+        }
+        // Highlight selected button
+        if (buttonElement) {
+          buttonElement.classList.remove('btn--secondary');
+          buttonElement.classList.add('btn--primary');
+        }
+      };
+      
+      // Make deleteJournal available globally
+      window.deleteJournal = function(journalId) {
+        if (!confirm('Are you sure you want to delete this journal entry?')) {
+          return;
+        }
+        if (typeof htmx !== 'undefined') {
+          htmx.ajax('DELETE', '/work-journals/' + journalId, {
+            target: '#work-journals-list',
+            swap: 'innerHTML',
+            headers: { 'HX-Request': 'true' }
+          });
+        }
+      };
+      
+      // Reset mood selection when modal opens
+      (function() {
+        const modal = document.getElementById('modal-create-journal');
+        if (modal) {
+          // Use MutationObserver to detect when modal opens
+          const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+              if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                if (modal.classList.contains('open')) {
+                  // Reset mood selection
+                  const moodInput = document.getElementById('journal-mood');
+                  if (moodInput) {
+                    moodInput.value = '';
+                  }
+                  modal.querySelectorAll('.mood-btn').forEach(btn => {
+                    btn.classList.remove('btn--primary');
+                    btn.classList.add('btn--secondary');
+                  });
+                }
+              }
+            });
+          });
+          observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+        }
+      })();
+    </script>
+  `;
 }
 
 /**

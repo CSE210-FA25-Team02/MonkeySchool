@@ -5,6 +5,7 @@
 
 import * as userService from "../services/user.service.js";
 import * as activityService from "../services/activity.service.js";
+import * as workJournalService from "../services/workJournal.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
 import {
@@ -88,8 +89,17 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
     // Continue with empty activities array
   }
 
-  // Render profile page with activities
-  const content = renderProfilePage(user, activities);
+  // Fetch user's work journals
+  let workJournals = [];
+  try {
+    workJournals = await workJournalService.getWorkJournalsByUserId(user.id);
+  } catch (e) {
+    console.log("Failed to fetch work journals:", e.message);
+    // Continue with empty work journals array
+  }
+
+  // Render profile page with activities and work journals
+  const content = renderProfilePage(user, activities, workJournals);
 
   if (isHtmx) {
     res.send(content);
@@ -123,7 +133,16 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     // Continue with empty activities array
   }
 
-  const content = renderProfilePage(updatedUser, activities);
+  // Fetch user's work journals
+  let workJournals = [];
+  try {
+    workJournals = await workJournalService.getWorkJournalsByUserId(userId);
+  } catch (e) {
+    console.log("Failed to fetch work journals:", e.message);
+    // Continue with empty work journals array
+  }
+
+  const content = renderProfilePage(updatedUser, activities, workJournals);
   const isHtmx = !!req.headers["hx-request"];
 
   if (isHtmx) {

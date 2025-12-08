@@ -33,14 +33,14 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
             </div>
             <div class="card-content" style="display: flex; flex-direction: column; gap: 12px;">
                 <button 
-                    class="btn btn--primary btn--full" 
+                    class="btn btn-primary btn-full" 
                     onclick="openModal('modal-create-class')"
                     style="justify-content: center;"
                 >
                     <i class="fa-solid fa-plus"></i> Create Class
                 </button>
                 <button 
-                    class="btn btn--secondary btn--full" 
+                    class="btn btn-secondary btn-full" 
                     onclick="openModal('modal-quick-journal')"
                     style="justify-content: center;"
                 >
@@ -56,7 +56,7 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
                     <div style="font-size: 24px; color: var(--color-brand-deep);"><i class="fa-solid fa-fingerprint"></i></div>
                     <div style="font-weight: bold; font-size: 14px; text-align: center; color: var(--color-brand-deep);">Punch In Activity</div>
                     <button 
-                        class="btn btn--primary btn--full" 
+                        class="btn btn-primary btn-full" 
                         style="justify-content: center; font-size: 12px; padding: 8px 16px;"
                         hx-get="/activity/new-modal" 
                         hx-target="#modal-container"
@@ -195,7 +195,7 @@ function renderRecentClassesList(classes) {
     return `
             <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
                 <p>No classes yet.</p>
-                <button class="btn btn--text" onclick="openModal('modal-create-class')">Create your first class</button>
+                <button class="btn btn-text" onclick="openModal('modal-create-class')">Create your first class</button>
             </div>
         `;
   }
@@ -270,8 +270,8 @@ export function createCreateClassModal(upcomingQuarters = []) {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-class')">Cancel</button>
-                        <button type="submit" class="btn btn--primary">Create Class</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create-class')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Class</button>
                     </div>
                 </section>
             </form>
@@ -293,27 +293,108 @@ export function createQuickJournalModal() {
                 <h3 class="modal-title">Work Journal Entry</h3>
                 <button class="btn-close" onclick="closeModal('modal-quick-journal')"><i class="fa-solid fa-times"></i></button>
             </div>
-            <form onsubmit="event.preventDefault(); closeModal('modal-quick-journal'); showToast('Saved', 'Journal entry saved.', 'success');">
+            <form 
+              hx-post="/work-journals"
+              hx-target="body"
+              hx-swap="none"
+              hx-on::after-request="if(event.detail.successful) { closeModal('modal-quick-journal'); if(typeof showToast !== 'undefined') showToast('Saved', 'Journal entry saved successfully!', 'success'); const contentField = document.getElementById('quick-journal-content'); if(contentField) contentField.value = ''; const quickMoodInput = document.getElementById('quick-journal-mood'); if(quickMoodInput) quickMoodInput.value = ''; const quickModal = document.getElementById('modal-quick-journal'); if(quickModal) { quickModal.querySelectorAll('.mood-btn').forEach(btn => { btn.classList.remove('btn-primary'); btn.classList.add('btn-secondary'); }); } }"
+              onsubmit="event.preventDefault(); if(typeof htmx !== 'undefined') { htmx.trigger(this, 'submit'); } else { alert('HTMX not loaded'); }"
+            >
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">What did you work on?</label>
-                        <textarea class="form-input" rows="4" placeholder="I implemented the new dashboard UI..."></textarea>
+                        <textarea 
+                          id="quick-journal-content"
+                          name="content" 
+                          class="form-input" 
+                          rows="4" 
+                          placeholder="I implemented the new dashboard UI..."
+                          required
+                        ></textarea>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mood</label>
                         <div style="display: flex; gap: 8px;">
-                            <button type="button" class="btn btn--secondary" style="flex:1">😊</button>
-                            <button type="button" class="btn btn--secondary" style="flex:1">😐</button>
-                            <button type="button" class="btn btn--secondary" style="flex:1">😫</button>
+                            <button 
+                              type="button" 
+                              class="btn btn-secondary mood-btn" 
+                              data-mood="😊"
+                              style="flex:1"
+                              onclick="selectMoodQuick('😊', this)"
+                            >😊</button>
+                            <button 
+                              type="button" 
+                              class="btn btn-secondary mood-btn" 
+                              data-mood="😐"
+                              style="flex:1"
+                              onclick="selectMoodQuick('😐', this)"
+                            >😐</button>
+                            <button 
+                              type="button" 
+                              class="btn btn-secondary mood-btn" 
+                              data-mood="😫"
+                              style="flex:1"
+                              onclick="selectMoodQuick('😫', this)"
+                            >😫</button>
                         </div>
+                        <input type="hidden" id="quick-journal-mood" name="mood" value="">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn--secondary" onclick="closeModal('modal-quick-journal')">Cancel</button>
-                    <button type="submit" class="btn btn--primary">Save Entry</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-quick-journal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Entry</button>
                 </div>
             </form>
         </div>
     </div>
+    <script>
+      // Make selectMoodQuick available globally for dashboard modal
+      window.selectMoodQuick = function(mood, buttonElement) {
+        const moodInput = document.getElementById('quick-journal-mood');
+        if (!moodInput) {
+          console.warn('quick-journal-mood input not found');
+          return;
+        }
+        
+        moodInput.value = mood;
+        // Reset all mood buttons in the modal
+        const modal = document.getElementById('modal-quick-journal');
+        if (modal) {
+          modal.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+          });
+        }
+        // Highlight selected button
+        if (buttonElement) {
+          buttonElement.classList.remove('btn-secondary');
+          buttonElement.classList.add('btn-primary');
+        }
+      };
+      
+      // Reset mood selection when dashboard modal opens
+      (function() {
+        const modal = document.getElementById('modal-quick-journal');
+        if (modal) {
+          const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+              if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                if (modal.classList.contains('open')) {
+                  const moodInput = document.getElementById('quick-journal-mood');
+                  if (moodInput) {
+                    moodInput.value = '';
+                  }
+                  modal.querySelectorAll('.mood-btn').forEach(btn => {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-secondary');
+                  });
+                }
+              }
+            });
+          });
+          observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+        }
+      })();
+    </script>
     `;
 }
