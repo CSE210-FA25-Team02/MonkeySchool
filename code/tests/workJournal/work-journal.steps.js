@@ -37,7 +37,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -47,7 +47,7 @@ defineFeature(feature, (test) => {
           .post("/work-journals")
           .send({ content })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be created successfully$/, () => {
@@ -79,7 +79,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -89,7 +89,7 @@ defineFeature(feature, (test) => {
           .post("/work-journals")
           .send({ content, mood })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be created successfully$/, () => {
@@ -119,7 +119,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -129,7 +129,7 @@ defineFeature(feature, (test) => {
           .post("/work-journals")
           .send({ content, mood: "" })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be created successfully$/, () => {
@@ -158,7 +158,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -168,7 +168,7 @@ defineFeature(feature, (test) => {
           .post("/work-journals")
           .send({ content: "" })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 400$/, () => {
@@ -198,7 +198,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -208,7 +208,7 @@ defineFeature(feature, (test) => {
           .post("/work-journals")
           .send({ content: "   " })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 400$/, () => {
@@ -238,7 +238,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -248,7 +248,7 @@ defineFeature(feature, (test) => {
           userId: context.user.id,
           content,
         });
-      }
+      },
     );
 
     and(
@@ -260,7 +260,7 @@ defineFeature(feature, (test) => {
           userId: context.user.id,
           content,
         });
-      }
+      },
     );
 
     when(/^the user retrieves all their work journals$/, async () => {
@@ -297,7 +297,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(/^the user retrieves all their work journals$/, async () => {
@@ -321,7 +321,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -332,7 +332,7 @@ defineFeature(feature, (test) => {
           content,
           mood,
         });
-      }
+      },
     );
 
     when(/^the user retrieves the work journal by ID$/, async () => {
@@ -369,7 +369,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -378,7 +378,7 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/work-journals/${invalidId}`)
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 404$/, () => {
@@ -408,7 +408,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -418,7 +418,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token2 = generateToken(context.user2);
-      }
+      },
     );
 
     and(
@@ -428,7 +428,7 @@ defineFeature(feature, (test) => {
           userId: context.user2.id,
           content,
         });
-      }
+      },
     );
 
     when(
@@ -437,14 +437,14 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/work-journals/${context.journal.id}`)
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
       /^user "(.*)" should receive an error response with status 404$/,
       () => {
         expect(context.response.status).toBe(404);
-      }
+      },
     );
 
     and(/^the error message should contain "(.*)"$/, (errorMessage) => {
@@ -465,7 +465,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -475,7 +475,7 @@ defineFeature(feature, (test) => {
           userId: context.user.id,
           content,
         });
-      }
+      },
     );
 
     when(
@@ -485,7 +485,7 @@ defineFeature(feature, (test) => {
           .put(`/work-journals/${context.journal.id}`)
           .send({ content: newContent })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be updated successfully$/, () => {
@@ -506,7 +506,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -517,7 +517,7 @@ defineFeature(feature, (test) => {
           content,
           mood,
         });
-      }
+      },
     );
 
     when(
@@ -527,7 +527,7 @@ defineFeature(feature, (test) => {
           .put(`/work-journals/${context.journal.id}`)
           .send({ mood: newMood })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be updated successfully$/, () => {
@@ -556,7 +556,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -567,7 +567,7 @@ defineFeature(feature, (test) => {
           content,
           mood,
         });
-      }
+      },
     );
 
     when(
@@ -577,7 +577,7 @@ defineFeature(feature, (test) => {
           .put(`/work-journals/${context.journal.id}`)
           .send({ content: newContent, mood: newMood })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be updated successfully$/, () => {
@@ -601,7 +601,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -612,7 +612,7 @@ defineFeature(feature, (test) => {
           content,
           mood,
         });
-      }
+      },
     );
 
     when(/^the user updates the work journal with mood ""$/, async () => {
@@ -644,7 +644,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -654,7 +654,7 @@ defineFeature(feature, (test) => {
           userId: context.user.id,
           content,
         });
-      }
+      },
     );
 
     when(
@@ -664,7 +664,7 @@ defineFeature(feature, (test) => {
           .put(`/work-journals/${context.journal.id}`)
           .send({ content: "" })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 400$/, () => {
@@ -694,7 +694,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -704,7 +704,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token2 = generateToken(context.user2);
-      }
+      },
     );
 
     and(
@@ -714,7 +714,7 @@ defineFeature(feature, (test) => {
           userId: context.user2.id,
           content,
         });
-      }
+      },
     );
 
     when(
@@ -724,14 +724,14 @@ defineFeature(feature, (test) => {
           .put(`/work-journals/${context.journal.id}`)
           .send({ content: "Hacked content" })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
       /^user "(.*)" should receive an error response with status 404$/,
       () => {
         expect(context.response.status).toBe(404);
-      }
+      },
     );
 
     and(/^the error message should contain "(.*)"$/, (errorMessage) => {
@@ -752,7 +752,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -762,7 +762,7 @@ defineFeature(feature, (test) => {
           userId: context.user.id,
           content,
         });
-      }
+      },
     );
 
     when(/^the user deletes the work journal$/, async () => {
@@ -796,7 +796,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -805,7 +805,7 @@ defineFeature(feature, (test) => {
         context.response = await request
           .delete(`/work-journals/${invalidId}`)
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 404$/, () => {
@@ -835,7 +835,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -845,7 +845,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token2 = generateToken(context.user2);
-      }
+      },
     );
 
     and(
@@ -855,7 +855,7 @@ defineFeature(feature, (test) => {
           userId: context.user2.id,
           content,
         });
-      }
+      },
     );
 
     when(
@@ -864,14 +864,14 @@ defineFeature(feature, (test) => {
         context.response = await request
           .delete(`/work-journals/${context.journal.id}`)
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
       /^user "(.*)" should receive an error response with status 404$/,
       () => {
         expect(context.response.status).toBe(404);
-      }
+      },
     );
 
     and(/^the error message should contain "(.*)"$/, (errorMessage) => {
@@ -892,7 +892,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -902,7 +902,7 @@ defineFeature(feature, (test) => {
           .post("/work-journals")
           .send({ content: "  Trimmed content  " })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be created successfully$/, () => {
@@ -927,7 +927,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -937,7 +937,7 @@ defineFeature(feature, (test) => {
           userId: context.user.id,
           content,
         });
-      }
+      },
     );
 
     when(
@@ -947,7 +947,7 @@ defineFeature(feature, (test) => {
           .put(`/work-journals/${context.journal.id}`)
           .send({ content: "  Updated content  " })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the work journal should be updated successfully$/, () => {
