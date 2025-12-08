@@ -132,7 +132,7 @@ function renderActivityTimeline(activity) {
       const activityDate = new Date(
         startTime.getFullYear(),
         startTime.getMonth(),
-        startTime.getDate()
+        startTime.getDate(),
       );
 
       let timeDisplay = "";
@@ -209,7 +209,7 @@ function renderActivityTimeline(activity) {
           <div class="timeline-meta">${escapeHtml(item.time)}</div>
         </div>
       </div>
-    `
+    `,
     )
     .join("");
 
@@ -260,7 +260,7 @@ export function renderWorkJournalsList(workJournals) {
       const journalDate = new Date(
         createdAt.getFullYear(),
         createdAt.getMonth(),
-        createdAt.getDate()
+        createdAt.getDate(),
       );
 
       let timeDisplay = "";
@@ -492,7 +492,7 @@ function renderActivityHistoryModal(activity) {
       const activityDate = new Date(
         startTime.getFullYear(),
         startTime.getMonth(),
-        startTime.getDate()
+        startTime.getDate(),
       );
 
       let timeDisplay = "";
@@ -557,7 +557,7 @@ function renderActivityHistoryModal(activity) {
               <div class="timeline-meta">${escapeHtml(item.time)}</div>
             </div>
           </div>
-        `
+        `,
           )
           .join("")
       : `
@@ -605,12 +605,12 @@ function renderWorkJournalsModal(workJournals) {
             const today = new Date(
               now.getFullYear(),
               now.getMonth(),
-              now.getDate()
+              now.getDate(),
             );
             const journalDate = new Date(
               createdAt.getFullYear(),
               createdAt.getMonth(),
-              createdAt.getDate()
+              createdAt.getDate(),
             );
 
             let timeDisplay = "";

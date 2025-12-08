@@ -83,6 +83,13 @@ router.get(
   asyncHandler(classController.renderClassDirectory),
 );
 
+// Class Settings (HTMX partial)
+router.get(
+  "/:id/settings",
+  requireAuth,
+  asyncHandler(classController.renderClassSettings),
+);
+
 // ============================================
 // FORM ROUTES
 // ============================================

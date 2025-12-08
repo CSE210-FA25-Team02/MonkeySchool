@@ -9,33 +9,33 @@ const router = Router();
 router.get(
   "/user/dropdown",
   requireAuth,
-  asyncHandler(activityController.getActivityDropdown)
+  asyncHandler(activityController.getActivityDropdown),
 );
 router.get("/details", asyncHandler(activityController.getActivityDetails));
 router.get(
   "/user/render",
   requireAuth,
-  asyncHandler(activityController.renderPunchCard)
+  asyncHandler(activityController.renderPunchCard),
 );
 router.get(
   "/new-modal",
   requireAuth,
-  asyncHandler(activityController.renderActivityModal)
+  asyncHandler(activityController.renderActivityModal),
 );
 router.get(
   "/edit-modal",
   requireAuth,
-  asyncHandler(activityController.renderEditModal)
+  asyncHandler(activityController.renderEditModal),
 );
 router.get(
   "/close-form",
   requireAuth,
-  asyncHandler(activityController.closeActivityPunchForm)
+  asyncHandler(activityController.closeActivityPunchForm),
 );
 router.get(
   "/load-fields",
   requireAuth,
-  asyncHandler(activityController.loadActivityFields)
+  asyncHandler(activityController.loadActivityFields),
 );
 
 // CRUD
@@ -43,23 +43,23 @@ router.post("/", requireAuth, asyncHandler(activityController.createActivity));
 router.get(
   "/user",
   requireAuth,
-  asyncHandler(activityController.getActivitiesByUser)
+  asyncHandler(activityController.getActivitiesByUser),
 );
 router.post(
   "/quick-punch",
   requireAuth,
-  asyncHandler(activityController.quickPunchIn)
+  asyncHandler(activityController.quickPunchIn),
 );
 router.get("/:id", requireAuth, asyncHandler(activityController.getActivity));
 router.put(
   "/:id",
   requireAuth,
-  asyncHandler(activityController.updateActivity)
+  asyncHandler(activityController.updateActivity),
 );
 router.delete(
   "/:id",
   requireAuth,
-  asyncHandler(activityController.deleteActivity)
+  asyncHandler(activityController.deleteActivity),
 );
 
 export default router;

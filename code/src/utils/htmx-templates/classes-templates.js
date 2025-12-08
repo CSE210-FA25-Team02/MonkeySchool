@@ -251,8 +251,11 @@ export function renderClassDetail(
                Groups
             </a>
             <a href="/classes/${classInfo.id}/settings"
+               hx-get="/classes/${classInfo.id}/settings"
+               hx-target="#tab-content"
+               hx-swap="innerHTML"
                class="tab-item ${activeTab === "settings" ? "active" : ""}"
-               style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
+               style="padding: var(--space-3) 0; color: ${activeTab === "settings" ? "var(--color-brand-deep)" : "var(--color-text-muted)"}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === "settings" ? "var(--color-accent-gold)" : "transparent"}; cursor: pointer; text-decoration: none;">
                Settings
             </a>
         </div>
@@ -780,4 +783,202 @@ export function displayInvite(inviteUrl) {
             }
         </script>
     `;
+}
+
+/**
+ * Render Class Settings Page
+ * @param {Object} klass - Class object with inviteCode
+ * @param {string} inviteUrl - Full invite URL
+ * @returns {string} HTML string
+ */
+export function renderClassSettings(klass, inviteUrl) {
+  const inviteCode = klass.inviteCode || "";
+
+  return `
+    <div class="pulse-analytics-container">
+      <div class="pulse-analytics-header" style="margin-bottom: var(--space-6);">
+        <h2 style="font-size: var(--text-2xl); font-weight: var(--weight-bold);">
+          Class Settings
+        </h2>
+      </div>
+
+      <!-- Invite Code Section -->
+      <div class="bento-card" style="margin-bottom: var(--space-6);">
+        <div class="card-header" style="margin-bottom: var(--space-4);">
+          <div class="card-title">
+            <i class="fa-solid fa-link"></i>
+            Invite Code
+          </div>
+        </div>
+        <div class="card-content">
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin-bottom: var(--space-6);">
+            Share this invite code or link with students to allow them to join this class.
+          </p>
+          
+          <div style="margin-bottom: var(--space-6);">
+            <label style="display: block; font-size: var(--text-sm); font-weight: var(--weight-medium); margin-bottom: var(--space-2); color: var(--color-text-main);">
+              Invite Code
+            </label>
+            <div style="display: flex; gap: var(--space-2);">
+              <input 
+                type="text" 
+                readonly 
+                value="${escapeHtml(inviteCode)}" 
+                id="invite-code-input" 
+                class="form-input" 
+                style="flex: 1; font-family: var(--font-mono); font-size: var(--text-base); font-weight: var(--weight-semibold); letter-spacing: 1px;"
+                onclick="this.select()"
+              >
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                id="copy-invite-code-btn" 
+                onclick="copyInviteCode()"
+                style="white-space: nowrap;"
+              >
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <label style="display: block; font-size: var(--text-sm); font-weight: var(--weight-medium); margin-bottom: var(--space-2); color: var(--color-text-main);">
+              Invite Link
+            </label>
+            <div style="display: flex; gap: var(--space-2);">
+              <input 
+                type="text" 
+                readonly 
+                value="${escapeHtml(inviteUrl)}" 
+                id="invite-url-input" 
+                class="form-input" 
+                style="flex: 1; font-size: var(--text-sm);"
+                onclick="this.select()"
+              >
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                id="copy-invite-url-btn" 
+                onclick="copyInviteUrl()"
+                style="white-space: nowrap;"
+              >
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Class Information Section -->
+      <div class="bento-card">
+        <div class="card-header" style="margin-bottom: var(--space-4);">
+          <div class="card-title">
+            <i class="fa-solid fa-info-circle"></i>
+            Class Information
+          </div>
+        </div>
+        <div class="card-content">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-6);">
+            <div>
+              <div class="stat-label">Class Name</div>
+              <div style="font-weight: var(--weight-semibold); color: var(--color-text-main); font-size: var(--text-base); margin-top: var(--space-2);">
+                ${escapeHtml(klass.name || "N/A")}
+              </div>
+            </div>
+            <div>
+              <div class="stat-label">Quarter</div>
+              <div style="font-weight: var(--weight-semibold); color: var(--color-text-main); font-size: var(--text-base); margin-top: var(--space-2);">
+                ${escapeHtml(klass.quarter || "N/A")}
+              </div>
+            </div>
+            <div>
+              <div class="stat-label">Location</div>
+              <div style="font-weight: var(--weight-semibold); color: var(--color-text-main); font-size: var(--text-base); margin-top: var(--space-2);">
+                ${escapeHtml(klass.location || "N/A")}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function copyInviteCode() {
+        var input = document.getElementById('invite-code-input');
+        var btn = document.getElementById('copy-invite-code-btn');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        
+        var copyText = function() {
+          var originalHtml = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+          btn.style.background = 'var(--color-status-success)';
+          btn.style.color = 'white';
+          setTimeout(function() {
+            btn.innerHTML = originalHtml;
+            btn.style.background = '';
+            btn.style.color = '';
+          }, 2000);
+        };
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(input.value).then(copyText).catch(function() {
+            document.execCommand('copy');
+            copyText();
+          });
+        } else {
+          document.execCommand('copy');
+          copyText();
+        }
+      }
+      
+      function copyInviteUrl() {
+        var input = document.getElementById('invite-url-input');
+        var btn = document.getElementById('copy-invite-url-btn');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        
+        var copyText = function() {
+          var originalHtml = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+          btn.style.background = 'var(--color-status-success)';
+          btn.style.color = 'white';
+          setTimeout(function() {
+            btn.innerHTML = originalHtml;
+            btn.style.background = '';
+            btn.style.color = '';
+          }, 2000);
+        };
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(input.value).then(copyText).catch(function() {
+            document.execCommand('copy');
+            copyText();
+          });
+        } else {
+          document.execCommand('copy');
+          copyText();
+        }
+      }
+      
+      // Update active tab state when settings loads
+      (function() {
+        // Mark settings tab as active
+        const settingsTab = document.querySelector('a[href*="/settings"]');
+        if (settingsTab) {
+          // Remove active from all tabs
+          document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.classList.remove('active');
+            tab.style.color = 'var(--color-text-muted)';
+            tab.style.borderBottom = '2px solid transparent';
+          });
+          
+          // Mark settings tab as active
+          settingsTab.classList.add('active');
+          settingsTab.style.color = 'var(--color-brand-deep)';
+          settingsTab.style.borderBottom = '2px solid var(--color-accent-gold)';
+        }
+      })();
+    </script>
+  `;
 }

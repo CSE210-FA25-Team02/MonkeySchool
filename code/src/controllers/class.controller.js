@@ -30,6 +30,7 @@ import {
   renderClassList,
   renderClassDirectory as renderDirectoryTemplate,
   renderClassDetail,
+  renderClassSettings as renderSettingsTemplate,
 } from "../utils/htmx-templates/classes-templates.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { NotFoundError } from "../utils/api-error.js";
@@ -158,6 +159,29 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
     },
     req.user,
   );
+  res.send(content);
+});
+
+/**
+ * Render Class Settings (HTMX Partial)
+ *
+ * Route: GET /classes/:id/settings
+ * Used for: Tab switching in class detail page
+ */
+export const renderClassSettings = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Fetch class info
+  const klass = await classService.getClassById(id);
+  if (!klass) {
+    throw new NotFoundError("Class not found");
+  }
+
+  // Generate invite URL
+  const inviteUrl = `${req.protocol}://${req.get("host")}/invite/${klass.inviteCode}`;
+
+  // Render settings content
+  const content = renderSettingsTemplate(klass, inviteUrl);
   res.send(content);
 });
 

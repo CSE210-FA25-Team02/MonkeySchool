@@ -10,7 +10,7 @@ export async function createDefaultCategories() {
   // Read activity categories from settings JSON file
   const settingsPath = join(
     __dirname,
-    "../../../settings/activity-categories.json"
+    "../../../settings/activity-categories.json",
   );
   const fileContent = await readFile(settingsPath, "utf-8");
   const defaultCategories = JSON.parse(fileContent);
