@@ -23,6 +23,7 @@ import * as pulseService from "../services/pulse.service.js";
 import {
   getUpcomingQuarters,
   createBaseLayout,
+  escapeHtml,
 } from "../utils/html-templates.js";
 import {
   createClassForm,
@@ -125,7 +126,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user,
+    req.user
   );
   const pageHtml = renderClassDetail(classInfo, "directory", content, {
     isStudent,
@@ -157,7 +158,7 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user,
+    req.user
   );
   res.send(content);
 });
@@ -330,7 +331,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         </p>
         <a href="/" class="btn btn--primary">Go to Dashboard</a>
       </div>
-    `,
+    `
     );
     return res.status(404).send(errorHtml);
   }
@@ -367,9 +368,158 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         <a href="/classes/${klass.id}" class="btn btn--primary">Go to Class</a>
       </div>
     </div>
-  `,
+  `
   );
   res.send(successHtml);
+});
+
+/**
+ * Join Class by Invite Code (Form Submission)
+ * Route: POST /classes/join
+ *
+ * This handles the join class form submission from the dashboard modal.
+ * It processes the invite code and adds the user to the class.
+ */
+export const joinClass = asyncHandler(async (req, res) => {
+  const { inviteCode } = req.body;
+  const userId = req.user.id;
+
+  if (!inviteCode || inviteCode.trim() === "") {
+    const isHtmx = !!req.headers["hx-request"];
+    if (isHtmx) {
+      return res.status(400).send(`
+        <div class="modal-body">
+          <div style="color: var(--color-status-error); margin-bottom: 16px;">
+            <i class="fa-solid fa-exclamation-circle"></i> Please enter an invite code.
+          </div>
+          <div class="form-group">
+            <label class="form-label">Invite Code</label>
+            <input 
+              type="text" 
+              name="inviteCode" 
+              class="form-input" 
+              placeholder="Enter the class invite code"
+              required
+              autocomplete="off"
+            >
+            <p class="form-helper">Ask your instructor for the invite code to join their class.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-join-class')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Join Class</button>
+        </div>
+      `);
+    }
+    return res.status(400).json({ error: "Invite code is required" });
+  }
+
+  // Find class by invite code
+  const klass = await classService.getClassByInviteCode(inviteCode.trim());
+
+  if (!klass) {
+    const isHtmx = !!req.headers["hx-request"];
+    if (isHtmx) {
+      return res.status(404).send(`
+        <div class="modal-body">
+          <div style="color: var(--color-status-error); margin-bottom: 16px;">
+            <i class="fa-solid fa-circle-xmark"></i> Invalid invite code. Please check and try again.
+          </div>
+          <div class="form-group">
+            <label class="form-label">Invite Code</label>
+            <input 
+              type="text" 
+              name="inviteCode" 
+              class="form-input" 
+              placeholder="Enter the class invite code"
+              required
+              autocomplete="off"
+              value="${escapeHtml(inviteCode)}"
+            >
+            <p class="form-helper">Ask your instructor for the invite code to join their class.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-join-class')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Join Class</button>
+        </div>
+      `);
+    }
+    return res.status(404).json({ error: "Invalid invite code" });
+  }
+
+  // Check if user is already in the class
+  const existingRole = await classRoleService.getClassRole(userId, klass.id);
+
+  if (existingRole) {
+    // Already a member
+    const isHtmx = !!req.headers["hx-request"];
+    if (isHtmx) {
+      return res.status(200).send(`
+        <div class="modal-body">
+          <div style="text-align: center; padding: 24px;">
+            <div style="font-size: 48px; margin-bottom: 16px; color: var(--color-brand-medium);">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 style="margin-bottom: 8px;">Already a Member</h3>
+            <p style="color: var(--color-text-muted); margin-bottom: 24px;">
+              You are already enrolled in ${escapeHtml(klass.name)}.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-join-class')">Close</button>
+          <a href="/classes/${klass.id}" class="btn btn-primary">Go to Class</a>
+        </div>
+        <script>
+          setTimeout(() => {
+            window.location.href = '/classes/${klass.id}';
+          }, 2000);
+        </script>
+      `);
+    }
+    return res.status(200).json({ message: "Already a member", class: klass });
+  }
+
+  // Add user to class as student
+  await classRoleService.upsertClassRole({
+    userId,
+    classId: klass.id,
+    role: "STUDENT",
+  });
+
+  // Success response
+  const isHtmx = !!req.headers["hx-request"];
+  if (isHtmx) {
+    return res.status(200).send(`
+      <div class="modal-body">
+        <div style="text-align: center; padding: 24px;">
+          <div style="font-size: 48px; margin-bottom: 16px; color: var(--color-status-success);">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h3 style="margin-bottom: 8px;">Successfully Joined!</h3>
+          <p style="color: var(--color-text-muted); margin-bottom: 24px;">
+            You have been added to ${escapeHtml(klass.name)}.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-join-class')">Close</button>
+        <a href="/classes/${klass.id}" class="btn btn-primary">Go to Class</a>
+      </div>
+      <script>
+        if (typeof showToast !== 'undefined') {
+          showToast('Success', 'Successfully joined ${escapeHtml(klass.name)}!', 'success');
+        }
+        setTimeout(() => {
+          window.location.href = '/classes/${klass.id}';
+        }, 1500);
+      </script>
+    `);
+  }
+
+  // For non-HTMX requests, redirect to class page
+  res.redirect(`/classes/${klass.id}`);
 });
 
 /**

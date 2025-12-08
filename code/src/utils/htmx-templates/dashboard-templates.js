@@ -32,6 +32,9 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
                 <div class="card-title"><i class="fa-solid fa-bolt"></i> Actions</div>
             </div>
             <div class="card-content" style="display: flex; flex-direction: column; gap: 12px;">
+                ${
+                  user.isProf
+                    ? `
                 <button 
                     class="btn btn-primary btn--full" 
                     onclick="openModal('modal-create-class')"
@@ -39,6 +42,17 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
                 >
                     <i class="fa-solid fa-plus"></i> Create Class
                 </button>
+                `
+                    : `
+                <button 
+                    class="btn btn-primary btn--full" 
+                    onclick="openModal('modal-join-class')"
+                    style="justify-content: center;"
+                >
+                    <i class="fa-solid fa-user-plus"></i> Join Class
+                </button>
+                `
+                }
                 <button 
                     class="btn btn-secondary btn--full" 
                     onclick="openModal('modal-quick-journal')"
@@ -75,7 +89,7 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
                 <a href="/classes" class="card-action">View All</a>
             </div>
             <div class="card-content">
-                ${renderRecentClassesList(recentClasses)}
+                ${renderRecentClassesList(recentClasses, user)}
             </div>
         </div>
 
@@ -91,7 +105,10 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
     </div>
 
     <!-- Create Class Modal (Hidden by default) -->
-    ${createCreateClassModal(getUpcomingQuarters())}
+    ${user.isProf ? createCreateClassModal(getUpcomingQuarters()) : ""}
+    
+    <!-- Join Class Modal (Hidden by default) -->
+    ${!user.isProf ? createJoinClassModal() : ""}
     
     <!-- Quick Journal Modal -->
     ${createQuickJournalModal()}
@@ -188,14 +205,19 @@ function renderUpcomingEvents(events) {
  * Render recent classes list on the dashboard.
  *
  * @param {Array} classes - List of class summary objects
+ * @param {Object} user - User object with isProf property
  * @returns {string} HTML string
  */
-function renderRecentClassesList(classes) {
+function renderRecentClassesList(classes, user = null) {
   if (!classes || classes.length === 0) {
+    const modalId = user?.isProf ? "modal-create-class" : "modal-join-class";
+    const buttonText = user?.isProf
+      ? "Create your first class"
+      : "Join a class";
     return `
             <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
                 <p>No classes yet.</p>
-                <button class="btn btn-secondary" onclick="openModal('modal-create-class')" style="background: transparent; border: none; text-decoration: underline; color: var(--color-brand-medium);">Create your first class</button>
+                <button class="btn btn-secondary" onclick="openModal('${modalId}')" style="background: transparent; border: none; text-decoration: underline; color: var(--color-brand-medium);">${buttonText}</button>
             </div>
         `;
   }
@@ -215,7 +237,7 @@ function renderRecentClassesList(classes) {
                 <a href="/classes/${c.id}" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></a>
             </div>
         </div>
-    `,
+    `
     )
     .join("");
 }
@@ -272,6 +294,50 @@ export function createCreateClassModal(upcomingQuarters = []) {
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create-class')">Cancel</button>
                         <button type="submit" class="btn btn-primary">Create Class</button>
+                    </div>
+                </section>
+            </form>
+        </div>
+    </div>
+    `;
+}
+
+/**
+ * Render the Join Class modal.
+ *
+ * @returns {string} HTML string
+ */
+export function createJoinClassModal() {
+  return `
+    <div id="modal-join-class" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Join Class</h3>
+                <button class="btn-close" onclick="closeModal('modal-join-class')"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <form 
+                hx-post="/classes/join" 
+                hx-target="#modal-join-class-content" 
+                hx-swap="innerHTML"
+            >
+                <section id="modal-join-class-content">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Invite Code</label>
+                            <input 
+                                type="text" 
+                                name="inviteCode" 
+                                class="form-input" 
+                                placeholder="Enter the class invite code"
+                                required
+                                autocomplete="off"
+                            >
+                            <p class="form-helper">Ask your instructor for the invite code to join their class.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-join-class')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Join Class</button>
                     </div>
                 </section>
             </form>
