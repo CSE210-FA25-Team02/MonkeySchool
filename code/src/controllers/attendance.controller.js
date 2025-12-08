@@ -19,7 +19,7 @@ import { prisma } from "../lib/prisma.js";
 
 /**
  * Create an attendance poll for a session
- * Auth: professor (must teach the class)
+ * Auth: professor or TA (must teach/assist the class)
  */
 export const createPoll = asyncHandler(async (req, res) => {
   const userId = req.user.id;
@@ -50,11 +50,15 @@ export const createPoll = asyncHandler(async (req, res) => {
   }
 
   const klass = await classService.getClassById(session.classId);
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+  const canCreatePoll = klass.members.some(
+    (member) =>
+      member.userId === userId &&
+      (member.role === "PROFESSOR" || member.role === "TA"),
   );
-  if (!isProfessor) {
-    throw new ForbiddenError("Only professors can create attendance polls");
+  if (!canCreatePoll) {
+    throw new ForbiddenError(
+      "Only professors and TAs can create attendance polls",
+    );
   }
 
   // Create poll
@@ -273,12 +277,16 @@ export const getSessionRecordsPage = asyncHandler(async (req, res) => {
 
   // Check authorization
   const klass = await classService.getClassById(session.classId);
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+  const canView = klass.members.some(
+    (member) =>
+      member.userId === userId &&
+      (member.role === "PROFESSOR" || member.role === "TA"),
   );
   const isAdmin = req.user.isProf;
-  if (!isProfessor && !isAdmin) {
-    throw new ForbiddenError("Only professors can view session attendance");
+  if (!canView && !isAdmin) {
+    throw new ForbiddenError(
+      "Only professors and TAs can view session attendance",
+    );
   }
 
   // Get attendance records
@@ -371,12 +379,16 @@ export const getCourseRecordsPage = asyncHandler(async (req, res) => {
     throw new NotFoundError("Course not found");
   }
 
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+  const canView = klass.members.some(
+    (member) =>
+      member.userId === userId &&
+      (member.role === "PROFESSOR" || member.role === "TA"),
   );
   const isAdmin = req.user.isProf;
-  if (!isProfessor && !isAdmin) {
-    throw new ForbiddenError("Only professors can view course attendance");
+  if (!canView && !isAdmin) {
+    throw new ForbiddenError(
+      "Only professors and TAs can view course attendance",
+    );
   }
 
   // Get attendance records for all sessions in the course
@@ -594,11 +606,15 @@ export const getNewPollForm = asyncHandler(async (req, res) => {
   }
 
   const klass = await classService.getClassById(session.classId);
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+  const canCreatePoll = klass.members.some(
+    (member) =>
+      member.userId === userId &&
+      (member.role === "PROFESSOR" || member.role === "TA"),
   );
-  if (!isProfessor) {
-    throw new ForbiddenError("Only professors can create attendance polls");
+  if (!canCreatePoll) {
+    throw new ForbiddenError(
+      "Only professors and TAs can create attendance polls",
+    );
   }
 
   const defaultDuration = env.ATTENDANCE_DEFAULT_DURATION;
@@ -649,11 +665,15 @@ export const startPoll = asyncHandler(async (req, res) => {
   }
 
   const klass = await classService.getClassById(session.classId);
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+  const canCreatePoll = klass.members.some(
+    (member) =>
+      member.userId === userId &&
+      (member.role === "PROFESSOR" || member.role === "TA"),
   );
-  if (!isProfessor) {
-    throw new ForbiddenError("Only professors can create attendance polls");
+  if (!canCreatePoll) {
+    throw new ForbiddenError(
+      "Only professors and TAs can create attendance polls",
+    );
   }
 
   // Create poll
@@ -719,11 +739,13 @@ export const getSessionCodeStatus = asyncHandler(async (req, res) => {
 
   // Check authorization
   const klass = await classService.getClassById(session.classId);
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+  const canView = klass.members.some(
+    (member) =>
+      member.userId === userId &&
+      (member.role === "PROFESSOR" || member.role === "TA"),
   );
-  if (!isProfessor) {
-    throw new ForbiddenError("Only professors can view code status");
+  if (!canView) {
+    throw new ForbiddenError("Only professors and TAs can view code status");
   }
 
   // Get latest poll
@@ -751,11 +773,15 @@ export const toggleCoursePane = asyncHandler(async (req, res) => {
     throw new NotFoundError("Course not found");
   }
 
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
+  const canView = klass.members.some(
+    (member) =>
+      member.userId === userId &&
+      (member.role === "PROFESSOR" || member.role === "TA"),
   );
-  if (!isProfessor) {
-    throw new ForbiddenError("Only professors can view course attendance");
+  if (!canView) {
+    throw new ForbiddenError(
+      "Only professors and TAs can view course attendance",
+    );
   }
 
   // Get sessions for the class
