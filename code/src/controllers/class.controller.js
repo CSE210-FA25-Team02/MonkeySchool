@@ -20,9 +20,7 @@
 import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import * as pulseService from "../services/pulse.service.js";
-import {
-  createBaseLayout,
-} from "../utils/html-templates.js";
+import { createBaseLayout } from "../utils/html-templates.js";
 import {
   displayInvite,
   renderClassList,
