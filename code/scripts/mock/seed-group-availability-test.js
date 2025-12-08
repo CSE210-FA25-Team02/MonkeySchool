@@ -304,51 +304,51 @@ async function seedGroupAvailabilityTest() {
     console.log(`- Your email: ${you.email}`);
     console.log("- Groups you're in:");
     console.log(
-      `  • ${testClass.id}-${group1.name} (4 members: You*, Alice, Bob, Charlie)`
+      `  • ${testClass.id}-${group1.name} (4 members: You*, Alice, Bob, Charlie)`,
     );
     console.log(
-      `  • ${testClass.id}-${group2.name} (3 members: You, Diana*, Eve)`
+      `  • ${testClass.id}-${group2.name} (3 members: You, Diana*, Eve)`,
     );
 
     console.log("\n🎨 Expected color patterns when you test:");
     console.log("Group 1 (4 members):");
     console.log(
-      "  • Monday 1-3 PM: 3/4 available (You, Alice, Charlie) = Dark green"
+      "  • Monday 1-3 PM: 3/4 available (You, Alice, Charlie) = Dark green",
     );
     console.log(
-      "  • Tuesday 1-3 PM: 2/4 available (You, Charlie) = Medium green"
+      "  • Tuesday 1-3 PM: 2/4 available (You, Charlie) = Medium green",
     );
     console.log(
-      "  • Wednesday 1-3 PM: 3/4 available (You, Alice, Charlie) = Dark green"
+      "  • Wednesday 1-3 PM: 3/4 available (You, Alice, Charlie) = Dark green",
     );
     console.log(
-      "  • Thursday 11-4 PM: 2/4 available (You, Bob) = Medium green"
+      "  • Thursday 11-4 PM: 2/4 available (You, Bob) = Medium green",
     );
     console.log(
-      "  • Friday 10-3 PM: 2/4 available (You, Alice) = Medium green"
+      "  • Friday 10-3 PM: 2/4 available (You, Alice) = Medium green",
     );
 
     console.log("\nGroup 2 (3 members):");
     console.log(
-      "  • Monday 10-12 PM: 2/3 available (You, Diana) = Medium-dark green"
+      "  • Monday 10-12 PM: 2/3 available (You, Diana) = Medium-dark green",
     );
     console.log(
-      "  • Tuesday 10-12 PM: 2/3 available (You, Diana) = Medium-dark green"
+      "  • Tuesday 10-12 PM: 2/3 available (You, Diana) = Medium-dark green",
     );
     console.log(
-      "  • Wednesday 2-4 PM: 2/3 available (You, Eve) = Medium-dark green"
+      "  • Wednesday 2-4 PM: 2/3 available (You, Eve) = Medium-dark green",
     );
 
     console.log("\n🧪 To test:");
     console.log("1. Start your app and login with j9yin@ucsd.edu");
     console.log("2. Go to /availability page");
     console.log(
-      "3. You should see 2 group sections below your personal calendar"
+      "3. You should see 2 group sections below your personal calendar",
     );
     console.log("4. Test expanding/collapsing sections");
     console.log("5. Hover over time slots to see 'X/Y available' tooltips");
     console.log(
-      "6. Check different color intensities based on availability overlap"
+      "6. Check different color intensities based on availability overlap",
     );
   } catch (error) {
     console.error("❌ Error creating test data:", error);
@@ -361,7 +361,7 @@ async function seedGroupAvailabilityTest() {
 seedGroupAvailabilityTest()
   .then(() => {
     console.log(
-      "\n🎉 Ready to test! Login with j9yin@ucsd.edu and visit /availability"
+      "\n🎉 Ready to test! Login with j9yin@ucsd.edu and visit /availability",
     );
     process.exit(0);
   })

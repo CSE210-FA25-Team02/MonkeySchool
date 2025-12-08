@@ -68,7 +68,7 @@ function getDateNDaysAgo(daysAgo) {
  */
 export async function createPulseEntries() {
   console.log(
-    "Creating 100 pulse entries for Advanced Software Engineering and Project Management..."
+    "Creating 100 pulse entries for Advanced Software Engineering and Project Management...",
   );
 
   // Find the specific class
@@ -81,7 +81,7 @@ export async function createPulseEntries() {
 
   if (!targetClass) {
     console.log(
-      "Advanced Software Engineering and Project Management class not found. Skipping pulse entry creation."
+      "Advanced Software Engineering and Project Management class not found. Skipping pulse entry creation.",
     );
     return 0;
   }
@@ -100,7 +100,7 @@ export async function createPulseEntries() {
 
   if (studentRoles.length === 0) {
     console.log(
-      "No students found in Advanced Software Engineering and Project Management. Skipping pulse entry creation."
+      "No students found in Advanced Software Engineering and Project Management. Skipping pulse entry creation.",
     );
     return 0;
   }
@@ -193,8 +193,8 @@ export async function createPulseEntries() {
             value: entry.value,
             date: entry.date,
           },
-        })
-      )
+        }),
+      ),
     );
 
     createdCount += batch.length;

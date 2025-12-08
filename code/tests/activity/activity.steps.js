@@ -34,7 +34,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -48,7 +48,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(/^a student activity category "(.*)" exists$/, async (catName) => {
@@ -89,7 +89,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -103,7 +103,7 @@ defineFeature(feature, (test) => {
             role: "TA",
           },
         });
-      }
+      },
     );
 
     and(/^a TA activity category "(.*)" exists$/, async (catName) => {
@@ -149,7 +149,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -163,7 +163,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(/^an all activity category "(.*)" exists$/, async (catName) => {
@@ -204,7 +204,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -218,7 +218,7 @@ defineFeature(feature, (test) => {
             role: "TA",
           },
         });
-      }
+      },
     );
 
     and(/^an all activity category "(.*)" exists$/, async (catName) => {
@@ -259,7 +259,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -273,7 +273,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(/^a student activity category "(.*)" exists$/, async (catName) => {
@@ -295,7 +295,7 @@ defineFeature(feature, (test) => {
           endTime: "2025-01-01T11:00:00Z",
         };
         context.activity = await activityService.createActivity(activityData);
-      }
+      },
     );
 
     when(
@@ -304,7 +304,7 @@ defineFeature(feature, (test) => {
         context.response = await request
           .get(`/activity/${context.activity.id}`)
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the student recieives the "Studying" activity punch$/, () => {
@@ -324,7 +324,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -338,7 +338,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(/^a student activity category "(.*)" exists$/, async (catName) => {
@@ -368,7 +368,7 @@ defineFeature(feature, (test) => {
           endTime: "2025-01-01T11:00:00Z",
         };
         context.activity = await activityService.createActivity(activityData);
-      }
+      },
     );
 
     and(
@@ -382,7 +382,7 @@ defineFeature(feature, (test) => {
           endTime: "2025-01-01T11:00:00Z",
         };
         context.activity2 = await activityService.createActivity(activityData);
-      }
+      },
     );
 
     when(/^the student attempts to get all of their activities$/, async () => {
@@ -402,7 +402,7 @@ defineFeature(feature, (test) => {
         expect(context.response.body[1].categoryId).toBe(context.category2.id);
         expect(context.response.body[1].classId).toBe(context.klass.id);
         expect(context.response.body[1].userId).toBe(context.user.id);
-      }
+      },
     );
   });
 
@@ -415,7 +415,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -429,7 +429,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(/^a student activity category "(.*)" exists$/, async (catName) => {
@@ -459,7 +459,7 @@ defineFeature(feature, (test) => {
           endTime: "2025-01-01T11:00:00Z",
         };
         context.activity = await activityService.createActivity(activityData);
-      }
+      },
     );
 
     when(
@@ -475,7 +475,7 @@ defineFeature(feature, (test) => {
           .put(`/activity/${context.activity.id}`)
           .send(activityData)
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the student recieves a "Lecture" activity punch$/, () => {
@@ -495,7 +495,7 @@ defineFeature(feature, (test) => {
           data: { email: email, name: name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -509,7 +509,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(/^a student activity category "(.*)" exists$/, async (catName) => {
@@ -531,7 +531,7 @@ defineFeature(feature, (test) => {
           endTime: "2025-01-01T11:00:00Z",
         };
         context.activity = await activityService.createActivity(activityData);
-      }
+      },
     );
 
     when(/^the student deletes the activity punch$/, async () => {

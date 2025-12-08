@@ -20,23 +20,29 @@ defineFeature(feature, (test) => {
   });
 
   test("Create a new class as Professor", ({ when, then, and }) => {
-    when(/^I create a class named "(.*)" for "(.*)"$/, async (name, quarter) => {
-      // Ensure request is authenticated as a professor
-      context.user = await prisma.user.create({
-        data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
-      });
-      const token = generateToken(context.user);
-      context.response = await request
-        .post("/classes/create")
-        .set("Cookie", `auth_token=${token}`)
-        .send({ name, quarter });
-      context.klass = context.response.body;
-    });
+    when(
+      /^I create a class named "(.*)" for "(.*)"$/,
+      async (name, quarter) => {
+        // Ensure request is authenticated as a professor
+        context.user = await prisma.user.create({
+          data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
+        });
+        const token = generateToken(context.user);
+        context.response = await request
+          .post("/classes/create")
+          .set("Cookie", `auth_token=${token}`)
+          .send({ name, quarter });
+        context.klass = context.response.body;
+      },
+    );
 
-    then(/^a class named "(.*)" for "(.*)" should exist$/, async (name, quarter) => {
-      const klass = await prisma.class.findFirst({ where: { name } });
-      expect(klass).not.toBeNull();
-    });
+    then(
+      /^a class named "(.*)" for "(.*)" should exist$/,
+      async (name, quarter) => {
+        const klass = await prisma.class.findFirst({ where: { name } });
+        expect(klass).not.toBeNull();
+      },
+    );
 
     and("the class should have an auto-generated invite code", () => {
       expect(context.klass.inviteCode).toBeDefined();
@@ -50,21 +56,24 @@ defineFeature(feature, (test) => {
       context.user = await prisma.user.create({
         data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
       });
-      context.klass = await classService.createClass({ name, quarter});
-      await classRoleService.upsertClassRole({ 
-        userId: context.user.id, 
-        classId: context.klass.id, 
-        role: "PROFESSOR", 
+      context.klass = await classService.createClass({ name, quarter });
+      await classRoleService.upsertClassRole({
+        userId: context.user.id,
+        classId: context.klass.id,
+        role: "PROFESSOR",
       });
     });
 
-    when(/^I rename the class "(.*)" to "(.*)" for "(.*)"$/, async (_, newName, quarter) => {
-      const token = generateToken(context.user);
-      await request
-        .put(`/classes/${context.klass.id}/${quarter}`)
-        .set("Cookie", `auth_token=${token}`)
-        .send({ name: newName });
-    });
+    when(
+      /^I rename the class "(.*)" to "(.*)" for "(.*)"$/,
+      async (_, newName, quarter) => {
+        const token = generateToken(context.user);
+        await request
+          .put(`/classes/${context.klass.id}/${quarter}`)
+          .set("Cookie", `auth_token=${token}`)
+          .send({ name: newName });
+      },
+    );
 
     then(/^a class named "(.*)" should exist$/, async (newName) => {
       const klass = await prisma.class.findFirst({ where: { name: newName } });
@@ -78,21 +87,24 @@ defineFeature(feature, (test) => {
       context.user = await prisma.user.create({
         data: { email: "ta@ucsd.edu", name: "TA User", isProf: false },
       });
-      context.klass = await classService.createClass({ name, quarter});
-      await classRoleService.upsertClassRole({ 
-        userId: context.user.id, 
-        classId: context.klass.id, 
-        role: "TA", 
+      context.klass = await classService.createClass({ name, quarter });
+      await classRoleService.upsertClassRole({
+        userId: context.user.id,
+        classId: context.klass.id,
+        role: "TA",
       });
     });
 
-    when(/^I rename the class "(.*)" to "(.*)" for "(.*)"$/, async (_, newName, quarter) => {
-      const token = generateToken(context.user);
-      await request
-        .put(`/classes/${context.klass.id}/${quarter}`)
-        .set("Cookie", `auth_token=${token}`)
-        .send({ name: newName });
-    });
+    when(
+      /^I rename the class "(.*)" to "(.*)" for "(.*)"$/,
+      async (_, newName, quarter) => {
+        const token = generateToken(context.user);
+        await request
+          .put(`/classes/${context.klass.id}/${quarter}`)
+          .set("Cookie", `auth_token=${token}`)
+          .send({ name: newName });
+      },
+    );
 
     then(/^a class named "(.*)" should exist$/, async (newName) => {
       const klass = await prisma.class.findFirst({ where: { name: newName } });
@@ -104,23 +116,30 @@ defineFeature(feature, (test) => {
     given(/^a class named "(.*)" for "(.*)" exists$/, async (name, quarter) => {
       // Create a user for authentication
       context.user = await prisma.user.create({
-        data: { email: "student@ucsd.edu", name: "Student User", isProf: false },
+        data: {
+          email: "student@ucsd.edu",
+          name: "Student User",
+          isProf: false,
+        },
       });
-      context.klass = await classService.createClass({ name, quarter});
-      await classRoleService.upsertClassRole({ 
-        userId: context.user.id, 
-        classId: context.klass.id, 
-        role: "STUDENT", 
+      context.klass = await classService.createClass({ name, quarter });
+      await classRoleService.upsertClassRole({
+        userId: context.user.id,
+        classId: context.klass.id,
+        role: "STUDENT",
       });
     });
 
-    when(/^I rename the class "(.*)" to "(.*)" for "(.*)"$/, async (_, newName, quarter) => {
-      const token = generateToken(context.user);
-      context.response = await request
-        .put(`/classes/${context.klass.id}/${quarter}`)
-        .set("Cookie", `auth_token=${token}`)
-        .send({ name: newName });
-    });
+    when(
+      /^I rename the class "(.*)" to "(.*)" for "(.*)"$/,
+      async (_, newName, quarter) => {
+        const token = generateToken(context.user);
+        context.response = await request
+          .put(`/classes/${context.klass.id}/${quarter}`)
+          .set("Cookie", `auth_token=${token}`)
+          .send({ name: newName });
+      },
+    );
 
     then(/^the request should be forbidden$/, async () => {
       expect(context.response.status).toBe(403);
@@ -134,10 +153,10 @@ defineFeature(feature, (test) => {
         data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
       });
       context.klass = await classService.createClass({ name, quarter });
-      await classRoleService.upsertClassRole({ 
-        userId: context.user.id, 
-        classId: context.klass.id, 
-        role: "PROFESSOR", 
+      await classRoleService.upsertClassRole({
+        userId: context.user.id,
+        classId: context.klass.id,
+        role: "PROFESSOR",
       });
     });
 
@@ -161,10 +180,10 @@ defineFeature(feature, (test) => {
         data: { email: "ta@ucsd.edu", name: "TA User", isProf: false },
       });
       context.klass = await classService.createClass({ name, quarter });
-      await classRoleService.upsertClassRole({ 
-        userId: context.user.id, 
-        classId: context.klass.id, 
-        role: "TA", 
+      await classRoleService.upsertClassRole({
+        userId: context.user.id,
+        classId: context.klass.id,
+        role: "TA",
       });
     });
 
@@ -184,13 +203,17 @@ defineFeature(feature, (test) => {
     given(/^a class named "(.*)" exists for "(.*)"$/, async (name, quarter) => {
       // Create a user for authentication
       context.user = await prisma.user.create({
-        data: { email: "student@ucsd.edu", name: "Student User", isProf: false },
+        data: {
+          email: "student@ucsd.edu",
+          name: "Student User",
+          isProf: false,
+        },
       });
       context.klass = await classService.createClass({ name, quarter });
-      await classRoleService.upsertClassRole({ 
-        userId: context.user.id, 
-        classId: context.klass.id, 
-        role: "STUDENT", 
+      await classRoleService.upsertClassRole({
+        userId: context.user.id,
+        classId: context.klass.id,
+        role: "STUDENT",
       });
     });
 
@@ -278,7 +301,9 @@ defineFeature(feature, (test) => {
 
     then(/^I should be added to the class called "(.*)"$/, async (name) => {
       expect(context.response.status).toBe(200);
-      expect(context.response.text).toContain(`<h2 style="margin-bottom: 8px;">Welcome to ${name}!</h2>`);
+      expect(context.response.text).toContain(
+        `<h2 style="margin-bottom: 8px;">Welcome to ${name}!</h2>`,
+      );
     });
   });
 
@@ -297,17 +322,22 @@ defineFeature(feature, (test) => {
       context.klass = await classService.createClass({ name });
     });
 
-    when(/^I request to join a class with an invalid invite code$/, async () => {
-      const token = generateToken(context.user);
-      const inviteCode = 9999;
-      context.response = await request
-        .get(`/invite/${inviteCode}`)
-        .set("Cookie", `auth_token=${token}`);
-    });
+    when(
+      /^I request to join a class with an invalid invite code$/,
+      async () => {
+        const token = generateToken(context.user);
+        const inviteCode = 9999;
+        context.response = await request
+          .get(`/invite/${inviteCode}`)
+          .set("Cookie", `auth_token=${token}`);
+      },
+    );
 
     then(/^I should recieve an invalid invite$/, async () => {
       expect(context.response.status).toBe(404);
-      expect(context.response.text).toContain('<h2 style="margin-bottom: 8px;">Invalid Invite Code</h2>');
+      expect(context.response.text).toContain(
+        '<h2 style="margin-bottom: 8px;">Invalid Invite Code</h2>',
+      );
     });
   });
 
@@ -361,7 +391,7 @@ defineFeature(feature, (test) => {
         });
         context.classes = context.classes || [];
         context.classes.push(klass);
-      }
+      },
     );
 
     and(
@@ -376,7 +406,7 @@ defineFeature(feature, (test) => {
           },
         });
         context.classes.push(klass);
-      }
+      },
     );
 
     when(/^I request the classes for "(.*)"$/, async (name) => {
@@ -393,7 +423,7 @@ defineFeature(feature, (test) => {
         const classNames = context.response.body.map((c) => c.name);
         expect(classNames).toContain(className1);
         expect(classNames).toContain(className2);
-      }
+      },
     );
   });
 });

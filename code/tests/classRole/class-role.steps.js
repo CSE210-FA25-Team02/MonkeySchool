@@ -114,13 +114,13 @@ defineFeature(feature, (test) => {
       (className, inviteCode) => {
         expect(context.class.name).toBe(className);
         expect(context.class.inviteCode).toBe(inviteCode);
-      }
+      },
     );
 
     given(/^I am a professor in the class$/, async () => {
       const role = await classRoleService.getClassRole(
         context.user.id,
-        context.class.id
+        context.class.id,
       );
       expect(role.role).toBe("PROFESSOR");
     });
@@ -139,7 +139,7 @@ defineFeature(feature, (test) => {
 
     given(/^I am on the class directory page$/, async () => {
       context.response = await request.get(
-        `/classes/${context.class.id}/directory`
+        `/classes/${context.class.id}/directory`,
       );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
@@ -151,7 +151,7 @@ defineFeature(feature, (test) => {
 
       // Verify the role management button exists
       const button = context.dom.window.document.querySelector(
-        `button[onclick="toggleRoleDropdown('${student.id}')"]`
+        `button[onclick="toggleRoleDropdown('${student.id}')"]`,
       );
       expect(button).toBeTruthy();
     });
@@ -174,7 +174,7 @@ defineFeature(feature, (test) => {
       // Verify in database
       const updatedRole = await classRoleService.getClassRole(
         context.students[0].id,
-        context.class.id
+        context.class.id,
       );
       expect(updatedRole.role).toBe("TA");
     });
@@ -184,7 +184,7 @@ defineFeature(feature, (test) => {
       const roleBadges =
         context.dom.window.document.querySelectorAll(".role-badge");
       const taRoleBadge = Array.from(roleBadges).find(
-        (badge) => badge.textContent.trim() === roleText
+        (badge) => badge.textContent.trim() === roleText,
       );
       expect(taRoleBadge).toBeTruthy();
       expect(taRoleBadge.textContent.trim()).toBe(roleText);
@@ -221,13 +221,13 @@ defineFeature(feature, (test) => {
       (className, inviteCode) => {
         expect(context.class.name).toBe(className);
         expect(context.class.inviteCode).toBe(inviteCode);
-      }
+      },
     );
 
     given(/^I am a professor in the class$/, async () => {
       const role = await classRoleService.getClassRole(
         context.user.id,
-        context.class.id
+        context.class.id,
       );
       expect(role.role).toBe("PROFESSOR");
     });
@@ -246,7 +246,7 @@ defineFeature(feature, (test) => {
 
     given(/^I am on the class directory page$/, async () => {
       context.response = await request.get(
-        `/classes/${context.class.id}/directory`
+        `/classes/${context.class.id}/directory`,
       );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
@@ -256,7 +256,7 @@ defineFeature(feature, (test) => {
       expect(context.ta.email).toBe(email);
 
       const button = context.dom.window.document.querySelector(
-        `button[onclick="toggleRoleDropdown('${context.ta.id}')"]`
+        `button[onclick="toggleRoleDropdown('${context.ta.id}')"]`,
       );
       expect(button).toBeTruthy();
     });
@@ -276,7 +276,7 @@ defineFeature(feature, (test) => {
 
       const updatedRole = await classRoleService.getClassRole(
         context.ta.id,
-        context.class.id
+        context.class.id,
       );
       expect(updatedRole.role).toBe("STUDENT");
     });
@@ -286,7 +286,7 @@ defineFeature(feature, (test) => {
       const roleBadges =
         context.dom.window.document.querySelectorAll(".role-badge");
       const expectedRoleBadge = Array.from(roleBadges).find(
-        (badge) => badge.textContent.trim() === roleText
+        (badge) => badge.textContent.trim() === roleText,
       );
       expect(expectedRoleBadge).toBeTruthy();
       expect(expectedRoleBadge.textContent.trim()).toBe(roleText);
@@ -321,13 +321,13 @@ defineFeature(feature, (test) => {
       (className, inviteCode) => {
         expect(context.class.name).toBe(className);
         expect(context.class.inviteCode).toBe(inviteCode);
-      }
+      },
     );
 
     given(/^I am a professor in the class$/, async () => {
       const role = await classRoleService.getClassRole(
         context.user.id,
-        context.class.id
+        context.class.id,
       );
       expect(role.role).toBe("PROFESSOR");
     });
@@ -346,7 +346,7 @@ defineFeature(feature, (test) => {
 
     given(/^I am on the class directory page$/, async () => {
       context.response = await request.get(
-        `/classes/${context.class.id}/directory`
+        `/classes/${context.class.id}/directory`,
       );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
@@ -364,7 +364,7 @@ defineFeature(feature, (test) => {
 
     when(/^I click the role management button for myself$/, () => {
       const button = context.dom.window.document.querySelector(
-        `button[onclick="toggleRoleDropdown('${context.user.id}')"]`
+        `button[onclick="toggleRoleDropdown('${context.user.id}')"]`,
       );
       expect(button).toBeTruthy();
     });
@@ -384,7 +384,7 @@ defineFeature(feature, (test) => {
 
       const updatedRole = await classRoleService.getClassRole(
         context.user.id,
-        context.class.id
+        context.class.id,
       );
       expect(updatedRole.role).toBe("STUDENT");
     });
@@ -394,7 +394,7 @@ defineFeature(feature, (test) => {
       const roleBadges =
         context.dom.window.document.querySelectorAll(".role-badge");
       const expectedRoleBadge = Array.from(roleBadges).find(
-        (badge) => badge.textContent.trim() === roleText
+        (badge) => badge.textContent.trim() === roleText,
       );
       expect(expectedRoleBadge).toBeTruthy();
       expect(expectedRoleBadge.textContent.trim()).toBe(roleText);
@@ -429,13 +429,13 @@ defineFeature(feature, (test) => {
       (className, inviteCode) => {
         expect(context.class.name).toBe(className);
         expect(context.class.inviteCode).toBe(inviteCode);
-      }
+      },
     );
 
     given(/^I am a professor in the class$/, async () => {
       const role = await classRoleService.getClassRole(
         context.user.id,
-        context.class.id
+        context.class.id,
       );
       expect(role.role).toBe("PROFESSOR");
     });
@@ -454,7 +454,7 @@ defineFeature(feature, (test) => {
 
     given(/^I am on the class directory page$/, async () => {
       context.response = await request.get(
-        `/classes/${context.class.id}/directory`
+        `/classes/${context.class.id}/directory`,
       );
       expect(context.response.status).toBe(200);
       context.dom = new JSDOM(context.response.text);
@@ -482,12 +482,12 @@ defineFeature(feature, (test) => {
     when(/^I click the role management button for myself$/, async () => {
       // Refresh page to get updated dropdown state
       context.response = await request.get(
-        `/classes/${context.class.id}/directory`
+        `/classes/${context.class.id}/directory`,
       );
       context.dom = new JSDOM(context.response.text);
 
       const button = context.dom.window.document.querySelector(
-        `button[onclick="toggleRoleDropdown('${context.user.id}')"]`
+        `button[onclick="toggleRoleDropdown('${context.user.id}')"]`,
       );
       expect(button).toBeTruthy();
     });
@@ -495,32 +495,32 @@ defineFeature(feature, (test) => {
     then(/^the "(.*)", "(.*)", and "(.*)" options should be disabled$/, () => {
       // Look specifically for the current user's dropdown options
       const userDropdown = context.dom.window.document.querySelector(
-        `#role-dropdown-${context.user.id}`
+        `#role-dropdown-${context.user.id}`,
       );
       expect(userDropdown).toBeTruthy();
       const disabledButtons = userDropdown.querySelectorAll(
-        ".role-option[disabled]"
+        ".role-option[disabled]",
       );
       expect(disabledButtons.length).toBeGreaterThanOrEqual(3);
     });
 
     then(/^the disabled options should show tooltip "(.*)"$/, (tooltipText) => {
       const userDropdown = context.dom.window.document.querySelector(
-        `#role-dropdown-${context.user.id}`
+        `#role-dropdown-${context.user.id}`,
       );
       const disabledButton = userDropdown.querySelector(
-        ".role-option[disabled]"
+        ".role-option[disabled]",
       );
       expect(disabledButton.getAttribute("title")).toBe(tooltipText);
     });
 
     then(/^only the "(.*)" option should be enabled$/, (roleText) => {
       const userDropdown = context.dom.window.document.querySelector(
-        `#role-dropdown-${context.user.id}`
+        `#role-dropdown-${context.user.id}`,
       );
       expect(userDropdown).toBeTruthy();
       const enabledButtons = userDropdown.querySelectorAll(
-        ".role-option:not([disabled])"
+        ".role-option:not([disabled])",
       );
       expect(enabledButtons.length).toBe(1);
       expect(enabledButtons[0].textContent.trim()).toContain(roleText);
@@ -543,13 +543,13 @@ defineFeature(feature, (test) => {
       (className, inviteCode) => {
         expect(context.class.name).toBe(className);
         expect(context.class.inviteCode).toBe(inviteCode);
-      }
+      },
     );
 
     given(/^I am a professor in the class$/, async () => {
       const role = await classRoleService.getClassRole(
         context.user.id,
-        context.class.id
+        context.class.id,
       );
       expect(role.role).toBe("PROFESSOR");
     });
@@ -571,7 +571,7 @@ defineFeature(feature, (test) => {
       try {
         context.response = await request
           .put(
-            `/classRoles/${context.class.id}/members/${context.user.id}/role`
+            `/classRoles/${context.class.id}/members/${context.user.id}/role`,
           )
           .send({ role: role.toUpperCase() });
 
@@ -589,7 +589,7 @@ defineFeature(feature, (test) => {
     then(/^my role should remain "(.*)"$/, async (role) => {
       const currentRole = await classRoleService.getClassRole(
         context.user.id,
-        context.class.id
+        context.class.id,
       );
       expect(currentRole.role).toBe(role.toUpperCase());
     });
