@@ -429,59 +429,60 @@ defineFeature(feature, (test) => {
     );
   });
 
-
-
   test("Get class directory JSON", ({ given, when, then }) => {
-    given(/^a class named "(.*)" exists with members and groups$/, async (className) => {
-      // Create a user for authentication
-      context.user = await prisma.user.create({
-        data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
-      });
-
-      // Create a class
-      context.klass = await classService.createClass({ name: className });
-
-      // Assign professor role
-      await prisma.classRole.create({
-        data: {
-          userId: context.user.id,
-          classId: context.klass.id,
-          role: "PROFESSOR",
-        },
-      });
-
-      // Add some students
-      context.students = [];
-      for (let i = 0; i < 2; i++) {
-        const student = await prisma.user.create({
-          data: { email: `student${i}@ucsd.edu`, name: `Student ${i}` },
+    given(
+      /^a class named "(.*)" exists with members and groups$/,
+      async (className) => {
+        // Create a user for authentication
+        context.user = await prisma.user.create({
+          data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
         });
-        context.students.push(student);
 
+        // Create a class
+        context.klass = await classService.createClass({ name: className });
+
+        // Assign professor role
         await prisma.classRole.create({
           data: {
-            userId: student.id,
+            userId: context.user.id,
             classId: context.klass.id,
-            role: "STUDENT",
+            role: "PROFESSOR",
           },
         });
-      }
 
-      // Add a group with one student
-      context.group = await prisma.group.create({
-        data: {
-          classId: context.klass.id,
-          name: "Alpha Team",
-          members: {
-            create: {
-              userId: context.students[0].id,
-              role: "LEADER",
+        // Add some students
+        context.students = [];
+        for (let i = 0; i < 2; i++) {
+          const student = await prisma.user.create({
+            data: { email: `student${i}@ucsd.edu`, name: `Student ${i}` },
+          });
+          context.students.push(student);
+
+          await prisma.classRole.create({
+            data: {
+              userId: student.id,
+              classId: context.klass.id,
+              role: "STUDENT",
+            },
+          });
+        }
+
+        // Add a group with one student
+        context.group = await prisma.group.create({
+          data: {
+            classId: context.klass.id,
+            name: "Alpha Team",
+            members: {
+              create: {
+                userId: context.students[0].id,
+                role: "LEADER",
+              },
             },
           },
-        },
-        include: { members: true },
-      });
-    });
+          include: { members: true },
+        });
+      },
+    );
 
     when(/^I request the directory for the class$/, async () => {
       const token = generateToken(context.user);
@@ -521,7 +522,11 @@ defineFeature(feature, (test) => {
     given(/^I am a user with classes exists$/, async () => {
       // Create a test user
       context.user = await prisma.user.create({
-        data: { email: "student@ucsd.edu", name: "Student User", isProf: false },
+        data: {
+          email: "student@ucsd.edu",
+          name: "Student User",
+          isProf: false,
+        },
       });
 
       // Create classes for the user
@@ -568,7 +573,11 @@ defineFeature(feature, (test) => {
     given(/^a user with classes exists$/, async () => {
       // Create a test user
       context.user = await prisma.user.create({
-        data: { email: "student@ucsd.edu", name: "Student User", isProf: false },
+        data: {
+          email: "student@ucsd.edu",
+          name: "Student User",
+          isProf: false,
+        },
       });
 
       // Create classes for the user
@@ -610,25 +619,31 @@ defineFeature(feature, (test) => {
   });
 
   test("Render class page for a student", ({ given, when, then, and }) => {
-    given(/^a user with email "(.*)" and name "(.*)" exists$/, async (email, name) => {
-      context.user = await prisma.user.create({
-        data: { email, name, isProf: false },
-      });
-    });
+    given(
+      /^a user with email "(.*)" and name "(.*)" exists$/,
+      async (email, name) => {
+        context.user = await prisma.user.create({
+          data: { email, name, isProf: false },
+        });
+      },
+    );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
       context.klass = await classService.createClass({ name: className });
     });
 
-    and(/^the user is enrolled in "(.*)" as "(.*)"$/, async (className, role) => {
-      await prisma.classRole.create({
-        data: {
-          userId: context.user.id,
-          classId: context.klass.id,
-          role,
-        },
-      });
-    });
+    and(
+      /^the user is enrolled in "(.*)" as "(.*)"$/,
+      async (className, role) => {
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role,
+          },
+        });
+      },
+    );
 
     when(/^I request the class page for "(.*)"$/, async (className) => {
       const token = generateToken(context.user);
@@ -647,34 +662,40 @@ defineFeature(feature, (test) => {
     });
 
     and(/^the HTML should contain the pulse component$/, async () => {
-      expect(context.response.text).toContain("id=\"pulse-check-container\"");
+      expect(context.response.text).toContain('id="pulse-check-container"');
     });
 
     and(/^the HTML should contain the "Punch In" button$/, async () => {
-      expect(context.response.text).toContain("id=\"class-punch-btn\"");
+      expect(context.response.text).toContain('id="class-punch-btn"');
     });
   });
 
   test("Render class page for an instructor", ({ given, when, then, and }) => {
-    given(/^a user with email "(.*)" and name "(.*)" exists$/, async (email, name) => {
-      context.user = await prisma.user.create({
-        data: { email, name, isProf: true },
-      });
-    });
+    given(
+      /^a user with email "(.*)" and name "(.*)" exists$/,
+      async (email, name) => {
+        context.user = await prisma.user.create({
+          data: { email, name, isProf: true },
+        });
+      },
+    );
 
     and(/^a class named "(.*)" exists$/, async (className) => {
       context.klass = await classService.createClass({ name: className });
     });
 
-    and(/^the user is enrolled in "(.*)" as "(.*)"$/, async (className, role) => {
-      await prisma.classRole.create({
-        data: {
-          userId: context.user.id,
-          classId: context.klass.id,
-          role,
-        },
-      });
-    });
+    and(
+      /^the user is enrolled in "(.*)" as "(.*)"$/,
+      async (className, role) => {
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role,
+          },
+        });
+      },
+    );
 
     when(/^I request the class page for "(.*)"$/, async (className) => {
       const token = generateToken(context.user);
@@ -693,8 +714,7 @@ defineFeature(feature, (test) => {
     });
 
     and(/^the HTML should NOT contain the pulse component$/, async () => {
-      expect(context.response.text).not.toContain("id=\"pulse-check-container\"");
+      expect(context.response.text).not.toContain('id="pulse-check-container"');
     });
   });
-
 });
