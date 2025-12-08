@@ -171,7 +171,7 @@ function renderRecentClassesList(classes) {
                 <a href="/classes/${c.id}" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></a>
             </div>
         </div>
-    `
+    `,
     )
     .join("");
 }

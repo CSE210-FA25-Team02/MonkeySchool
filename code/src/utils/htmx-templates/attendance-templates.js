@@ -25,7 +25,7 @@ export function renderAttendancePage(
   professorCourses = [],
   studentCourses = [],
   studentHistory = [],
-  emptyStateFlags = {}
+  emptyStateFlags = {},
 ) {
   const {
     hasProfessorCourses = false,
@@ -357,7 +357,7 @@ export function renderAttendancePage(
 export function createStartAttendanceModal(
   sessionId,
   courseIdOrDuration,
-  durationMinutes
+  durationMinutes,
 ) {
   // Handle both new signature (sessionId, courseId, durationMinutes) and legacy (sessionId, durationMinutes)
   let courseId;
@@ -625,7 +625,7 @@ function renderStudentView(
   courses = [],
   userId = null,
   hasStudentCourses = false,
-  hasAttendanceRecords = false
+  hasAttendanceRecords = false,
 ) {
   return `
     <div class="attendance-student-grid">
@@ -689,7 +689,7 @@ function renderStudentCourseCard(course, userId) {
   // userId should always be provided, but handle gracefully if not
   if (!userId) {
     console.warn(
-      "renderStudentCourseCard: userId not provided, cannot create attendance link"
+      "renderStudentCourseCard: userId not provided, cannot create attendance link",
     );
     return `
       <div class="bento-card" style="display: flex; flex-direction: column;">
@@ -1131,7 +1131,7 @@ export function renderStudentAttendanceForm({
             <option value="${escapeHtml(course.id)}" ${selectedCourseId === course.id ? "selected" : ""}>
               ${escapeHtml(course.name)}${course.quarter ? ` (${escapeHtml(course.quarter)})` : ""}
             </option>
-          `
+          `,
             )
             .join("")}
         </select>
@@ -1481,7 +1481,7 @@ export function displayCourseRecordsPage(data) {
                   <th style="min-width: 150px; text-align: center; white-space: nowrap;">
                     ${formatSessionHeader(session)}
                   </th>
-                `
+                `,
                   )
                   .join("")}
                 <th style="min-width: 120px; text-align: center;">Attendance %</th>

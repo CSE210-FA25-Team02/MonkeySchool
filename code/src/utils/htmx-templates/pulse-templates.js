@@ -74,12 +74,12 @@ export function renderPulseAnalyticsPage(data) {
     classInfo.id,
     range,
     analyticsData,
-    selectedDate
+    selectedDate,
   );
   const detailsTable = renderDetailsTable(
     classInfo.id,
     selectedDate,
-    detailsData
+    detailsData,
   );
 
   return `
@@ -306,7 +306,7 @@ function renderChartContainer(
   classId,
   range,
   analyticsData,
-  selectedDate = null
+  selectedDate = null,
 ) {
   if (analyticsData.length === 0) {
     return `
@@ -366,7 +366,7 @@ function renderLineChart(classId, range, data, selectedDate = null) {
       ? points
           .map(
             (p, i) =>
-              `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`
+              `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`,
           )
           .join(" ")
       : "";
@@ -383,10 +383,10 @@ function renderLineChart(classId, range, data, selectedDate = null) {
     const y =
       padding.top + chartHeight - ((i - minPulse) / pulseRange) * chartHeight;
     gridLines.push(
-      `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="var(--color-border)" stroke-width="1" opacity="0.3" />`
+      `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="var(--color-border)" stroke-width="1" opacity="0.3" />`,
     );
     gridLines.push(
-      `<text x="${padding.left - 10}" y="${y + 4}" text-anchor="end" fill="var(--color-text-muted)" font-size="12">${i}</text>`
+      `<text x="${padding.left - 10}" y="${y + 4}" text-anchor="end" fill="var(--color-text-muted)" font-size="12">${i}</text>`,
     );
   }
 
@@ -398,7 +398,7 @@ function renderLineChart(classId, range, data, selectedDate = null) {
       const point = points[i];
       const date = formatDateShort(data[i].date);
       dateLabels.push(
-        `<text x="${point.x}" y="${height - padding.bottom + 20}" text-anchor="middle" fill="var(--color-text-muted)" font-size="11">${escapeHtml(date)}</text>`
+        `<text x="${point.x}" y="${height - padding.bottom + 20}" text-anchor="middle" fill="var(--color-text-muted)" font-size="11">${escapeHtml(date)}</text>`,
       );
     }
     // Always show last date
@@ -406,7 +406,7 @@ function renderLineChart(classId, range, data, selectedDate = null) {
       const lastPoint = points[points.length - 1];
       const lastDate = formatDateShort(data[data.length - 1].date);
       dateLabels.push(
-        `<text x="${lastPoint.x}" y="${height - padding.bottom + 20}" text-anchor="middle" fill="var(--color-text-muted)" font-size="11">${escapeHtml(lastDate)}</text>`
+        `<text x="${lastPoint.x}" y="${height - padding.bottom + 20}" text-anchor="middle" fill="var(--color-text-muted)" font-size="11">${escapeHtml(lastDate)}</text>`,
       );
     }
   }
@@ -491,7 +491,7 @@ function renderDetailsTable(classId, selectedDate, detailsData) {
         </td>
         <td>${formatDate(entry.date)}</td>
       </tr>
-    `
+    `,
     )
     .join("");
 

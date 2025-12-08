@@ -15,14 +15,14 @@ const router = Router();
 router.get(
   "/classes/:id/schedule",
   requireAuth,
-  asyncHandler(scheduleController.renderClassSchedule)
+  asyncHandler(scheduleController.renderClassSchedule),
 );
 
 // Create event
 router.post(
   "/events/create",
   requireAuth,
-  asyncHandler(eventController.createEvent)
+  asyncHandler(eventController.createEvent),
 );
 
 // Get event by ID
@@ -32,21 +32,21 @@ router.get("/events/:id", requireAuth, asyncHandler(eventController.getEvent));
 router.get(
   "/events/:id/edit",
   requireAuth,
-  asyncHandler(eventController.getEventEditForm)
+  asyncHandler(eventController.getEventEditForm),
 );
 
 // Update event
 router.put(
   "/events/:id",
   requireAuth,
-  asyncHandler(eventController.updateEvent)
+  asyncHandler(eventController.updateEvent),
 );
 
 // Delete event
 router.delete(
   "/events/:id",
   requireAuth,
-  asyncHandler(eventController.deleteEvent)
+  asyncHandler(eventController.deleteEvent),
 );
 
 export default router;

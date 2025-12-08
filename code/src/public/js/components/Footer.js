@@ -17,7 +17,7 @@ export class Footer {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(
-        `Footer: Container with id "${this.containerId}" not found`
+        `Footer: Container with id "${this.containerId}" not found`,
       );
       return;
     }

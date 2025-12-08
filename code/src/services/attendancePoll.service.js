@@ -29,7 +29,7 @@ async function isCodeUnique(code) {
 export async function createAttendancePoll(
   sessionId,
   durationMinutes,
-  createdBy
+  createdBy,
 ) {
   // Use provided duration or default from config (ensure it's a number)
   const duration =

@@ -42,7 +42,7 @@ export async function generateUniqueCode(uniquenessChecker) {
   }
 
   throw new Error(
-    `Failed to generate unique code after ${MAX_RETRIES} attempts`
+    `Failed to generate unique code after ${MAX_RETRIES} attempts`,
   );
 }
 

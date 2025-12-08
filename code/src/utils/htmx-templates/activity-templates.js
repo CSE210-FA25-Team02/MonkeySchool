@@ -159,7 +159,7 @@ export function createEditActivityModal(categories, activity, classes) {
                         <option value="${c.id}" ${c.id === activity.categoryId ? "selected" : ""}>
                                 ${c.name}
                         </option>
-                        `
+                        `,
                           )
                           .join("")}
                     </select>
@@ -225,7 +225,7 @@ export function refreshCategories(categories, categoryId) {
             <option value="${c.id}" ${c.id === categoryId ? "selected" : ""}>
                     ${c.name}
             </option>
-            `
+            `,
               )
               .join("")}
         </select>

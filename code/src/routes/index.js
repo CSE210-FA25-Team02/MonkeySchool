@@ -42,7 +42,7 @@ router.use("/:quarter/classRoles", classRoleRoutes);
 router.get(
   "/invite/:code",
   requireAuth,
-  asyncHandler(classController.joinClassByInviteCode)
+  asyncHandler(classController.joinClassByInviteCode),
 );
 
 export default router;

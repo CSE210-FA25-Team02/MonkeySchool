@@ -9,7 +9,7 @@ const router = Router({ mergeParams: true });
 router.put(
   "/:classId/members/:userId/role",
   requireAuth,
-  asyncHandler(classRoleController.changeMemberRole)
+  asyncHandler(classRoleController.changeMemberRole),
 );
 
 export default router;

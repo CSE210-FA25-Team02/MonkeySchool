@@ -22,7 +22,7 @@ export class SubMenu {
     this.container = document.getElementById(this.containerId);
     if (!this.container) {
       console.error(
-        `SubMenu: Container with id "${this.containerId}" not found`
+        `SubMenu: Container with id "${this.containerId}" not found`,
       );
       return;
     }
