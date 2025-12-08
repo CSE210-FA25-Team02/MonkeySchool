@@ -66,3 +66,38 @@ Feature: Class Management
     And a class named "Class 2" exists and includes "Bob Student"
     When I request the classes for "Bob Student"
     Then I should receive the classes "Class 1" and "Class 2"
+  
+  Scenario: Get class directory JSON
+    Given a class named "Class 1" exists with members and groups
+    When I request the directory for the class
+    Then I should receive the organized class directory
+
+  Scenario: View classes as a full page
+    Given I am a user with classes exists
+    When I request my classes as a normal page
+    Then I should receive the full page HTML
+
+  Scenario: View classes as a partial HTMX
+    Given a user with classes exists
+    When I request my classes via HTMX
+    Then I should receive the class list HTML
+
+  Scenario: Render class page for a student
+    Given a user with email "student@ucsd.edu" and name "Student User" exists
+    And a class named "Algorithms 101" exists
+    And the user is enrolled in "Algorithms 101" as "STUDENT"
+    When I request the class page for "Algorithms 101"
+    Then I should receive the full page HTML
+    And the HTML should contain "Algorithms 101"
+    And the HTML should contain the pulse component
+    And the HTML should contain the "Punch In" button
+
+  Scenario: Render class page for an instructor
+    Given a user with email "professor@ucsd.edu" and name "Professor User" exists
+    And a class named "Algorithms 101" exists
+    And the user is enrolled in "Algorithms 101" as "PROFESSOR"
+    When I request the class page for "Algorithms 101"
+    Then I should receive the full page HTML
+    And the HTML should contain "Algorithms 101"
+    And the HTML should NOT contain the pulse component
+    

@@ -84,17 +84,6 @@ router.get(
 );
 
 // ============================================
-// FORM ROUTES
-// ============================================
-
-router.get(
-  "/form",
-  requireAuth,
-  asyncHandler(classController.renderCreateClassForm),
-);
-router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
-
-// ============================================
 // JSON API ROUTES
 // ============================================
 

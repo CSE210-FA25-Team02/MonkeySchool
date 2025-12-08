@@ -17,6 +17,8 @@ defineFeature(feature, (test) => {
     context.klass = undefined;
     context.response = undefined;
     context.user = undefined;
+    context.students = undefined;
+    context.group = undefined;
   });
 
   test("Create a new class as Professor", ({ when, then, and }) => {
@@ -426,4 +428,273 @@ defineFeature(feature, (test) => {
       },
     );
   });
+
+
+
+  test("Get class directory JSON", ({ given, when, then }) => {
+    given(/^a class named "(.*)" exists with members and groups$/, async (className) => {
+      // Create a user for authentication
+      context.user = await prisma.user.create({
+        data: { email: "prof@ucsd.edu", name: "Prof User", isProf: true },
+      });
+
+      // Create a class
+      context.klass = await classService.createClass({ name: className });
+
+      // Assign professor role
+      await prisma.classRole.create({
+        data: {
+          userId: context.user.id,
+          classId: context.klass.id,
+          role: "PROFESSOR",
+        },
+      });
+
+      // Add some students
+      context.students = [];
+      for (let i = 0; i < 2; i++) {
+        const student = await prisma.user.create({
+          data: { email: `student${i}@ucsd.edu`, name: `Student ${i}` },
+        });
+        context.students.push(student);
+
+        await prisma.classRole.create({
+          data: {
+            userId: student.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+      }
+
+      // Add a group with one student
+      context.group = await prisma.group.create({
+        data: {
+          classId: context.klass.id,
+          name: "Alpha Team",
+          members: {
+            create: {
+              userId: context.students[0].id,
+              role: "LEADER",
+            },
+          },
+        },
+        include: { members: true },
+      });
+    });
+
+    when(/^I request the directory for the class$/, async () => {
+      const token = generateToken(context.user);
+
+      context.response = await request
+        .get(`/classes/${context.klass.id}/directory/json`)
+        .set("Cookie", `auth_token=${token}`);
+    });
+
+    then(/^I should receive the organized class directory$/, async () => {
+      expect(context.response.status).toBe(200);
+      const data = context.response.body;
+
+      // Check class info
+      expect(data.class.id).toBe(context.klass.id);
+      expect(data.class.name).toBe(context.klass.name);
+
+      // Check professor
+      expect(data.professors).toHaveLength(1);
+      expect(data.professors[0].id).toBe(context.user.id);
+
+      // Check students without group
+      expect(data.studentsWithoutGroup).toHaveLength(1);
+      expect(data.studentsWithoutGroup[0].id).toBe(context.students[1].id);
+
+      // Check group members
+      expect(data.groups).toHaveLength(1);
+      const group = data.groups[0];
+      expect(group.name).toBe("Alpha Team");
+      expect(group.members).toHaveLength(1);
+      expect(group.members[0].isLeader).toBe(true);
+      expect(group.members[0].id).toBe(context.students[0].id);
+    });
+  });
+
+  test("View classes as a full page", ({ given, when, then }) => {
+    given(/^I am a user with classes exists$/, async () => {
+      // Create a test user
+      context.user = await prisma.user.create({
+        data: { email: "student@ucsd.edu", name: "Student User", isProf: false },
+      });
+
+      // Create classes for the user
+      context.classes = [];
+      for (let i = 1; i <= 2; i++) {
+        const klass = await classService.createClass({ name: `Class ${i}` });
+        await prisma.classRole.create({
+          data: {
+            classId: klass.id,
+            userId: context.user.id,
+            role: "STUDENT",
+          },
+        });
+        context.classes.push(klass);
+      }
+    });
+
+    when(/^I request my classes as a normal page$/, async () => {
+      const token = generateToken(context.user);
+
+      context.response = await request
+        .get("/classes/my-classes")
+        .set("Cookie", `auth_token=${token}`);
+    });
+
+    then(/^I should receive the full page HTML$/, async () => {
+      expect(context.response.status).toBe(200);
+      const html = context.response.text;
+
+      // Should include the main page title
+      expect(html).toContain("My Classes");
+
+      // Should include all class names
+      context.classes.forEach((klass) => {
+        expect(html).toContain(klass.name);
+      });
+
+      // Should include the "Create / Join Class" button
+      expect(html).toContain("Create / Join Class");
+    });
+  });
+
+  test("View classes as a partial HTMX", ({ given, when, then }) => {
+    given(/^a user with classes exists$/, async () => {
+      // Create a test user
+      context.user = await prisma.user.create({
+        data: { email: "student@ucsd.edu", name: "Student User", isProf: false },
+      });
+
+      // Create classes for the user
+      context.classes = [];
+      for (let i = 1; i <= 2; i++) {
+        const klass = await classService.createClass({ name: `Class ${i}` });
+        await prisma.classRole.create({
+          data: {
+            classId: klass.id,
+            userId: context.user.id,
+            role: "STUDENT",
+          },
+        });
+        context.classes.push(klass);
+      }
+    });
+
+    when(/^I request my classes via HTMX$/, async () => {
+      const token = generateToken(context.user);
+
+      context.response = await request
+        .get("/classes/user/classes")
+        .set("Cookie", `auth_token=${token}`)
+        .set("hx-request", "true"); // mark as HTMX request
+    });
+
+    then(/^I should receive the class list HTML$/, async () => {
+      expect(context.response.status).toBe(200);
+      const html = context.response.text;
+
+      // Check for class names in the HTML
+      context.classes.forEach((klass) => {
+        expect(html).toContain(klass.name);
+      });
+
+      // Check that it does NOT include the full-page wrapper (like "My Classes" title)
+      expect(html).not.toContain("My Classes");
+    });
+  });
+
+  test("Render class page for a student", ({ given, when, then, and }) => {
+    given(/^a user with email "(.*)" and name "(.*)" exists$/, async (email, name) => {
+      context.user = await prisma.user.create({
+        data: { email, name, isProf: false },
+      });
+    });
+
+    and(/^a class named "(.*)" exists$/, async (className) => {
+      context.klass = await classService.createClass({ name: className });
+    });
+
+    and(/^the user is enrolled in "(.*)" as "(.*)"$/, async (className, role) => {
+      await prisma.classRole.create({
+        data: {
+          userId: context.user.id,
+          classId: context.klass.id,
+          role,
+        },
+      });
+    });
+
+    when(/^I request the class page for "(.*)"$/, async (className) => {
+      const token = generateToken(context.user);
+      context.response = await request
+        .get(`/classes/${context.klass.id}`)
+        .set("Cookie", `auth_token=${token}`);
+    });
+
+    then(/^I should receive the full page HTML$/, async () => {
+      expect(context.response.status).toBe(200);
+      expect(context.response.text).toContain("<!DOCTYPE html>");
+    });
+
+    and(/^the HTML should contain "(.*)"$/, async (text) => {
+      expect(context.response.text).toContain(text);
+    });
+
+    and(/^the HTML should contain the pulse component$/, async () => {
+      expect(context.response.text).toContain("id=\"pulse-check-container\"");
+    });
+
+    and(/^the HTML should contain the "Punch In" button$/, async () => {
+      expect(context.response.text).toContain("id=\"class-punch-btn\"");
+    });
+  });
+
+  test("Render class page for an instructor", ({ given, when, then, and }) => {
+    given(/^a user with email "(.*)" and name "(.*)" exists$/, async (email, name) => {
+      context.user = await prisma.user.create({
+        data: { email, name, isProf: true },
+      });
+    });
+
+    and(/^a class named "(.*)" exists$/, async (className) => {
+      context.klass = await classService.createClass({ name: className });
+    });
+
+    and(/^the user is enrolled in "(.*)" as "(.*)"$/, async (className, role) => {
+      await prisma.classRole.create({
+        data: {
+          userId: context.user.id,
+          classId: context.klass.id,
+          role,
+        },
+      });
+    });
+
+    when(/^I request the class page for "(.*)"$/, async (className) => {
+      const token = generateToken(context.user);
+      context.response = await request
+        .get(`/classes/${context.klass.id}`)
+        .set("Cookie", `auth_token=${token}`);
+    });
+
+    then(/^I should receive the full page HTML$/, async () => {
+      expect(context.response.status).toBe(200);
+      expect(context.response.text).toContain("<!DOCTYPE html>");
+    });
+
+    and(/^the HTML should contain "(.*)"$/, async (text) => {
+      expect(context.response.text).toContain(text);
+    });
+
+    and(/^the HTML should NOT contain the pulse component$/, async () => {
+      expect(context.response.text).not.toContain("id=\"pulse-check-container\"");
+    });
+  });
+
 });

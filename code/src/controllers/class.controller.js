@@ -365,27 +365,3 @@ export const deleteClass = asyncHandler(async (req, res) => {
   await classService.deleteClass(req.params.id);
   res.status(204).send();
 });
-
-// ============================================================================
-// FORM HELPERS
-// ============================================================================
-
-/**
- * Render Create Class Form (HTMX)
- */
-export const renderCreateClassForm = asyncHandler(async (req, res) => {
-  const isProf = req.user.isProf === true;
-  if (!isProf) {
-    return res.status(401).send("Unauthorized to create class.");
-  }
-
-  const upcomingQuarters = getUpcomingQuarters();
-  res.status(201).send(createClassForm(upcomingQuarters));
-});
-
-/**
- * Close Create Class Form (HTMX)
- */
-export const closeCreateClassForm = asyncHandler(async (req, res) => {
-  res.status(201).send("");
-});
