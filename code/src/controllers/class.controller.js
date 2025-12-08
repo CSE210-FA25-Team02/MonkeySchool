@@ -21,11 +21,9 @@ import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import * as pulseService from "../services/pulse.service.js";
 import {
-  getUpcomingQuarters,
   createBaseLayout,
 } from "../utils/html-templates.js";
 import {
-  createClassForm,
   displayInvite,
   renderClassList,
   renderClassDirectory as renderDirectoryTemplate,
