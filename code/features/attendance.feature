@@ -79,7 +79,7 @@ Feature: Attendance Management
         And a class named "CSE 210" exists and includes "Alice Student" as a student
         And a course session "Lecture 1" exists for class "CSE 210"
         When the student attempts to create an attendance poll for session "Lecture 1"
-        Then the student receives an error response with message "Only professors can create attendance polls"
+        Then the student receives an error response with message "Only professors and TAs can create attendance polls"
 
     Scenario: Professor cannot create poll for session they don't teach
         Given a logged-in professor "Dr. Jones" with email "jones@university.edu" exists
@@ -87,7 +87,7 @@ Feature: Attendance Management
         And a class named "CSE 210" exists and includes "Dr. Smith" as a professor
         And a course session "Lecture 1" exists for class "CSE 210"
         When professor "Dr. Jones" attempts to create an attendance poll for session "Lecture 1"
-        Then the professor receives an error response with message "Only professors can create attendance polls"
+        Then the professor receives an error response with message "Only professors and TAs can create attendance polls"
 
     Scenario: Professor views session attendance records
         Given a logged-in professor "Dr. Smith" with email "prof@university.edu" exists

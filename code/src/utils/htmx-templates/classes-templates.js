@@ -965,7 +965,7 @@ export function renderClassSettings(
                 placeholder="example@external.com"
                 required
                 style="flex: 1;"
-                pattern="[^@]+@[^@]+\.[^@]+"
+                pattern="[^@]+@[^@]+\\.[^@]+"
               >
               <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
                 <i class="fa-solid fa-plus"></i> Add Email
