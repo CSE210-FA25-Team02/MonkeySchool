@@ -126,7 +126,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user
+    req.user,
   );
   const pageHtml = renderClassDetail(classInfo, "directory", content, {
     isStudent,
@@ -158,7 +158,7 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user
+    req.user,
   );
   res.send(content);
 });
@@ -331,7 +331,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         </p>
         <a href="/" class="btn btn--primary">Go to Dashboard</a>
       </div>
-    `
+    `,
     );
     return res.status(404).send(errorHtml);
   }
@@ -368,7 +368,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         <a href="/classes/${klass.id}" class="btn btn--primary">Go to Class</a>
       </div>
     </div>
-  `
+  `,
   );
   res.send(successHtml);
 });
