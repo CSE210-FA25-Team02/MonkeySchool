@@ -126,7 +126,7 @@ router.get(
 router.post("/create", requireAuth, asyncHandler(classController.createClass));
 
 router.put(
-  "/:id",
+  "/:id/:quarter",
   requireAuth,
   (req, res, next) => {
     if (req.params.quarter) {
@@ -138,7 +138,7 @@ router.put(
 );
 
 router.delete(
-  "/:id",
+  "/:id/:quarter",
   requireAuth,
   (req, res, next) => {
     if (req.params.quarter) {

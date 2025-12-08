@@ -1,19 +1,39 @@
 Feature: Class Management
 
-  Scenario: Create a new class
-    When I create a class named "CSE 210"
-    Then a class named "CSE 210" should exist
+  Scenario: Create a new class as Professor
+    When I create a class named "CSE 210" for "FA25"
+    Then a class named "CSE 210" for "FA25" should exist
     And the class should have an auto-generated invite code
 
-  Scenario: Update class name
-    Given a class named "Old Class" exists
-    When I rename the class "Old Class" to "New Class"
+  Scenario: Update class name as Professor
+    Given a class named "Old Class" for "FA25" exists
+    When I rename the class "Old Class" to "New Class" for "FA25"
     Then a class named "New Class" should exist
 
-  Scenario: Delete a class
-    Given a class named "Temp Class" exists
-    When I delete the class "Temp Class"
-    Then no class named "Temp Class" should exist
+  Scenario: Update class name as TA
+    Given a class named "Old Class" for "FA25" exists
+    When I rename the class "Old Class" to "New Class" for "FA25"
+    Then a class named "New Class" should exist
+  
+  Scenario: Fail to update class name as Student
+    Given a class named "Old Class" for "FA25" exists
+    When I rename the class "Old Class" to "New Class" for "FA25"
+    Then the request should be forbidden
+
+  Scenario: Delete a class as Professor
+    Given a class named "Temp Class" exists for "FA25"
+    When I delete the class "Temp Class" for "FA25"
+    Then no class named "Temp Class" should exist for "FA25"
+
+  Scenario: Fail to delete a class as TA
+    Given a class named "Temp Class" exists for "FA25"
+    When I delete the class "Temp Class" for "FA25"
+    Then the request should be forbidden
+  
+  Scenario: Fail to delete a class as Student
+    Given a class named "Temp Class" exists for "FA25"
+    When I delete the class "Temp Class" for "FA25"
+    Then the request should be forbidden
 
   Scenario: Get an existing class
     Given a class named "Curr Class" exists
@@ -29,6 +49,16 @@ Feature: Class Management
     Given a class named "Join Class" exists
     When I request to join a class with its invite code
     Then I should be added to the class called "Join Class"
+
+  Scenario: Fail to join a class by invite
+    Given a class named "Join Class" exists
+    When I request to join a class with an invalid invite code
+    Then I should recieve an invalid invite
+
+  Scenario: Find a class by invite code
+    Given a class named "Join Class" exists
+    When I request to find a class by its invite code
+    Then I should get the class called "Join Class"
 
   Scenario: Get all classes for a user
     Given a user "Bob Student" with email "bob@university.edu" exists

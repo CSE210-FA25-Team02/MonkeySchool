@@ -350,7 +350,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
 
 /**
  * Update Class
- * Route: PUT /classes/:id
+ * Route: PUT /classes/:id/:quarter
  */
 export const updateClass = asyncHandler(async (req, res) => {
   const klass = await classService.updateClass(req.params.id, req.body);
@@ -359,7 +359,7 @@ export const updateClass = asyncHandler(async (req, res) => {
 
 /**
  * Delete Class
- * Route: DELETE /classes/:id
+ * Route: DELETE /classes/:id/:quarter
  */
 export const deleteClass = asyncHandler(async (req, res) => {
   await classService.deleteClass(req.params.id);
