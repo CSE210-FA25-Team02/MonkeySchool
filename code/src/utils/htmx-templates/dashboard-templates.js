@@ -33,14 +33,14 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
             </div>
             <div class="card-content" style="display: flex; flex-direction: column; gap: 12px;">
                 <button 
-                    class="btn btn-primary btn-full" 
+                    class="btn btn-primary btn--full" 
                     onclick="openModal('modal-create-class')"
                     style="justify-content: center;"
                 >
                     <i class="fa-solid fa-plus"></i> Create Class
                 </button>
                 <button 
-                    class="btn btn-secondary btn-full" 
+                    class="btn btn-secondary btn--full" 
                     onclick="openModal('modal-quick-journal')"
                     style="justify-content: center;"
                 >
@@ -56,7 +56,7 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
                     <div style="font-size: 24px; color: var(--color-brand-deep);"><i class="fa-solid fa-fingerprint"></i></div>
                     <div style="font-weight: bold; font-size: 14px; text-align: center; color: var(--color-brand-deep);">Punch In Activity</div>
                     <button 
-                        class="btn btn-primary btn-full" 
+                        class="btn btn-primary btn--full" 
                         style="justify-content: center; font-size: 12px; padding: 8px 16px;"
                         hx-get="/activity/new-modal" 
                         hx-target="#modal-container"
@@ -195,7 +195,7 @@ function renderRecentClassesList(classes) {
     return `
             <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
                 <p>No classes yet.</p>
-                <button class="btn btn-text" onclick="openModal('modal-create-class')">Create your first class</button>
+                <button class="btn btn-secondary" onclick="openModal('modal-create-class')" style="background: transparent; border: none; text-decoration: underline; color: var(--color-brand-medium);">Create your first class</button>
             </div>
         `;
   }

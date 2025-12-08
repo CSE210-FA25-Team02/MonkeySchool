@@ -30,8 +30,10 @@ export const createWorkJournal = asyncHandler(async (req, res) => {
   const hxTarget = req.headers["hx-target"];
 
   if (isHtmx) {
-    // If target is #work-journals-list, return the updated list (profile page)
-    if (hxTarget === "#work-journals-list") {
+    // HTMX sends hx-target without the # symbol, so normalize the comparison
+    // If target is work-journals-list (or #work-journals-list), return the updated list (profile page)
+    const normalizedTarget = hxTarget?.replace(/^#/, "") || "";
+    if (normalizedTarget === "work-journals-list") {
       const journals = await workJournalService.getWorkJournalsByUserId(userId);
       const html = renderWorkJournalsList(journals);
       res.status(201).send(html);

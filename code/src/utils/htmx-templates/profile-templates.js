@@ -79,14 +79,14 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
               <i class="fa-solid fa-pen-to-square"></i> Work Journals
             </div>
             <button 
-              class="btn btn--primary" 
+              class="btn btn-primary" 
               style="padding: 6px 12px; font-size: 12px;"
               onclick="openModal('modal-create-journal')"
             >
               <i class="fa-solid fa-plus"></i> New Entry
             </button>
           </div>
-          <div id="work-journals-list" style="max-height: 600px; overflow-y: auto;">
+          <div id="work-journals-list">
             ${renderWorkJournalsList(workJournals)}
           </div>
         </div>
@@ -98,12 +98,19 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
     
     <!-- Create Work Journal Modal -->
     ${renderCreateJournalModal()}
+    
+    <!-- Activity History Modal -->
+    ${renderActivityHistoryModal(activity)}
+    
+    <!-- Work Journals Modal -->
+    ${renderWorkJournalsModal(workJournals)}
     </div>
   `;
 }
 
 /**
  * Render activity timeline on the profile page.
+ * Shows only first 3 items with a "View More" button if there are more.
  *
  * @param {Array} activity - List of activity items from database
  * @returns {string} HTML string
@@ -186,7 +193,11 @@ function renderActivityTimeline(activity) {
     default: "fa-circle",
   };
 
-  return items
+  // Show only first 3 items
+  const displayItems = items.slice(0, 3);
+  const hasMore = items.length > 3;
+
+  let html = displayItems
     .map(
       (item) => `
       <div class="timeline-item">
@@ -201,10 +212,28 @@ function renderActivityTimeline(activity) {
     `
     )
     .join("");
+
+  // Add "View More" button if there are more than 3 items
+  if (hasMore) {
+    html += `
+      <div style="text-align: center; padding: 16px;">
+        <button 
+          class="btn btn-secondary" 
+          style="padding: 8px 16px; font-size: 12px;"
+          onclick="openModal('modal-activity-history')"
+        >
+          View More (${items.length - 3} more)
+        </button>
+      </div>
+    `;
+  }
+
+  return html;
 }
 
 /**
  * Render work journals list
+ * Shows only first 3 items with a "View More" button if there are more.
  *
  * @param {Array} workJournals - List of work journal entries
  * @returns {string} HTML string
@@ -219,7 +248,11 @@ export function renderWorkJournalsList(workJournals) {
     `;
   }
 
-  return workJournals
+  // Show only first 3 items
+  const displayJournals = workJournals.slice(0, 3);
+  const hasMore = workJournals.length > 3;
+
+  let html = displayJournals
     .map((journal) => {
       const createdAt = new Date(journal.createdAt);
       const now = new Date();
@@ -265,7 +298,7 @@ export function renderWorkJournalsList(workJournals) {
               <span style="font-size: 11px; color: var(--color-text-muted);">${escapeHtml(timeDisplay)}</span>
             </div>
             <button 
-              class="btn btn--secondary" 
+              class="btn btn-secondary" 
               style="padding: 4px 8px; font-size: 11px;"
               onclick="deleteJournal('${journal.id}')"
               title="Delete journal"
@@ -280,6 +313,23 @@ export function renderWorkJournalsList(workJournals) {
       `;
     })
     .join("");
+
+  // Add "View More" button if there are more than 3 items
+  if (hasMore) {
+    html += `
+      <div style="text-align: center; padding: 16px;">
+        <button 
+          class="btn btn-secondary" 
+          style="padding: 8px 16px; font-size: 12px;"
+          onclick="openModal('modal-work-journals')"
+        >
+          View More (${workJournals.length - 3} more)
+        </button>
+      </div>
+    `;
+  }
+
+  return html;
 }
 
 /**
@@ -301,7 +351,7 @@ function renderCreateJournalModal() {
           hx-post="/work-journals"
           hx-target="#work-journals-list"
           hx-swap="innerHTML"
-          hx-on::after-request="if(event.detail.successful) { closeModal('modal-create-journal'); const contentField = document.getElementById('journal-content'); if(contentField) contentField.value = ''; const moodInput = document.getElementById('journal-mood'); if(moodInput) moodInput.value = ''; const modal = document.getElementById('modal-create-journal'); if(modal) { modal.querySelectorAll('.mood-btn').forEach(btn => { btn.classList.remove('btn--primary'); btn.classList.add('btn--secondary'); }); } }"
+          hx-on::after-request="if(event.detail.successful) { closeModal('modal-create-journal'); const contentField = document.getElementById('journal-content'); if(contentField) contentField.value = ''; const moodInput = document.getElementById('journal-mood'); if(moodInput) moodInput.value = ''; const modal = document.getElementById('modal-create-journal'); if(modal) { modal.querySelectorAll('.mood-btn').forEach(btn => { btn.classList.remove('btn-primary'); btn.classList.add('btn-secondary'); }); } }"
           onsubmit="event.preventDefault(); htmx.trigger(this, 'submit');"
         >
           <div class="modal-body">
@@ -321,21 +371,21 @@ function renderCreateJournalModal() {
               <div style="display: flex; gap: 8px;">
                 <button 
                   type="button" 
-                  class="btn btn--secondary mood-btn" 
+                  class="btn btn-secondary mood-btn" 
                   data-mood="😊"
                   style="flex:1"
                   onclick="selectMood('😊', this)"
                 >😊</button>
                 <button 
                   type="button" 
-                  class="btn btn--secondary mood-btn" 
+                  class="btn btn-secondary mood-btn" 
                   data-mood="😐"
                   style="flex:1"
                   onclick="selectMood('😐', this)"
                 >😐</button>
                 <button 
                   type="button" 
-                  class="btn btn--secondary mood-btn" 
+                  class="btn btn-secondary mood-btn" 
                   data-mood="😫"
                   style="flex:1"
                   onclick="selectMood('😫', this)"
@@ -345,8 +395,8 @@ function renderCreateJournalModal() {
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-journal')">Cancel</button>
-            <button type="submit" class="btn btn--primary">Save Entry</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-create-journal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Entry</button>
           </div>
         </form>
       </div>
@@ -365,14 +415,14 @@ function renderCreateJournalModal() {
         const modal = document.getElementById('modal-create-journal');
         if (modal) {
           modal.querySelectorAll('.mood-btn').forEach(btn => {
-            btn.classList.remove('btn--primary');
-            btn.classList.add('btn--secondary');
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
           });
         }
         // Highlight selected button
         if (buttonElement) {
-          buttonElement.classList.remove('btn--secondary');
-          buttonElement.classList.add('btn--primary');
+          buttonElement.classList.remove('btn-secondary');
+          buttonElement.classList.add('btn-primary');
         }
       };
       
@@ -405,8 +455,8 @@ function renderCreateJournalModal() {
                     moodInput.value = '';
                   }
                   modal.querySelectorAll('.mood-btn').forEach(btn => {
-                    btn.classList.remove('btn--primary');
-                    btn.classList.add('btn--secondary');
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-secondary');
                   });
                 }
               }
@@ -416,6 +466,227 @@ function renderCreateJournalModal() {
         }
       })();
     </script>
+  `;
+}
+
+/**
+ * Render Activity History modal with all activities in a scrollable list
+ *
+ * @param {Array} activity - List of activity items from database
+ * @returns {string} HTML string
+ */
+function renderActivityHistoryModal(activity) {
+  // Format database activities into timeline items
+  let items = [];
+
+  if (activity && activity.length > 0) {
+    items = activity.map((act) => {
+      const startTime = new Date(act.startTime);
+      const endTime = act.endTime ? new Date(act.endTime) : null;
+      const className = act.class?.name || "Unknown Class";
+      const categoryName = act.category?.name || "Activity";
+
+      // Format time display
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const activityDate = new Date(
+        startTime.getFullYear(),
+        startTime.getMonth(),
+        startTime.getDate()
+      );
+
+      let timeDisplay = "";
+      if (activityDate.getTime() === today.getTime()) {
+        timeDisplay = `Today, ${startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+      } else if (activityDate.getTime() === today.getTime() - 86400000) {
+        timeDisplay = `Yesterday, ${startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+      } else {
+        const daysDiff = Math.floor((today - activityDate) / 86400000);
+        if (daysDiff < 7) {
+          timeDisplay = `${daysDiff} days ago, ${startTime.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+        } else {
+          timeDisplay =
+            startTime.toLocaleDateString([], {
+              month: "short",
+              day: "numeric",
+              year:
+                startTime.getFullYear() !== now.getFullYear()
+                  ? "numeric"
+                  : undefined,
+            }) +
+            ", " +
+            startTime.toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            });
+        }
+      }
+
+      // Determine if it's a punch in or punch out
+      const isPunchOut = endTime !== null;
+      const title = isPunchOut
+        ? `Punched out from <strong>${escapeHtml(className)}</strong> - ${escapeHtml(categoryName)}`
+        : `Punched in for <strong>${escapeHtml(className)}</strong> - ${escapeHtml(categoryName)}`;
+
+      return {
+        type: "punch",
+        title: title,
+        time: timeDisplay,
+      };
+    });
+  }
+
+  const iconMap = {
+    punch: "fa-fingerprint",
+    post: "fa-comment",
+    join: "fa-user-plus",
+    default: "fa-circle",
+  };
+
+  const timelineItems =
+    items.length > 0
+      ? items
+          .map(
+            (item) => `
+          <div class="timeline-item">
+            <div class="timeline-dot ${item.type}">
+              <i class="fa-solid ${iconMap[item.type] || iconMap.default}"></i>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">${item.title}</div>
+              <div class="timeline-meta">${escapeHtml(item.time)}</div>
+            </div>
+          </div>
+        `
+          )
+          .join("")
+      : `
+      <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
+        <p>No activity history yet.</p>
+        <p style="font-size: 12px; margin-top: 8px;">Start by punching in an activity from the dashboard!</p>
+      </div>
+    `;
+
+  return `
+    <div id="modal-activity-history" class="modal-overlay">
+      <div class="modal-card" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Activity History</h3>
+          <button class="btn-close" onclick="closeModal('modal-activity-history')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding: var(--space-6);">
+          <div class="timeline">
+            ${timelineItems}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-activity-history')">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render Work Journals modal with all journals in a scrollable list
+ *
+ * @param {Array} workJournals - List of work journal entries
+ * @returns {string} HTML string
+ */
+function renderWorkJournalsModal(workJournals) {
+  const journalItems =
+    workJournals && workJournals.length > 0
+      ? workJournals
+          .map((journal) => {
+            const createdAt = new Date(journal.createdAt);
+            const now = new Date();
+            const today = new Date(
+              now.getFullYear(),
+              now.getMonth(),
+              now.getDate()
+            );
+            const journalDate = new Date(
+              createdAt.getFullYear(),
+              createdAt.getMonth(),
+              createdAt.getDate()
+            );
+
+            let timeDisplay = "";
+            if (journalDate.getTime() === today.getTime()) {
+              timeDisplay = `Today, ${createdAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+            } else if (journalDate.getTime() === today.getTime() - 86400000) {
+              timeDisplay = `Yesterday, ${createdAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+            } else {
+              const daysDiff = Math.floor((today - journalDate) / 86400000);
+              if (daysDiff < 7) {
+                timeDisplay = `${daysDiff} days ago`;
+              } else {
+                timeDisplay = createdAt.toLocaleDateString([], {
+                  month: "short",
+                  day: "numeric",
+                  year:
+                    createdAt.getFullYear() !== now.getFullYear()
+                      ? "numeric"
+                      : undefined,
+                });
+              }
+            }
+
+            const moodEmoji = journal.mood || "";
+            const contentPreview =
+              journal.content.length > 100
+                ? journal.content.substring(0, 100) + "..."
+                : journal.content;
+
+            return `
+            <div class="work-journal-item" style="padding: 12px; border-bottom: 1px solid var(--color-border-subtle);">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  ${moodEmoji ? `<span style="font-size: 18px;">${escapeHtml(moodEmoji)}</span>` : ""}
+                  <span style="font-size: 11px; color: var(--color-text-muted);">${escapeHtml(timeDisplay)}</span>
+                </div>
+                <button 
+                  class="btn btn-secondary" 
+                  style="padding: 4px 8px; font-size: 11px;"
+                  onclick="deleteJournal('${journal.id}')"
+                  title="Delete journal"
+                >
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+              <div style="font-size: 13px; line-height: 1.5; color: var(--color-text);">
+                ${escapeHtml(contentPreview)}
+              </div>
+            </div>
+          `;
+          })
+          .join("")
+      : `
+      <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
+        <p>No work journals yet.</p>
+        <p style="font-size: 12px; margin-top: 8px;">Click "New Entry" to create your first journal entry!</p>
+      </div>
+    `;
+
+  return `
+    <div id="modal-work-journals" class="modal-overlay">
+      <div class="modal-card" style="max-width: 600px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Work Journals</h3>
+          <button class="btn-close" onclick="closeModal('modal-work-journals')">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding: var(--space-6);">
+          ${journalItems}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-work-journals')">Close</button>
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -465,8 +736,8 @@ function renderEditProfileModal(user) {
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn--secondary" onclick="closeModal('modal-edit-profile')">Cancel</button>
-            <button type="submit" class="btn btn--primary">Save Changes</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-edit-profile')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
           </div>
         </form>
       </div>
