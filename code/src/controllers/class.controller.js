@@ -20,6 +20,7 @@
 import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import * as pulseService from "../services/pulse.service.js";
+import * as classExternalEmailService from "../services/classExternalEmail.service.js";
 import {
   getUpcomingQuarters,
   createBaseLayout,
@@ -32,9 +33,14 @@ import {
   renderClassDirectory as renderDirectoryTemplate,
   renderClassDetail,
   renderClassSettings as renderSettingsTemplate,
+  renderExternalEmailsList,
 } from "../utils/htmx-templates/classes-templates.js";
 import { asyncHandler } from "../utils/async-handler.js";
-import { NotFoundError } from "../utils/api-error.js";
+import {
+  NotFoundError,
+  ForbiddenError,
+  BadRequestError,
+} from "../utils/api-error.js";
 
 // ============================================================================
 // PAGE ROUTES - These render full HTML pages
@@ -126,7 +132,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user,
+    req.user
   );
   const pageHtml = renderClassDetail(classInfo, "directory", content, {
     isStudent,
@@ -158,7 +164,7 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user,
+    req.user
   );
   res.send(content);
 });
@@ -178,11 +184,28 @@ export const renderClassSettings = asyncHandler(async (req, res) => {
     throw new NotFoundError("Class not found");
   }
 
+  // Check if user is professor/TA (can manage external emails)
+  const userRole = klass.members.find((m) => m.userId === req.user.id);
+  const canManage =
+    userRole?.role === "PROFESSOR" ||
+    userRole?.role === "TA" ||
+    req.user.isProf;
+
+  // Fetch external emails for this class
+  const externalEmails = canManage
+    ? await classExternalEmailService.getExternalEmailsByClassId(id)
+    : [];
+
   // Generate invite URL
   const inviteUrl = `${req.protocol}://${req.get("host")}/invite/${klass.inviteCode}`;
 
   // Render settings content
-  const content = renderSettingsTemplate(klass, inviteUrl);
+  const content = renderSettingsTemplate(
+    klass,
+    inviteUrl,
+    externalEmails,
+    canManage
+  );
   res.send(content);
 });
 
@@ -331,7 +354,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         </p>
         <a href="/" class="btn btn--primary">Go to Dashboard</a>
       </div>
-    `,
+    `
     );
     return res.status(404).send(errorHtml);
   }
@@ -368,7 +391,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         <a href="/classes/${klass.id}" class="btn btn--primary">Go to Class</a>
       </div>
     </div>
-  `,
+  `
   );
   res.send(successHtml);
 });
@@ -562,4 +585,130 @@ export const renderCreateClassForm = asyncHandler(async (req, res) => {
  */
 export const closeCreateClassForm = asyncHandler(async (req, res) => {
   res.status(201).send("");
+});
+
+// ============================================================================
+// EXTERNAL EMAIL MANAGEMENT
+// ============================================================================
+
+/**
+ * Add an external email to a class
+ * Route: POST /classes/:id/external-emails
+ * Auth: requireAuth (must be PROFESSOR or TA of the class)
+ */
+export const addExternalEmail = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { email } = req.body;
+  const userId = req.user.id;
+
+  // Validate email
+  if (!email || !email.trim()) {
+    throw new BadRequestError("Email is required");
+  }
+
+  // Basic email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim())) {
+    throw new BadRequestError("Invalid email format");
+  }
+
+  // Check if email is a UCSD email (shouldn't be added as external)
+  if (email.trim().endsWith("@ucsd.edu")) {
+    throw new BadRequestError(
+      "UCSD emails are already allowed and don't need to be added"
+    );
+  }
+
+  // Fetch class and check authorization
+  const klass = await classService.getClassById(id);
+  if (!klass) {
+    throw new NotFoundError("Class not found");
+  }
+
+  const userRole = klass.members.find((m) => m.userId === userId);
+  const canManage =
+    userRole?.role === "PROFESSOR" ||
+    userRole?.role === "TA" ||
+    req.user.isProf;
+  if (!canManage) {
+    throw new ForbiddenError(
+      "Only professors and TAs can manage external emails"
+    );
+  }
+
+  // Add external email
+  const externalEmail = await classExternalEmailService.addExternalEmailToClass(
+    id,
+    email.trim()
+  );
+
+  // Fetch updated list
+  const externalEmails =
+    await classExternalEmailService.getExternalEmailsByClassId(id);
+
+  const isHtmx = !!req.headers["hx-request"];
+  if (isHtmx) {
+    // Return updated external emails list HTML
+    const html = renderExternalEmailsList(externalEmails, id, true);
+    res.status(201).send(html);
+  } else {
+    res.status(201).json(externalEmail);
+  }
+});
+
+/**
+ * Remove an external email from a class
+ * Route: DELETE /classes/:id/external-emails/:email
+ * Auth: requireAuth (must be PROFESSOR or TA of the class)
+ */
+export const removeExternalEmail = asyncHandler(async (req, res) => {
+  const { id, email } = req.params;
+  const userId = req.user.id;
+
+  // Decode email from URL (may be URL encoded)
+  const decodedEmail = decodeURIComponent(email);
+
+  // Fetch class and check authorization
+  const klass = await classService.getClassById(id);
+  if (!klass) {
+    throw new NotFoundError("Class not found");
+  }
+
+  const userRole = klass.members.find((m) => m.userId === userId);
+  const canManage =
+    userRole?.role === "PROFESSOR" ||
+    userRole?.role === "TA" ||
+    req.user.isProf;
+  if (!canManage) {
+    throw new ForbiddenError(
+      "Only professors and TAs can manage external emails"
+    );
+  }
+
+  // Remove external email
+  try {
+    await classExternalEmailService.removeExternalEmailFromClass(
+      id,
+      decodedEmail
+    );
+  } catch (error) {
+    if (error.code === "P2025") {
+      // Record not found
+      throw new NotFoundError("External email not found");
+    }
+    throw error;
+  }
+
+  // Fetch updated list
+  const externalEmails =
+    await classExternalEmailService.getExternalEmailsByClassId(id);
+
+  const isHtmx = !!req.headers["hx-request"];
+  if (isHtmx) {
+    // Return updated external emails list HTML
+    const html = renderExternalEmailsList(externalEmails, id, true);
+    res.send(html);
+  } else {
+    res.status(204).send();
+  }
 });

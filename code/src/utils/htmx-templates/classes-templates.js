@@ -76,7 +76,7 @@ export function renderPulseCheck(classId, currentPulse = null) {
       >
         ${item.emoji}
       </button>
-    `,
+    `
     )
     .join("");
 
@@ -184,7 +184,7 @@ export function renderClassDetail(
   classInfo,
   activeTab = "directory",
   content = "",
-  options = {},
+  options = {}
 ) {
   const {
     isStudent = false,
@@ -520,13 +520,13 @@ export function renderClassDirectory(data, user = null) {
                       memberWithRole,
                       classId,
                       user,
-                      professorCount,
+                      professorCount
                     );
                   })
                   .join("")}
               </div>
             </div>
-          `,
+          `
             )
             .join("")}
         </div>
@@ -786,12 +786,76 @@ export function displayInvite(inviteUrl) {
 }
 
 /**
+ * Render external emails list (helper function)
+ * @param {Array} externalEmails - Array of external email objects
+ * @param {string} classId - Class ID
+ * @param {boolean} canManage - Whether user can manage external emails
+ * @returns {string} HTML string
+ */
+export function renderExternalEmailsList(
+  externalEmails = [],
+  classId,
+  canManage = false
+) {
+  if (externalEmails.length === 0) {
+    return `
+      <div style="text-align: center; padding: var(--space-6); color: var(--color-text-muted);">
+        <i class="fa-solid fa-inbox" style="font-size: 32px; margin-bottom: var(--space-2); opacity: 0.5;"></i>
+        <p style="font-size: var(--text-sm);">No external emails added yet</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+      ${externalEmails
+        .map(
+          (item) => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); background: var(--color-bg-surface); border-radius: var(--radius-md); border: 1px solid var(--color-bg-canvas);">
+          <div style="display: flex; align-items: center; gap: var(--space-3); flex: 1;">
+            <i class="fa-solid fa-envelope" style="color: var(--color-text-muted);"></i>
+            <span style="font-size: var(--text-sm); color: var(--color-text-main);">${escapeHtml(item.email)}</span>
+          </div>
+          ${
+            canManage
+              ? `
+            <button
+              type="button"
+              class="btn btn-secondary"
+              style="padding: 4px 8px; font-size: var(--text-xs);"
+              hx-delete="/classes/${classId}/external-emails/${encodeURIComponent(item.email)}"
+              hx-target="#external-emails-list"
+              hx-swap="innerHTML"
+              hx-confirm="Remove this external email?"
+              title="Remove email"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          `
+              : ""
+          }
+        </div>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+/**
  * Render Class Settings Page
  * @param {Object} klass - Class object with inviteCode
  * @param {string} inviteUrl - Full invite URL
+ * @param {Array} [externalEmails=[]] - Array of external email objects
+ * @param {boolean} [canManage=false] - Whether user can manage external emails
  * @returns {string} HTML string
  */
-export function renderClassSettings(klass, inviteUrl) {
+export function renderClassSettings(
+  klass,
+  inviteUrl,
+  externalEmails = [],
+  canManage = false
+) {
   const inviteCode = klass.inviteCode || "";
 
   return `
@@ -869,37 +933,65 @@ export function renderClassSettings(klass, inviteUrl) {
         </div>
       </div>
 
-      <!-- Class Information Section -->
-      <div class="bento-card">
+      <!-- External Emails Section (only for professors/TAs) -->
+      ${
+        canManage
+          ? `
+      <div class="bento-card" style="margin-bottom: var(--space-6);">
         <div class="card-header" style="margin-bottom: var(--space-4);">
           <div class="card-title">
-            <i class="fa-solid fa-info-circle"></i>
-            Class Information
+            <i class="fa-solid fa-envelope-circle-check"></i>
+            External Emails
           </div>
         </div>
         <div class="card-content">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-6);">
-            <div>
-              <div class="stat-label">Class Name</div>
-              <div style="font-weight: var(--weight-semibold); color: var(--color-text-main); font-size: var(--text-base); margin-top: var(--space-2);">
-                ${escapeHtml(klass.name || "N/A")}
-              </div>
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin-bottom: var(--space-6);">
+            Add external email addresses that should be allowed to login to this portal. These emails will be able to access the system even if they're not @ucsd.edu addresses.
+          </p>
+          
+          <!-- Add External Email Form -->
+          <form
+            id="add-external-email-form"
+            hx-post="/classes/${klass.id}/external-emails"
+            hx-target="#external-emails-list"
+            hx-swap="innerHTML"
+            style="margin-bottom: var(--space-6);"
+          >
+            <div style="display: flex; gap: var(--space-2);">
+              <input
+                type="email"
+                name="email"
+                class="form-input"
+                placeholder="example@external.com"
+                required
+                style="flex: 1;"
+                pattern="[^@]+@[^@]+\.[^@]+"
+              >
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+                <i class="fa-solid fa-plus"></i> Add Email
+              </button>
             </div>
-            <div>
-              <div class="stat-label">Quarter</div>
-              <div style="font-weight: var(--weight-semibold); color: var(--color-text-main); font-size: var(--text-base); margin-top: var(--space-2);">
-                ${escapeHtml(klass.quarter || "N/A")}
-              </div>
-            </div>
-            <div>
-              <div class="stat-label">Location</div>
-              <div style="font-weight: var(--weight-semibold); color: var(--color-text-main); font-size: var(--text-base); margin-top: var(--space-2);">
-                ${escapeHtml(klass.location || "N/A")}
-              </div>
+            <p class="form-helper" style="margin-top: var(--space-2); font-size: var(--text-xs);">
+              Note: UCSD emails (@ucsd.edu) are already allowed and don't need to be added.
+            </p>
+          </form>
+          
+          <!-- External Emails List -->
+          <div>
+            <label style="display: block; font-size: var(--text-sm); font-weight: var(--weight-medium); margin-bottom: var(--space-2); color: var(--color-text-main);">
+              Allowed External Emails
+            </label>
+            <div id="external-emails-list">
+              ${renderExternalEmailsList(externalEmails, klass.id, canManage)}
             </div>
           </div>
         </div>
       </div>
+      `
+          : ""
+      }
+
+      <!-- Class Information Section -->
     </div>
 
     <script>
@@ -977,6 +1069,37 @@ export function renderClassSettings(klass, inviteUrl) {
           settingsTab.classList.add('active');
           settingsTab.style.color = 'var(--color-brand-deep)';
           settingsTab.style.borderBottom = '2px solid var(--color-accent-gold)';
+        }
+      })();
+      
+      // Handle external email form submission
+      (function() {
+        const form = document.getElementById('add-external-email-form');
+        if (form) {
+          document.body.addEventListener('htmx:afterRequest', function(event) {
+            if (event.detail.target && event.detail.target.id === 'external-emails-list') {
+              const status = event.detail.xhr?.status;
+              const emailInput = form.querySelector('input[name=email]');
+              
+              if (status === 201) {
+                // Success - clear input and show toast
+                if (emailInput) {
+                  emailInput.value = '';
+                }
+                if (typeof showToast !== 'undefined') {
+                  showToast('Success', 'External email added successfully', 'success');
+                }
+              } else if (status && status >= 400) {
+                // Error - show error message
+                const responseText = event.detail.xhr?.responseText || 'Failed to add external email';
+                if (typeof showToast !== 'undefined') {
+                  showToast('Error', responseText, 'error');
+                } else {
+                  alert('Error: ' + responseText);
+                }
+              }
+            }
+          });
         }
       })();
     </script>
