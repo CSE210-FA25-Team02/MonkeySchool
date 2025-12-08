@@ -227,7 +227,7 @@ export function renderClassDetail(
                style="padding: var(--space-3) 0; color: ${activeTab === "directory" ? "var(--color-brand-deep)" : "var(--color-text-muted)"}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === "directory" ? "var(--color-accent-gold)" : "transparent"}; cursor: pointer; text-decoration: none;">
                Directory
             </a>
-            <a href="/classes/${classInfo.id}/attendance"
+            <a href="/attendance"
                class="tab-item ${activeTab === "attendance" ? "active" : ""}"
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
                Attendance <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px; margin-left: 4px;"></i>
