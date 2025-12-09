@@ -63,3 +63,43 @@ Feature: Activity Punch Card
         When the student deletes the activity punch
         Then the student receivies no activity punch
 
+    Scenario: Quick punch-in creates an activity for a student
+        Given a logged-in student "Bob Student" with email "bob@university.edu" exists
+        And a class named "Class 1" exists and includes "Bob Student"
+        When the student performs a quick punch for "Lecture"
+        Then a new activity punch is created for the student
+
+    Scenario: Quick punch-in fails if no valid class relationship exists
+        Given a logged-in student "Bob Student" with email "bob@university.edu" exists
+        When the student performs a quick punch for "Lecture" in unknown class
+        Then the student receives an unauthorized activity response
+    
+    Scenario: Student cannot use a TA-only category
+        Given a logged-in student "Bob Student" with email "bob@university.edu" exists
+        And a class named "Class 1" exists and includes "Bob Student"
+        And a TA activity category "Grading" exists
+        When the student attempt to create a "Grading" punch
+        Then the student receives a forbidden category response
+
+    Scenario: Cannot create an activity when not logged in
+        Given a student activity category "Studying" exists
+        When an unauthenticated request tries to create a "Studying" punch
+        Then the request is rejected as unauthorized
+
+    Scenario: A student cannot update another student's activity punch
+        Given a logged-in student "Bob Student" with email "bob@university.edu" exists
+        And another student "Alice Student" exists
+        And an activity punch for "Studying" exists and belongs to "Alice Student"
+        When Bob attempts to update that activity punch
+        Then the update is forbidden
+    
+    Scenario: A student cannot delete another student's activity punch
+        Given a logged-in student "Bob Student" with email "bob@university.edu" exists
+        And another student "Alice Student" exists
+        And an activity punch for "Studying" exists and belongs to "Alice Student"
+        When Bob attempts to delete that activity punch
+        Then the delete is forbidden
+
+
+
+

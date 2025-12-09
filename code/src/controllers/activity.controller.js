@@ -15,7 +15,26 @@ import { getClassRole } from "../services/classRole.service.js";
  */
 export const createActivity = asyncHandler(async (req, res) => {
   let activity;
+  const categoryId = req.body.categoryId;
   const userId = req.user.id;
+  const classId = req.body.classId;
+
+  // Get user role
+  const classRole = await getClassRole(userId, classId);
+
+  // Lookup category
+  const category = await activityService.getActivityCategory(categoryId);
+
+  if (!category) {
+    return res.status(404).send("Category not found");
+  }
+
+  const allowed = category.role === "ALL" || category.role === classRole.role;
+
+  // Check if category and user role matches
+  if (!allowed) {
+    return res.status(403).send("You are not allowed to create this type of activity.");
+  }
 
   try {
     const activityData = {
@@ -41,6 +60,15 @@ export const createActivity = asyncHandler(async (req, res) => {
 
 export const updateActivity = asyncHandler(async (req, res) => {
   const id = req.params.id;
+  const userId = req.user.id;
+
+  //Verify activity exists
+  const existing = await activityService.getActivityById(id);
+  if (!existing) return res.status(404).send("Activity not found");
+
+  if (existing.userId !== userId) {
+    return res.status(403).send("You are not allowed to modify this activity.");
+  }
 
   let updatedActivity;
   try {
@@ -98,6 +126,16 @@ export const getActivitiesByUser = asyncHandler(async (req, res) => {
  */
 export const deleteActivity = asyncHandler(async (req, res) => {
   const id = req.params.id;
+  const userId = req.user.id;
+
+  //Verify activity exists
+  const existing = await activityService.getActivityById(id);
+  if (!existing) return res.status(404).send("Activity not found");
+
+  if (existing.userId !== userId) {
+    return res.status(403).send("You are not allowed to delete this activity.");
+  }
+
   try {
     await activityService.deleteActivity(id);
   } catch {

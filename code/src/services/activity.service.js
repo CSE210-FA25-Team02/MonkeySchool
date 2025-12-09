@@ -24,6 +24,18 @@ export async function createActivityCategory(data) {
 }
 
 /**
+ * Get a activity category
+ * 
+ * @param {string} id - The ID of the category to fetch.
+ * @returns {Promise<Object|null>} The category object or null if not found.
+ */
+export async function getActivityCategory(id) {
+  return prisma.activityCategory.findUnique({
+    where: { id },
+  });
+}
+
+/**
  * Get a activity by ID, including the category and user it belongs to
  *
  * @param {string} id - The ID of the activity to fetch.
