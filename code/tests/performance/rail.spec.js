@@ -16,10 +16,12 @@ const paths = [
 const BASE_URL = process.env.PERF_TEST_URL || "http://monkeyschool.indresh.me";
 const AUTH_TOKEN = process.env.PERF_TEST_AUTH_TOKEN;
 
-// Default token if env var is missing (the one provided in the task)
-const DEFAULT_TOKEN ="";
+if (!AUTH_TOKEN) {
+  console.error("Error: PERF_TEST_AUTH_TOKEN environment variable is required.");
+  process.exit(1);
+}
 
-const token = AUTH_TOKEN || DEFAULT_TOKEN;
+const token = AUTH_TOKEN;
 
 test.describe("RAIL Performance Tests", () => {
   let results = [];
