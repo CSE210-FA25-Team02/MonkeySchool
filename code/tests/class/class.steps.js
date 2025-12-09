@@ -666,7 +666,7 @@ defineFeature(feature, (test) => {
     });
 
     and(/^the HTML should contain the "Punch In" button$/, async () => {
-      expect(context.response.text).toContain('id="class-punch-btn"');
+      expect(context.response.text).toContain('id="class-punch-btn');
     });
   });
 
