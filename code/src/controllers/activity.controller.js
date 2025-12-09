@@ -33,7 +33,9 @@ export const createActivity = asyncHandler(async (req, res) => {
 
   // Check if category and user role matches
   if (!allowed) {
-    return res.status(403).send("You are not allowed to create this type of activity.");
+    return res
+      .status(403)
+      .send("You are not allowed to create this type of activity.");
   }
 
   try {

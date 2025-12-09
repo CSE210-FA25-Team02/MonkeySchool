@@ -547,24 +547,35 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test("Quick punch-in creates an activity for a student", ({ given, when, then, and }) => {
-    given(/^a logged-in student "(.*)" with email "(.*)" exists$/, async (name, email) => {
-      context.user = await prisma.user.create({
-        data: { email, name, isProf: false },
-      });
-      context.token = generateToken(context.user);
-    });
+  test("Quick punch-in creates an activity for a student", ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { email, name, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
 
-    and(/^a class named "(.*)" exists and includes "(.*)"$/, async (className) => {
-      context.klass = await classService.createClass({ name: className });
-      await prisma.classRole.create({
-        data: {
-          userId: context.user.id,
-          classId: context.klass.id,
-          role: "STUDENT",
-        },
-      });
-    });
+    and(
+      /^a class named "(.*)" exists and includes "(.*)"$/,
+      async (className) => {
+        context.klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+      },
+    );
 
     when(/^the student performs a quick punch for "Lecture"$/, async () => {
       context.response = await request
@@ -580,44 +591,66 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test("Quick punch-in fails if no valid class relationship exists", ({ given, when, then, and }) => {
-    given(/^a logged-in student "(.*)" with email "(.*)" exists$/, async (name, email) => {
-      context.user = await prisma.user.create({
-        data: { email, name, isProf: false },
-      });
-      context.token = generateToken(context.user);
-    });
+  test("Quick punch-in fails if no valid class relationship exists", ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { email, name, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
 
-    when(/^the student performs a quick punch for "Lecture" in unknown class$/, async () => {
-      context.response = await request
-        .post(`/activity/quick-punch`)
-        .send({ classId: 999999 })
-        .set("Cookie", `auth_token=${context.token}`);
-    });
+    when(
+      /^the student performs a quick punch for "Lecture" in unknown class$/,
+      async () => {
+        context.response = await request
+          .post(`/activity/quick-punch`)
+          .send({ classId: 999999 })
+          .set("Cookie", `auth_token=${context.token}`);
+      },
+    );
 
     then(/^the student receives an unauthorized activity response$/, () => {
       expect(context.response.status).toBe(500);
     });
   });
 
-  test("Student cannot use a TA-only category", ({ given, when, then, and }) => {
-    given(/^a logged-in student "(.*)" with email "(.*)" exists$/, async (name, email) => {
-      context.user = await prisma.user.create({
-        data: { email, name, isProf: false },
-      });
-      context.token = generateToken(context.user);
-    });
+  test("Student cannot use a TA-only category", ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { email, name, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
 
-    and(/^a class named "(.*)" exists and includes "(.*)"$/, async (className) => {
-      context.klass = await classService.createClass({ name: className });
-      await prisma.classRole.create({
-        data: {
-          userId: context.user.id,
-          classId: context.klass.id,
-          role: "STUDENT",
-        },
-      });
-    });
+    and(
+      /^a class named "(.*)" exists and includes "(.*)"$/,
+      async (className) => {
+        context.klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+      },
+    );
 
     and(/^a TA activity category "(.*)" exists$/, async (catName) => {
       context.category = await activityService.createActivityCategory({
@@ -644,7 +677,11 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test("Cannot create an activity when not logged in", ({ given, when, then }) => {
+  test("Cannot create an activity when not logged in", ({
+    given,
+    when,
+    then,
+  }) => {
     given(/^a student activity category "(.*)" exists$/, async (catName) => {
       context.category = await activityService.createActivityCategory({
         name: catName,
@@ -653,60 +690,79 @@ defineFeature(feature, (test) => {
       });
     });
 
-    when(/^an unauthenticated request tries to create a "Studying" punch$/, async () => {
-      context.response = await request.post(`/activity`)
-      .set("Accept", "application/json")
-      .send({
-        classId: 1,
-        categoryId: context.category.id,
-        startTime: "2025-01-01T10:00:00Z",
-        endTime: "2025-01-01T11:00:00Z",
-      });
-    });
+    when(
+      /^an unauthenticated request tries to create a "Studying" punch$/,
+      async () => {
+        context.response = await request
+          .post(`/activity`)
+          .set("Accept", "application/json")
+          .send({
+            classId: 1,
+            categoryId: context.category.id,
+            startTime: "2025-01-01T10:00:00Z",
+            endTime: "2025-01-01T11:00:00Z",
+          });
+      },
+    );
 
     then(/^the request is rejected as unauthorized$/, () => {
       expect(context.response.status).toBe(401);
     });
   });
 
-  test("A student cannot update another student's activity punch", ({ given, when, then, and }) => {
-    given(/^a logged-in student "(.*)" with email "(.*)" exists$/, async (name, email) => {
-      context.user = await prisma.user.create({
-        data: { email, name, isProf: false },
-      });
-      context.token = generateToken(context.user);
-    });
+  test("A student cannot update another student's activity punch", ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { email, name, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
 
     and(/^another student "(.*)" exists$/, async (name) => {
       context.otherUser = await prisma.user.create({
-        data: { email: `${name.toLowerCase().replace(" ", "")}@test.com`, name, isProf: false },
-      });
-    });
-
-    and(/^an activity punch for "Studying" exists and belongs to "Alice Student"$/, async () => {
-      context.category = await activityService.createActivityCategory({
-        name: "Studying",
-        description: "Student activity",
-        role: "STUDENT",
-      });
-
-      context.klass = await classService.createClass({ name: "Class 1" });
-      await prisma.classRole.create({
         data: {
-          userId: context.otherUser.id,
-          classId: context.klass.id,
-          role: "STUDENT",
+          email: `${name.toLowerCase().replace(" ", "")}@test.com`,
+          name,
+          isProf: false,
         },
       });
-
-      context.activity = await activityService.createActivity({
-        classId: context.klass.id,
-        categoryId: context.category.id,
-        userId: context.otherUser.id,
-        startTime: "2025-01-01T10:00:00Z",
-        endTime: "2025-01-01T11:00:00Z",
-      });
     });
+
+    and(
+      /^an activity punch for "Studying" exists and belongs to "Alice Student"$/,
+      async () => {
+        context.category = await activityService.createActivityCategory({
+          name: "Studying",
+          description: "Student activity",
+          role: "STUDENT",
+        });
+
+        context.klass = await classService.createClass({ name: "Class 1" });
+        await prisma.classRole.create({
+          data: {
+            userId: context.otherUser.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+
+        context.activity = await activityService.createActivity({
+          classId: context.klass.id,
+          categoryId: context.category.id,
+          userId: context.otherUser.id,
+          startTime: "2025-01-01T10:00:00Z",
+          endTime: "2025-01-01T11:00:00Z",
+        });
+      },
+    );
 
     when(/^Bob attempts to update that activity punch$/, async () => {
       context.response = await request
@@ -725,44 +781,59 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test("A student cannot delete another student's activity punch", ({ given, when, then, and }) => {
-    given(/^a logged-in student "(.*)" with email "(.*)" exists$/, async (name, email) => {
-      context.user = await prisma.user.create({
-        data: { email, name, isProf: false },
-      });
-      context.token = generateToken(context.user);
-    });
+  test("A student cannot delete another student's activity punch", ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { email, name, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
 
     and(/^another student "(.*)" exists$/, async (name) => {
       context.otherUser = await prisma.user.create({
-        data: { email: `${name.toLowerCase().replace(" ", "")}@test.com`, name, isProf: false },
-      });
-    });
-
-    and(/^an activity punch for "Studying" exists and belongs to "Alice Student"$/, async () => {
-      context.category = await activityService.createActivityCategory({
-        name: "Studying",
-        description: "Student activity",
-        role: "STUDENT",
-      });
-
-      context.klass = await classService.createClass({ name: "Class 1" });
-      await prisma.classRole.create({
         data: {
-          userId: context.otherUser.id,
-          classId: context.klass.id,
-          role: "STUDENT",
+          email: `${name.toLowerCase().replace(" ", "")}@test.com`,
+          name,
+          isProf: false,
         },
       });
-
-      context.activity = await activityService.createActivity({
-        classId: context.klass.id,
-        categoryId: context.category.id,
-        userId: context.otherUser.id,
-        startTime: "2025-01-01T10:00:00Z",
-        endTime: "2025-01-01T11:00:00Z",
-      });
     });
+
+    and(
+      /^an activity punch for "Studying" exists and belongs to "Alice Student"$/,
+      async () => {
+        context.category = await activityService.createActivityCategory({
+          name: "Studying",
+          description: "Student activity",
+          role: "STUDENT",
+        });
+
+        context.klass = await classService.createClass({ name: "Class 1" });
+        await prisma.classRole.create({
+          data: {
+            userId: context.otherUser.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+
+        context.activity = await activityService.createActivity({
+          classId: context.klass.id,
+          categoryId: context.category.id,
+          userId: context.otherUser.id,
+          startTime: "2025-01-01T10:00:00Z",
+          endTime: "2025-01-01T11:00:00Z",
+        });
+      },
+    );
 
     when(/^Bob attempts to delete that activity punch$/, async () => {
       context.response = await request
@@ -774,5 +845,4 @@ defineFeature(feature, (test) => {
       expect(context.response.status).toBe(403);
     });
   });
-
 });

@@ -25,7 +25,7 @@ export async function createActivityCategory(data) {
 
 /**
  * Get a activity category
- * 
+ *
  * @param {string} id - The ID of the category to fetch.
  * @returns {Promise<Object|null>} The category object or null if not found.
  */
