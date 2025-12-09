@@ -83,6 +83,13 @@ router.get(
   asyncHandler(classController.renderClassDirectory),
 );
 
+// Class Settings (HTMX partial)
+router.get(
+  "/:id/settings",
+  requireAuth,
+  asyncHandler(classController.renderClassSettings),
+);
+
 // ============================================
 // JSON API ROUTES
 // ============================================
@@ -109,10 +116,30 @@ router.get(
 );
 
 // ============================================
+// EXTERNAL EMAIL MANAGEMENT (require auth)
+// ============================================
+
+// Add external email to class
+router.post(
+  "/:id/external-emails",
+  requireAuth,
+  asyncHandler(classController.addExternalEmail),
+);
+
+// Remove external email from class
+router.delete(
+  "/:id/external-emails/:email",
+  requireAuth,
+  asyncHandler(classController.removeExternalEmail),
+);
+
+// ============================================
 // CRUD OPERATIONS (require auth)
 // ============================================
 
 router.post("/create", requireAuth, asyncHandler(classController.createClass));
+
+router.post("/join", requireAuth, asyncHandler(classController.joinClass));
 
 router.put(
   "/:id/:quarter",

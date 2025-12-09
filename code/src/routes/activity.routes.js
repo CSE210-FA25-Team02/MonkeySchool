@@ -45,6 +45,11 @@ router.get(
   requireAuth,
   asyncHandler(activityController.getActivitiesByUser),
 );
+router.post(
+  "/quick-punch",
+  requireAuth,
+  asyncHandler(activityController.quickPunchIn),
+);
 router.get("/:id", requireAuth, asyncHandler(activityController.getActivity));
 router.put(
   "/:id",
