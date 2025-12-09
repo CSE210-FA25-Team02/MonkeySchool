@@ -21,6 +21,7 @@ import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import * as pulseService from "../services/pulse.service.js";
 import * as classExternalEmailService from "../services/classExternalEmail.service.js";
+import * as groupService from "../services/group.service.js";
 import {
   getUpcomingQuarters,
   createBaseLayout,
@@ -34,7 +35,9 @@ import {
   renderClassDetail,
   renderClassSettings as renderSettingsTemplate,
   renderExternalEmailsList,
+  renderGroupsTab,
 } from "../utils/htmx-templates/classes-templates.js";
+import { renderCreateGroupModal } from "../utils/htmx-templates/group-templates.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import {
   NotFoundError,
@@ -132,7 +135,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user,
+    req.user
   );
   const pageHtml = renderClassDetail(classInfo, "directory", content, {
     isStudent,
@@ -164,7 +167,7 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user,
+    req.user
   );
   res.send(content);
 });
@@ -204,7 +207,7 @@ export const renderClassSettings = asyncHandler(async (req, res) => {
     klass,
     inviteUrl,
     externalEmails,
-    canManage,
+    canManage
   );
   res.send(content);
 });
@@ -354,7 +357,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         </p>
         <a href="/" class="btn btn--primary">Go to Dashboard</a>
       </div>
-    `,
+    `
     );
     return res.status(404).send(errorHtml);
   }
@@ -391,7 +394,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         <a href="/classes/${klass.id}" class="btn btn--primary">Go to Class</a>
       </div>
     </div>
-  `,
+  `
   );
   res.send(successHtml);
 });
@@ -615,7 +618,7 @@ export const addExternalEmail = asyncHandler(async (req, res) => {
   // Check if email is a UCSD email (shouldn't be added as external)
   if (email.trim().endsWith("@ucsd.edu")) {
     throw new BadRequestError(
-      "UCSD emails are already allowed and don't need to be added",
+      "UCSD emails are already allowed and don't need to be added"
     );
   }
 
@@ -632,14 +635,14 @@ export const addExternalEmail = asyncHandler(async (req, res) => {
     req.user.isProf;
   if (!canManage) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage external emails",
+      "Only professors and TAs can manage external emails"
     );
   }
 
   // Add external email
   const externalEmail = await classExternalEmailService.addExternalEmailToClass(
     id,
-    email.trim(),
+    email.trim()
   );
 
   // Fetch updated list
@@ -681,7 +684,7 @@ export const removeExternalEmail = asyncHandler(async (req, res) => {
     req.user.isProf;
   if (!canManage) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage external emails",
+      "Only professors and TAs can manage external emails"
     );
   }
 
@@ -689,7 +692,7 @@ export const removeExternalEmail = asyncHandler(async (req, res) => {
   try {
     await classExternalEmailService.removeExternalEmailFromClass(
       id,
-      decodedEmail,
+      decodedEmail
     );
   } catch (error) {
     if (error.code === "P2025") {
@@ -711,4 +714,95 @@ export const removeExternalEmail = asyncHandler(async (req, res) => {
   } else {
     res.status(204).send();
   }
+});
+
+// ============================================================================
+// GROUP MANAGEMENT
+// ============================================================================
+
+/**
+ * Render Class Groups Tab
+ * Route: GET /classes/:id/groups
+ * Used for: Tab switching in class detail page (HTMX) or direct navigation
+ */
+export const renderClassGroups = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Fetch class info
+  const klass = await classService.getClassById(id);
+  if (!klass) {
+    throw new NotFoundError("Class not found");
+  }
+
+  // Fetch class directory data (includes groups)
+  const directory = await classService.getClassDirectory(id);
+  if (!directory) {
+    throw new NotFoundError("Class not found");
+  }
+
+  const groupsContent = renderGroupsTab(directory, req.user, id);
+
+  // Check if HTMX request (partial) or full page request
+  const isHtmxRequest = req.headers["hx-request"];
+  if (isHtmxRequest) {
+    res.send(groupsContent);
+  } else {
+    // Full page request - wrap in class detail layout
+    const studentCount = klass.members.filter(
+      (m) => m.role === "STUDENT"
+    ).length;
+    const classInfo = { ...klass, studentCount };
+
+    const userRole = klass.members.find((m) => m.userId === req.user.id);
+    const isStudent = userRole?.role === "STUDENT";
+    const isInstructor =
+      userRole?.role === "PROFESSOR" ||
+      userRole?.role === "TA" ||
+      userRole?.role === "TUTOR";
+
+    const pageHtml = renderClassDetail(classInfo, "groups", groupsContent, {
+      isStudent,
+      currentPulse: null,
+      isInstructor,
+    });
+
+    const fullPage = createBaseLayout(klass.name, pageHtml, { user: req.user });
+    res.send(fullPage);
+  }
+});
+
+/**
+ * Get Create Group Modal
+ * Route: GET /classes/:id/groups/create-modal
+ * Auth: requireAuth (must be PROFESSOR or TA)
+ */
+export const getCreateGroupModal = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  // Fetch class and check authorization
+  const klass = await classService.getClassById(id);
+  if (!klass) {
+    throw new NotFoundError("Class not found");
+  }
+
+  const userRole = klass.members.find((m) => m.userId === userId);
+  const canManage = userRole?.role === "PROFESSOR" || userRole?.role === "TA";
+
+  if (!canManage) {
+    throw new ForbiddenError("Only professors and TAs can create groups");
+  }
+
+  // Get students and TAs for selection
+  const students = await groupService.getStudentsInClass(id);
+  const tas = await groupService.getTAsInClass(id);
+
+  const html = renderCreateGroupModal(id, students, tas);
+
+  // Prevent caching for modals
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
+  res.send(html);
 });

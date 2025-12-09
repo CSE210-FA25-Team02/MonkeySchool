@@ -17,11 +17,13 @@ import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
 import { requireAuth } from "./middleware/auth.js";
+import { asyncHandler } from "./utils/async-handler.js";
 import {
   getAttendancePage,
   getSessionRecordsPage,
   getCourseRecordsPage,
 } from "./controllers/attendance.controller.js";
+import * as classController from "./controllers/class.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -72,7 +74,7 @@ export function createApp() {
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
-    }),
+    })
   );
 
   // CORS configuration for HTMX requests
@@ -89,23 +91,23 @@ export function createApp() {
         "HX-Current-URL",
         "HX-Trigger",
       ],
-    }),
+    })
   );
 
   // Rate limiting
-  const limiter = rateLimit({
-    windowMs: env.RATE_LIMIT_WINDOW_MS,
-    max: env.RATE_LIMIT_MAX_REQUESTS,
-    message: `
-      <div class="alert alert--error" role="alert">
-        <h2>Rate limit exceeded</h2>
-        <p>Too many requests from this IP, please try again later.</p>
-      </div>
-    `,
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
-  app.use("/", limiter);
+  // const limiter = rateLimit({
+  //   windowMs: env.RATE_LIMIT_WINDOW_MS,
+  //   max: env.RATE_LIMIT_MAX_REQUESTS,
+  //   message: `
+  //     <div class="alert alert--error" role="alert">
+  //       <h2>Rate limit exceeded</h2>
+  //       <p>Too many requests from this IP, please try again later.</p>
+  //     </div>
+  //   `,
+  //   standardHeaders: true,
+  //   legacyHeaders: false,
+  // });
+  // app.use("/", limiter);
 
   // Cookie parsing
   app.use(cookieParser());
@@ -114,13 +116,13 @@ export function createApp() {
   app.use(
     express.json({
       limit: "10mb",
-    }),
+    })
   );
   app.use(
     express.urlencoded({
       extended: true,
       limit: "10mb",
-    }),
+    })
   );
 
   // Compression
@@ -139,8 +141,9 @@ export function createApp() {
 
   // Dashboard - requires authentication
   app.get("/", requireAuth, async (req, res, next) => {
-    const { getDashboard } =
-      await import("./controllers/dashboard.controller.js");
+    const { getDashboard } = await import(
+      "./controllers/dashboard.controller.js"
+    );
     return getDashboard(req, res, next);
   });
 
@@ -162,10 +165,11 @@ export function createApp() {
     "/course/:courseId/session/:sessionId/poll/new",
     requireAuth,
     async (req, res, next) => {
-      const { getNewPollForm } =
-        await import("./controllers/attendance.controller.js");
+      const { getNewPollForm } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getNewPollForm(req, res, next);
-    },
+    }
   );
 
   // Start poll (HTMX)
@@ -173,10 +177,11 @@ export function createApp() {
     "/course/:courseId/session/:sessionId/poll/start",
     requireAuth,
     async (req, res, next) => {
-      const { startPoll } =
-        await import("./controllers/attendance.controller.js");
+      const { startPoll } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return startPoll(req, res, next);
-    },
+    }
   );
 
   // Session-wise attendance records page (professor only)
@@ -184,10 +189,11 @@ export function createApp() {
     "/course/:courseId/session/:sessionId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getSessionRecordsPage } =
-        await import("./controllers/attendance.controller.js");
+      const { getSessionRecordsPage } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getSessionRecordsPage(req, res, next);
-    },
+    }
   );
 
   // Legacy route for backward compatibility
@@ -196,13 +202,14 @@ export function createApp() {
     requireAuth,
     async (req, res, next) => {
       return getSessionRecordsPage(req, res, next);
-    },
+    }
   );
 
   // Course-wise attendance records page (professor only)
   app.get("/course/:courseId/records", requireAuth, async (req, res, next) => {
-    const { getCourseRecordsPage } =
-      await import("./controllers/attendance.controller.js");
+    const { getCourseRecordsPage } = await import(
+      "./controllers/attendance.controller.js"
+    );
     return getCourseRecordsPage(req, res, next);
   });
 
@@ -211,16 +218,18 @@ export function createApp() {
     "/course/:courseId/user/:userId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getStudentCourseRecordsPage } =
-        await import("./controllers/attendance.controller.js");
+      const { getStudentCourseRecordsPage } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getStudentCourseRecordsPage(req, res, next);
-    },
+    }
   );
 
   // API: Get courses for a user (where user is a student)
   app.get("/api/user/:userId/courses", requireAuth, async (req, res, next) => {
-    const { getUserCourses } =
-      await import("./controllers/attendance.controller.js");
+    const { getUserCourses } = await import(
+      "./controllers/attendance.controller.js"
+    );
     return getUserCourses(req, res, next);
   });
 
@@ -229,10 +238,11 @@ export function createApp() {
     "/api/course/:courseId/user/:userId/records",
     requireAuth,
     async (req, res, next) => {
-      const { getStudentCourseRecords } =
-        await import("./controllers/attendance.controller.js");
+      const { getStudentCourseRecords } = await import(
+        "./controllers/attendance.controller.js"
+      );
       return getStudentCourseRecords(req, res, next);
-    },
+    }
   );
 
   // Legacy route for backward compatibility
@@ -241,7 +251,7 @@ export function createApp() {
     requireAuth,
     async (req, res, next) => {
       return getCourseRecordsPage(req, res, next);
-    },
+    }
   );
 
   // Redirect /courses/attendance to /attendance for backward compatibility
