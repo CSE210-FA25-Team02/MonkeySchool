@@ -21,10 +21,7 @@ import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import * as pulseService from "../services/pulse.service.js";
 import * as classExternalEmailService from "../services/classExternalEmail.service.js";
-import {
-  createBaseLayout,
-  escapeHtml,
-} from "../utils/html-templates.js";
+import { createBaseLayout, escapeHtml } from "../utils/html-templates.js";
 import {
   displayInvite,
   renderClassList,
