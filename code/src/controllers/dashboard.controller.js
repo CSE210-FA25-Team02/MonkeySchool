@@ -15,6 +15,7 @@
  */
 
 import * as classService from "../services/class.service.js";
+import * as eventService from "../services/event.service.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { createDashboard } from "../utils/htmx-templates/dashboard-templates.js";
 import { createBaseLayout } from "../utils/html-templates.js";
@@ -41,9 +42,8 @@ export const getDashboard = asyncHandler(async (req, res) => {
   // Get first 3 classes for "Recent Classes" section
   const recentClasses = classes.slice(0, 3);
 
-  // TODO: Backend team - implement eventService.getUpcomingEvents(userId)
-  // For now, show empty events
-  const upcomingEvents = [];
+  // Get top 3 upcoming events from all user's classes
+  const upcomingEvents = await eventService.getUpcomingEvents(userId);
 
   // Render dashboard
   const dashboardHtml = createDashboard(user, recentClasses, upcomingEvents);

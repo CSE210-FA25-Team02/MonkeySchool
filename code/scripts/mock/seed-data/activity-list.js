@@ -1,28 +1,19 @@
 import { prisma } from "../../../src/lib/prisma.js";
+import { readFile } from "fs/promises";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export async function createDefaultCategories() {
-  const defaultCategories = [
-    {
-      name: "Homework",
-      description: "Assignments for students to complete",
-      role: "STUDENT",
-    },
-    {
-      name: "Lecture",
-      description: "Instructor-led sessions",
-      role: "ALL",
-    },
-    {
-      name: "Grading",
-      description: "Tasks assigned to TAs for grading",
-      role: "TA",
-    },
-    {
-      name: "Project",
-      description: "Long-term assignments for students",
-      role: "STUDENT",
-    },
-  ];
+  // Read activity categories from settings JSON file
+  const settingsPath = join(
+    __dirname,
+    "../../../settings/activity-categories.json",
+  );
+  const fileContent = await readFile(settingsPath, "utf-8");
+  const defaultCategories = JSON.parse(fileContent);
 
   for (const category of defaultCategories) {
     // Using upsert to avoid duplicates if running seed multiple times
