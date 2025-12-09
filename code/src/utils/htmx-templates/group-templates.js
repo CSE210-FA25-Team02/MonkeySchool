@@ -184,6 +184,7 @@ export function renderCreateGroupModal(classId, students = [], tas = []) {
         });
 
         // Close modal on successful submission and refresh Groups tab
+        // Close modal on successful submission
         document.body.addEventListener('htmx:afterRequest', function(event) {
           if (event.detail.pathInfo?.requestPath === '/groups' && event.detail.successful) {
             window.closeModal('modal-create-group');
@@ -671,6 +672,7 @@ export function renderGroupManagementModal(
     <script>
       (function() {
         // Show toast and refresh Groups tab on successful operations
+        // Show toast on successful operations
         document.body.addEventListener('htmx:afterRequest', function(event) {
           const path = event.detail.pathInfo?.requestPath || '';
           if (path.includes('/groups/') && event.detail.successful) {
