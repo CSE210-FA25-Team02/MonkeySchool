@@ -24,5 +24,8 @@ model Class {
   // Pulse check entries for this class
   pulseEntries PulseEntry[] @relation("ClassPulseEntries")
 
+  // External emails allowed for this class
+  externalEmails ClassExternalEmail[] @relation("ClassExternalEmails")
+
   @@map("classes")
 }

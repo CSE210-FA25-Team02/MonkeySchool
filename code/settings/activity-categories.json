@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Homework",
+    "description": "Assignments for students to complete",
+    "role": "STUDENT"
+  },
+  {
+    "name": "Lecture",
+    "description": "Instructor-led sessions",
+    "role": "ALL"
+  },
+  {
+    "name": "Grading",
+    "description": "Tasks assigned to TAs for grading",
+    "role": "TA"
+  },
+  {
+    "name": "Project",
+    "description": "Long-term assignments for students",
+    "role": "STUDENT"
+  }
+]

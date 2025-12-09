@@ -33,29 +33,56 @@ export function renderAttendancePage(
     hasAttendanceRecords = false,
   } = emptyStateFlags;
 
-  // Check if user is professor/TA (can manage attendance)
-  const isProf =
-    (user && user.isProf) ||
-    (user && user.role === "PROFESSOR") ||
-    (user && user.role === "TA");
+  // Determine which views to show based on user's roles
+  // - If user has no student classes: show only "Create Attendance" (professor view)
+  // - If user has only student classes: show only "Fill Attendance" (student view)
+  // - If user has mixed roles: show both tabs
+  const showCreateAttendance = hasProfessorCourses;
+  const showFillAttendance = hasStudentCourses;
+  const showBothTabs = showCreateAttendance && showFillAttendance;
+
+  // Default to "Create Attendance" if both are available, otherwise show the only available one
+  const defaultView = showBothTabs
+    ? "create"
+    : showCreateAttendance
+      ? "create"
+      : "fill";
 
   return `
     <div class="container">
-      <!-- Role Switcher (Demo Only) -->
+      <!-- Role Switcher -->
+      ${
+        showBothTabs
+          ? `
       <div class="role-switcher" style="margin-bottom: var(--space-6);">
-        <button class="btn-role ${isProf ? "active" : ""}" onclick="switchAttendanceView('professor')">Professor View</button>
-        <button class="btn-role ${!isProf ? "active" : ""}" onclick="switchAttendanceView('student')">Student View</button>
+        <button class="btn-role ${defaultView === "create" ? "active" : ""}" onclick="switchAttendanceView('create')">Create Attendance</button>
+        <button class="btn-role ${defaultView === "fill" ? "active" : ""}" onclick="switchAttendanceView('fill')">Fill Attendance</button>
       </div>
+      `
+          : ""
+      }
 
-      <!-- Professor View -->
-      <div id="view-professor" class="view-section" style="display: ${isProf ? "block" : "none"};">
+      <!-- Create Attendance View (for Professors/TAs) -->
+      ${
+        showCreateAttendance
+          ? `
+      <div id="view-create" class="view-section" style="display: ${defaultView === "create" ? "block" : "none"};">
         ${renderProfessorView(professorCourses, hasProfessorCourses)}
       </div>
+      `
+          : ""
+      }
 
-      <!-- Student View -->
-      <div id="view-student" class="view-section" style="display: ${!isProf ? "block" : "none"};">
+      <!-- Fill Attendance View (for Students) -->
+      ${
+        showFillAttendance
+          ? `
+      <div id="view-fill" class="view-section" style="display: ${defaultView === "fill" ? "block" : "none"};">
         ${renderStudentView(studentHistory, studentCourses, user?.id, hasStudentCourses, hasAttendanceRecords)}
       </div>
+      `
+          : ""
+      }
     </div>
 
     <!-- Modals -->
@@ -68,12 +95,16 @@ export function renderAttendancePage(
         document.querySelectorAll('.btn-role').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.view-section').forEach(v => v.style.display = 'none');
         
-        if (role === 'professor') {
-          document.querySelector('button[onclick*="professor"]').classList.add('active');
-          document.getElementById('view-professor').style.display = 'block';
-        } else {
-          document.querySelector('button[onclick*="student"]').classList.add('active');
-          document.getElementById('view-student').style.display = 'block';
+        if (role === 'create') {
+          const createBtn = document.querySelector('button[onclick*="create"]');
+          if (createBtn) createBtn.classList.add('active');
+          const createView = document.getElementById('view-create');
+          if (createView) createView.style.display = 'block';
+        } else if (role === 'fill') {
+          const fillBtn = document.querySelector('button[onclick*="fill"]');
+          if (fillBtn) fillBtn.classList.add('active');
+          const fillView = document.getElementById('view-fill');
+          if (fillView) fillView.style.display = 'block';
         }
       }
 

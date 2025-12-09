@@ -455,3 +455,135 @@ export async function getUserEventPermissions(userId, classId) {
 
   return permissions;
 }
+
+/**
+ * Get upcoming events for a user across all their classes
+ * Returns top 3 upcoming events sorted by startTime
+ * @param {string} userId - User ID
+ * @returns {Promise<Array>} Array of formatted event objects for dashboard display
+ */
+export async function getUpcomingEvents(userId) {
+  const now = new Date();
+
+  // Get all classes the user is enrolled in
+  const classRoles = await prisma.classRole.findMany({
+    where: {
+      userId,
+    },
+    select: {
+      classId: true,
+      role: true,
+    },
+  });
+
+  if (classRoles.length === 0) {
+    return [];
+  }
+
+  const classIds = classRoles.map((cr) => cr.classId);
+  const classRoleMap = new Map(classRoles.map((cr) => [cr.classId, cr.role]));
+
+  // Get all upcoming events from user's classes
+  const allEvents = await prisma.event.findMany({
+    where: {
+      classId: {
+        in: classIds,
+      },
+      startTime: {
+        gte: now,
+      },
+    },
+    include: {
+      class: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      group: {
+        select: {
+          id: true,
+        },
+      },
+    },
+    orderBy: {
+      startTime: "asc",
+    },
+  });
+
+  // Pre-fetch user's group memberships for efficient filtering
+  const userGroupRoles = await prisma.groupRole.findMany({
+    where: {
+      userId,
+      group: {
+        classId: {
+          in: classIds,
+        },
+      },
+    },
+    select: {
+      groupId: true,
+    },
+  });
+
+  const userGroupIds = new Set(userGroupRoles.map((gr) => gr.groupId));
+
+  // Filter events based on user role (students only see their group's meetings)
+  const filteredEvents = [];
+  for (const event of allEvents) {
+    const userRole = classRoleMap.get(event.classId);
+
+    // If user is a STUDENT, filter GROUP_MEETING events to only show their group's meetings
+    if (userRole === "STUDENT" && event.type === "GROUP_MEETING") {
+      // Only include if student is in the group for this event
+      if (event.groupId && userGroupIds.has(event.groupId)) {
+        filteredEvents.push(event);
+      }
+      // Otherwise, skip this GROUP_MEETING event for students
+    } else {
+      // For all other cases (PROFESSOR, TA, TUTOR, or non-GROUP_MEETING events), include the event
+      filteredEvents.push(event);
+    }
+  }
+
+  // Take top 3 events
+  const topEvents = filteredEvents.slice(0, 3);
+
+  // Format events for dashboard display
+  return topEvents.map((event) => {
+    const startTime = new Date(event.startTime);
+
+    // Format date
+    const dateStr = startTime.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    // Format time
+    const timeStr = startTime.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    // Map event type enum to lowercase format for dashboard template
+    const typeMap = {
+      COURSE_LECTURE: "lecture",
+      COURSE_OFFICE_HOUR: "office-hours",
+      COURSE_DISCUSSION: "lecture", // Use lecture style
+      GROUP_MEETING: "meeting",
+      OTHER: "meeting", // Default to meeting style
+    };
+
+    return {
+      id: event.id,
+      title: event.title,
+      date: dateStr,
+      time: timeStr,
+      type: typeMap[event.type] || "meeting",
+      classId: event.classId,
+      className: event.class?.name || "Unknown Class",
+    };
+  });
+}
