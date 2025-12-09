@@ -6,7 +6,9 @@ const BASE_URL = process.env.PERF_TEST_URL || "http://monkeyschool.indresh.me";
 const AUTH_TOKEN = process.env.PERF_TEST_AUTH_TOKEN;
 
 if (!AUTH_TOKEN) {
-  console.error("Error: PERF_TEST_AUTH_TOKEN environment variable is required.");
+  console.error(
+    "Error: PERF_TEST_AUTH_TOKEN environment variable is required.",
+  );
   process.exit(1);
 }
 
