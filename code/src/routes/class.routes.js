@@ -73,9 +73,6 @@ router.get(
   asyncHandler(pulseController.getTodayPulse),
 );
 
-// Class Detail Page (must come after pulse routes)
-router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
-
 // Class Directory (HTMX partial)
 router.get(
   "/:id/directory",
@@ -89,6 +86,21 @@ router.get(
   requireAuth,
   asyncHandler(classController.renderClassSettings),
 );
+
+// ============================================
+// GROUP MANAGEMENT ROUTES
+// These must come BEFORE /:id to avoid conflicts
+// ============================================
+
+// Create Group Modal
+router.get(
+  "/:id/groups/create-modal",
+  requireAuth,
+  asyncHandler(classController.getCreateGroupModal),
+);
+
+// Class Detail Page (must come AFTER all /:id/* routes)
+router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
 
 // ============================================
 // JSON API ROUTES

@@ -245,11 +245,6 @@ export function renderClassDetail(
             `
                 : ""
             }
-            <a href="/classes/${classInfo.id}/groups"
-               class="tab-item ${activeTab === "groups" ? "active" : ""}"
-               style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
-               Groups
-            </a>
             <a href="/classes/${classInfo.id}/settings"
                hx-get="/classes/${classInfo.id}/settings"
                hx-target="#tab-content"
@@ -308,7 +303,7 @@ export function renderClassDetail(
 
 /**
  * Render the class directory content (Tab Content)
- * @param {Object} data Directory data with professors, tas, tutors, groups, and studentsWithoutGroup
+ * @param {Object} data Directory data with professors, tas, tutors, groups, and students
  * @param {Object} [user] Current user object with isProf property
  * @returns {string} HTML
  */
@@ -320,7 +315,7 @@ export function renderClassDirectory(data, user = null) {
     tas = [],
     tutors = [],
     groups = [],
-    studentsWithoutGroup = [],
+    students = [],
   } = data;
 
   // Check if current user is a professor in THIS class (not globally)
@@ -494,57 +489,185 @@ export function renderClassDirectory(data, user = null) {
     `;
   }
 
+  // Check if current user is a TA in THIS class
+  const isTA = user ? tas.some((ta) => ta.id === user.id) : false;
+
   // Groups Section
-  if (groups.length > 0) {
-    html += `
-      <div class="directory-section" style="margin-bottom: var(--space-8);">
-        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-          <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
-            Groups <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${groups.length}</span>
-          </div>
+  html += `
+    <div class="directory-section" style="margin-bottom: var(--space-8);">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+        <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
+          Groups <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${groups.length}</span>
         </div>
+        ${
+          isProf || isTA
+            ? `
+          <a
+            href="/classes/${classId}/groups/create-modal"
+            class="btn btn--primary"
+            style="padding: 8px 16px; font-size: var(--text-sm); display: inline-flex; align-items: center; gap: 8px; text-decoration: none;"
+            hx-get="/classes/${classId}/groups/create-modal"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            hx-trigger="click"
+            role="button"
+          >
+            <i class="fa-solid fa-plus"></i>
+            Create Group
+          </a>
+        `
+            : ""
+        }
+      </div>
+      ${
+        groups.length > 0
+          ? `
         <div class="groups-container" style="display: flex; flex-direction: column; gap: var(--space-6);">
           ${groups
-            .map(
-              (group) => `
-            <div class="group-section" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);">
-              <div class="group-header" style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-bg-canvas);">
-                <div class="group-name" style="font-weight: var(--weight-bold); font-size: var(--text-lg);">${escapeHtml(group.name)}</div>
-                <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${group.members.length} members</span>
+            .map((group) => {
+              // Check if current user is a leader of this group
+              const isGroupLeader = user
+                ? group.members.some((m) => m.id === user.id && m.isLeader)
+                : false;
+
+              return `
+              <div class="group-section" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);">
+                <div class="group-header" style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-bg-canvas);">
+                  ${
+                    group.logoUrl
+                      ? `<img src="${escapeHtml(group.logoUrl)}" alt="${escapeHtml(group.name)}" style="width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;">`
+                      : `<div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">${escapeHtml(group.name.charAt(0).toUpperCase())}</div>`
+                  }
+                  <div style="flex: 1;">
+                    <div class="group-name" style="font-weight: var(--weight-bold); font-size: var(--text-lg);">${escapeHtml(group.name)}</div>
+                    ${group.mantra ? `<div style="font-size: var(--text-sm); color: var(--color-text-muted); font-style: italic;">"${escapeHtml(group.mantra)}"</div>` : ""}
+                  </div>
+                  <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${group.members.length} members</span>
+                  
+                  <!-- Group Action Buttons -->
+                  ${
+                    isProf || isTA || isGroupLeader
+                      ? `
+                    <div class="group-actions" style="display: flex; gap: var(--space-2);">
+                      ${
+                        group.github
+                          ? `
+                        <a href="${escapeHtml(group.github)}" target="_blank" class="btn btn--secondary" style="padding: 6px 10px;" title="View GitHub">
+                          <i class="fa-brands fa-github"></i>
+                        </a>
+                      `
+                          : ""
+                      }
+                      <button 
+                        class="btn btn--secondary" 
+                        style="padding: 6px 10px;"
+                        hx-get="/groups/${group.id}/edit-modal"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        title="Edit group"
+                      >
+                        <i class="fa-solid fa-pen"></i>
+                      </button>
+                      ${
+                        isProf || isTA
+                          ? `
+                        <button 
+                          class="btn btn--secondary" 
+                          style="padding: 6px 10px;"
+                          hx-get="/groups/${group.id}/manage"
+                          hx-target="#modal-container"
+                          hx-swap="innerHTML"
+                          title="Manage members"
+                        >
+                          <i class="fa-solid fa-users-gear"></i>
+                        </button>
+                        <button 
+                          class="btn btn--secondary" 
+                          style="padding: 6px 10px; color: var(--color-status-error);"
+                          hx-get="/groups/${group.id}/delete-modal"
+                          hx-target="#modal-container"
+                          hx-swap="innerHTML"
+                          title="Delete group"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      `
+                          : ""
+                      }
+                    </div>
+                  `
+                      : ""
+                  }
+                </div>
+                
+                <!-- Supervisors -->
+                ${
+                  group.supervisors && group.supervisors.length > 0
+                    ? `
+                  <div style="margin-bottom: var(--space-3);">
+                    <span style="font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Supervisors:</span>
+                    <span style="font-size: var(--text-sm); margin-left: var(--space-2);">
+                      ${group.supervisors.map((s) => escapeHtml(s.preferredName || s.name)).join(", ")}
+                    </span>
+                  </div>
+                `
+                    : ""
+                }
+                
+                <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
+                  ${group.members
+                    .map((member) => {
+                      const memberWithRole = { ...member, role: "STUDENT" };
+                      return renderPersonCard(
+                        memberWithRole,
+                        classId,
+                        user,
+                        professorCount,
+                      );
+                    })
+                    .join("")}
+                </div>
               </div>
-              <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-                ${group.members
-                  .map((member) => {
-                    const memberWithRole = { ...member, role: "STUDENT" };
-                    return renderPersonCard(
-                      memberWithRole,
-                      classId,
-                      user,
-                      professorCount,
-                    );
-                  })
-                  .join("")}
-              </div>
-            </div>
-          `,
-            )
+            `;
+            })
             .join("")}
         </div>
-      </div>
-    `;
-  }
+      `
+          : `
+        <div style="text-align: center; padding: var(--space-8); color: var(--color-text-muted); background: var(--color-bg-surface); border-radius: var(--radius-md);">
+          <i class="fa-solid fa-users-rectangle" style="font-size: 48px; margin-bottom: var(--space-4); opacity: 0.3;"></i>
+          <p style="margin-bottom: var(--space-4);">No groups have been created yet.</p>
+          ${
+            isProf || isTA
+              ? `
+            <button
+              class="btn btn--primary"
+              hx-get="/classes/${classId}/groups/create-modal"
+              hx-target="#modal-container"
+              hx-swap="innerHTML"
+            >
+              <i class="fa-solid fa-plus"></i> Create First Group
+            </button>
+          `
+              : ""
+          }
+        </div>
+      `
+      }
+    </div>
+  `;
 
-  // Students Without Group Section
-  if (studentsWithoutGroup.length > 0) {
+  // Students Section
+  if (students.length > 0) {
     html += `
       <div class="directory-section">
         <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
           <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
-            Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${studentsWithoutGroup.length}</span>
+            Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${students.length}</span>
           </div>
         </div>
         <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-          ${studentsWithoutGroup.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
+          ${students.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
         </div>
       </div>
     `;

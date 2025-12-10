@@ -1,0 +1,28 @@
+model Conversation {
+  id      String   @id @default(cuid())
+  
+  // The two participants in the conversation
+  userId1 String
+  userId2 String
+  
+  // Optional: link to a class for context
+  classId String?
+  
+  user1   User     @relation("UserConversations1", fields: [userId1], references: [id], onDelete: Cascade)
+  user2   User     @relation("UserConversations2", fields: [userId2], references: [id], onDelete: Cascade)
+  class   Class?   @relation(fields: [classId], references: [id], onDelete: SetNull)
+  
+  messages Message[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Ensure unique conversation between two users (within same class if classId is provided)
+  // Note: PostgreSQL treats NULL values specially in unique constraints, so this allows
+  // one conversation per user pair globally (classId=null) and one per user pair per class
+  @@unique([userId1, userId2, classId], name: "unique_conversation")
+  @@index([userId1])
+  @@index([userId2])
+  @@index([classId])
+  @@map("conversations")
+}

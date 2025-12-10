@@ -246,3 +246,58 @@ button {
   line-height: 1;
   padding-top: 1px;
 }
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .top-bar {
+    height: 64px;
+    padding: 0 var(--space-4);
+  }
+
+  .content-canvas {
+    padding: var(--space-4);
+  }
+
+  .search-trigger {
+    min-width: 150px;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .user-pill {
+    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+  }
+
+  .user-name {
+    display: none; /* Hide name on mobile, show only avatar */
+  }
+
+  .kbd-shortcut {
+    display: none; /* Hide keyboard shortcut on mobile */
+  }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .top-bar {
+    height: 56px;
+    padding: 0 var(--space-3);
+  }
+
+  .content-canvas {
+    padding: var(--space-3);
+  }
+
+  .search-trigger {
+    min-width: 120px;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .breadcrumbs {
+    font-size: var(--text-xs);
+  }
+}
