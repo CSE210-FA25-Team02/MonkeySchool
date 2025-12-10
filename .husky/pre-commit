@@ -1,0 +1,3 @@
+cd code
+npm run format
+npm test

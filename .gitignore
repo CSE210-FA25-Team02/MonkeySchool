@@ -1,2 +1,4 @@
 .DS_Store
 /code/docs/jsdoc/
+package-lock.json
+node_modules/

@@ -13,7 +13,7 @@ import {
   setUserWeeklyAvailability,
   getUserGroupsAvailability,
 } from "../services/availability.service.js";
-
+import { renderGroupAvailabilitySections } from "../utils/htmx-templates/availability-templates.js";
 /**
  * Render Availability Planning Page
  * Route: GET /availability
@@ -55,8 +55,7 @@ export const getGroupAvailabilitySections = asyncHandler(async (req, res) => {
   const groupsAvailability = await getUserGroupsAvailability(user.id);
 
   // Use the same template function but just for groups
-  const { renderGroupAvailabilitySections } =
-    await import("../utils/htmx-templates/availability-templates.js");
+
   const groupSections = renderGroupAvailabilitySections(groupsAvailability);
 
   res.send(groupSections);

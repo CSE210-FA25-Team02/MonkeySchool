@@ -13,6 +13,7 @@ import * as classService from "../services/class.service.js";
 import * as eventService from "../services/event.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import { prisma } from "../lib/prisma.js";
+import { renderScheduleWrapper } from "../utils/htmx-templates/schedule-templates.js";
 
 /**
  * Render class schedule page
@@ -141,9 +142,6 @@ export const renderClassSchedule = asyncHandler(async (req, res) => {
 
   const isHtmx = req.headers["hx-request"];
   if (isHtmx) {
-    // For HTMX requests, wrap in schedule-wrapper for targeting
-    const { renderScheduleWrapper } =
-      await import("../utils/htmx-templates/schedule-templates.js");
     const wrappedContent = renderScheduleWrapper(
       klass,
       view,

@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
+import { createJoinClassModal } from "./dashboard-templates.js";
 
 /**
  * Render the Pulse Check success state (after submission)
@@ -402,7 +403,10 @@ export function renderClassDirectory(data, user = null) {
     const style = roleStyles[person.role] || roleStyles.STUDENT;
 
     return `
-      <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm); position: relative;">
+      <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm); position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" 
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)'" 
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'"
+           onclick="window.location.href='/users/${person.id}/profile'">
         <div class="member-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: ${style.bg}; color: ${style.color}; display: flex; align-items: center; justify-content: center; font-weight: bold;">
           ${escapeHtml(initials)}
         </div>
@@ -418,7 +422,7 @@ export function renderClassDirectory(data, user = null) {
         ${
           isProf
             ? `
-          <div class="role-management" style="position: absolute; top: 8px; right: 8px;">
+          <div class="role-management" style="position: absolute; top: 8px; right: 8px; z-index: 5;" onclick="event.stopPropagation();">
             <button class="role-change-btn" 
                     onclick="toggleRoleDropdown('${person.id}')" 
                     style="background: none; border: none; color: var(--color-text-muted); padding: 4px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
@@ -717,9 +721,10 @@ export function renderClassDirectory(data, user = null) {
  * Render the list of classes (My Classes Page)
  * Matches demo/my-classes.html structure
  * @param {Array} classes - List of class objects
+ * @param {Object} [user=null] - Current user object with isProf property
  * @returns {string} HTML string
  */
-export function renderClassList(classes) {
+export function renderClassList(classes, user = null) {
   // Header
   const headerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
@@ -769,15 +774,30 @@ export function renderClassList(classes) {
     })
     .join("");
 
-  // Create New Class Card (Always appended)
-  const createCardHTML = `
+  // Create/Join Class Card (Conditional based on user role)
+  const isProf = user?.isProf === true;
+  const createCardHTML = isProf
+    ? `
         <button class="course-card create-card" onclick="window.openModal('modal-create-class')">
             <div class="create-icon">
                 <i class="fa-solid fa-plus-circle"></i>
             </div>
-            <span style="font-weight: bold;">Create / Join Class</span>
+            <span style="font-weight: bold;">Create Class</span>
+        </button>
+    `
+    : `
+        <button class="course-card create-card" onclick="window.openModal('modal-join-class')">
+            <div class="create-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <span style="font-weight: bold;">Join Class</span>
         </button>
     `;
+
+  // Include appropriate modal based on user role
+  const modalHTML = isProf
+    ? createClassForm(getUpcomingQuarters())
+    : createJoinClassModal();
 
   return `
         ${headerHTML}
@@ -785,7 +805,7 @@ export function renderClassList(classes) {
             ${classCardsHTML}
             ${createCardHTML}
         </div>
-        ${createClassForm(getUpcomingQuarters())}
+        ${modalHTML}
     `;
 }
 

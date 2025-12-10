@@ -110,18 +110,93 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Load Another User's Profile Page by ID
+ * Auth: requireAuth
+ */
+export const renderUserProfilePageById = asyncHandler(async (req, res) => {
+  const isHtmx = !!req.headers["hx-request"];
+  const userId = req.params.id;
+
+  // Fetch user data from database
+  let user = await userService.getUserById(userId);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  // Fetch user's activities for the profile history
+  let activities = [];
+  try {
+    activities = await activityService.getActivitiesByUserId(userId);
+  } catch (e) {
+    console.log("Failed to fetch activities:", e.message);
+    // Continue with empty activities array
+  }
+
+  // Fetch user's work journals
+  let workJournals = [];
+  try {
+    workJournals = await workJournalService.getWorkJournalsByUserId(userId);
+  } catch (e) {
+    console.log("Failed to fetch work journals:", e.message);
+    // Continue with empty work journals array
+  }
+
+  // Render profile page with activities and work journals
+  const content = renderProfilePage(user, activities, workJournals);
+
+  if (isHtmx) {
+    res.send(content);
+  } else {
+    const fullPage = createBaseLayout("Profile", content, { user: req.user });
+    res.send(fullPage);
+  }
+});
+
+/**
  * Update User Profile
  */
 export const updateUserProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { name, pronouns, bio, github } = req.body;
-
-  const updateData = {
-    name: name || req.user.name,
+  const {
+    name,
+    preferredName,
+    pronunciation,
     pronouns,
+    phone,
+    photoUrl,
     bio,
     github,
-  };
+    timezone,
+    socialLinks,
+    chatLinks,
+  } = req.body;
+
+  // Build update data object, only including fields that are provided
+  const updateData = {};
+  if (name !== undefined) updateData.name = name;
+  if (preferredName !== undefined)
+    updateData.preferredName = preferredName || null;
+  if (pronunciation !== undefined)
+    updateData.pronunciation = pronunciation || null;
+  if (pronouns !== undefined) updateData.pronouns = pronouns || null;
+  if (phone !== undefined) updateData.phone = phone || null;
+  if (photoUrl !== undefined) updateData.photoUrl = photoUrl || null;
+  if (bio !== undefined) updateData.bio = bio || null;
+  if (github !== undefined) updateData.github = github || null;
+  if (timezone !== undefined) updateData.timezone = timezone || null;
+
+  // Handle arrays - filter out empty strings
+  if (socialLinks !== undefined) {
+    updateData.socialLinks = Array.isArray(socialLinks)
+      ? socialLinks.filter((link) => link && link.trim() !== "")
+      : [];
+  }
+  if (chatLinks !== undefined) {
+    updateData.chatLinks = Array.isArray(chatLinks)
+      ? chatLinks.filter((link) => link && link.trim() !== "")
+      : [];
+  }
+
   const updatedUser = await userService.updateUser(userId, updateData);
 
   // Fetch user's activities for the profile history

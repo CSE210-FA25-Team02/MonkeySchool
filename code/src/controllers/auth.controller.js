@@ -140,17 +140,26 @@ export async function logout(req, res) {
   const isHtmxRequest = req.headers["hx-request"];
 
   if (isHtmxRequest) {
-    res.send(`
-      <div class="alert alert--success" role="alert">
-        <h2>Logged out successfully</h2>
-        <p>You have been logged out.</p>
+    res.set("Content-Type", "text/html");
+    const logoutHtml = `
+      <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #0E534A 0%, #1B6A59 100%);">
+        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); text-align: center; max-width: 400px;">
+          <div style="font-size: 48px; margin-bottom: 20px;">👋</div>
+          <h2 style="margin: 0 0 10px 0; color: #333; font-size: 24px;">Logged out successfully</h2>
+          <p style="color: #666; margin: 0 0 30px 0; line-height: 1.6;">You have been safely logged out. Redirecting...</p>
+          <div style="width: 40px; height: 40px; border: 4px solid #F2A93B; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;" id="spinner"></div>
+        </div>
+        <style>
+          @keyframes spin { to { transform: rotate(360deg); } }
+        </style>
       </div>
       <script>
         setTimeout(() => {
           window.location.href = '/login';
-        }, 1000);
+        }, 2000);
       </script>
-    `);
+    `;
+    res.send(logoutHtml);
   } else {
     res.redirect("/");
   }

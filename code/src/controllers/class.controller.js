@@ -58,7 +58,7 @@ export const renderUserClasses = asyncHandler(async (req, res) => {
   const classes = await classService.getClassesByUserId(userId);
 
   // Render page
-  const content = renderClassList(classes);
+  const content = renderClassList(classes, user);
 
   // Check if HTMX request (partial) or full page request
   const isHtmxRequest = req.headers["hx-request"];

@@ -246,36 +246,3 @@ export const deleteCourseSession = asyncHandler(async (req, res) => {
   await courseSessionService.deleteCourseSession(req.params.id);
   res.status(204).send();
 });
-
-/**
- * Get session creation form (HTMX)
- */
-export const getSessionForm = asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  if (!userId) {
-    return res.status(401).json({ error: "Authentication required" });
-  }
-
-  const { classId } = req.query;
-  if (!classId) {
-    return res.status(400).json({ error: "Class ID required" });
-  }
-
-  // Check if user is professor of the class
-  const klass = await classService.getClassById(classId);
-  if (!klass) {
-    throw new NotFoundError("Class not found");
-  }
-
-  const isProfessor = klass.members.some(
-    (member) => member.userId === userId && member.role === "PROFESSOR",
-  );
-  if (!isProfessor) {
-    throw new ForbiddenError("Only professors can create sessions");
-  }
-
-  const { createSessionForm } =
-    await import("../utils/htmx-templates/attendance-templates.js");
-  const formHtml = createSessionForm(classId);
-  res.send(formHtml);
-});
