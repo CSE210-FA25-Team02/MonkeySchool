@@ -26,6 +26,9 @@ model Class {
 
   // External emails allowed for this class
   externalEmails ClassExternalEmail[] @relation("ClassExternalEmails")
+  
+  // Conversations in this class
+  conversations Conversation[]
 
   @@map("classes")
 }

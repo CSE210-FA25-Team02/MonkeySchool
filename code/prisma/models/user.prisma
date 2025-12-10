@@ -28,6 +28,11 @@ model User {
   availability Availability[] @relation("UserAvailability") // User's weekly availability
   pulseEntries PulseEntry[] @relation("UserPulseEntries") // User's pulse check entries
   workJournals WorkJournal[] @relation("UserWorkJournals") // User's work journal entries
+  
+  // Chat relationships
+  conversations1 Conversation[] @relation("UserConversations1") // Conversations where user is user1
+  conversations2 Conversation[] @relation("UserConversations2") // Conversations where user is user2
+  messages Message[] @relation("UserMessages") // Messages sent by this user
 
   @@index([name])
   @@index([email])
