@@ -164,7 +164,7 @@ function renderActivityTimeline(activity) {
       const activityDate = new Date(
         startTime.getFullYear(),
         startTime.getMonth(),
-        startTime.getDate(),
+        startTime.getDate()
       );
 
       let timeDisplay = "";
@@ -241,7 +241,7 @@ function renderActivityTimeline(activity) {
           <div class="timeline-meta">${escapeHtml(item.time)}</div>
         </div>
       </div>
-    `,
+    `
     )
     .join("");
 
@@ -292,7 +292,7 @@ export function renderWorkJournalsList(workJournals) {
       const journalDate = new Date(
         createdAt.getFullYear(),
         createdAt.getMonth(),
-        createdAt.getDate(),
+        createdAt.getDate()
       );
 
       let timeDisplay = "";
@@ -524,7 +524,7 @@ function renderActivityHistoryModal(activity) {
       const activityDate = new Date(
         startTime.getFullYear(),
         startTime.getMonth(),
-        startTime.getDate(),
+        startTime.getDate()
       );
 
       let timeDisplay = "";
@@ -589,7 +589,7 @@ function renderActivityHistoryModal(activity) {
               <div class="timeline-meta">${escapeHtml(item.time)}</div>
             </div>
           </div>
-        `,
+        `
           )
           .join("")
       : `
@@ -637,12 +637,12 @@ function renderWorkJournalsModal(workJournals) {
             const today = new Date(
               now.getFullYear(),
               now.getMonth(),
-              now.getDate(),
+              now.getDate()
             );
             const journalDate = new Date(
               createdAt.getFullYear(),
               createdAt.getMonth(),
-              createdAt.getDate(),
+              createdAt.getDate()
             );
 
             let timeDisplay = "";
@@ -746,14 +746,14 @@ function renderEditProfileModal(user) {
     socialLinks.length > 0
       ? socialLinks
           .map(
-            (link, index) => `
+            (link) => `
         <div class="form-group" style="display: flex; gap: 8px; align-items: center;">
           <input type="text" class="form-input" name="socialLinks[]" value="${escapeHtml(link)}" placeholder="https://example.com/...">
           <button type="button" class="btn btn-secondary" onclick="removeLinkField(this)" style="padding: 6px 12px;">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
-      `,
+      `
           )
           .join("")
       : "";
@@ -763,14 +763,14 @@ function renderEditProfileModal(user) {
     chatLinks.length > 0
       ? chatLinks
           .map(
-            (link, index) => `
+            (link) => `
         <div class="form-group" style="display: flex; gap: 8px; align-items: center;">
           <input type="text" class="form-input" name="chatLinks[]" value="${escapeHtml(link)}" placeholder="Chat handle or URL">
           <button type="button" class="btn btn-secondary" onclick="removeLinkField(this)" style="padding: 6px 12px;">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
-      `,
+      `
           )
           .join("")
       : "";
