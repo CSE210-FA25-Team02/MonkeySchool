@@ -21,8 +21,8 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
         <!-- Welcome Card -->
         <div class="bento-card span-2 card-welcome">
             <div class="card-content">
-                <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 8px;">Welcome back, ${displayName}</h2>
-                <p style="opacity: 0.9;">Ready to monkey around with some code?</p>
+                <h2>Welcome back, ${displayName}</h2>
+                <p>Ready to monkey around with some code?</p>
             </div>
         </div>
 
@@ -31,32 +31,29 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
             <div class="card-header">
                 <div class="card-title"><i class="fa-solid fa-bolt"></i> Actions</div>
             </div>
-            <div class="card-content" style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="card-content card-content--actions">
                 ${
                   user.isProf
                     ? `
                 <button 
-                    class="btn btn-primary btn--full" 
+                    class="btn btn-primary btn--full btn--center" 
                     onclick="openModal('modal-create-class')"
-                    style="justify-content: center;"
                 >
                     <i class="fa-solid fa-plus"></i> Create Class
                 </button>
                 `
                     : `
                 <button 
-                    class="btn btn-primary btn--full" 
+                    class="btn btn-primary btn--full btn--center" 
                     onclick="openModal('modal-join-class')"
-                    style="justify-content: center;"
                 >
                     <i class="fa-solid fa-user-plus"></i> Join Class
                 </button>
                 `
                 }
                 <button 
-                    class="btn btn-secondary btn--full" 
+                    class="btn btn-secondary btn--full btn--center" 
                     onclick="openModal('modal-quick-journal')"
-                    style="justify-content: center;"
                 >
                     <i class="fa-solid fa-pen-to-square"></i> Work Journal
                 </button>
@@ -65,13 +62,12 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
 
         <!-- Activity Punch-In Card -->
         <div class="bento-card span-1" id="activity-punch-card-container">
-            <div class="card-content" style="padding: 16px;">
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 12px;">
-                    <div style="font-size: 24px; color: var(--color-brand-deep);"><i class="fa-solid fa-fingerprint"></i></div>
-                    <div style="font-weight: bold; font-size: 14px; text-align: center; color: var(--color-brand-deep);">Punch In Activity</div>
+            <div class="card-content">
+                <div class="activity-punch-inner">
+                    <div class="activity-punch-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                    <div class="activity-punch-label">Punch In Activity</div>
                     <button 
-                        class="btn btn-primary btn--full" 
-                        style="justify-content: center; font-size: 12px; padding: 8px 16px;"
+                        class="btn btn-primary btn--full activity-punch-button btn--center"
                         hx-get="/activity/new-modal" 
                         hx-target="#modal-container"
                         hx-swap="innerHTML"
@@ -157,29 +153,25 @@ export function createDashboard(user, recentClasses = [], upcomingEvents = []) {
  */
 function renderUpcomingEvents(events) {
   if (!events || events.length === 0) {
-    return `<div style="text-align: center; padding: 16px; color: var(--color-text-muted);">No upcoming events</div>`;
+    return `<div class="empty-state">No upcoming events</div>`;
   }
 
   const iconMap = {
     lecture: {
       icon: "fa-book-open",
-      bg: "#E0F2FE",
-      color: "#0284C7",
+      class: "list-item-icon--lecture",
     },
     meeting: {
       icon: "fa-user-group",
-      bg: "#F3E8FF",
-      color: "#7C3AED",
+      class: "list-item-icon--meeting",
     },
     "office-hours": {
       icon: "fa-clock",
-      bg: "#FEF3C7",
-      color: "#D97706",
+      class: "list-item-icon--office-hours",
     },
     default: {
       icon: "fa-calendar",
-      bg: "#E5E7EB",
-      color: "#6B7280",
+      class: "list-item-icon--default",
     },
   };
 
@@ -188,7 +180,7 @@ function renderUpcomingEvents(events) {
       const style = iconMap[e.type] || iconMap.default;
       return `
             <div class="list-item">
-                <div class="list-item-icon" style="background: ${style.bg}; color: ${style.color};">
+                <div class="list-item-icon ${style.class}">
                     <i class="fa-solid ${style.icon}"></i>
                 </div>
                 <div class="list-item-content">
@@ -215,9 +207,9 @@ function renderRecentClassesList(classes, user = null) {
       ? "Create your first class"
       : "Join a class";
     return `
-            <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
+            <div class="empty-state empty-state--large">
                 <p>No classes yet.</p>
-                <button class="btn btn-secondary" onclick="openModal('${modalId}')" style="background: transparent; border: none; text-decoration: underline; color: var(--color-brand-medium);">${buttonText}</button>
+                <button class="btn btn-secondary empty-state-button" onclick="openModal('${modalId}')">${buttonText}</button>
             </div>
         `;
   }
@@ -233,11 +225,11 @@ function renderRecentClassesList(classes, user = null) {
                 <div class="list-item-title">${escapeHtml(c.name)}</div>
                 <div class="list-item-subtitle">${escapeHtml(c.quarter)} • ${escapeHtml(c.role)}</div>
             </div>
-            <div style="margin-left: auto;">
+            <div class="list-item-action">
                 <a href="/classes/${c.id}" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></a>
             </div>
         </div>
-    `,
+    `
     )
     .join("");
 }
@@ -380,26 +372,23 @@ export function createQuickJournalModal() {
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mood</label>
-                        <div style="display: flex; gap: 8px;">
+                        <div class="mood-buttons">
                             <button 
                               type="button" 
                               class="btn btn-secondary mood-btn" 
                               data-mood="😊"
-                              style="flex:1"
                               onclick="selectMoodQuick('😊', this)"
                             >😊</button>
                             <button 
                               type="button" 
                               class="btn btn-secondary mood-btn" 
                               data-mood="😐"
-                              style="flex:1"
                               onclick="selectMoodQuick('😐', this)"
                             >😐</button>
                             <button 
                               type="button" 
                               class="btn btn-secondary mood-btn" 
                               data-mood="😫"
-                              style="flex:1"
                               onclick="selectMoodQuick('😫', this)"
                             >😫</button>
                         </div>
