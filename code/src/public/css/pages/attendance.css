@@ -13,6 +13,16 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .role-switcher {
+    margin-left: var(--space-4);
+    margin-right: var(--space-4);
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .btn-role {
   padding: 6px 16px;
   border-radius: var(--radius-full);
@@ -101,6 +111,19 @@
   overflow: visible; /* Ensure dropdowns are not clipped */
 }
 
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .actions-cell {
+    gap: 4px;
+  }
+
+  .btn-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}
+
 .btn-icon {
   width: 28px;
   height: 28px;
@@ -124,6 +147,20 @@
 .dropdown-container {
   position: relative;
   display: inline-block;
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    min-width: 160px;
+    right: 0;
+    left: auto;
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    font-size: var(--text-xs);
+  }
 }
 
 .dropdown-menu {
@@ -211,6 +248,36 @@
   gap: var(--space-6);
 }
 
+/* Responsive: Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .attendance-student-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  .attendance-student-grid .bento-card.span-2 {
+    grid-column: span 2;
+  }
+
+  .attendance-student-grid .bento-card.row-span-2 {
+    grid-row: span 2;
+  }
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .attendance-student-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .attendance-student-grid .bento-card.span-2,
+  .attendance-student-grid .bento-card.row-span-2 {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
 .input-code-wrapper {
   display: flex;
   justify-content: center;
@@ -229,6 +296,33 @@
   color: var(--color-brand-deep);
   font-weight: bold;
   transition: all 0.2s;
+}
+
+/* Responsive: Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .big-input {
+    font-size: 28px;
+    padding: 14px;
+    letter-spacing: 6px;
+  }
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .big-input {
+    font-size: 24px;
+    padding: 12px;
+    letter-spacing: 4px;
+  }
+}
+
+/* Responsive: Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .big-input {
+    font-size: 20px;
+    padding: 10px;
+    letter-spacing: 3px;
+  }
 }
 
 .big-input:focus {
@@ -359,6 +453,32 @@
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* Responsive: Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .live-code {
+    font-size: 64px;
+    letter-spacing: 10px;
+  }
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .live-code {
+    font-size: 48px;
+    letter-spacing: 8px;
+    margin-bottom: var(--space-6);
+  }
+}
+
+/* Responsive: Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .live-code {
+    font-size: 36px;
+    letter-spacing: 6px;
+    margin-bottom: var(--space-4);
+  }
+}
+
 .live-timer-ring {
   position: relative;
   width: 120px;
@@ -405,6 +525,48 @@
   margin-top: 8px;
 }
 
+/* Responsive: Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .live-stats-row {
+    gap: 30px;
+  }
+
+  .stat-val {
+    font-size: 40px;
+  }
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .live-stats-row {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .stat-val {
+    font-size: 32px;
+  }
+
+  .stat-lbl {
+    font-size: 11px;
+  }
+}
+
+/* Responsive: Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .live-stats-row {
+    gap: 16px;
+  }
+
+  .stat-val {
+    font-size: 28px;
+  }
+
+  .stat-lbl {
+    font-size: 10px;
+  }
+}
+
 /* =========================================
    Empty State
    ========================================= */
@@ -437,12 +599,51 @@
   display: none;
 }
 
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .view-section {
+    padding: 0;
+  }
+
+  .container {
+    padding: 0 var(--space-4);
+    max-width: 100%;
+  }
+
+  /* Ensure proper spacing for course content on mobile */
+  .bento-card.span-4 {
+    margin-left: calc(-1 * var(--space-4));
+    margin-right: calc(-1 * var(--space-4));
+    border-radius: 0;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
 /* Page Header */
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--space-6);
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .page-header h1 {
+    font-size: var(--text-xl);
+  }
+
+  .page-header h2 {
+    font-size: var(--text-lg);
+  }
 }
 
 .page-header h1 {
@@ -472,6 +673,19 @@
 .card-action {
   display: flex;
   gap: var(--space-2);
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .card-action {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .card-action .btn {
+    flex: 1;
+    min-width: 120px;
+  }
 }
 
 .card-header {
@@ -592,6 +806,22 @@
   gap: var(--space-4);
 }
 
+/* Responsive: Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .course-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .course-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
 .course-grid-container {
   margin-top: var(--space-6);
 }
@@ -621,6 +851,14 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-4);
+}
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
 }
 
 .stats-item {
@@ -771,6 +1009,14 @@
   flex: 1;
 }
 
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .form-group-flex {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+}
+
 /* Success Message */
 .success-message {
   text-align: center;
@@ -866,4 +1112,132 @@
 
 .course-records-table tbody td:first-child {
   background: var(--color-bg-surface);
+}
+
+/* =========================================
+   RESPONSIVE DESIGN - ADDITIONAL STYLES
+   ========================================= */
+
+/* Responsive: Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Table improvements for mobile */
+  .course-content {
+    padding: var(--space-3);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    font-size: var(--text-xs);
+    min-width: 600px; /* Ensure table doesn't get too cramped */
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* History items on mobile */
+  .history-item {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .history-date {
+    width: 100%;
+    margin-bottom: var(--space-1);
+  }
+
+  /* Live poll modal adjustments */
+  .live-poll-card {
+    padding: var(--space-4);
+  }
+
+  .live-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .live-timer-ring {
+    width: 100px;
+    height: 100px;
+  }
+
+  .live-time {
+    font-size: 20px;
+  }
+
+  /* Input code wrapper */
+  .input-code-wrapper {
+    margin: var(--space-4) 0;
+    padding: 0 var(--space-2);
+  }
+
+  /* Success icon */
+  .success-icon-lg {
+    font-size: 36px;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+/* Responsive: Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  /* Further reduce table font size */
+  .data-table {
+    font-size: 10px;
+    min-width: 500px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--space-1) var(--space-2);
+  }
+
+  /* Smaller buttons */
+  .btn--small {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  /* Compact history */
+  .history-group {
+    margin-bottom: var(--space-4);
+  }
+
+  .history-item {
+    padding: var(--space-2) 0;
+  }
+
+  /* Smaller live poll elements */
+  .live-timer-ring {
+    width: 80px;
+    height: 80px;
+  }
+
+  .live-time {
+    font-size: 18px;
+  }
+
+  .live-header {
+    margin-bottom: var(--space-6);
+  }
+
+  /* Compact card headers */
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-action {
+    width: 100%;
+    margin-top: var(--space-2);
+  }
+
+  .card-action .btn {
+    width: 100%;
+  }
 }
