@@ -183,12 +183,20 @@ export function renderCreateGroupModal(classId, students = [], tas = []) {
           });
         });
 
-        // Close modal on successful submission
+        // Close modal on successful submission and refresh Groups tab
         document.body.addEventListener('htmx:afterRequest', function(event) {
           if (event.detail.pathInfo?.requestPath === '/groups' && event.detail.successful) {
             window.closeModal('modal-create-group');
             if (typeof showToast !== 'undefined') {
               showToast('Success', 'Group created successfully!', 'success');
+            }
+            
+            // Refresh the Groups tab content to show the new group
+            if (typeof htmx !== 'undefined') {
+              htmx.ajax('GET', '/classes/${classId}/groups', {
+                target: '#tab-content',
+                swap: 'innerHTML'
+              });
             }
           }
         });
@@ -305,6 +313,15 @@ export function renderEditGroupModal(
             if (typeof showToast !== 'undefined') {
               showToast('Success', 'Group updated successfully!', 'success');
             }
+            
+            // Refresh the Groups tab content to show the updated group
+            if (typeof htmx !== 'undefined') {
+              const classId = '${group.classId}';
+              htmx.ajax('GET', '/classes/' + classId + '/groups', {
+                target: '#tab-content',
+                swap: 'innerHTML'
+              });
+            }
           }
         });
       })();
@@ -368,6 +385,15 @@ export function renderDeleteGroupConfirmation(group) {
             window.closeModal('modal-delete-group');
             if (typeof showToast !== 'undefined') {
               showToast('Success', 'Group deleted successfully!', 'success');
+            }
+            
+            // Refresh the Groups tab content to remove the deleted group
+            if (typeof htmx !== 'undefined') {
+              const classId = '${group.classId}';
+              htmx.ajax('GET', '/classes/' + classId + '/groups', {
+                target: '#tab-content',
+                swap: 'innerHTML'
+              });
             }
           }
         });
@@ -644,7 +670,7 @@ export function renderGroupManagementModal(
     </div>
     <script>
       (function() {
-        // Show toast on successful operations
+        // Show toast and refresh Groups tab on successful operations
         document.body.addEventListener('htmx:afterRequest', function(event) {
           const path = event.detail.pathInfo?.requestPath || '';
           if (path.includes('/groups/') && event.detail.successful) {
@@ -658,6 +684,16 @@ export function renderGroupManagementModal(
                 } else if (verb === 'put') {
                   showToast('Success', 'Role updated successfully!', 'success');
                 }
+              }
+              
+              // Refresh the Groups tab content in the background
+              const classId = path.split('/groups/')[0].split('/').pop();
+              if (classId && typeof htmx !== 'undefined') {
+                // Trigger a background refresh of the Groups tab
+                htmx.ajax('GET', '/classes/' + classId + '/groups', {
+                  target: '#tab-content',
+                  swap: 'innerHTML'
+                });
               }
             }
           }
