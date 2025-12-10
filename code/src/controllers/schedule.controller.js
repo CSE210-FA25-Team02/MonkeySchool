@@ -13,6 +13,7 @@ import * as classService from "../services/class.service.js";
 import * as eventService from "../services/event.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import { prisma } from "../lib/prisma.js";
+import { renderScheduleWrapper } from "../utils/htmx-templates/schedule-templates.js";
 
 /**
  * Render class schedule page
@@ -119,7 +120,7 @@ export const renderClassSchedule = asyncHandler(async (req, res) => {
     weekStart,
     weekEnd,
     userId,
-    userClassRole,
+    userClassRole
   );
 
   // Prepare groups data for the modal
@@ -136,21 +137,18 @@ export const renderClassSchedule = asyncHandler(async (req, res) => {
     currentDate,
     events,
     allowedEventTypes,
-    groupsData,
+    groupsData
   );
 
   const isHtmx = req.headers["hx-request"];
   if (isHtmx) {
-    // For HTMX requests, wrap in schedule-wrapper for targeting
-    const { renderScheduleWrapper } =
-      await import("../utils/htmx-templates/schedule-templates.js");
     const wrappedContent = renderScheduleWrapper(
       klass,
       view,
       currentDate,
       events,
       allowedEventTypes,
-      groupsData,
+      groupsData
     );
     res.send(wrappedContent);
   } else {
@@ -161,7 +159,7 @@ export const renderClassSchedule = asyncHandler(async (req, res) => {
       wrappedContent,
       {
         user: req.user,
-      },
+      }
     );
     res.send(fullPage);
   }

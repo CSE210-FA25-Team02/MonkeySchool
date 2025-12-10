@@ -22,17 +22,6 @@ export const createPollSchema = z.object({
 });
 
 /**
- * Schema for submitting attendance
- */
-export const submitAttendanceSchema = z.object({
-  code: z
-    .string()
-    .regex(/^\d{8}$/, "Code must be exactly 8 digits")
-    .min(8)
-    .max(8),
-});
-
-/**
  * Schema for marking attendance with course selection
  */
 export const markAttendanceSchema = z.object({
