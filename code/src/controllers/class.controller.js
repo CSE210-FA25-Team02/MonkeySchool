@@ -21,6 +21,7 @@ import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import * as pulseService from "../services/pulse.service.js";
 import * as classExternalEmailService from "../services/classExternalEmail.service.js";
+import * as groupService from "../services/group.service.js";
 import {
   getUpcomingQuarters,
   createBaseLayout,
@@ -35,6 +36,7 @@ import {
   renderClassSettings as renderSettingsTemplate,
   renderExternalEmailsList,
 } from "../utils/htmx-templates/classes-templates.js";
+import { renderCreateGroupModal } from "../utils/htmx-templates/group-templates.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import {
   NotFoundError,
@@ -711,4 +713,44 @@ export const removeExternalEmail = asyncHandler(async (req, res) => {
   } else {
     res.status(204).send();
   }
+});
+
+// ============================================================================
+// GROUP MANAGEMENT
+// ============================================================================
+
+/**
+ * Get Create Group Modal
+ * Route: GET /classes/:id/groups/create-modal
+ * Auth: requireAuth (must be PROFESSOR or TA)
+ */
+export const getCreateGroupModal = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  // Fetch class and check authorization
+  const klass = await classService.getClassById(id);
+  if (!klass) {
+    throw new NotFoundError("Class not found");
+  }
+
+  const userRole = klass.members.find((m) => m.userId === userId);
+  const canManage = userRole?.role === "PROFESSOR" || userRole?.role === "TA";
+
+  if (!canManage) {
+    throw new ForbiddenError("Only professors and TAs can create groups");
+  }
+
+  // Get students and TAs for selection
+  const students = await groupService.getStudentsInClass(id);
+  const tas = await groupService.getTAsInClass(id);
+
+  const html = renderCreateGroupModal(id, students, tas);
+
+  // Prevent caching for modals
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
+  res.send(html);
 });

@@ -56,6 +56,9 @@ function handlePrismaError(err) {
  */
 export function errorHandler(err, req, res) {
   const isHtmxRequest = req.headers["hx-request"];
+  const acceptsJson =
+    req.headers.accept?.includes("application/json") ||
+    req.headers["content-type"]?.includes("application/json");
   let statusCode = 500;
   let message = "An unexpected error occurred.";
   let errors = null;
@@ -86,6 +89,14 @@ export function errorHandler(err, req, res) {
     } else {
       message = "Internal server error";
     }
+  }
+
+  // For API/test requests, return JSON
+  if (acceptsJson && !isHtmxRequest) {
+    return res.status(statusCode).json({
+      message,
+      ...(errors && { errors }),
+    });
   }
 
   // Create HTML error response
