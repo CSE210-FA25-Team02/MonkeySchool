@@ -25,7 +25,7 @@ export function renderAttendancePage(
   professorCourses = [],
   studentCourses = [],
   studentHistory = [],
-  emptyStateFlags = {},
+  emptyStateFlags = {}
 ) {
   const {
     hasProfessorCourses = false,
@@ -54,7 +54,7 @@ export function renderAttendancePage(
       ${
         showBothTabs
           ? `
-      <div class="role-switcher" style="margin-bottom: var(--space-6);">
+      <div class="role-switcher">
         <button class="btn-role ${defaultView === "create" ? "active" : ""}" onclick="switchAttendanceView('create')">Create Attendance</button>
         <button class="btn-role ${defaultView === "fill" ? "active" : ""}" onclick="switchAttendanceView('fill')">Fill Attendance</button>
       </div>
@@ -66,7 +66,7 @@ export function renderAttendancePage(
       ${
         showCreateAttendance
           ? `
-      <div id="view-create" class="view-section" style="display: ${defaultView === "create" ? "block" : "none"};">
+      <div id="view-create" class="view-section ${defaultView === "create" ? "" : "hidden"}">
         ${renderProfessorView(professorCourses, hasProfessorCourses)}
       </div>
       `
@@ -77,7 +77,7 @@ export function renderAttendancePage(
       ${
         showFillAttendance
           ? `
-      <div id="view-fill" class="view-section" style="display: ${defaultView === "fill" ? "block" : "none"};">
+      <div id="view-fill" class="view-section ${defaultView === "fill" ? "" : "hidden"}">
         ${renderStudentView(studentHistory, studentCourses, user?.id, hasStudentCourses, hasAttendanceRecords)}
       </div>
       `
@@ -388,7 +388,7 @@ export function renderAttendancePage(
 export function createStartAttendanceModal(
   sessionId,
   courseIdOrDuration,
-  durationMinutes,
+  durationMinutes
 ) {
   // Handle both new signature (sessionId, courseId, durationMinutes) and legacy (sessionId, durationMinutes)
   let courseId;
@@ -440,7 +440,7 @@ export function createStartAttendanceModal(
                 value="${duration}"
                 required
               >
-              <small style="color: var(--color-text-muted); font-size: 11px; margin-top: 4px; display: block;">
+              <small class="form-help-text">
                 The attendance code will be automatically generated after submission
               </small>
             </div>
@@ -470,10 +470,8 @@ function renderProfessorView(courses, hasProfessorCourses) {
   // If no professor courses, show empty state
   if (!hasProfessorCourses || courses.length === 0) {
     return `
-      <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
-        <h1 style="font-size: var(--text-2xl); color: var(--color-brand-deep); font-weight: bold;">
-          Course Attendance
-        </h1>
+      <div class="page-header">
+        <h1>Course Attendance</h1>
       </div>
       <div class="empty-state">
         <p>You are not a professor in any courses.</p>
@@ -482,10 +480,8 @@ function renderProfessorView(courses, hasProfessorCourses) {
   }
 
   return `
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
-      <h1 style="font-size: var(--text-2xl); color: var(--color-brand-deep); font-weight: bold;">
-        Course Attendance
-      </h1>
+    <div class="page-header">
+      <h1>Course Attendance</h1>
     </div>
 
     ${courses.map((course, idx) => renderCourseCard(course, idx === 0)).join("")}
@@ -505,15 +501,15 @@ function renderCourseCard(course, expanded = true) {
     course.sessions && course.sessions.some((s) => s.status === "active");
 
   return `
-    <div class="bento-card span-4" style="margin-bottom: var(--space-6);">
-      <div class="card-header" onclick="toggleCourse('${course.id}')" style="cursor: pointer;">
+    <div class="bento-card span-4">
+      <div class="card-header" onclick="toggleCourse('${course.id}')">
         <div class="card-title">
           <i class="fa-solid fa-chevron-${expanded ? "down" : "right"}" id="icon-${course.id}"></i>
           ${escapeHtml(course.name)}
           ${course.quarter ? `<span class="badge badge-soft">${escapeHtml(course.quarter)}</span>` : ""}
           ${hasActiveSessions ? '<span class="badge badge-active">LIVE</span>' : ""}
         </div>
-        <div class="card-action" style="display: flex; gap: var(--space-2);">
+        <div class="card-action">
           <button class="btn btn--primary btn--small" onclick="event.stopPropagation(); openCreateSessionModal('${course.classId || course.id}')">
             + New Session
           </button>
@@ -522,15 +518,14 @@ function renderCourseCard(course, expanded = true) {
              hx-target="#main-content"
              hx-swap="innerHTML"
              hx-push-url="true"
-             class="btn btn--small"
-             style="background: var(--color-bg-canvas); color: var(--color-text-main); border: 1px solid rgba(0,0,0,0.1);"
+             class="btn btn--small btn-secondary"
              onclick="event.stopPropagation();">
             View Records
           </a>
         </div>
       </div>
 
-      <div id="content-${course.id}" class="course-content" style="display: ${expanded ? "block" : "none"};">
+      <div id="content-${course.id}" class="course-content ${expanded ? "" : "hidden"}">
         ${course.sessions?.length > 0 ? renderSessionsTable(course.sessions, course.classId || course.id) : renderEmptySessions()}
       </div>
     </div>
@@ -553,7 +548,7 @@ function renderSessionsTable(sessions, courseId) {
           <th>Date / Time</th>
           <th>Code</th>
           <th>Status</th>
-          <th style="text-align: right;">Actions</th>
+          <th class="text-right">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -595,7 +590,7 @@ function renderSessionRow(session, courseId) {
       <td class="font-mono">${escapeHtml(session.code)}</td>
       <td>
         <span class="status-pill ${statusClass}">${statusLabel}</span>
-        ${timeRemaining ? `<span class="time-remaining" style="margin-left: 8px; font-size: 11px; color: var(--color-text-muted);">${timeRemaining}</span>` : ""}
+        ${timeRemaining ? `<span class="time-remaining">${timeRemaining}</span>` : ""}
       </td>
       <td class="actions-cell">
         <div class="dropdown-container">
@@ -634,7 +629,7 @@ function renderSessionRow(session, courseId) {
  */
 function renderEmptySessions() {
   return `
-    <div style="padding: var(--space-4); text-align: center; color: var(--color-text-muted);">
+    <div class="empty-sessions">
       No active sessions. Create one to start taking attendance.
     </div>
   `;
@@ -656,7 +651,7 @@ function renderStudentView(
   courses = [],
   userId = null,
   hasStudentCourses = false,
-  hasAttendanceRecords = false,
+  hasAttendanceRecords = false
 ) {
   return `
     <div class="attendance-student-grid">
@@ -665,7 +660,7 @@ function renderStudentView(
         <div class="card-header">
           <div class="card-title"><i class="fa-solid fa-qrcode"></i> Mark Attendance</div>
         </div>
-        <div class="card-content" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+        <div class="card-content flex-center">
           <div id="student-input-form">
             ${renderStudentAttendanceForm({ courses })}
           </div>
@@ -693,13 +688,11 @@ function renderStudentView(
     ${
       courses && courses.length > 0
         ? `
-      <div style="margin-top: var(--space-6);">
+      <div class="course-grid-container">
         <div class="page-header" style="margin-bottom: var(--space-4);">
-          <h2 style="font-size: var(--text-xl); color: var(--color-brand-deep); font-weight: bold;">
-            My Courses
-          </h2>
+          <h2>My Courses</h2>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-4);">
+        <div class="course-grid">
           ${courses.map((course) => renderStudentCourseCard(course, userId)).join("")}
         </div>
       </div>
@@ -720,19 +713,19 @@ function renderStudentCourseCard(course, userId) {
   // userId should always be provided, but handle gracefully if not
   if (!userId) {
     console.warn(
-      "renderStudentCourseCard: userId not provided, cannot create attendance link",
+      "renderStudentCourseCard: userId not provided, cannot create attendance link"
     );
     return `
-      <div class="bento-card" style="display: flex; flex-direction: column;">
+      <div class="bento-card student-course-card">
         <div class="card-header">
           <div class="card-title">
             ${escapeHtml(course.name)}
             ${course.quarter ? `<span class="badge badge-soft">${escapeHtml(course.quarter)}</span>` : ""}
           </div>
         </div>
-        <div class="card-content" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-          <div style="margin-bottom: var(--space-4);">
-            ${course.code ? `<p style="color: var(--color-text-muted); font-size: var(--text-sm);">${escapeHtml(course.code)}</p>` : ""}
+        <div class="card-content flex-between">
+          <div class="student-course-card-content">
+            ${course.code ? `<p>${escapeHtml(course.code)}</p>` : ""}
           </div>
           <div>
             <button class="btn btn--primary btn--full" disabled>
@@ -745,16 +738,16 @@ function renderStudentCourseCard(course, userId) {
   }
 
   return `
-    <div class="bento-card" style="display: flex; flex-direction: column;">
+    <div class="bento-card student-course-card">
       <div class="card-header">
         <div class="card-title">
           ${escapeHtml(course.name)}
           ${course.quarter ? `<span class="badge badge-soft">${escapeHtml(course.quarter)}</span>` : ""}
         </div>
       </div>
-      <div class="card-content" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-        <div style="margin-bottom: var(--space-4);">
-          ${course.code ? `<p style="color: var(--color-text-muted); font-size: var(--text-sm);">${escapeHtml(course.code)}</p>` : ""}
+      <div class="card-content flex-between">
+        <div class="student-course-card-content">
+          ${course.code ? `<p>${escapeHtml(course.code)}</p>` : ""}
         </div>
         <div>
           <a href="/course/${escapeHtml(course.id)}/user/${escapeHtml(userId)}/records"
@@ -828,24 +821,24 @@ function renderCreateSessionModal() {
           <div class="modal-body">
             <input type="hidden" id="session-class-id" name="classId" required>
             <div class="form-group">
-              <label class="form-label">Session Name <span style="color: var(--color-error);">*</span></label>
+              <label class="form-label">Session Name <span class="required-asterisk">*</span></label>
               <input type="text" class="form-input" id="session-name" name="name" placeholder="e.g. Week 6: Testing Strategies" required>
             </div>
             <div class="form-group">
-              <label class="form-label">Date <span style="color: var(--color-error);">*</span></label>
+              <label class="form-label">Date <span class="required-asterisk">*</span></label>
               <input type="date" class="form-input" id="session-date" name="date" required>
             </div>
-            <div class="form-group" style="display: flex; gap: 12px;">
-              <div style="flex: 1;">
+            <div class="form-group form-group-flex">
+              <div>
                 <label class="form-label">Start Time</label>
                 <input type="time" class="form-input" id="session-start-time" name="startTime">
               </div>
-              <div style="flex: 1;">
+              <div>
                 <label class="form-label">End Time</label>
                 <input type="time" class="form-input" id="session-end-time" name="endTime">
               </div>
             </div>
-            <div id="session-form-error" class="alert alert--error" style="display: none; margin-top: var(--space-4);"></div>
+            <div id="session-form-error" class="alert alert--error" style="display: none;"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn--secondary" onclick="closeModal('modal-create-session')">Cancel</button>
@@ -933,27 +926,23 @@ export function renderSessionRecordsPage(data) {
 
   return `
     <div class="container">
-      <div class="page-header" style="margin-bottom: var(--space-6);">
+      <div class="records-page-header">
         <div>
-          <a href="/attendance" style="color: var(--color-text-muted); text-decoration: none; font-size: var(--text-sm);">
+          <a href="/attendance">
             ← Back to Attendance
           </a>
-          <h1 style="font-size: var(--text-2xl); color: var(--color-brand-deep); font-weight: bold; margin-top: var(--space-2);">
-            ${escapeHtml(sessionName)}
-          </h1>
-          <p style="color: var(--color-text-muted); margin-top: var(--space-1);">
-            ${escapeHtml(courseName)}
-          </p>
+          <h1>${escapeHtml(sessionName)}</h1>
+          <p>${escapeHtml(courseName)}</p>
         </div>
       </div>
 
-      <div class="bento-card span-4" style="margin-bottom: var(--space-6); width: 100%;">
+      <div class="bento-card span-4 full-width">
         <div class="card-header">
           <div class="card-title">Attendance Overview</div>
         </div>
-        <div class="card-content" style="display: flex; align-items: center; gap: var(--space-8); padding: var(--space-6);">
+        <div class="card-content flex-align-center">
           <!-- Circular Percentage Indicator -->
-          <div class="attendance-circle-container">
+          <div class="attendance-circle-container size-120">
             <svg class="attendance-circle" width="120" height="120">
               <circle 
                 class="attendance-circle-bg" 
@@ -975,53 +964,40 @@ export function renderSessionRecordsPage(data) {
                 stroke-dasharray="${circumference}"
                 stroke-dashoffset="${offset}"
                 transform="rotate(-90 60 60)"
-                style="transition: stroke-dashoffset 0.5s ease;"
               />
             </svg>
             <div class="attendance-circle-text">
-              <div class="attendance-circle-percentage">${attendancePercentage}%</div>
-              <div class="attendance-circle-label">Attendance</div>
+              <div class="attendance-circle-percentage size-2xl">${attendancePercentage}%</div>
+              <div class="attendance-circle-label size-xs">Attendance</div>
             </div>
           </div>
           
           <!-- Stats -->
           <div style="flex: 1;">
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4);">
+            <div class="stats-grid">
               <div>
-                <div style="font-size: var(--text-2xl); font-weight: bold; color: var(--color-brand-deep);">
-                  ${presentCount}
-                </div>
-                <div style="font-size: var(--text-sm); color: var(--color-text-muted);">
-                  Present
-                </div>
+                <div class="stats-item">${presentCount}</div>
+                <div class="stats-label">Present</div>
               </div>
               <div>
-                <div style="font-size: var(--text-2xl); font-weight: bold; color: var(--color-brand-deep);">
-                  ${totalStudents - presentCount}
-                </div>
-                <div style="font-size: var(--text-sm); color: var(--color-text-muted);">
-                  Absent
-                </div>
+                <div class="stats-item">${totalStudents - presentCount}</div>
+                <div class="stats-label">Absent</div>
               </div>
               <div>
-                <div style="font-size: var(--text-2xl); font-weight: bold; color: var(--color-brand-deep);">
-                  ${totalStudents}
-                </div>
-                <div style="font-size: var(--text-sm); color: var(--color-text-muted);">
-                  Total Enrolled
-                </div>
+                <div class="stats-item">${totalStudents}</div>
+                <div class="stats-label">Total Enrolled</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="bento-card span-4" style="width: 100%;">
+      <div class="bento-card span-4 full-width">
         <div class="card-header">
           <div class="card-title">Student Records</div>
         </div>
-        <div class="card-content" style="width: 100%;">
-          <table class="data-table" style="width: 100%;">
+        <div class="card-content overflow-auto">
+          <table class="data-table full-width">
             <thead>
               <tr>
                 <th>Student Name</th>
@@ -1053,7 +1029,7 @@ export function renderSessionRecordsPage(data) {
                   <tr>
                     <td><strong>${escapeHtml(student.name)}</strong></td>
                     <td>${escapeHtml(student.email || student.id)}</td>
-                    <td class="font-mono" style="font-size: var(--text-xs);">${escapeHtml(timestamp)}</td>
+                    <td class="font-mono timestamp">${escapeHtml(timestamp)}</td>
                     <td>
                       <span class="status-badge ${statusClass}">${status}</span>
                     </td>
@@ -1066,39 +1042,6 @@ export function renderSessionRecordsPage(data) {
         </div>
       </div>
     </div>
-
-    <style>
-      .attendance-circle-container {
-        position: relative;
-        width: 120px;
-        height: 120px;
-      }
-      
-      .attendance-circle {
-        transform: rotate(-90deg);
-      }
-      
-      .attendance-circle-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-      }
-      
-      .attendance-circle-percentage {
-        font-size: var(--text-2xl);
-        font-weight: bold;
-        color: var(--color-brand-deep);
-        line-height: 1;
-      }
-      
-      .attendance-circle-label {
-        font-size: var(--text-xs);
-        color: var(--color-text-muted);
-        margin-top: 4px;
-      }
-    </style>
   `;
 }
 
@@ -1126,14 +1069,14 @@ export function renderStudentAttendanceForm({
     : "";
 
   return `
-    <p style="color: var(--color-text-muted); margin-bottom: var(--space-4);">
+    <p class="student-form-text">
       Select your course and enter the 8-digit code provided by your professor.
     </p>
     
     ${
       error
         ? `
-      <div class="alert alert--error" role="alert" style="margin-bottom: var(--space-4);">
+      <div class="alert alert--error alert-error" role="alert">
         <strong>Error:</strong> ${escapeHtml(error)}
       </div>
     `
@@ -1147,7 +1090,7 @@ export function renderStudentAttendanceForm({
       hx-swap="innerHTML"
       hx-indicator="#attendance-submit-btn"
     >
-      <div class="form-group" style="margin-bottom: var(--space-4);">
+      <div class="form-group form-group-spaced">
         <label class="form-label" for="course-select">Course</label>
         <select 
           class="form-select" 
@@ -1162,13 +1105,13 @@ export function renderStudentAttendanceForm({
             <option value="${escapeHtml(course.id)}" ${selectedCourseId === course.id ? "selected" : ""}>
               ${escapeHtml(course.name)}${course.quarter ? ` (${escapeHtml(course.quarter)})` : ""}
             </option>
-          `,
+          `
             )
             .join("")}
         </select>
       </div>
       
-      <div class="form-group" style="margin-bottom: var(--space-4);">
+      <div class="form-group form-group-spaced">
         <label class="form-label" for="attendance-code-input">Attendance Code</label>
         <div class="input-code-wrapper">
           <input 
@@ -1217,20 +1160,14 @@ export function renderStudentAttendanceSuccess({
   });
 
   return `
-    <div style="text-align: center; animation: fadeIn 0.5s;">
+    <div class="success-message">
       <div class="success-icon-lg">
         <i class="fa-solid fa-check"></i>
       </div>
-      <h3 style="color: var(--color-brand-deep); margin-top: var(--space-4);">
-        ${alreadyMarked ? "Already Checked In!" : "You're Checked In!"}
-      </h3>
-      <p class="text-muted" style="margin-top: var(--space-2);">
-        ${escapeHtml(courseName)}
-      </p>
-      <p class="text-muted" style="font-size: var(--text-sm); margin-top: var(--space-1);">
-        ${escapeHtml(sessionName)}
-      </p>
-      <p class="text-muted" style="font-size: var(--text-xs); margin-top: var(--space-2);">
+      <h3>${alreadyMarked ? "Already Checked In!" : "You're Checked In!"}</h3>
+      <p class="text-muted">${escapeHtml(courseName)}</p>
+      <p class="text-muted-sm">${escapeHtml(sessionName)}</p>
+      <p class="text-muted-xs">
         ${alreadyMarked ? "Previously marked at" : "Marked at"} ${timeStr}
       </p>
     </div>
@@ -1279,32 +1216,27 @@ export function renderStudentAttendanceRecordsPage(data) {
 
   return `
     <div class="container">
-      <div class="page-header" style="margin-bottom: var(--space-6);">
+      <div class="records-page-header">
         <div>
           <a href="/attendance" 
              hx-get="/attendance"
              hx-target="#main-content"
              hx-swap="innerHTML"
-             hx-push-url="true"
-             style="color: var(--color-text-muted); text-decoration: none; font-size: var(--text-sm);">
+             hx-push-url="true">
             ← Back to Courses
           </a>
-          <h1 style="font-size: var(--text-2xl); color: var(--color-brand-deep); font-weight: bold; margin-top: var(--space-2);">
-            Attendance Records
-          </h1>
-          <p style="color: var(--color-text-muted); margin-top: var(--space-1);">
-            ${escapeHtml(courseName)}
-          </p>
+          <h1>Attendance Records</h1>
+          <p>${escapeHtml(courseName)}</p>
         </div>
       </div>
 
       <!-- Attendance Summary Circle -->
-      <div class="bento-card span-4" style="margin-bottom: var(--space-6);">
+      <div class="bento-card span-4">
         <div class="card-header">
           <div class="card-title">Attendance Summary</div>
         </div>
-        <div class="card-content" style="display: flex; align-items: center; justify-content: center; padding: var(--space-8);">
-          <div class="attendance-circle-container">
+        <div class="card-content flex-justify-center">
+          <div class="attendance-circle-container size-160">
             <svg class="attendance-circle" width="160" height="160">
               <circle 
                 class="attendance-circle-bg" 
@@ -1326,12 +1258,11 @@ export function renderStudentAttendanceRecordsPage(data) {
                 stroke-dasharray="${circumference}"
                 stroke-dashoffset="${offset}"
                 transform="rotate(-90 80 80)"
-                style="transition: stroke-dashoffset 0.5s ease;"
               />
             </svg>
             <div class="attendance-circle-text">
-              <div class="attendance-circle-percentage">${attendancePercentage}%</div>
-              <div class="attendance-circle-label">Attendance</div>
+              <div class="attendance-circle-percentage size-3xl">${attendancePercentage}%</div>
+              <div class="attendance-circle-label size-sm">Attendance</div>
             </div>
           </div>
         </div>
@@ -1348,7 +1279,7 @@ export function renderStudentAttendanceRecordsPage(data) {
               <tr>
                 <th>Session Name</th>
                 <th>Session Date</th>
-                <th style="text-align: center;">Status</th>
+                <th class="text-center">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -1361,11 +1292,11 @@ export function renderStudentAttendanceRecordsPage(data) {
                   <tr>
                     <td><strong>${escapeHtml(session.name)}</strong></td>
                     <td>${escapeHtml(formatSessionDate(session.date))}</td>
-                    <td style="text-align: center; font-size: var(--text-lg);">
+                    <td class="text-center">
                       ${
                         isPresent
-                          ? '<span style="color: var(--color-status-success);">✔️</span>'
-                          : '<span style="color: var(--color-status-error);">❌</span>'
+                          ? '<span class="status-icon-success">✔️</span>'
+                          : '<span class="status-icon-error">❌</span>'
                       }
                     </td>
                   </tr>
@@ -1374,7 +1305,7 @@ export function renderStudentAttendanceRecordsPage(data) {
                       .join("")
                   : `
                 <tr>
-                  <td colspan="3" style="text-align: center; color: var(--color-text-muted); padding: var(--space-4);">
+                  <td colspan="3" class="text-center-small">
                     No sessions found for this course.
                   </td>
                 </tr>
@@ -1385,39 +1316,6 @@ export function renderStudentAttendanceRecordsPage(data) {
         </div>
       </div>
     </div>
-
-    <style>
-      .attendance-circle-container {
-        position: relative;
-        width: 160px;
-        height: 160px;
-      }
-      
-      .attendance-circle {
-        transform: rotate(-90deg);
-      }
-      
-      .attendance-circle-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-      }
-      
-      .attendance-circle-percentage {
-        font-size: var(--text-3xl);
-        font-weight: bold;
-        color: var(--color-brand-deep);
-        line-height: 1;
-      }
-      
-      .attendance-circle-label {
-        font-size: var(--text-sm);
-        color: var(--color-text-muted);
-        margin-top: var(--space-1);
-      }
-    </style>
   `;
 }
 
@@ -1454,7 +1352,7 @@ export function displayCourseRecordsPage(data) {
    */
   const formatSessionHeader = (session) => {
     const dateStr = formatSessionDate(session.date);
-    return `${escapeHtml(session.name)}<br><span style="font-size: var(--text-xs); color: var(--color-text-muted); font-weight: normal;">${dateStr}</span>`;
+    return `${escapeHtml(session.name)}<br><span class="session-header">${dateStr}</span>`;
   };
 
   /**
@@ -1478,44 +1376,39 @@ export function displayCourseRecordsPage(data) {
 
   return `
     <div class="container">
-      <div class="page-header" style="margin-bottom: var(--space-6);">
+      <div class="records-page-header">
         <div>
           <a href="/attendance" 
              hx-get="/attendance"
              hx-target="#main-content"
              hx-swap="innerHTML"
-             hx-push-url="true"
-             style="color: var(--color-text-muted); text-decoration: none; font-size: var(--text-sm);">
+             hx-push-url="true">
             ← Back to Attendance
           </a>
-          <h1 style="font-size: var(--text-2xl); color: var(--color-brand-deep); font-weight: bold; margin-top: var(--space-2);">
-            Attendance Records
-          </h1>
-          <p style="color: var(--color-text-muted); margin-top: var(--space-1);">
-            ${escapeHtml(courseName)}
-          </p>
+          <h1>Attendance Records</h1>
+          <p>${escapeHtml(courseName)}</p>
         </div>
       </div>
 
-      <div class="bento-card span-4" style="width: 100%;">
+      <div class="bento-card span-4 full-width course-records-table">
         <div class="card-header">
           <div class="card-title">Student Attendance Overview</div>
         </div>
-        <div class="card-content" style="overflow-x: auto; width: 100%;">
-          <table class="data-table" style="width: 100%; min-width: 100%;">
+        <div class="card-content overflow-auto">
+          <table class="data-table full-width">
             <thead>
               <tr>
-                <th style="position: sticky; left: 0; background: var(--color-bg-surface); z-index: 10; min-width: 200px;">Student Name</th>
+                <th class="sticky-left">Student Name</th>
                 ${sessions
                   .map(
                     (session) => `
-                  <th style="min-width: 150px; text-align: center; white-space: nowrap;">
+                  <th class="session-header-cell">
                     ${formatSessionHeader(session)}
                   </th>
-                `,
+                `
                   )
                   .join("")}
-                <th style="min-width: 120px; text-align: center;">Attendance %</th>
+                <th class="percentage-header">Attendance %</th>
               </tr>
             </thead>
             <tbody>
@@ -1525,24 +1418,22 @@ export function displayCourseRecordsPage(data) {
                     calculateAttendancePercentage(student);
                   return `
                   <tr>
-                    <td style="position: sticky; left: 0; background: var(--color-bg-surface); z-index: 10;">
-                      <strong>${escapeHtml(student.name)}</strong>
-                      <div style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 2px;">
-                        ${escapeHtml(student.email)}
-                      </div>
+                    <td class="sticky-left">
+                      <div class="student-name">${escapeHtml(student.name)}</div>
+                      <div class="student-email">${escapeHtml(student.email)}</div>
                     </td>
                     ${sessions
                       .map((session) => {
                         const isPresent =
                           !!student.sessionAttendance[session.id];
                         return `
-                        <td style="text-align: center; font-size: var(--text-lg);">
-                          ${isPresent ? '<span style="color: var(--color-status-success);">✔️</span>' : '<span style="color: var(--color-status-error);">❌</span>'}
+                        <td class="text-center">
+                          ${isPresent ? '<span class="status-icon-success">✔️</span>' : '<span class="status-icon-error">❌</span>'}
                         </td>
                       `;
                       })
                       .join("")}
-                    <td style="text-align: center; font-weight: bold; color: var(--color-brand-deep);">
+                    <td class="percentage-cell">
                       ${attendancePercentage}%
                     </td>
                   </tr>
@@ -1554,39 +1445,5 @@ export function displayCourseRecordsPage(data) {
         </div>
       </div>
     </div>
-
-    <style>
-      /* Ensure table container takes full width */
-      .bento-card.span-4 {
-        width: 100%;
-        max-width: 100%;
-      }
-      
-      /* Ensure table is responsive with horizontal scroll */
-      .card-content {
-        max-width: 100%;
-        width: 100%;
-      }
-      
-      /* Ensure table takes full available width */
-      .data-table {
-        width: 100%;
-        min-width: 100%;
-      }
-      
-      /* Sticky header for better UX when scrolling horizontally */
-      thead th {
-        position: sticky;
-        top: 0;
-        background: var(--color-bg-surface);
-        z-index: 5;
-        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-      }
-      
-      /* Ensure sticky student name column has proper background */
-      tbody td:first-child {
-        background: var(--color-bg-surface);
-      }
-    </style>
   `;
 }
