@@ -135,7 +135,7 @@ export const renderClassPage = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user
+    req.user,
   );
   const pageHtml = renderClassDetail(classInfo, "directory", content, {
     isStudent,
@@ -167,7 +167,7 @@ export const renderClassDirectory = asyncHandler(async (req, res) => {
       tutors: [],
       groups: [],
     },
-    req.user
+    req.user,
   );
   res.send(content);
 });
@@ -207,7 +207,7 @@ export const renderClassSettings = asyncHandler(async (req, res) => {
     klass,
     inviteUrl,
     externalEmails,
-    canManage
+    canManage,
   );
   res.send(content);
 });
@@ -357,7 +357,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         </p>
         <a href="/" class="btn btn--primary">Go to Dashboard</a>
       </div>
-    `
+    `,
     );
     return res.status(404).send(errorHtml);
   }
@@ -394,7 +394,7 @@ export const joinClassByInviteCode = asyncHandler(async (req, res) => {
         <a href="/classes/${klass.id}" class="btn btn--primary">Go to Class</a>
       </div>
     </div>
-  `
+  `,
   );
   res.send(successHtml);
 });
@@ -618,7 +618,7 @@ export const addExternalEmail = asyncHandler(async (req, res) => {
   // Check if email is a UCSD email (shouldn't be added as external)
   if (email.trim().endsWith("@ucsd.edu")) {
     throw new BadRequestError(
-      "UCSD emails are already allowed and don't need to be added"
+      "UCSD emails are already allowed and don't need to be added",
     );
   }
 
@@ -635,14 +635,14 @@ export const addExternalEmail = asyncHandler(async (req, res) => {
     req.user.isProf;
   if (!canManage) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage external emails"
+      "Only professors and TAs can manage external emails",
     );
   }
 
   // Add external email
   const externalEmail = await classExternalEmailService.addExternalEmailToClass(
     id,
-    email.trim()
+    email.trim(),
   );
 
   // Fetch updated list
@@ -684,7 +684,7 @@ export const removeExternalEmail = asyncHandler(async (req, res) => {
     req.user.isProf;
   if (!canManage) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage external emails"
+      "Only professors and TAs can manage external emails",
     );
   }
 
@@ -692,7 +692,7 @@ export const removeExternalEmail = asyncHandler(async (req, res) => {
   try {
     await classExternalEmailService.removeExternalEmailFromClass(
       id,
-      decodedEmail
+      decodedEmail,
     );
   } catch (error) {
     if (error.code === "P2025") {
@@ -749,7 +749,7 @@ export const renderClassGroups = asyncHandler(async (req, res) => {
   } else {
     // Full page request - wrap in class detail layout
     const studentCount = klass.members.filter(
-      (m) => m.role === "STUDENT"
+      (m) => m.role === "STUDENT",
     ).length;
     const classInfo = { ...klass, studentCount };
 

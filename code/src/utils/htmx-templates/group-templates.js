@@ -214,17 +214,8 @@ export function renderCreateGroupModal(classId, students = [], tas = []) {
  * @param {Array} tas - Available TAs in the class
  * @returns {string} HTML string
  */
-export function renderEditGroupModal(
-  group,
-  permissions,
-  students = [],
-  tas = []
-) {
-  const { canEditMembers, isProf, isTA } = permissions;
-
-  // Get current member IDs
-  const currentMemberIds = new Set(group.members.map((m) => m.userId));
-  const currentSupervisorIds = new Set(group.supervisors.map((s) => s.userId));
+export function renderEditGroupModal(group, permissions) {
+  const { canEditMembers } = permissions;
 
   return `
     <div id="modal-edit-group" class="modal-overlay open" style="display: flex;">
@@ -417,7 +408,7 @@ export function renderGroupManagementModal(
   classTAs,
   permissions
 ) {
-  const { isProf, isTA } = permissions;
+  const { isProf } = permissions;
 
   // Get current member and supervisor IDs
   const currentMemberIds = new Set(group.members.map((m) => m.userId));
@@ -712,8 +703,8 @@ export function renderGroupManagementModal(
  * @param {string} classId - Class ID
  * @returns {string} HTML string
  */
-export function renderGroupCard(group, permissions, classId) {
-  const { canEdit, canEditMembers, canDelete, isProf, isTA } = permissions;
+export function renderGroupCard(group, permissions) {
+  const { canEdit, canEditMembers, canDelete } = permissions;
 
   return `
     <div class="group-section" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);">

@@ -112,7 +112,7 @@ export function errorHandler(err, req, res) {
       errorHtml,
       {
         description: "An error occurred while processing your request.",
-      }
+      },
     );
     res.status(statusCode).send(fullPage);
   }
@@ -168,7 +168,7 @@ export async function notFoundHandler(req, res) {
       errorHtml,
       {
         description: "The requested page could not be found.",
-      }
+      },
     );
     res.status(404).send(fullPage);
   }

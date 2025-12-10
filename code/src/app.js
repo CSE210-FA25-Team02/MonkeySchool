@@ -17,13 +17,11 @@ import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
 import { requireAuth } from "./middleware/auth.js";
-import { asyncHandler } from "./utils/async-handler.js";
 import {
   getAttendancePage,
   getSessionRecordsPage,
   getCourseRecordsPage,
 } from "./controllers/attendance.controller.js";
-import * as classController from "./controllers/class.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -95,19 +93,19 @@ export function createApp() {
   );
 
   // Rate limiting
-  // const limiter = rateLimit({
-  //   windowMs: env.RATE_LIMIT_WINDOW_MS,
-  //   max: env.RATE_LIMIT_MAX_REQUESTS,
-  //   message: `
-  //     <div class="alert alert--error" role="alert">
-  //       <h2>Rate limit exceeded</h2>
-  //       <p>Too many requests from this IP, please try again later.</p>
-  //     </div>
-  //   `,
-  //   standardHeaders: true,
-  //   legacyHeaders: false,
-  // });
-  // app.use("/", limiter);
+  const limiter = rateLimit({
+    windowMs: env.RATE_LIMIT_WINDOW_MS,
+    max: env.RATE_LIMIT_MAX_REQUESTS,
+    message: `
+      <div class="alert alert--error" role="alert">
+        <h2>Rate limit exceeded</h2>
+        <p>Too many requests from this IP, please try again later.</p>
+      </div>
+    `,
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+  app.use("/", limiter);
 
   // Cookie parsing
   app.use(cookieParser());

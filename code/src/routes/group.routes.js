@@ -32,7 +32,7 @@ router.post("/", requireAuth, asyncHandler(groupController.createGroup));
 router.get(
   "/:groupId",
   requireAuth,
-  asyncHandler(groupController.getGroupDetail)
+  asyncHandler(groupController.getGroupDetail),
 );
 
 /**
@@ -49,7 +49,7 @@ router.put("/:groupId", requireAuth, asyncHandler(groupController.updateGroup));
 router.delete(
   "/:groupId",
   requireAuth,
-  asyncHandler(groupController.deleteGroup)
+  asyncHandler(groupController.deleteGroup),
 );
 
 // ============================================
@@ -64,7 +64,7 @@ router.delete(
 router.post(
   "/:groupId/members",
   requireAuth,
-  asyncHandler(groupController.addMember)
+  asyncHandler(groupController.addMember),
 );
 
 /**
@@ -74,7 +74,7 @@ router.post(
 router.delete(
   "/:groupId/members/:userId",
   requireAuth,
-  asyncHandler(groupController.removeMember)
+  asyncHandler(groupController.removeMember),
 );
 
 /**
@@ -85,7 +85,7 @@ router.delete(
 router.put(
   "/:groupId/members/:userId/role",
   requireAuth,
-  asyncHandler(groupController.updateMemberRole)
+  asyncHandler(groupController.updateMemberRole),
 );
 
 // ============================================
@@ -100,7 +100,7 @@ router.put(
 router.post(
   "/:groupId/supervisors",
   requireAuth,
-  asyncHandler(groupController.addSupervisor)
+  asyncHandler(groupController.addSupervisor),
 );
 
 /**
@@ -110,7 +110,7 @@ router.post(
 router.delete(
   "/:groupId/supervisors/:userId",
   requireAuth,
-  asyncHandler(groupController.removeSupervisor)
+  asyncHandler(groupController.removeSupervisor),
 );
 
 // ============================================
@@ -124,7 +124,7 @@ router.delete(
 router.get(
   "/:groupId/edit-modal",
   requireAuth,
-  asyncHandler(groupController.getEditGroupModal)
+  asyncHandler(groupController.getEditGroupModal),
 );
 
 /**
@@ -134,7 +134,7 @@ router.get(
 router.get(
   "/:groupId/delete-modal",
   requireAuth,
-  asyncHandler(groupController.getDeleteGroupModal)
+  asyncHandler(groupController.getDeleteGroupModal),
 );
 
 /**
@@ -144,7 +144,7 @@ router.get(
 router.get(
   "/:groupId/manage",
   requireAuth,
-  asyncHandler(groupController.getGroupManagementModal)
+  asyncHandler(groupController.getGroupManagementModal),
 );
 
 export default router;

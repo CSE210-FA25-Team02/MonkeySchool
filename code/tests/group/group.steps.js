@@ -99,7 +99,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created in setupBasicData
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -126,7 +126,7 @@ defineFeature(feature, (test) => {
           .expect(201);
 
         context.group = context.response.body;
-      }
+      },
     );
 
     then("the group should be created successfully", () => {
@@ -160,7 +160,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -221,7 +221,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a TA in the class", async () => {
@@ -248,7 +248,7 @@ defineFeature(feature, (test) => {
           .expect(201);
 
         context.group = context.response.body;
-      }
+      },
     );
 
     then("the group should be created successfully", () => {
@@ -273,7 +273,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a student in the class", async () => {
@@ -295,7 +295,7 @@ defineFeature(feature, (test) => {
         } catch (error) {
           context.apiError = error;
         }
-      }
+      },
     );
 
     then("I should receive a 403 Forbidden error", () => {
@@ -325,7 +325,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -348,7 +348,7 @@ defineFeature(feature, (test) => {
       /^I add student "(.*)" to the group as "(.*)"$/,
       async (studentEmail, role) => {
         const student = context.students.find(
-          (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+          (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
         );
         context.response = await request
           .post(`/groups/${context.group.id}/members`)
@@ -357,7 +357,7 @@ defineFeature(feature, (test) => {
             role,
           })
           .expect(201);
-      }
+      },
     );
 
     then("the student should be added to the group", async () => {
@@ -388,7 +388,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -411,7 +411,7 @@ defineFeature(feature, (test) => {
       /^I add student "(.*)" to the group as "(.*)"$/,
       async (studentEmail, role) => {
         const student = context.students.find(
-          (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+          (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
         );
         context.response = await request
           .post(`/groups/${context.group.id}/members`)
@@ -420,7 +420,7 @@ defineFeature(feature, (test) => {
             role,
           })
           .expect(201);
-      }
+      },
     );
 
     then("the student should be added to the group", async () => {
@@ -446,7 +446,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a TA in the class", async () => {
@@ -494,7 +494,7 @@ defineFeature(feature, (test) => {
             role: "MEMBER",
           })
           .expect(201);
-      }
+      },
     );
 
     then(/^the group should have (\d+) members$/, async (count) => {
@@ -506,17 +506,17 @@ defineFeature(feature, (test) => {
       const group = await groupService.getGroupById(context.group.id);
 
       const member1 = group.members.find(
-        (m) => m.userId === context.students[0].id
+        (m) => m.userId === context.students[0].id,
       );
       expect(member1.role).toBe("LEADER");
 
       const member2 = group.members.find(
-        (m) => m.userId === context.students[1].id
+        (m) => m.userId === context.students[1].id,
       );
       expect(member2.role).toBe("MEMBER");
 
       const member3 = group.members.find(
-        (m) => m.userId === context.students[2].id
+        (m) => m.userId === context.students[2].id,
       );
       expect(member3.role).toBe("MEMBER");
     });
@@ -539,7 +539,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -560,7 +560,7 @@ defineFeature(feature, (test) => {
 
     and(/^student "(.*)" is a member of the group$/, async (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       await groupService.addGroupMember(context.group.id, student.id, "MEMBER");
     });
@@ -569,13 +569,13 @@ defineFeature(feature, (test) => {
       /^I update student "(.*)" role to "(.*)" in the group$/,
       async (studentEmail, role) => {
         const student = context.students.find(
-          (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+          (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
         );
         context.response = await request
           .put(`/groups/${context.group.id}/members/${student.id}/role`)
           .send({ role })
           .expect(200);
-      }
+      },
     );
 
     then(/^the student's role should be updated to "(.*)"$/, async (role) => {
@@ -598,7 +598,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -619,7 +619,7 @@ defineFeature(feature, (test) => {
 
     and(/^student "(.*)" is a leader of the group$/, async (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       await groupService.addGroupMember(context.group.id, student.id, "LEADER");
     });
@@ -628,13 +628,13 @@ defineFeature(feature, (test) => {
       /^I update student "(.*)" role to "(.*)" in the group$/,
       async (studentEmail, role) => {
         const student = context.students.find(
-          (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+          (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
         );
         context.response = await request
           .put(`/groups/${context.group.id}/members/${student.id}/role`)
           .send({ role })
           .expect(200);
-      }
+      },
     );
 
     then(/^the student's role should be updated to "(.*)"$/, async (role) => {
@@ -662,7 +662,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and(/^there are (\d+) students in the class$/, async (count) => {
@@ -685,7 +685,7 @@ defineFeature(feature, (test) => {
       await groupService.addGroupMember(
         context.group.id,
         context.user.id,
-        "LEADER"
+        "LEADER",
       );
     });
 
@@ -693,7 +693,7 @@ defineFeature(feature, (test) => {
       /^I add student "(.*)" to the group as "(.*)"$/,
       async (studentEmail, role) => {
         const student = context.students.find(
-          (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+          (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
         );
         context.response = await request
           .post(`/groups/${context.group.id}/members`)
@@ -702,7 +702,7 @@ defineFeature(feature, (test) => {
             role,
           })
           .expect(201);
-      }
+      },
     );
 
     then("the student should be added to the group", async () => {
@@ -728,7 +728,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and(/^there are (\d+) students in the class$/, async (count) => {
@@ -751,7 +751,7 @@ defineFeature(feature, (test) => {
       await groupService.addGroupMember(
         context.group.id,
         context.user.id,
-        "MEMBER"
+        "MEMBER",
       );
     });
 
@@ -759,7 +759,7 @@ defineFeature(feature, (test) => {
       /^I attempt to add student "(.*)" to the group$/,
       async (studentEmail) => {
         const student = context.students.find(
-          (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+          (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
         );
         try {
           context.response = await request
@@ -771,7 +771,7 @@ defineFeature(feature, (test) => {
         } catch (error) {
           context.apiError = error;
         }
-      }
+      },
     );
 
     then("I should receive a 403 Forbidden error", () => {
@@ -801,7 +801,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -822,14 +822,14 @@ defineFeature(feature, (test) => {
 
     and(/^student "(.*)" is a member of the group$/, async (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       await groupService.addGroupMember(context.group.id, student.id, "MEMBER");
     });
 
     when(/^I remove student "(.*)" from the group$/, async (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       context.response = await request
         .delete(`/groups/${context.group.id}/members/${student.id}`)
@@ -840,7 +840,7 @@ defineFeature(feature, (test) => {
       const student = context.students.find(
         (s) =>
           s.lookupEmail === "student1@ucsd.edu" ||
-          s.email === "student1@ucsd.edu"
+          s.email === "student1@ucsd.edu",
       );
       const group = await groupService.getGroupById(context.group.id);
       const member = group.members.find((m) => m.userId === student.id);
@@ -865,7 +865,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -906,7 +906,7 @@ defineFeature(feature, (test) => {
     then("the TA should be assigned as supervisor", async () => {
       const group = await groupService.getGroupById(context.group.id);
       const supervisor = group.supervisors.find(
-        (s) => s.userId === context.ta.id
+        (s) => s.userId === context.ta.id,
       );
       expect(supervisor).toBeDefined();
     });
@@ -936,7 +936,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a TA in the class", async () => {
@@ -977,7 +977,7 @@ defineFeature(feature, (test) => {
         } catch (error) {
           context.apiError = error;
         }
-      }
+      },
     );
 
     then("I should receive a 403 Forbidden error", () => {
@@ -1002,7 +1002,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -1041,13 +1041,13 @@ defineFeature(feature, (test) => {
         context.response = await request
           .delete(`/groups/${context.group.id}/supervisors/${context.ta.id}`)
           .expect(204);
-      }
+      },
     );
 
     then("the TA should be removed as supervisor", async () => {
       const group = await groupService.getGroupById(context.group.id);
       const supervisor = group.supervisors.find(
-        (s) => s.userId === context.ta.id
+        (s) => s.userId === context.ta.id,
       );
       expect(supervisor).toBeUndefined();
     });
@@ -1070,7 +1070,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -1137,7 +1137,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a TA in the class", async () => {
@@ -1182,7 +1182,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a student in the class", async () => {
@@ -1201,7 +1201,7 @@ defineFeature(feature, (test) => {
       await groupService.addGroupMember(
         context.group.id,
         context.user.id,
-        "LEADER"
+        "LEADER",
       );
     });
 
@@ -1235,7 +1235,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a student in the class", async () => {
@@ -1254,7 +1254,7 @@ defineFeature(feature, (test) => {
       await groupService.addGroupMember(
         context.group.id,
         context.user.id,
-        "MEMBER"
+        "MEMBER",
       );
     });
 
@@ -1290,7 +1290,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -1336,7 +1336,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a TA in the class", async () => {
@@ -1375,7 +1375,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a student in the class", async () => {
@@ -1394,7 +1394,7 @@ defineFeature(feature, (test) => {
       await groupService.addGroupMember(
         context.group.id,
         context.user.id,
-        "LEADER"
+        "LEADER",
       );
     });
 
@@ -1428,7 +1428,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -1478,7 +1478,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -1513,14 +1513,14 @@ defineFeature(feature, (test) => {
 
     and(/^student "(.*)" is a leader of the group$/, async (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       await groupService.addGroupMember(context.group.id, student.id, "LEADER");
     });
 
     and(/^student "(.*)" is a member of the group$/, async (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       await groupService.addGroupMember(context.group.id, student.id, "MEMBER");
     });
@@ -1543,7 +1543,7 @@ defineFeature(feature, (test) => {
 
     and(/^student "(.*)" should be a leader$/, (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       const member = context.group.members.find((m) => m.userId === student.id);
       expect(member.role).toBe("LEADER");
@@ -1551,7 +1551,7 @@ defineFeature(feature, (test) => {
 
     and(/^student "(.*)" should be a member$/, (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       const member = context.group.members.find((m) => m.userId === student.id);
       expect(member.role).toBe("MEMBER");
@@ -1575,7 +1575,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -1596,7 +1596,7 @@ defineFeature(feature, (test) => {
 
     and(/^student "(.*)" is a member of the group$/, async (studentEmail) => {
       const student = context.students.find(
-        (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+        (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
       );
       await groupService.addGroupMember(context.group.id, student.id, "MEMBER");
     });
@@ -1605,7 +1605,7 @@ defineFeature(feature, (test) => {
       /^I attempt to add student "(.*)" to the group again$/,
       async (studentEmail) => {
         const student = context.students.find(
-          (s) => s.lookupEmail === studentEmail || s.email === studentEmail
+          (s) => s.lookupEmail === studentEmail || s.email === studentEmail,
         );
         context.response = await request
           .post(`/groups/${context.group.id}/members`)
@@ -1614,7 +1614,7 @@ defineFeature(feature, (test) => {
             userId: student.id,
             role: "MEMBER",
           });
-      }
+      },
     );
 
     then("I should receive a 400 Bad Request error", () => {
@@ -1650,7 +1650,7 @@ defineFeature(feature, (test) => {
       /^there is a class "(.*)" with invite code "(.*)"$/,
       async (className, inviteCode) => {
         // Already created
-      }
+      },
     );
 
     and("I am a professor in the class", async () => {
@@ -1669,7 +1669,7 @@ defineFeature(feature, (test) => {
           name: "Outsider",
           preferredName: "Outsider",
         });
-      }
+      },
     );
 
     and(/^there is a group "(.*)" in the class$/, async (groupName) => {

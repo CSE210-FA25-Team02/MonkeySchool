@@ -36,8 +36,6 @@ import {
   renderEditGroupModal,
   renderDeleteGroupConfirmation,
   renderGroupManagementModal,
-  renderGroupSuccess,
-  renderGroupError,
 } from "../utils/htmx-templates/group-templates.js";
 import { renderClassDirectory } from "../utils/htmx-templates/classes-templates.js";
 import { asyncHandler } from "../utils/async-handler.js";
