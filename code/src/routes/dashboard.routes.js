@@ -18,7 +18,7 @@ router.get(
     const { getDashboard } =
       await import("../controllers/dashboard.controller.js");
     return getDashboard(req, res, next);
-  })
+  }),
 );
 
 export default router;

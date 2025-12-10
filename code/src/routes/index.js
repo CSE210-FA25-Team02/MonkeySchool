@@ -61,7 +61,7 @@ router.use("/:quarter/classRoles", classRoleRoutes);
 router.get(
   "/invite/:code",
   requireAuth,
-  asyncHandler(classController.joinClassByInviteCode)
+  asyncHandler(classController.joinClassByInviteCode),
 );
 
 // Top-level attendance page routes
@@ -69,49 +69,49 @@ router.get(
 router.get(
   "/course/:courseId/session/:sessionId/poll/new",
   requireAuth,
-  asyncHandler(attendanceController.getNewPollForm)
+  asyncHandler(attendanceController.getNewPollForm),
 );
 
 // Start poll (HTMX)
 router.post(
   "/course/:courseId/session/:sessionId/poll/start",
   requireAuth,
-  asyncHandler(attendanceController.startPoll)
+  asyncHandler(attendanceController.startPoll),
 );
 
 // Session-wise attendance records page (professor only)
 router.get(
   "/course/:courseId/session/:sessionId/records",
   requireAuth,
-  asyncHandler(attendanceController.getSessionRecordsPage)
+  asyncHandler(attendanceController.getSessionRecordsPage),
 );
 
 // Course-wise attendance records page (professor only)
 router.get(
   "/course/:courseId/records",
   requireAuth,
-  asyncHandler(attendanceController.getCourseRecordsPage)
+  asyncHandler(attendanceController.getCourseRecordsPage),
 );
 
 // Student attendance records page for a specific course
 router.get(
   "/course/:courseId/user/:userId/records",
   requireAuth,
-  asyncHandler(attendanceController.getStudentCourseRecordsPage)
+  asyncHandler(attendanceController.getStudentCourseRecordsPage),
 );
 
 // API: Get courses for a user (where user is a student)
 router.get(
   "/api/user/:userId/courses",
   requireAuth,
-  asyncHandler(attendanceController.getUserCourses)
+  asyncHandler(attendanceController.getUserCourses),
 );
 
 // API: Get attendance records for a student in a course (JSON)
 router.get(
   "/api/course/:courseId/user/:userId/records",
   requireAuth,
-  asyncHandler(attendanceController.getStudentCourseRecords)
+  asyncHandler(attendanceController.getStudentCourseRecords),
 );
 
 // Redirect /courses/attendance to /attendance for backward compatibility
@@ -127,7 +127,7 @@ router.get(
       // For direct navigation, redirect
       res.redirect("/attendance");
     }
-  })
+  }),
 );
 
 export default router;

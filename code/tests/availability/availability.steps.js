@@ -29,7 +29,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(/^the user sets weekly availability with ranges:$/, async (table) => {
@@ -70,7 +70,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -80,9 +80,9 @@ defineFeature(feature, (test) => {
           context.user.id,
           parseInt(dayOfWeek, 10),
           startTime,
-          endTime
+          endTime,
         );
-      }
+      },
     );
 
     when(/^the user sets weekly availability with ranges:$/, async (table) => {
@@ -121,7 +121,7 @@ defineFeature(feature, (test) => {
           },
         });
         expect(availability).toBeTruthy();
-      }
+      },
     );
 
     and(
@@ -136,7 +136,7 @@ defineFeature(feature, (test) => {
           },
         });
         expect(availability).toBeNull();
-      }
+      },
     );
   });
 
@@ -153,7 +153,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(/^the user sets weekly availability with ranges:$/, async (table) => {
@@ -194,7 +194,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -210,7 +210,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -243,7 +243,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -259,7 +259,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -292,7 +292,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -308,7 +308,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -341,7 +341,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -357,7 +357,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -390,7 +390,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -406,7 +406,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -439,7 +439,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -455,7 +455,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -488,7 +488,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -504,7 +504,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -537,7 +537,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -553,7 +553,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -586,7 +586,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -602,7 +602,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: JSON.stringify(ranges) })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {
@@ -630,7 +630,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -640,9 +640,9 @@ defineFeature(feature, (test) => {
           context.user.id,
           parseInt(dayOfWeek, 10),
           startTime,
-          endTime
+          endTime,
         );
-      }
+      },
     );
 
     and(
@@ -652,9 +652,9 @@ defineFeature(feature, (test) => {
           context.user.id,
           parseInt(dayOfWeek, 10),
           startTime,
-          endTime
+          endTime,
         );
-      }
+      },
     );
 
     when(/^the user retrieves their availability$/, async () => {
@@ -671,7 +671,7 @@ defineFeature(feature, (test) => {
           where: { userId: context.user.id },
         });
         expect(availability.length).toBe(parseInt(count, 10));
-      }
+      },
     );
 
     and(/^the availability should be ordered by day and time$/, async () => {
@@ -701,7 +701,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(/^the user retrieves their availability$/, async () => {
@@ -727,7 +727,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     and(
@@ -737,9 +737,9 @@ defineFeature(feature, (test) => {
           context.user.id,
           parseInt(dayOfWeek, 10),
           startTime,
-          endTime
+          endTime,
         );
-      }
+      },
     );
 
     when(/^the user sets weekly availability with no ranges$/, async () => {
@@ -774,7 +774,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(/^the user sets weekly availability with ranges:$/, async (table) => {
@@ -815,7 +815,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.user);
-      }
+      },
     );
 
     when(
@@ -825,7 +825,7 @@ defineFeature(feature, (test) => {
           .post("/availability/save")
           .send({ availability: "not an array" })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the user should receive an error response with status 500$/, () => {

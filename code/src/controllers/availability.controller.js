@@ -32,7 +32,7 @@ export const getAvailabilityPage = asyncHandler(async (req, res) => {
   const html = renderAvailabilityPage(
     user,
     userAvailability,
-    groupsAvailability
+    groupsAvailability,
   );
 
   if (isHtmx) {
@@ -79,7 +79,7 @@ export const saveUserAvailability = asyncHandler(async (req, res) => {
     const availabilityRanges = JSON.parse(availability);
     console.log(
       "Parsed availability ranges:",
-      JSON.stringify(availabilityRanges, null, 2)
+      JSON.stringify(availabilityRanges, null, 2),
     );
 
     // Validate that it's an array

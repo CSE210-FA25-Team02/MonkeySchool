@@ -24,7 +24,7 @@ router.use(requireAuth);
 // Get attendance poll form (HTMX)
 router.get(
   "/poll/form",
-  asyncHandler(attendanceController.getAttendancePollForm)
+  asyncHandler(attendanceController.getAttendancePollForm),
 );
 
 // Create an attendance poll (professor only)
@@ -34,7 +34,7 @@ router.post("/poll/create", asyncHandler(attendanceController.createPoll));
 router.post(
   "/mark",
   submitRateLimiter,
-  asyncHandler(attendanceController.markAttendance)
+  asyncHandler(attendanceController.markAttendance),
 );
 
 // Attendance page route
@@ -43,43 +43,43 @@ router.get("/", asyncHandler(attendanceController.getAttendancePage));
 // Legacy route for backward compatibility
 router.get(
   "/course/session/:sessionId/records",
-  asyncHandler(attendanceController.getSessionRecordsPage)
+  asyncHandler(attendanceController.getSessionRecordsPage),
 );
 
 // Legacy route for backward compatibility
 router.get(
   "/course/:courseId/records",
-  asyncHandler(attendanceController.getCourseRecordsPage)
+  asyncHandler(attendanceController.getCourseRecordsPage),
 );
 
 // Get attendance records for a session (professor only) - legacy endpoint
 router.get(
   "/session/:sessionId",
-  asyncHandler(attendanceController.getSessionAttendance)
+  asyncHandler(attendanceController.getSessionAttendance),
 );
 
 // Get attendance summary for a course (professor only)
 router.get(
   "/course/:courseId/summary",
-  asyncHandler(attendanceController.getCourseAttendanceSummary)
+  asyncHandler(attendanceController.getCourseAttendanceSummary),
 );
 
 // Get student's personal attendance history
 router.get(
   "/student/me",
-  asyncHandler(attendanceController.getStudentAttendance)
+  asyncHandler(attendanceController.getStudentAttendance),
 );
 
 // Get code status for a session (HTMX polling)
 router.get(
   "/session/:sessionId/code-status",
-  asyncHandler(attendanceController.getSessionCodeStatus)
+  asyncHandler(attendanceController.getSessionCodeStatus),
 );
 
 // Toggle course pane (for collapsible course sections)
 router.get(
   "/course/:courseId/toggle",
-  asyncHandler(attendanceController.toggleCoursePane)
+  asyncHandler(attendanceController.toggleCoursePane),
 );
 
 export default router;

@@ -36,7 +36,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.professor);
-      }
+      },
     );
 
     and(
@@ -50,7 +50,7 @@ defineFeature(feature, (test) => {
             role: "PROFESSOR",
           },
         });
-      }
+      },
     );
 
     and(
@@ -61,7 +61,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     when(
@@ -74,7 +74,7 @@ defineFeature(feature, (test) => {
             durationMinutes: parseInt(duration, 10),
           })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
@@ -85,7 +85,7 @@ defineFeature(feature, (test) => {
         expect(context.response.body.code).toMatch(/^\d{8}$/);
         expect(context.response.body).toHaveProperty("pollId");
         expect(context.response.body).toHaveProperty("expiresAt");
-      }
+      },
     );
 
     and(/^the poll expires in "(.*)" minutes$/, async (duration) => {
@@ -113,7 +113,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.professor);
-      }
+      },
     );
 
     and(
@@ -127,7 +127,7 @@ defineFeature(feature, (test) => {
             role: "PROFESSOR",
           },
         });
-      }
+      },
     );
 
     and(
@@ -138,7 +138,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     when(
@@ -150,7 +150,7 @@ defineFeature(feature, (test) => {
             sessionId: context.session.id,
           })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
@@ -159,7 +159,7 @@ defineFeature(feature, (test) => {
         expect(context.response.status).toBe(201);
         expect(context.response.body).toHaveProperty("code");
         expect(context.response.body.code).toMatch(/^\d{8}$/);
-      }
+      },
     );
 
     and(/^the poll expires with default duration$/, async () => {
@@ -184,7 +184,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.student);
-      }
+      },
     );
 
     and(
@@ -193,7 +193,7 @@ defineFeature(feature, (test) => {
         context.professor = await prisma.user.create({
           data: { email, name, isProf: true },
         });
-      }
+      },
     );
 
     and(
@@ -209,7 +209,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(
@@ -225,7 +225,7 @@ defineFeature(feature, (test) => {
             role: "PROFESSOR",
           },
         });
-      }
+      },
     );
 
     and(
@@ -236,7 +236,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     and(
@@ -254,7 +254,7 @@ defineFeature(feature, (test) => {
             active: true,
           },
         });
-      }
+      },
     );
 
     when(
@@ -264,7 +264,7 @@ defineFeature(feature, (test) => {
           .post("/attendance/mark")
           .send({ code, courseId: context.klass.id })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the student receives a success response$/, () => {
@@ -281,7 +281,7 @@ defineFeature(feature, (test) => {
           },
         });
         expect(record).toBeTruthy();
-      }
+      },
     );
   });
 
@@ -298,7 +298,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.student);
-      }
+      },
     );
 
     and(
@@ -312,7 +312,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(
@@ -323,7 +323,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     when(
@@ -336,7 +336,7 @@ defineFeature(feature, (test) => {
             durationMinutes: 15,
           })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
@@ -349,7 +349,7 @@ defineFeature(feature, (test) => {
           context.response.body?.message ||
           "";
         expect(responseText).toContain(errorMessage);
-      }
+      },
     );
   });
 
@@ -366,7 +366,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token = generateToken(context.professor);
-      }
+      },
     );
 
     and(
@@ -376,7 +376,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: true },
         });
         context.token2 = generateToken(context.professor2);
-      }
+      },
     );
 
     and(
@@ -390,7 +390,7 @@ defineFeature(feature, (test) => {
             role: "PROFESSOR",
           },
         });
-      }
+      },
     );
 
     and(
@@ -401,7 +401,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     when(
@@ -414,7 +414,7 @@ defineFeature(feature, (test) => {
             durationMinutes: 15,
           })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
@@ -427,7 +427,7 @@ defineFeature(feature, (test) => {
           context.response.body?.message ||
           "";
         expect(responseText).toContain(errorMessage);
-      }
+      },
     );
   });
 
@@ -444,7 +444,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.student);
-      }
+      },
     );
 
     and(
@@ -453,7 +453,7 @@ defineFeature(feature, (test) => {
         context.professor = await prisma.user.create({
           data: { email, name, isProf: true },
         });
-      }
+      },
     );
 
     and(
@@ -469,7 +469,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(
@@ -485,7 +485,7 @@ defineFeature(feature, (test) => {
             role: "PROFESSOR",
           },
         });
-      }
+      },
     );
 
     and(
@@ -496,7 +496,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     and(
@@ -521,7 +521,7 @@ defineFeature(feature, (test) => {
             pollId: poll.id,
           },
         });
-      }
+      },
     );
 
     when(/^the student views their attendance history$/, async () => {
@@ -539,7 +539,7 @@ defineFeature(feature, (test) => {
     and(/^the history includes session "(.*)"$/, (sessionName) => {
       const attendance = context.response.body.attendance;
       const sessionRecord = attendance.find(
-        (a) => a.sessionId === context.session.id
+        (a) => a.sessionId === context.session.id,
       );
       expect(sessionRecord).toBeTruthy();
     });
@@ -558,7 +558,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.student);
-      }
+      },
     );
 
     and(
@@ -568,7 +568,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token2 = generateToken(context.student2);
-      }
+      },
     );
 
     and(
@@ -582,7 +582,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(
@@ -593,7 +593,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     and(
@@ -618,7 +618,7 @@ defineFeature(feature, (test) => {
             pollId: poll.id,
           },
         });
-      }
+      },
     );
 
     when(
@@ -626,10 +626,10 @@ defineFeature(feature, (test) => {
       async (viewerName, targetName) => {
         context.response = await request
           .get(
-            `/api/course/${context.klass.id}/user/${context.student2.id}/records`
+            `/api/course/${context.klass.id}/user/${context.student2.id}/records`,
           )
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(
@@ -642,7 +642,7 @@ defineFeature(feature, (test) => {
           context.response.body.message ||
           "";
         expect(responseText).toContain(errorMessage);
-      }
+      },
     );
   });
 
@@ -659,7 +659,7 @@ defineFeature(feature, (test) => {
           data: { email, name, isProf: false },
         });
         context.token = generateToken(context.student);
-      }
+      },
     );
 
     and(
@@ -668,7 +668,7 @@ defineFeature(feature, (test) => {
         context.professor = await prisma.user.create({
           data: { email, name, isProf: true },
         });
-      }
+      },
     );
 
     and(
@@ -684,7 +684,7 @@ defineFeature(feature, (test) => {
             role: "STUDENT",
           },
         });
-      }
+      },
     );
 
     and(
@@ -700,7 +700,7 @@ defineFeature(feature, (test) => {
             role: "PROFESSOR",
           },
         });
-      }
+      },
     );
 
     and(
@@ -711,7 +711,7 @@ defineFeature(feature, (test) => {
           name: sessionName,
           date: new Date(),
         });
-      }
+      },
     );
 
     and(
@@ -729,7 +729,7 @@ defineFeature(feature, (test) => {
             active: true,
           },
         });
-      }
+      },
     );
 
     when(
@@ -739,7 +739,7 @@ defineFeature(feature, (test) => {
           .post("/attendance/mark")
           .send({ code, courseId: context.klass.id })
           .set("Cookie", `auth_token=${context.token}`);
-      }
+      },
     );
 
     then(/^the student receives a success response$/, () => {
@@ -756,7 +756,7 @@ defineFeature(feature, (test) => {
           },
         });
         expect(record).toBeTruthy();
-      }
+      },
     );
   });
 });
