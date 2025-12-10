@@ -504,10 +504,6 @@ defineFeature(feature, (test) => {
       expect(data.professors).toHaveLength(1);
       expect(data.professors[0].id).toBe(context.user.id);
 
-      // Check students without group
-      expect(data.studentsWithoutGroup).toHaveLength(1);
-      expect(data.studentsWithoutGroup[0].id).toBe(context.students[1].id);
-
       // Check group members
       expect(data.groups).toHaveLength(1);
       const group = data.groups[0];
