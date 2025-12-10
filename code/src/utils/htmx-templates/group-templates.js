@@ -15,31 +15,7 @@ import { escapeHtml } from "../html-templates.js";
  * @param {Array} tas - Array of TA objects for supervisor selection
  * @returns {string} HTML string
  */
-export function renderCreateGroupModal(classId, students = [], tas = []) {
-  const studentCheckboxes = students
-    .map(
-      (s) => `
-      <label class="member-checkbox" style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s;">
-        <input type="checkbox" name="members" value="${s.user.id}" style="width: 16px; height: 16px;">
-        <span style="flex: 1;">${escapeHtml(s.user.preferredName || s.user.name)}</span>
-        <span style="font-size: var(--text-xs); color: var(--color-text-muted);">${escapeHtml(s.user.email)}</span>
-      </label>
-    `,
-    )
-    .join("");
-
-  const taCheckboxes = tas
-    .map(
-      (t) => `
-      <label class="supervisor-checkbox" style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s;">
-        <input type="checkbox" name="supervisors" value="${t.user.id}" style="width: 16px; height: 16px;">
-        <span style="flex: 1;">${escapeHtml(t.user.preferredName || t.user.name)}</span>
-        <span style="font-size: var(--text-xs); color: var(--color-text-muted);">${escapeHtml(t.user.email)}</span>
-      </label>
-    `,
-    )
-    .join("");
-
+export function renderCreateGroupModal(classId) {
   return `
     <div id="modal-create-group" class="modal-overlay open" style="display: flex;">
       <div class="modal-card" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
@@ -81,55 +57,7 @@ export function renderCreateGroupModal(classId, students = [], tas = []) {
               </div>
             </div>
 
-            <!-- Member Selection Section -->
-            ${
-              students.length > 0
-                ? `
-            <div style="margin-bottom: var(--space-6);">
-              <h4 style="font-size: var(--text-base); font-weight: var(--weight-semibold); margin-bottom: var(--space-4); color: var(--color-text-main);">
-                <i class="fa-solid fa-user-plus" style="margin-right: var(--space-2);"></i>
-                Select Members
-              </h4>
-              <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--color-bg-canvas); border-radius: var(--radius-md); padding: var(--space-2);">
-                ${studentCheckboxes}
-              </div>
-              <p class="form-helper" style="margin-top: var(--space-2); font-size: var(--text-xs);">
-                Select students to add to this group. You can add more members later.
-              </p>
-            </div>
-            `
-                : ""
-            }
-
-            <!-- Leader Selection Section -->
-            <div style="margin-bottom: var(--space-6);">
-              <h4 style="font-size: var(--text-base); font-weight: var(--weight-semibold); margin-bottom: var(--space-4); color: var(--color-text-main);">
-                <i class="fa-solid fa-crown" style="margin-right: var(--space-2); color: var(--color-accent-gold);"></i>
-                Designate Leader(s)
-              </h4>
-              <div id="leader-selection" style="border: 1px solid var(--color-bg-canvas); border-radius: var(--radius-md); padding: var(--space-4); min-height: 60px;">
-                <p style="color: var(--color-text-muted); font-size: var(--text-sm);">
-                  Select members above first, then you can designate leaders here.
-                </p>
-              </div>
-            </div>
-
-            <!-- Supervisor Selection Section -->
-            ${
-              tas.length > 0
-                ? `
-            <div>
-              <h4 style="font-size: var(--text-base); font-weight: var(--weight-semibold); margin-bottom: var(--space-4); color: var(--color-text-main);">
-                <i class="fa-solid fa-chalkboard-user" style="margin-right: var(--space-2);"></i>
-                Assign Supervisors (TAs)
-              </h4>
-              <div style="max-height: 150px; overflow-y: auto; border: 1px solid var(--color-bg-canvas); border-radius: var(--radius-md); padding: var(--space-2);">
-                ${taCheckboxes}
-              </div>
-            </div>
-            `
-                : ""
-            }
+            
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn--secondary" onclick="window.closeModal('modal-create-group')">Cancel</button>
@@ -194,7 +122,7 @@ export function renderCreateGroupModal(classId, students = [], tas = []) {
             
             // Refresh the Groups tab content to show the new group
             if (typeof htmx !== 'undefined') {
-              htmx.ajax('GET', '/classes/${classId}/groups', {
+              htmx.ajax('GET', '/classes/${classId}', {
                 target: '#tab-content',
                 swap: 'innerHTML'
               });
@@ -274,7 +202,7 @@ export function renderEditGroupModal(group, permissions) {
                     <span style="flex: 1;">${escapeHtml(m.user.preferredName || m.user.name)}</span>
                     ${m.role === "LEADER" ? '<span style="font-size: var(--text-xs); color: var(--color-accent-gold);"><i class="fa-solid fa-crown"></i> Leader</span>' : ""}
                   </div>
-                `,
+                `
                   )
                   .join("")}
               </div>
@@ -295,30 +223,7 @@ export function renderEditGroupModal(group, permissions) {
         </form>
       </div>
     </div>
-    <script>
-      (function() {
-        document.body.addEventListener('htmx:afterRequest', function(event) {
-          if (event.detail.pathInfo?.requestPath?.startsWith('/groups/') && 
-              event.detail.pathInfo?.requestPath?.indexOf('/members') === -1 &&
-              event.detail.successful) {
-            window.closeModal('modal-edit-group');
-            if (typeof showToast !== 'undefined') {
-              showToast('Success', 'Group updated successfully!', 'success');
-            }
-            
-            // Refresh the Groups tab content to show the updated group
-            if (typeof htmx !== 'undefined') {
-              const classId = '${group.classId}';
-              htmx.ajax('GET', '/classes/' + classId + '/groups', {
-                target: '#tab-content',
-                swap: 'innerHTML'
-              });
-            }
-          }
-        });
-      })();
-    </script>
-  `;
+    `;
 }
 
 /**
@@ -406,7 +311,7 @@ export function renderGroupManagementModal(
   group,
   classMembers,
   classTAs,
-  permissions,
+  permissions
 ) {
   const { isProf } = permissions;
 
@@ -416,12 +321,12 @@ export function renderGroupManagementModal(
 
   // Available students (not yet in this group)
   const availableStudents = classMembers.filter(
-    (s) => !currentMemberIds.has(s.user.id),
+    (s) => !currentMemberIds.has(s.user.id)
   );
 
   // Available TAs (not yet supervisors)
   const availableTAs = classTAs.filter(
-    (t) => !currentSupervisorIds.has(t.user.id),
+    (t) => !currentSupervisorIds.has(t.user.id)
   );
 
   return `
@@ -505,7 +410,7 @@ export function renderGroupManagementModal(
                     </button>
                   </div>
                 </div>
-              `,
+              `
                       )
                       .join("")
                   : `
@@ -598,7 +503,7 @@ export function renderGroupManagementModal(
                       : ""
                   }
                 </div>
-              `,
+              `
                       )
                       .join("")
                   : `

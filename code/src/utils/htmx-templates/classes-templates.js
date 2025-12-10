@@ -76,7 +76,7 @@ export function renderPulseCheck(classId, currentPulse = null) {
       >
         ${item.emoji}
       </button>
-    `,
+    `
     )
     .join("");
 
@@ -184,7 +184,7 @@ export function renderClassDetail(
   classInfo,
   activeTab = "directory",
   content = "",
-  options = {},
+  options = {}
 ) {
   const {
     isStudent = false,
@@ -303,7 +303,7 @@ export function renderClassDetail(
 
 /**
  * Render the class directory content (Tab Content)
- * @param {Object} data Directory data with professors, tas, tutors, groups, and studentsWithoutGroup
+ * @param {Object} data Directory data with professors, tas, tutors, groups, and students
  * @param {Object} [user] Current user object with isProf property
  * @returns {string} HTML
  */
@@ -315,7 +315,7 @@ export function renderClassDirectory(data, user = null) {
     tas = [],
     tutors = [],
     groups = [],
-    studentsWithoutGroup = [],
+    students = [],
   } = data;
 
   // Check if current user is a professor in THIS class (not globally)
@@ -622,7 +622,7 @@ export function renderClassDirectory(data, user = null) {
                         memberWithRole,
                         classId,
                         user,
-                        professorCount,
+                        professorCount
                       );
                     })
                     .join("")}
@@ -657,17 +657,17 @@ export function renderClassDirectory(data, user = null) {
     </div>
   `;
 
-  // Students Without Group Section
-  if (studentsWithoutGroup.length > 0) {
+  // Students Section
+  if (students.length > 0) {
     html += `
       <div class="directory-section">
         <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
           <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
-            Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${studentsWithoutGroup.length}</span>
+            Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${students.length}</span>
           </div>
         </div>
         <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-          ${studentsWithoutGroup.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
+          ${students.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
         </div>
       </div>
     `;
@@ -918,7 +918,7 @@ export function displayInvite(inviteUrl) {
 export function renderExternalEmailsList(
   externalEmails = [],
   classId,
-  canManage = false,
+  canManage = false
 ) {
   if (externalEmails.length === 0) {
     return `
@@ -958,7 +958,7 @@ export function renderExternalEmailsList(
               : ""
           }
         </div>
-      `,
+      `
         )
         .join("")}
     </div>
@@ -977,7 +977,7 @@ export function renderClassSettings(
   klass,
   inviteUrl,
   externalEmails = [],
-  canManage = false,
+  canManage = false
 ) {
   const inviteCode = klass.inviteCode || "";
 

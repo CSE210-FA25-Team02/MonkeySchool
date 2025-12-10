@@ -13,7 +13,7 @@ function generateInviteCode() {
     {
       length: 8,
     },
-    () => chars[Math.floor(Math.random() * chars.length)],
+    () => chars[Math.floor(Math.random() * chars.length)]
   ).join("");
 }
 
@@ -283,7 +283,7 @@ export async function getClassDirectory(id) {
   const professors = [];
   const tas = [];
   const tutors = [];
-  const studentsWithoutGroup = [];
+  const students = [];
 
   classData.members.forEach((member) => {
     const userData = {
@@ -302,18 +302,10 @@ export async function getClassDirectory(id) {
       case "TUTOR":
         tutors.push(userData);
         break;
-      case "STUDENT": {
-        // Check if student is in any group
-        const isInGroup = classData.groups.some((group) =>
-          group.members.some(
-            (groupMember) => groupMember.userId === member.userId,
-          ),
-        );
-        if (!isInGroup) {
-          studentsWithoutGroup.push(userData);
-        }
+      case "STUDENT":
+        // Include all students regardless of group membership
+        students.push(userData);
         break;
-      }
     }
   });
 
@@ -344,7 +336,7 @@ export async function getClassDirectory(id) {
     tas,
     tutors,
     groups: processedGroups,
-    studentsWithoutGroup,
+    students,
   };
 }
 
