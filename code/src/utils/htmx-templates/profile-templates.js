@@ -13,9 +13,15 @@ import { escapeHtml } from "../html-templates.js";
  * @param {Object} user - User object
  * @param {Array} activity - Activity history array (optional, for future backend integration)
  * @param {Array} workJournals - Work journal entries array
+ * @param {string} currentUserId - ID of the currently logged-in user (optional)
  * @returns {string} HTML string
  */
-export function renderProfilePage(user, activity = [], workJournals = []) {
+export function renderProfilePage(
+  user,
+  activity = [],
+  workJournals = [],
+  currentUserId = null,
+) {
   // Defaults for display
   const displayName = user?.name || "Student";
   const preferredName = user?.preferredName || "";
@@ -35,6 +41,9 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
   const socialLinks = user?.socialLinks || [];
   const chatLinks = user?.chatLinks || [];
   const timezone = user?.timezone || "";
+
+  // Check if the current user is viewing their own profile
+  const isOwnProfile = currentUserId && user?.id && currentUserId === user.id;
 
   // Render avatar - use photo if available, otherwise show initials
   const avatarContent = photoUrl
@@ -84,11 +93,17 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
             ${chatLinksHtml}
           </div>
         </div>
+        ${
+          isOwnProfile
+            ? `
         <button 
           class="profile-edit-btn"
           onclick="openModal('modal-edit-profile')">
           <i class="fa-solid fa-pencil"></i> Edit
         </button>
+        `
+            : ""
+        }
       </div>
 
       <div class="profile-content-grid">
@@ -110,6 +125,9 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
             <div>
               <i class="fa-solid fa-pen-to-square"></i> Work Journals
             </div>
+            ${
+              isOwnProfile
+                ? `
             <button 
               class="btn btn-primary" 
               style="padding: 6px 12px; font-size: 12px;"
@@ -117,25 +135,28 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
             >
               <i class="fa-solid fa-plus"></i> New Entry
             </button>
+            `
+                : ""
+            }
           </div>
           <div id="work-journals-list">
-            ${renderWorkJournalsList(workJournals)}
+            ${renderWorkJournalsList(workJournals, isOwnProfile)}
           </div>
         </div>
       </div>
     </div>
 
     <!-- Edit Profile Modal -->
-    ${renderEditProfileModal(user)}
+    ${isOwnProfile ? renderEditProfileModal(user) : ""}
     
     <!-- Create Work Journal Modal -->
-    ${renderCreateJournalModal()}
+    ${isOwnProfile ? renderCreateJournalModal() : ""}
     
     <!-- Activity History Modal -->
     ${renderActivityHistoryModal(activity)}
     
     <!-- Work Journals Modal -->
-    ${renderWorkJournalsModal(workJournals)}
+    ${renderWorkJournalsModal(workJournals, isOwnProfile)}
     </div>
   `;
 }
@@ -268,9 +289,10 @@ function renderActivityTimeline(activity) {
  * Shows only first 3 items with a "View More" button if there are more.
  *
  * @param {Array} workJournals - List of work journal entries
+ * @param {boolean} isOwnProfile - Whether the profile belongs to the current user
  * @returns {string} HTML string
  */
-export function renderWorkJournalsList(workJournals) {
+export function renderWorkJournalsList(workJournals, isOwnProfile = true) {
   if (!workJournals || workJournals.length === 0) {
     return `
       <div style="text-align: center; padding: 24px; color: var(--color-text-muted);">
@@ -329,6 +351,9 @@ export function renderWorkJournalsList(workJournals) {
               ${moodEmoji ? `<span style="font-size: 18px;">${escapeHtml(moodEmoji)}</span>` : ""}
               <span style="font-size: 11px; color: var(--color-text-muted);">${escapeHtml(timeDisplay)}</span>
             </div>
+            ${
+              isOwnProfile
+                ? `
             <button 
               class="btn btn-secondary" 
               style="padding: 4px 8px; font-size: 11px;"
@@ -337,6 +362,9 @@ export function renderWorkJournalsList(workJournals) {
             >
               <i class="fa-solid fa-trash"></i>
             </button>
+            `
+                : ""
+            }
           </div>
           <div style="font-size: 13px; line-height: 1.5; color: var(--color-text);">
             ${escapeHtml(contentPreview)}
@@ -625,9 +653,10 @@ function renderActivityHistoryModal(activity) {
  * Render Work Journals modal with all journals in a scrollable list
  *
  * @param {Array} workJournals - List of work journal entries
+ * @param {boolean} isOwnProfile - Whether the current user is viewing their own profile
  * @returns {string} HTML string
  */
-function renderWorkJournalsModal(workJournals) {
+function renderWorkJournalsModal(workJournals, isOwnProfile = true) {
   const journalItems =
     workJournals && workJournals.length > 0
       ? workJournals
@@ -679,6 +708,9 @@ function renderWorkJournalsModal(workJournals) {
                   ${moodEmoji ? `<span style="font-size: 18px;">${escapeHtml(moodEmoji)}</span>` : ""}
                   <span style="font-size: 11px; color: var(--color-text-muted);">${escapeHtml(timeDisplay)}</span>
                 </div>
+                ${
+                  isOwnProfile
+                    ? `
                 <button 
                   class="btn btn-secondary" 
                   style="padding: 4px 8px; font-size: 11px;"
@@ -687,6 +719,9 @@ function renderWorkJournalsModal(workJournals) {
                 >
                   <i class="fa-solid fa-trash"></i>
                 </button>
+                `
+                    : ""
+                }
               </div>
               <div style="font-size: 13px; line-height: 1.5; color: var(--color-text);">
                 ${escapeHtml(contentPreview)}
