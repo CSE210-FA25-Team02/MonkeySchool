@@ -66,15 +66,14 @@ export function renderChatPage(
 ) {
   return `
     <div id="chat-page-root">
-      <div class="chat-container" style="display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 120px); gap: var(--space-4);">
+      <div class="chat-container">
         <!-- Conversation List Sidebar -->
-        <div class="chat-sidebar" style="border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); background: white; overflow-y: auto;">
-          <div class="chat-sidebar-header" style="padding: var(--space-4); border-bottom: 1px solid var(--color-border-subtle); display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Messages</h2>
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-header">
+            <h2>Messages</h2>
             <button
               onclick="openModal('modal-new-chat')"
               class="btn btn-primary"
-              style="padding: 6px 12px; font-size: 12px;"
               title="Start new conversation"
             >
               <i class="fa-solid fa-plus"></i> New
@@ -86,11 +85,11 @@ export function renderChatPage(
         </div>
 
         <!-- Main Chat Area -->
-        <div class="chat-main" style="border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); background: white; display: flex; flex-direction: column;">
-          <div class="chat-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--color-text-muted);">
-            <div style="text-align: center;">
-              <i class="fa-solid fa-comments" style="font-size: 48px; margin-bottom: var(--space-4); opacity: 0.3;"></i>
-              <p style="font-size: 16px; margin: 0;">Select a conversation to start chatting</p>
+        <div class="chat-main">
+          <div class="chat-placeholder">
+            <div>
+              <i class="fa-solid fa-comments"></i>
+              <p>Select a conversation to start chatting</p>
             </div>
           </div>
         </div>
@@ -110,7 +109,7 @@ export function renderChatPage(
 export function renderConversationList(conversations) {
   if (conversations.length === 0) {
     return `
-      <div style="padding: var(--space-6); text-align: center; color: var(--color-text-muted);">
+      <div class="conversation-list-empty">
         <p>No conversations yet. Start a new chat to begin!</p>
       </div>
     `;
@@ -135,31 +134,29 @@ export function renderConversationList(conversations) {
       return `
         <div
           class="conversation-item ${isUnread ? "unread" : ""}"
-          style="padding: var(--space-3) var(--space-4); border: 1px solid var(--color-brand-light); cursor: pointer; transition: background 0.2s;"
           hx-get="/chat/conversations/${conv.id}"
           hx-target=".chat-main"
           hx-swap="innerHTML"
-          onclick="this.style.background='var(--color-brand-light)'"
         >
-          <div style="display: flex; gap: var(--space-3); align-items: center;">
-            <div class="avatar" style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
+          <div>
+            <div class="avatar">
               ${initials}
             </div>
-            <div style="flex: 1; min-width: 0;">
-              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
-                <div style="font-weight: ${isUnread ? "600" : "500"}; font-size: 14px; color: var(--color-text);">
+            <div class="conversation-content">
+              <div class="conversation-header">
+                <div class="conversation-name">
                   ${escapeHtml(displayName)}
                 </div>
-                <div style="font-size: 12px; color: var(--color-text-muted); white-space: nowrap;">
+                <div class="conversation-time">
                   ${escapeHtml(timeAgo)}
                 </div>
               </div>
-              <div style="font-size: 13px; color: var(--color-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              <div class="conversation-preview">
                 ${escapeHtml(preview)}
               </div>
               ${
                 conv.class
-                  ? `<div style="font-size: 11px; color: var(--color-brand-deep); margin-top: 2px;">
+                  ? `<div class="conversation-class">
                     ${escapeHtml(conv.class.name)}
                   </div>`
                   : ""
@@ -190,19 +187,19 @@ export function renderConversationView(
   const initials = getUserInitials(otherUser);
 
   return `
-    <div class="chat-conversation" style="display: flex; flex-direction: column; height: 100%;">
+    <div class="chat-conversation">
       <!-- Chat Header -->
-      <div class="chat-header" style="padding: var(--space-4); border-bottom: 1px solid var(--color-border-subtle); display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0;">
-        <div class="avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
+      <div class="chat-header">
+        <div class="avatar">
           ${initials}
         </div>
-        <div style="flex: 1;">
-          <div style="font-weight: 600; font-size: 16px; color: var(--color-text);">
+        <div class="chat-header-info">
+          <div class="chat-header-name">
             ${escapeHtml(displayName)}
           </div>
           ${
             conversation.class
-              ? `<div style="font-size: 12px; color: var(--color-text-muted);">
+              ? `<div class="chat-header-class">
                 ${escapeHtml(conversation.class.name)}
               </div>`
               : ""
@@ -214,11 +211,10 @@ export function renderConversationView(
       <div
         id="messages-container"
         class="chat-messages"
-        style="flex: 1; overflow-y: auto; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);"
       >
         ${
           messages.length === 0
-            ? `<div id="empty-messages-placeholder" style="text-align: center; color: var(--color-text-muted); padding: var(--space-8);">
+            ? `<div id="empty-messages-placeholder">
               <p>No messages yet. Start the conversation!</p>
             </div>`
             : messages.map((msg) => renderMessage(msg, currentUserId)).join("")
@@ -226,7 +222,7 @@ export function renderConversationView(
       </div>
 
       <!-- Message Input -->
-      <div class="chat-input-area" style="padding: var(--space-4); border-top: 1px solid var(--color-border-subtle); flex-shrink: 0;">
+      <div class="chat-input-area">
         <form
           hx-post="/chat/conversations/${conversation.id}/messages"
           hx-target="#messages-container"
@@ -248,19 +244,16 @@ export function renderConversationView(
               }
             }
           "
-          style="display: flex; gap: var(--space-2);"
         >
           <input
             type="text"
             name="content"
             placeholder="Type a message..."
             required
-            style="flex: 1; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); font-size: 14px;"
           />
           <button
             type="submit"
             class="btn btn-primary"
-            style="padding: var(--space-3) var(--space-4);"
           >
             <i class="fa-solid fa-paper-plane"></i> Send
           </button>
@@ -285,34 +278,26 @@ export function renderMessage(message, currentUserId) {
   return `
     <div
       class="message ${isOwnMessage ? "message-own" : "message-other"}"
-      style="display: flex; gap: var(--space-2); align-items: flex-start; ${isOwnMessage ? "flex-direction: row-reverse;" : ""}"
     >
       ${
         !isOwnMessage
-          ? `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; flex-shrink: 0;">
+          ? `<div class="avatar">
             ${initials}
           </div>`
           : ""
       }
-      <div style="max-width: 70%; display: flex; flex-direction: column; ${isOwnMessage ? "align-items: flex-end;" : ""}">
+      <div class="message-content">
         ${
           !isOwnMessage && message.sender
-            ? `<div style="font-size: 12px; font-weight: 600; color: var(--color-text); margin-bottom: 4px;">
+            ? `<div class="message-sender">
               ${escapeHtml(senderName)}
             </div>`
             : ""
         }
-        <div
-          class="message-bubble"
-          style="padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); word-wrap: break-word; ${
-            isOwnMessage
-              ? "background: var(--color-brand-deep); color: white;"
-              : "background: var(--color-bg-surface); color: var(--color-text);"
-          }"
-        >
+        <div class="message-bubble">
           ${escapeHtml(message.content)}
         </div>
-        <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px; ${isOwnMessage ? "text-align: right;" : ""}">
+        <div class="message-time">
           ${escapeHtml(time)}
         </div>
       </div>
@@ -329,7 +314,7 @@ function renderNewChatModal(recipients) {
   if (recipients.length === 0) {
     return `
       <div id="modal-new-chat" class="modal-overlay">
-        <div class="modal-card" style="max-width: 500px;">
+        <div class="modal-card">
           <div class="modal-header">
             <h3 class="modal-title">Start New Conversation</h3>
             <button onclick="closeModal('modal-new-chat')" class="btn-close">
@@ -346,7 +331,7 @@ function renderNewChatModal(recipients) {
 
   return `
     <div id="modal-new-chat" class="modal-overlay">
-      <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-card">
         <div class="modal-header">
           <h3 class="modal-title">Start New Conversation</h3>
           <button onclick="closeModal('modal-new-chat')" class="btn-close">
@@ -354,7 +339,7 @@ function renderNewChatModal(recipients) {
           </button>
         </div>
         <div class="modal-body">
-          <div style="display: flex; flex-direction: column; gap: var(--space-2); max-height: 400px; overflow-y: auto;">
+          <div class="recipient-list">
             ${recipients
               .map((recipient) => {
                 const displayName = getUserDisplayName(recipient.user);
@@ -367,23 +352,20 @@ function renderNewChatModal(recipients) {
                 return `
                   <div
                     class="recipient-item"
-                    style="padding: var(--space-3); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); cursor: pointer; transition: background 0.2s;"
                     onclick="window.startConversation && window.startConversation('${recipient.user.id}')"
-                    onmouseover="this.style.background='var(--color-brand-light)'"
-                    onmouseout="this.style.background='white'"
                   >
-                    <div style="display: flex; gap: var(--space-3); align-items: center;">
-                      <div class="avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
+                    <div>
+                      <div class="avatar">
                         ${initials}
                       </div>
-                      <div style="flex: 1; min-width: 0;">
-                        <div style="font-weight: 600; font-size: 14px; color: var(--color-text); margin-bottom: 2px;">
+                      <div class="recipient-info">
+                        <div class="recipient-name">
                           ${escapeHtml(displayName)}
                         </div>
-                        <div style="font-size: 12px; color: var(--color-text-muted);">
+                        <div class="recipient-roles">
                           ${escapeHtml(roles)}
                         </div>
-                        <div style="font-size: 11px; color: var(--color-brand-deep); margin-top: 4px;">
+                        <div class="recipient-classes">
                           ${escapeHtml(classes)}
                         </div>
                       </div>
