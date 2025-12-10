@@ -572,11 +572,11 @@ export function renderGroupManagementModal(
                   ? group.supervisors
                       .map(
                         (s) => `
-                <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-bg-canvas);">
+                <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-bg-canvas); justify-content: space-between;">
                   <div style="width: 36px; height: 36px; border-radius: 50%; background: #E0F2FE; color: #0284C7; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: var(--text-sm);">
                     ${escapeHtml((s.user.preferredName || s.user.name).charAt(0).toUpperCase())}
                   </div>
-                  <div style="flex: 1;">
+                  <div>
                     <div style="font-weight: var(--weight-medium);">${escapeHtml(s.user.preferredName || s.user.name)}</div>
                     <div style="font-size: var(--text-xs); color: var(--color-text-muted);">${escapeHtml(s.user.email)}</div>
                   </div>
@@ -714,7 +714,7 @@ export function renderGroupCard(group, permissions) {
             ? `<img src="${escapeHtml(group.logoUrl)}" alt="${escapeHtml(group.name)}" style="width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;">`
             : `<div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">${escapeHtml(group.name.charAt(0).toUpperCase())}</div>`
         }
-        <div style="flex: 1;">
+        <div>
           <div class="group-name" style="font-weight: var(--weight-bold); font-size: var(--text-lg);">${escapeHtml(group.name)}</div>
           ${group.mantra ? `<div style="font-size: var(--text-sm); color: var(--color-text-muted); font-style: italic;">"${escapeHtml(group.mantra)}"</div>` : ""}
         </div>
@@ -831,45 +831,6 @@ export function renderGroupCard(group, permissions) {
           })
           .join("")}
       </div>
-    </div>
-  `;
-}
-
-/**
- * Render success message after group operation
- * @param {string} message - Success message
- * @param {string} classId - Class ID for refresh
- * @returns {string} HTML string
- */
-export function renderGroupSuccess(message, classId) {
-  return `
-    <div style="text-align: center; padding: var(--space-6);">
-      <div style="font-size: 48px; margin-bottom: var(--space-4); color: var(--color-status-success);">
-        <i class="fa-solid fa-circle-check"></i>
-      </div>
-      <h4 style="margin-bottom: var(--space-2);">${escapeHtml(message)}</h4>
-      <p style="color: var(--color-text-muted); margin-bottom: var(--space-4);">The page will refresh automatically.</p>
-    </div>
-    <script>
-      setTimeout(function() {
-        htmx.ajax('GET', '/classes/${classId}/directory', {target: '#tab-content', swap: 'innerHTML'});
-      }, 1000);
-    </script>
-  `;
-}
-
-/**
- * Render error message
- * @param {string} message - Error message
- * @returns {string} HTML string
- */
-export function renderGroupError(message) {
-  return `
-    <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius-md); padding: var(--space-4); margin: var(--space-4);">
-      <p style="color: #991B1B; margin: 0;">
-        <i class="fa-solid fa-exclamation-circle"></i>
-        <strong>Error:</strong> ${escapeHtml(message)}
-      </p>
     </div>
   `;
 }

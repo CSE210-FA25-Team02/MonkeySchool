@@ -29,7 +29,6 @@ import {
   canDeleteGroup,
   canManageSupervisors,
   getGroupPermissions,
-  getUserClassRoleType,
 } from "../utils/group-permissions.js";
 import {
   renderCreateGroupModal,
@@ -652,23 +651,4 @@ export const getCreateGroupModal = asyncHandler(async (req, res) => {
 
   const html = renderCreateGroupModal(classId, students, tas);
   res.send(html);
-});
-
-/**
- * Get all groups for a class (JSON API)
- * Route: GET /classes/:classId/groups
- * Auth: requireAuth
- */
-export const getGroupsByClass = asyncHandler(async (req, res) => {
-  const { classId } = req.params;
-  const userId = req.user.id;
-
-  // Check if user is a member of this class
-  const roleType = await getUserClassRoleType(userId, classId);
-  if (!roleType.isMember) {
-    throw new ForbiddenError("You are not a member of this class");
-  }
-
-  const groups = await groupService.getGroupsByClassId(classId);
-  res.json(groups);
 });
