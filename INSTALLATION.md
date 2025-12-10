@@ -477,7 +477,6 @@ After successful installation:
 
    - [README.md](README.md) - Project overview
    - [Contributing.md](Contributing.md) - Development guidelines
-   - [docs/DEV_BACKEND/RAMP_UP.md](docs/DEV_BACKEND/RAMP_UP.md) - Backend development guide
 
 2. **Explore the Codebase**:
 
