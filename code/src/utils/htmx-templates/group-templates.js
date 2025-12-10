@@ -122,7 +122,8 @@ export function renderCreateGroupModal(classId) {
             
             // Refresh the Groups tab content to show the new group
             if (typeof htmx !== 'undefined') {
-              htmx.ajax('GET', '/classes/${classId}', {
+              const classId = '${classId}';
+              htmx.ajax('GET', '/classes/' + classId + '/directory', {
                 target: '#tab-content',
                 swap: 'innerHTML'
               });
@@ -223,6 +224,21 @@ export function renderEditGroupModal(group, permissions) {
         </form>
       </div>
     </div>
+    <script>
+      (function() {
+        // Close modal and show toast on successful update
+        document.body.addEventListener('htmx:afterRequest', function(event) {
+          if (event.detail.pathInfo?.requestPath === '/groups/${group.id}' && 
+              event.detail.requestConfig?.verb === 'put' &&
+              event.detail.successful) {
+            window.closeModal('modal-edit-group');
+            if (typeof showToast !== 'undefined') {
+              showToast('Success', 'Group updated successfully!', 'success');
+            }
+          }
+        });
+      })();
+    </script>
     `;
 }
 
@@ -287,7 +303,7 @@ export function renderDeleteGroupConfirmation(group) {
             // Refresh the Groups tab content to remove the deleted group
             if (typeof htmx !== 'undefined') {
               const classId = '${group.classId}';
-              htmx.ajax('GET', '/classes/' + classId + '/groups', {
+              htmx.ajax('GET', '/classes/' + classId + '/directory', {
                 target: '#tab-content',
                 swap: 'innerHTML'
               });
@@ -585,10 +601,11 @@ export function renderGroupManagementModal(
               }
               
               // Refresh the Groups tab content in the background
-              const classId = path.split('/groups/')[0].split('/').pop();
+              // Get classId from the group object that's available in this modal
+              const classId = '${group.classId}';
               if (classId && typeof htmx !== 'undefined') {
                 // Trigger a background refresh of the Groups tab
-                htmx.ajax('GET', '/classes/' + classId + '/groups', {
+                htmx.ajax('GET', '/classes/' + classId + '/directory', {
                   target: '#tab-content',
                   swap: 'innerHTML'
                 });
