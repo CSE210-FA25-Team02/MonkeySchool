@@ -114,14 +114,46 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
  */
 export const updateUserProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { name, pronouns, bio, github } = req.body;
-
-  const updateData = {
-    name: name || req.user.name,
+  const {
+    name,
+    preferredName,
+    pronunciation,
     pronouns,
+    phone,
+    photoUrl,
     bio,
     github,
-  };
+    timezone,
+    socialLinks,
+    chatLinks,
+  } = req.body;
+
+  // Build update data object, only including fields that are provided
+  const updateData = {};
+  if (name !== undefined) updateData.name = name;
+  if (preferredName !== undefined)
+    updateData.preferredName = preferredName || null;
+  if (pronunciation !== undefined)
+    updateData.pronunciation = pronunciation || null;
+  if (pronouns !== undefined) updateData.pronouns = pronouns || null;
+  if (phone !== undefined) updateData.phone = phone || null;
+  if (photoUrl !== undefined) updateData.photoUrl = photoUrl || null;
+  if (bio !== undefined) updateData.bio = bio || null;
+  if (github !== undefined) updateData.github = github || null;
+  if (timezone !== undefined) updateData.timezone = timezone || null;
+
+  // Handle arrays - filter out empty strings
+  if (socialLinks !== undefined) {
+    updateData.socialLinks = Array.isArray(socialLinks)
+      ? socialLinks.filter((link) => link && link.trim() !== "")
+      : [];
+  }
+  if (chatLinks !== undefined) {
+    updateData.chatLinks = Array.isArray(chatLinks)
+      ? chatLinks.filter((link) => link && link.trim() !== "")
+      : [];
+  }
+
   const updatedUser = await userService.updateUser(userId, updateData);
 
   // Fetch user's activities for the profile history

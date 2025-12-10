@@ -18,6 +18,8 @@ import { escapeHtml } from "../html-templates.js";
 export function renderProfilePage(user, activity = [], workJournals = []) {
   // Defaults for display
   const displayName = user?.name || "Student";
+  const preferredName = user?.preferredName || "";
+  const pronunciation = user?.pronunciation || "";
   const initials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -26,9 +28,33 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
     .slice(0, 2);
   const email = user?.email || "student@ucsd.edu";
   const pronouns = user?.pronouns || "";
+  const phone = user?.phone || "";
   const bio = user?.bio || "No bio yet.";
   const github = user?.github || "";
-  const linkedin = user?.linkedin || "";
+  const photoUrl = user?.photoUrl || null;
+  const socialLinks = user?.socialLinks || [];
+  const chatLinks = user?.chatLinks || [];
+  const timezone = user?.timezone || "";
+
+  // Render avatar - use photo if available, otherwise show initials
+  const avatarContent = photoUrl
+    ? `<img src="${escapeHtml(photoUrl)}" alt="${escapeHtml(displayName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`
+    : initials;
+
+  // Render social links from array
+  const socialLinksHtml = socialLinks
+    .map((link) => {
+      const url = link.startsWith("http") ? link : `https://${link}`;
+      return `<a href="${escapeHtml(url)}" class="social-link" target="_blank"><i class="fa-solid fa-link"></i> ${escapeHtml(link)}</a>`;
+    })
+    .join("");
+
+  // Render chat links from array
+  const chatLinksHtml = chatLinks
+    .map((link) => {
+      return `<a href="${escapeHtml(link)}" class="social-link" target="_blank"><i class="fa-solid fa-comment"></i> ${escapeHtml(link)}</a>`;
+    })
+    .join("");
 
   return `
   <div id="profile-page-root">
@@ -36,20 +62,26 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
       <!-- Profile Header Card -->
       <div class="profile-header-card">
         <div class="profile-avatar-xl">
-          ${initials}
+          ${avatarContent}
         </div>
         <div class="profile-info">
           <div class="profile-name-row">
-            <div class="profile-name">${escapeHtml(displayName)}</div>
+            <div class="profile-name">${escapeHtml(displayName)}${preferredName && preferredName !== displayName ? ` (${escapeHtml(preferredName)})` : ""}</div>
             ${pronouns ? `<div class="profile-pronouns">${escapeHtml(pronouns)}</div>` : ""}
           </div>
+          ${pronunciation ? `<div class="profile-pronunciation" style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-2);"><i class="fa-solid fa-volume-high"></i> ${escapeHtml(pronunciation)}</div>` : ""}
           <div class="profile-bio">
             ${escapeHtml(bio)}
           </div>
+          <div class="profile-contact-info" style="display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-3);">
+            <a href="mailto:${escapeHtml(email)}" class="social-link"><i class="fa-regular fa-envelope"></i> ${escapeHtml(email)}</a>
+            ${phone ? `<a href="tel:${escapeHtml(phone)}" class="social-link"><i class="fa-solid fa-phone"></i> ${escapeHtml(phone)}</a>` : ""}
+            ${timezone ? `<span class="social-link" style="cursor: default;"><i class="fa-solid fa-clock"></i> ${escapeHtml(timezone)}</span>` : ""}
+          </div>
           <div class="profile-socials">
             ${github ? `<a href="https://github.com/${escapeHtml(github)}" class="social-link" target="_blank"><i class="fa-brands fa-github"></i> ${escapeHtml(github)}</a>` : ""}
-            ${linkedin ? `<a href="https://linkedin.com/in/${escapeHtml(linkedin)}" class="social-link" target="_blank"><i class="fa-brands fa-linkedin"></i> ${escapeHtml(linkedin)}</a>` : ""}
-            <a href="mailto:${escapeHtml(email)}" class="social-link"><i class="fa-regular fa-envelope"></i> ${escapeHtml(email)}</a>
+            ${socialLinksHtml}
+            ${chatLinksHtml}
           </div>
         </div>
         <button 
@@ -698,13 +730,54 @@ function renderWorkJournalsModal(workJournals) {
  */
 function renderEditProfileModal(user) {
   const displayName = user?.name || "";
+  const preferredName = user?.preferredName || "";
+  const pronunciation = user?.pronunciation || "";
   const pronouns = user?.pronouns || "";
+  const phone = user?.phone || "";
   const bio = user?.bio || "";
   const github = user?.github || "";
+  const photoUrl = user?.photoUrl || "";
+  const socialLinks = user?.socialLinks || [];
+  const chatLinks = user?.chatLinks || [];
+  const timezone = user?.timezone || "";
+
+  // Render social links inputs
+  const socialLinksInputs =
+    socialLinks.length > 0
+      ? socialLinks
+          .map(
+            (link, index) => `
+        <div class="form-group" style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" class="form-input" name="socialLinks[]" value="${escapeHtml(link)}" placeholder="https://example.com/...">
+          <button type="button" class="btn btn-secondary" onclick="removeLinkField(this)" style="padding: 6px 12px;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `
+          )
+          .join("")
+      : "";
+
+  // Render chat links inputs
+  const chatLinksInputs =
+    chatLinks.length > 0
+      ? chatLinks
+          .map(
+            (link, index) => `
+        <div class="form-group" style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" class="form-input" name="chatLinks[]" value="${escapeHtml(link)}" placeholder="Chat handle or URL">
+          <button type="button" class="btn btn-secondary" onclick="removeLinkField(this)" style="padding: 6px 12px;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `
+          )
+          .join("")
+      : "";
 
   return `
     <div id="modal-edit-profile" class="modal-overlay">
-      <div class="modal-card">
+      <div class="modal-card" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
         <div class="modal-header">
           <h3 class="modal-title">Edit Profile</h3>
           <button class="btn-close" onclick="closeModal('modal-edit-profile')">
@@ -719,20 +792,70 @@ function renderEditProfileModal(user) {
         >
           <div class="modal-body">
             <div class="form-group">
-              <label class="form-label">Display Name</label>
-              <input type="text" class="form-input" name="name" value="${escapeHtml(displayName)}">
+              <label class="form-label">Display Name *</label>
+              <input type="text" class="form-input" name="name" value="${escapeHtml(displayName)}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Name</label>
+              <input type="text" class="form-input" name="preferredName" value="${escapeHtml(preferredName)}" placeholder="Name you prefer to be called">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Pronunciation</label>
+              <input type="text" class="form-input" name="pronunciation" value="${escapeHtml(pronunciation)}" placeholder="e.g. John (JON)">
             </div>
             <div class="form-group">
               <label class="form-label">Pronouns</label>
               <input type="text" class="form-input" name="pronouns" value="${escapeHtml(pronouns)}" placeholder="e.g. she/her, he/him, they/them">
             </div>
             <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input type="tel" class="form-input" name="phone" value="${escapeHtml(phone)}" placeholder="e.g. +1-555-123-4567">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Photo URL</label>
+              <input type="url" class="form-input" name="photoUrl" value="${escapeHtml(photoUrl)}" placeholder="https://example.com/photo.jpg">
+            </div>
+            <div class="form-group">
               <label class="form-label">Bio</label>
-              <textarea class="form-input" name="bio" rows="3" style="resize: none;">${escapeHtml(bio)}</textarea>
+              <textarea class="form-input" name="bio" rows="3" style="resize: none;" placeholder="Tell us about yourself...">${escapeHtml(bio)}</textarea>
             </div>
             <div class="form-group">
               <label class="form-label">Github Username</label>
               <input type="text" class="form-input" name="github" value="${escapeHtml(github)}" placeholder="e.g. zihanzhou">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Timezone</label>
+              <input type="text" class="form-input" name="timezone" value="${escapeHtml(timezone)}" placeholder="e.g. America/Los_Angeles, PST, UTC-8">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Social Links</label>
+              <div id="social-links-container">
+                ${socialLinksInputs}
+                <div class="form-group" style="display: flex; gap: 8px; align-items: center;">
+                  <input type="text" class="form-input" name="socialLinks[]" placeholder="https://example.com/...">
+                  <button type="button" class="btn btn-secondary" onclick="removeLinkField(this)" style="padding: 6px 12px;">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="addLinkField('social-links-container', 'socialLinks[]')" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">
+                <i class="fa-solid fa-plus"></i> Add Social Link
+              </button>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chat Links</label>
+              <div id="chat-links-container">
+                ${chatLinksInputs}
+                <div class="form-group" style="display: flex; gap: 8px; align-items: center;">
+                  <input type="text" class="form-input" name="chatLinks[]" placeholder="Chat handle or URL">
+                  <button type="button" class="btn btn-secondary" onclick="removeLinkField(this)" style="padding: 6px 12px;">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary" onclick="addLinkField('chat-links-container', 'chatLinks[]')" style="margin-top: 8px; padding: 6px 12px; font-size: 12px;">
+                <i class="fa-solid fa-plus"></i> Add Chat Link
+              </button>
             </div>
           </div>
           <div class="modal-footer">
@@ -742,5 +865,30 @@ function renderEditProfileModal(user) {
         </form>
       </div>
     </div>
+    <script>
+      // Make addLinkField and removeLinkField available globally
+      window.addLinkField = function(containerId, fieldName) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        const newField = document.createElement('div');
+        newField.className = 'form-group';
+        newField.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+        newField.innerHTML = \`
+          <input type="text" class="form-input" name="\${fieldName}" placeholder="\${fieldName.includes('social') ? 'https://example.com/...' : 'Chat handle or URL'}">
+          <button type="button" class="btn btn-secondary" onclick="removeLinkField(this)" style="padding: 6px 12px;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        \`;
+        container.appendChild(newField);
+      };
+      
+      window.removeLinkField = function(button) {
+        const fieldGroup = button.closest('.form-group');
+        if (fieldGroup && fieldGroup.parentElement.children.length > 1) {
+          fieldGroup.remove();
+        }
+      };
+    </script>
   `;
 }

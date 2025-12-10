@@ -135,7 +135,7 @@ export function renderConversationList(conversations) {
       return `
         <div
           class="conversation-item ${isUnread ? "unread" : ""}"
-          style="padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border-subtle); cursor: pointer; transition: background 0.2s;"
+          style="padding: var(--space-3) var(--space-4); border: 1px solid var(--color-brand-light); cursor: pointer; transition: background 0.2s;"
           hx-get="/chat/conversations/${conv.id}"
           hx-target=".chat-main"
           hx-swap="innerHTML"

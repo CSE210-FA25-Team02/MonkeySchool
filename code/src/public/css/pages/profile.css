@@ -76,6 +76,22 @@
   border-radius: var(--radius-full);
 }
 
+.profile-pronunciation {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
 .profile-bio {
   color: var(--color-text-muted);
   margin-bottom: var(--space-4);
