@@ -268,7 +268,7 @@ export const addMember = asyncHandler(async (req, res) => {
   const canEditMembers = await canEditGroupMembers(userId, groupId);
   if (!canEditMembers) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage group members"
+      "Only professors and TAs can manage group members",
     );
   }
 
@@ -308,7 +308,7 @@ export const addMember = asyncHandler(async (req, res) => {
       updatedGroup,
       students,
       tas,
-      permissions
+      permissions,
     );
     res.send(html);
   } else {
@@ -336,7 +336,7 @@ export const removeMember = asyncHandler(async (req, res) => {
   const canEditMembers = await canEditGroupMembers(userId, groupId);
   if (!canEditMembers) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage group members"
+      "Only professors and TAs can manage group members",
     );
   }
 
@@ -363,7 +363,7 @@ export const removeMember = asyncHandler(async (req, res) => {
       updatedGroup,
       students,
       tas,
-      permissions
+      permissions,
     );
     res.send(html);
   } else {
@@ -395,7 +395,7 @@ export const updateMemberRole = asyncHandler(async (req, res) => {
   const canEditMembers = await canEditGroupMembers(userId, groupId);
   if (!canEditMembers) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage group members"
+      "Only professors and TAs can manage group members",
     );
   }
 
@@ -422,7 +422,7 @@ export const updateMemberRole = asyncHandler(async (req, res) => {
       updatedGroup,
       students,
       tas,
-      permissions
+      permissions,
     );
     res.send(html);
   } else {
@@ -484,7 +484,7 @@ export const addSupervisor = asyncHandler(async (req, res) => {
       updatedGroup,
       students,
       tas,
-      permissions
+      permissions,
     );
     res.send(html);
   } else {
@@ -537,7 +537,7 @@ export const removeSupervisor = asyncHandler(async (req, res) => {
       updatedGroup,
       students,
       tas,
-      permissions
+      permissions,
     );
     res.send(html);
   } else {
@@ -619,7 +619,7 @@ export const getGroupManagementModal = asyncHandler(async (req, res) => {
   const permissions = await getGroupPermissions(userId, groupId);
   if (!permissions.canEditMembers) {
     throw new ForbiddenError(
-      "Only professors and TAs can manage group members"
+      "Only professors and TAs can manage group members",
     );
   }
 

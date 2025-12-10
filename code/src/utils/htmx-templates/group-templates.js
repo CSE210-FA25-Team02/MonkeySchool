@@ -24,7 +24,7 @@ export function renderCreateGroupModal(classId, students = [], tas = []) {
         <span style="flex: 1;">${escapeHtml(s.user.preferredName || s.user.name)}</span>
         <span style="font-size: var(--text-xs); color: var(--color-text-muted);">${escapeHtml(s.user.email)}</span>
       </label>
-    `
+    `,
     )
     .join("");
 
@@ -36,7 +36,7 @@ export function renderCreateGroupModal(classId, students = [], tas = []) {
         <span style="flex: 1;">${escapeHtml(t.user.preferredName || t.user.name)}</span>
         <span style="font-size: var(--text-xs); color: var(--color-text-muted);">${escapeHtml(t.user.email)}</span>
       </label>
-    `
+    `,
     )
     .join("");
 
@@ -274,7 +274,7 @@ export function renderEditGroupModal(group, permissions) {
                     <span style="flex: 1;">${escapeHtml(m.user.preferredName || m.user.name)}</span>
                     ${m.role === "LEADER" ? '<span style="font-size: var(--text-xs); color: var(--color-accent-gold);"><i class="fa-solid fa-crown"></i> Leader</span>' : ""}
                   </div>
-                `
+                `,
                   )
                   .join("")}
               </div>
@@ -406,7 +406,7 @@ export function renderGroupManagementModal(
   group,
   classMembers,
   classTAs,
-  permissions
+  permissions,
 ) {
   const { isProf } = permissions;
 
@@ -416,12 +416,12 @@ export function renderGroupManagementModal(
 
   // Available students (not yet in this group)
   const availableStudents = classMembers.filter(
-    (s) => !currentMemberIds.has(s.user.id)
+    (s) => !currentMemberIds.has(s.user.id),
   );
 
   // Available TAs (not yet supervisors)
   const availableTAs = classTAs.filter(
-    (t) => !currentSupervisorIds.has(t.user.id)
+    (t) => !currentSupervisorIds.has(t.user.id),
   );
 
   return `
@@ -505,7 +505,7 @@ export function renderGroupManagementModal(
                     </button>
                   </div>
                 </div>
-              `
+              `,
                       )
                       .join("")
                   : `
@@ -598,7 +598,7 @@ export function renderGroupManagementModal(
                       : ""
                   }
                 </div>
-              `
+              `,
                       )
                       .join("")
                   : `

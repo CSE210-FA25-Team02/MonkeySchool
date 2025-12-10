@@ -72,7 +72,7 @@ export function createApp() {
         },
       },
       crossOriginEmbedderPolicy: env.NODE_ENV === "production",
-    })
+    }),
   );
 
   // CORS configuration for HTMX requests
@@ -89,7 +89,7 @@ export function createApp() {
         "HX-Current-URL",
         "HX-Trigger",
       ],
-    })
+    }),
   );
 
   // Rate limiting
@@ -114,13 +114,13 @@ export function createApp() {
   app.use(
     express.json({
       limit: "10mb",
-    })
+    }),
   );
   app.use(
     express.urlencoded({
       extended: true,
       limit: "10mb",
-    })
+    }),
   );
 
   // Compression
@@ -167,7 +167,7 @@ export function createApp() {
         "./controllers/attendance.controller.js"
       );
       return getNewPollForm(req, res, next);
-    }
+    },
   );
 
   // Start poll (HTMX)
@@ -179,7 +179,7 @@ export function createApp() {
         "./controllers/attendance.controller.js"
       );
       return startPoll(req, res, next);
-    }
+    },
   );
 
   // Session-wise attendance records page (professor only)
@@ -191,7 +191,7 @@ export function createApp() {
         "./controllers/attendance.controller.js"
       );
       return getSessionRecordsPage(req, res, next);
-    }
+    },
   );
 
   // Legacy route for backward compatibility
@@ -200,7 +200,7 @@ export function createApp() {
     requireAuth,
     async (req, res, next) => {
       return getSessionRecordsPage(req, res, next);
-    }
+    },
   );
 
   // Course-wise attendance records page (professor only)
@@ -220,7 +220,7 @@ export function createApp() {
         "./controllers/attendance.controller.js"
       );
       return getStudentCourseRecordsPage(req, res, next);
-    }
+    },
   );
 
   // API: Get courses for a user (where user is a student)
@@ -240,7 +240,7 @@ export function createApp() {
         "./controllers/attendance.controller.js"
       );
       return getStudentCourseRecords(req, res, next);
-    }
+    },
   );
 
   // Legacy route for backward compatibility
@@ -249,7 +249,7 @@ export function createApp() {
     requireAuth,
     async (req, res, next) => {
       return getCourseRecordsPage(req, res, next);
-    }
+    },
   );
 
   // Redirect /courses/attendance to /attendance for backward compatibility
