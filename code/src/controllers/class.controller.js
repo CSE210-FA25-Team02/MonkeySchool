@@ -21,14 +21,9 @@ import * as classService from "../services/class.service.js";
 import * as classRoleService from "../services/classRole.service.js";
 import * as pulseService from "../services/pulse.service.js";
 import * as classExternalEmailService from "../services/classExternalEmail.service.js";
+import { createBaseLayout, escapeHtml } from "../utils/html-templates.js";
 import * as groupService from "../services/group.service.js";
 import {
-  getUpcomingQuarters,
-  createBaseLayout,
-  escapeHtml,
-} from "../utils/html-templates.js";
-import {
-  createClassForm,
   displayInvite,
   renderClassList,
   renderClassDirectory as renderDirectoryTemplate,
@@ -549,7 +544,7 @@ export const joinClass = asyncHandler(async (req, res) => {
 
 /**
  * Update Class
- * Route: PUT /classes/:id
+ * Route: PUT /classes/:id/:quarter
  */
 export const updateClass = asyncHandler(async (req, res) => {
   const klass = await classService.updateClass(req.params.id, req.body);
@@ -558,35 +553,11 @@ export const updateClass = asyncHandler(async (req, res) => {
 
 /**
  * Delete Class
- * Route: DELETE /classes/:id
+ * Route: DELETE /classes/:id/:quarter
  */
 export const deleteClass = asyncHandler(async (req, res) => {
   await classService.deleteClass(req.params.id);
   res.status(204).send();
-});
-
-// ============================================================================
-// FORM HELPERS
-// ============================================================================
-
-/**
- * Render Create Class Form (HTMX)
- */
-export const renderCreateClassForm = asyncHandler(async (req, res) => {
-  const isProf = req.user.isProf === true;
-  if (!isProf) {
-    return res.status(401).send("Unauthorized to create class.");
-  }
-
-  const upcomingQuarters = getUpcomingQuarters();
-  res.status(201).send(createClassForm(upcomingQuarters));
-});
-
-/**
- * Close Create Class Form (HTMX)
- */
-export const closeCreateClassForm = asyncHandler(async (req, res) => {
-  res.status(201).send("");
 });
 
 // ============================================================================

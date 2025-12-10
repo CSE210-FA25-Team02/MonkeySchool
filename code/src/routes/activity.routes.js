@@ -28,11 +28,6 @@ router.get(
   asyncHandler(activityController.renderEditModal),
 );
 router.get(
-  "/close-form",
-  requireAuth,
-  asyncHandler(activityController.closeActivityPunchForm),
-);
-router.get(
   "/load-fields",
   requireAuth,
   asyncHandler(activityController.loadActivityFields),

@@ -12,7 +12,11 @@ const router = Router();
 router.use(requireAuth);
 
 // Create a new course session
-router.post("/", asyncHandler(courseSessionController.createCourseSession));
+router.post(
+  "/",
+  requireAuth,
+  asyncHandler(courseSessionController.createCourseSession),
+);
 
 // GET /course-sessions is not supported - return 404
 router.get("/", (req, res) => {
