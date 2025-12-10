@@ -177,3 +177,81 @@
   background: var(--color-brand-medium);
   box-shadow: var(--shadow-sm);
 }
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .modal-card {
+    max-width: calc(100vw - 2rem);
+    margin: 1rem;
+    max-height: 85vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: var(--space-4);
+  }
+
+  .modal-title {
+    font-size: var(--text-lg);
+  }
+
+  .modal-body {
+    padding: var(--space-4);
+  }
+
+  .modal-footer {
+    padding: var(--space-4);
+    flex-direction: column-reverse;
+    gap: var(--space-2);
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
+
+  .form-input,
+  .form-select {
+    padding: 10px;
+    font-size: var(--text-sm);
+  }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .modal-card {
+    max-width: calc(100vw - 1rem);
+    margin: 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .modal-header {
+    padding: var(--space-3);
+  }
+
+  .modal-title {
+    font-size: var(--text-base);
+  }
+
+  .modal-body {
+    padding: var(--space-3);
+  }
+
+  .modal-footer {
+    padding: var(--space-3);
+  }
+
+  .form-label {
+    font-size: var(--text-xs);
+  }
+
+  .form-input,
+  .form-select {
+    padding: 8px;
+    font-size: var(--text-xs);
+  }
+}
