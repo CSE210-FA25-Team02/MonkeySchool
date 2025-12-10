@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
+import { createJoinClassModal } from "./dashboard-templates.js";
 
 /**
  * Render the Pulse Check success state (after submission)
@@ -76,7 +77,7 @@ export function renderPulseCheck(classId, currentPulse = null) {
       >
         ${item.emoji}
       </button>
-    `,
+    `
     )
     .join("");
 
@@ -184,7 +185,7 @@ export function renderClassDetail(
   classInfo,
   activeTab = "directory",
   content = "",
-  options = {},
+  options = {}
 ) {
   const {
     isStudent = false,
@@ -622,7 +623,7 @@ export function renderClassDirectory(data, user = null) {
                         memberWithRole,
                         classId,
                         user,
-                        professorCount,
+                        professorCount
                       );
                     })
                     .join("")}
@@ -717,9 +718,10 @@ export function renderClassDirectory(data, user = null) {
  * Render the list of classes (My Classes Page)
  * Matches demo/my-classes.html structure
  * @param {Array} classes - List of class objects
+ * @param {Object} [user=null] - Current user object with isProf property
  * @returns {string} HTML string
  */
-export function renderClassList(classes) {
+export function renderClassList(classes, user = null) {
   // Header
   const headerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
@@ -769,15 +771,30 @@ export function renderClassList(classes) {
     })
     .join("");
 
-  // Create New Class Card (Always appended)
-  const createCardHTML = `
+  // Create/Join Class Card (Conditional based on user role)
+  const isProf = user?.isProf === true;
+  const createCardHTML = isProf
+    ? `
         <button class="course-card create-card" onclick="window.openModal('modal-create-class')">
             <div class="create-icon">
                 <i class="fa-solid fa-plus-circle"></i>
             </div>
-            <span style="font-weight: bold;">Create / Join Class</span>
+            <span style="font-weight: bold;">Create Class</span>
+        </button>
+    `
+    : `
+        <button class="course-card create-card" onclick="window.openModal('modal-join-class')">
+            <div class="create-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <span style="font-weight: bold;">Join Class</span>
         </button>
     `;
+
+  // Include appropriate modal based on user role
+  const modalHTML = isProf
+    ? createClassForm(getUpcomingQuarters())
+    : createJoinClassModal();
 
   return `
         ${headerHTML}
@@ -785,7 +802,7 @@ export function renderClassList(classes) {
             ${classCardsHTML}
             ${createCardHTML}
         </div>
-        ${createClassForm(getUpcomingQuarters())}
+        ${modalHTML}
     `;
 }
 
@@ -918,7 +935,7 @@ export function displayInvite(inviteUrl) {
 export function renderExternalEmailsList(
   externalEmails = [],
   classId,
-  canManage = false,
+  canManage = false
 ) {
   if (externalEmails.length === 0) {
     return `
@@ -958,7 +975,7 @@ export function renderExternalEmailsList(
               : ""
           }
         </div>
-      `,
+      `
         )
         .join("")}
     </div>
@@ -977,7 +994,7 @@ export function renderClassSettings(
   klass,
   inviteUrl,
   externalEmails = [],
-  canManage = false,
+  canManage = false
 ) {
   const inviteCode = klass.inviteCode || "";
 
