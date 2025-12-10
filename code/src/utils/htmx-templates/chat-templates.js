@@ -62,7 +62,7 @@ function getUserInitials(user) {
 export function renderChatPage(
   conversations = [],
   recipients = [],
-  currentUserId
+  currentUserId,
 ) {
   return `
     <div id="chat-page-root">
@@ -188,7 +188,7 @@ export function renderConversationView(
   conversation,
   messages,
   currentUserId,
-  otherUser
+  otherUser,
 ) {
   const displayName = getUserDisplayName(otherUser);
   const initials = getUserInitials(otherUser);
