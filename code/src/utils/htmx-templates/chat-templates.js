@@ -62,7 +62,7 @@ function getUserInitials(user) {
 export function renderChatPage(
   conversations = [],
   recipients = [],
-  currentUserId,
+  currentUserId
 ) {
   return `
     <div id="chat-page-root">
@@ -143,11 +143,7 @@ export function renderConversationList(conversations) {
         >
           <div style="display: flex; gap: var(--space-3); align-items: center;">
             <div class="avatar" style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
-              ${
-                otherUser.photoUrl
-                  ? `<img src="${escapeHtml(otherUser.photoUrl)}" alt="${escapeHtml(displayName)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />`
-                  : initials
-              }
+              ${initials}
             </div>
             <div style="flex: 1; min-width: 0;">
               <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
@@ -188,7 +184,7 @@ export function renderConversationView(
   conversation,
   messages,
   currentUserId,
-  otherUser,
+  otherUser
 ) {
   const displayName = getUserDisplayName(otherUser);
   const initials = getUserInitials(otherUser);
@@ -198,11 +194,7 @@ export function renderConversationView(
       <!-- Chat Header -->
       <div class="chat-header" style="padding: var(--space-4); border-bottom: 1px solid var(--color-border-subtle); display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0;">
         <div class="avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
-          ${
-            otherUser.photoUrl
-              ? `<img src="${escapeHtml(otherUser.photoUrl)}" alt="${escapeHtml(displayName)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />`
-              : initials
-          }
+          ${initials}
         </div>
         <div style="flex: 1;">
           <div style="font-weight: 600; font-size: 16px; color: var(--color-text);">
@@ -298,11 +290,7 @@ export function renderMessage(message, currentUserId) {
       ${
         !isOwnMessage
           ? `<div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; flex-shrink: 0;">
-            ${
-              message.sender?.photoUrl
-                ? `<img src="${escapeHtml(message.sender.photoUrl)}" alt="${escapeHtml(senderName)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />`
-                : initials
-            }
+            ${initials}
           </div>`
           : ""
       }
@@ -386,11 +374,7 @@ function renderNewChatModal(recipients) {
                   >
                     <div style="display: flex; gap: var(--space-3); align-items: center;">
                       <div class="avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
-                        ${
-                          recipient.user.photoUrl
-                            ? `<img src="${escapeHtml(recipient.user.photoUrl)}" alt="${escapeHtml(displayName)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />`
-                            : initials
-                        }
+                        ${initials}
                       </div>
                       <div style="flex: 1; min-width: 0;">
                         <div style="font-weight: 600; font-size: 14px; color: var(--color-text); margin-bottom: 2px;">
