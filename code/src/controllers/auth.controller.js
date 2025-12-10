@@ -92,7 +92,7 @@ export async function callback(req, res) {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
-      },
+      }
     );
 
     if (!profileResponse.ok) {
@@ -137,23 +137,7 @@ export async function callback(req, res) {
 export async function logout(req, res) {
   res.clearCookie("auth_token");
 
-  const isHtmxRequest = req.headers["hx-request"];
-
-  if (isHtmxRequest) {
-    res.send(`
-      <div class="alert alert--success" role="alert">
-        <h2>Logged out successfully</h2>
-        <p>You have been logged out.</p>
-      </div>
-      <script>
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 1000);
-      </script>
-    `);
-  } else {
-    res.redirect("/");
-  }
+  res.redirect("/");
 }
 
 /**
