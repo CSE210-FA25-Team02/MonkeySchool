@@ -14,6 +14,8 @@
  * @param {string} [options.charset='UTF-8'] Character encoding
  * @param {string} [options.viewport='width=device-width, initial-scale=1.0'] Viewport meta tag
  * @param {string} [options.description='Student Management System'] Meta description
+ * @param {object} [options.user=null] User object for header display
+ * @param {string} [options.breadcrumbPath] Optional breadcrumb path (e.g., "Dashboard / Attendance / Records")
  * @returns {string} HTML string for the full page layout
  */
 export function createBaseLayout(title, content, options = {}) {
@@ -24,6 +26,7 @@ export function createBaseLayout(title, content, options = {}) {
     viewport = "width=device-width, initial-scale=1.0",
     description = "Student Management System",
     user = null,
+    breadcrumbPath = null,
   } = options;
 
   // Derive simple user display data for header pill
@@ -36,6 +39,24 @@ export function createBaseLayout(title, content, options = {}) {
       .join("")
       .toUpperCase()
       .slice(0, 2) || "U";
+
+  // Build breadcrumbs
+  let breadcrumbs = '<a href="/">MonkeySchool</a>';
+  if (breadcrumbPath) {
+    const parts = breadcrumbPath.split(" / ");
+    parts.forEach((part, index) => {
+      if (index < parts.length - 1) {
+        // Not the last part - make it a link
+        const href = part === "Dashboard" ? "/" : `/${part.toLowerCase()}`;
+        breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <a href="${href}">${escapeHtml(part)}</a>`;
+      } else {
+        // Last part - current page
+        breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <span class="current">${escapeHtml(part)}</span>`;
+      }
+    });
+  } else {
+    breadcrumbs += ` <span style="color: var(--color-text-muted)">/</span> <span class="current">${escapeHtml(title)}</span>`;
+  }
 
   return `
 <!DOCTYPE html>
@@ -121,9 +142,7 @@ export function createBaseLayout(title, content, options = {}) {
         <main class="main-content" id="main-content">
             <header class="top-bar">
                 <div class="breadcrumbs">
-                    <a href="/">Dashboard</a>
-                    <span style="color: var(--color-text-muted)">/</span>
-                    <span class="current">${escapeHtml(title)}</span>
+                    ${breadcrumbs}
                 </div>
                 
                 <div class="top-actions">
