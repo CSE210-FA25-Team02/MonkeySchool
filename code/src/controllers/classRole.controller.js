@@ -104,7 +104,7 @@ export const changeMemberRole = asyncHandler(async (req, res) => {
       tas: [],
       tutors: [],
       groups: [],
-      studentsWithoutGroup: [],
+      students: [],
     },
     currentUser,
   );

@@ -195,6 +195,9 @@ export function createBaseLayout(title, content, options = {}) {
       };
     </script>
 
+    <!-- Modal Container for HTMX -->
+    <div id="modal-container"></div>
+
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 </body>
