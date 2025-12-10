@@ -53,13 +53,13 @@ export function renderProfilePage(user, activity = [], workJournals = []) {
           </div>
         </div>
         <button 
-          onclick="openModal('modal-edit-profile')"
-          style="position: absolute; top: 24px; right: 24px; border: 1px solid var(--color-border-subtle); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; color: var(--color-text-muted); z-index: 10; cursor: pointer; background: white;">
+          class="profile-edit-btn"
+          onclick="openModal('modal-edit-profile')">
           <i class="fa-solid fa-pencil"></i> Edit
         </button>
       </div>
 
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6);">
+      <div class="profile-content-grid">
         <!-- Left Col: Activity Stream -->
         <div>
           <div class="activity-section">
@@ -132,7 +132,7 @@ function renderActivityTimeline(activity) {
       const activityDate = new Date(
         startTime.getFullYear(),
         startTime.getMonth(),
-        startTime.getDate(),
+        startTime.getDate()
       );
 
       let timeDisplay = "";
@@ -209,7 +209,7 @@ function renderActivityTimeline(activity) {
           <div class="timeline-meta">${escapeHtml(item.time)}</div>
         </div>
       </div>
-    `,
+    `
     )
     .join("");
 
@@ -260,7 +260,7 @@ export function renderWorkJournalsList(workJournals) {
       const journalDate = new Date(
         createdAt.getFullYear(),
         createdAt.getMonth(),
-        createdAt.getDate(),
+        createdAt.getDate()
       );
 
       let timeDisplay = "";
@@ -492,7 +492,7 @@ function renderActivityHistoryModal(activity) {
       const activityDate = new Date(
         startTime.getFullYear(),
         startTime.getMonth(),
-        startTime.getDate(),
+        startTime.getDate()
       );
 
       let timeDisplay = "";
@@ -557,7 +557,7 @@ function renderActivityHistoryModal(activity) {
               <div class="timeline-meta">${escapeHtml(item.time)}</div>
             </div>
           </div>
-        `,
+        `
           )
           .join("")
       : `
@@ -605,12 +605,12 @@ function renderWorkJournalsModal(workJournals) {
             const today = new Date(
               now.getFullYear(),
               now.getMonth(),
-              now.getDate(),
+              now.getDate()
             );
             const journalDate = new Date(
               createdAt.getFullYear(),
               createdAt.getMonth(),
-              createdAt.getDate(),
+              createdAt.getDate()
             );
 
             let timeDisplay = "";
