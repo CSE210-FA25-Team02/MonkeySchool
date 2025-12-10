@@ -99,7 +99,7 @@ export async function canEditGroup(userId, groupId) {
 
 /**
  * Check if user can edit group members (add/remove members, change roles)
- * Only Professors and TAs can modify group membership
+ * Professors, TAs, and Group Leaders can modify group membership
  *
  * @param {string} userId - User ID
  * @param {string} groupId - Group ID
@@ -112,7 +112,13 @@ export async function canEditGroupMembers(userId, groupId) {
   const classRole = await getClassRole(userId, group.classId);
   if (!classRole) return false;
 
-  return ["PROFESSOR", "TA"].includes(classRole.role);
+  // Professors and TAs can always edit members
+  if (["PROFESSOR", "TA"].includes(classRole.role)) {
+    return true;
+  }
+
+  // Group leaders can edit members of their own group
+  return await isGroupLeader(userId, groupId);
 }
 
 /**

@@ -19,6 +19,7 @@
  * ============================================================================
  */
 
+import { prisma } from "../lib/prisma.js";
 import * as groupService from "../services/group.service.js";
 import * as classService from "../services/class.service.js";
 import {
@@ -271,6 +272,19 @@ export const addMember = asyncHandler(async (req, res) => {
     throw new ForbiddenError(
       "Only professors and TAs can manage group members"
     );
+  }
+
+  // Check if user is enrolled in the class
+  const classRole = await prisma.classRole.findFirst({
+    where: {
+      userId: memberUserId,
+      classId: group.classId,
+      role: "STUDENT",
+    },
+  });
+
+  if (!classRole) {
+    throw new BadRequestError("User is not enrolled in the class as a student");
   }
 
   // Add member
