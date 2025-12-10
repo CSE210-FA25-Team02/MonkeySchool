@@ -7,6 +7,8 @@ import { escapeHtml } from "../html-templates.js";
 
 /**
  * Format date/time for display
+ * @param {Date|string} date - The date to format
+ * @returns {string} The formatted date/time string
  */
 function formatDateTime(date) {
   if (!date) return "";
@@ -27,6 +29,8 @@ function formatDateTime(date) {
 
 /**
  * Get user display name
+ * @param {Object} user - The user object
+ * @returns {string} The display name
  */
 function getUserDisplayName(user) {
   return user?.preferredName || user?.name || "Unknown User";
@@ -34,6 +38,8 @@ function getUserDisplayName(user) {
 
 /**
  * Get user initials
+ * @param {Object} user - The user object
+ * @returns {string} The initials
  */
 function getUserInitials(user) {
   const name = getUserDisplayName(user);
@@ -48,11 +54,15 @@ function getUserInitials(user) {
 
 /**
  * Render the main chat page
+ * @param {Array} conversations - List of conversations
+ * @param {Array} recipients - List of possible recipients for new chats
+ * @param {string} currentUserId - ID of the current user
+ * @returns {string} The HTML string for the chat page
  */
 export function renderChatPage(
   conversations = [],
   recipients = [],
-  currentUserId,
+  currentUserId
 ) {
   return `
     <div id="chat-page-root">
@@ -94,8 +104,10 @@ export function renderChatPage(
 
 /**
  * Render conversation list
+ * @param {Array} conversations - List of conversations
+ * @returns {string} The HTML string for the conversation list
  */
-export function renderConversationList(conversations, currentUserId) {
+export function renderConversationList(conversations) {
   if (conversations.length === 0) {
     return `
       <div style="padding: var(--space-6); text-align: center; color: var(--color-text-muted);">
@@ -166,12 +178,17 @@ export function renderConversationList(conversations, currentUserId) {
 
 /**
  * Render conversation view with messages
+ * @param {Object} conversation - The conversation object
+ * @param {Array} messages - List of messages in the conversation
+ * @param {string} currentUserId - ID of the current user
+ * @param {Object} otherUser - The other user in the conversation
+ * @returns {string} The HTML string for the conversation view
  */
 export function renderConversationView(
   conversation,
   messages,
   currentUserId,
-  otherUser,
+  otherUser
 ) {
   const displayName = getUserDisplayName(otherUser);
   const initials = getUserInitials(otherUser);
@@ -263,6 +280,9 @@ export function renderConversationView(
 
 /**
  * Render a single message
+ * @param {Object} message - The message object
+ * @param {string} currentUserId - ID of the current user
+ * @returns {string} The HTML string for the message
  */
 export function renderMessage(message, currentUserId) {
   const isOwnMessage = message.senderId === currentUserId;
@@ -314,6 +334,8 @@ export function renderMessage(message, currentUserId) {
 
 /**
  * Render new chat modal
+ * @param {Array} recipients - List of possible recipients for new chats
+ * @returns {string} The HTML string for the new chat modal
  */
 function renderNewChatModal(recipients) {
   if (recipients.length === 0) {
