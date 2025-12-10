@@ -40,6 +40,20 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: ["node", "src/server.js"]
+    # Use syslog driver with direct IP address
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:5140"
+        tag: "monkeyschool-app"
+    networks:
+      - default
+      - monkeyschool-telemetry
 
 volumes:
   postgres_data:
+
+networks:
+  monkeyschool-telemetry:
+    external: true
+    name: monkeyschool-telemetry
