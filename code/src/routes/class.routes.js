@@ -103,17 +103,6 @@ router.get(
 router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
 
 // ============================================
-// FORM ROUTES
-// ============================================
-
-router.get(
-  "/form",
-  requireAuth,
-  asyncHandler(classController.renderCreateClassForm),
-);
-router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
-
-// ============================================
 // JSON API ROUTES
 // ============================================
 
@@ -165,7 +154,7 @@ router.post("/create", requireAuth, asyncHandler(classController.createClass));
 router.post("/join", requireAuth, asyncHandler(classController.joinClass));
 
 router.put(
-  "/:id",
+  "/:id/:quarter",
   requireAuth,
   (req, res, next) => {
     if (req.params.quarter) {
@@ -177,7 +166,7 @@ router.put(
 );
 
 router.delete(
-  "/:id",
+  "/:id/:quarter",
   requireAuth,
   (req, res, next) => {
     if (req.params.quarter) {
