@@ -267,13 +267,6 @@ export const renderPunchCard = asyncHandler(async (req, res) => {
 });
 
 /**
- * Close Activity Punch Form
- */
-export const closeActivityPunchForm = asyncHandler(async (req, res) => {
-  res.status(201).send("");
-});
-
-/**
  * Quick punch-in for lecture (1 hour duration)
  * Creates an activity with Lecture category for the specified class
  */

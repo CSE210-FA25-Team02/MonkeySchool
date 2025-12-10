@@ -595,7 +595,6 @@ defineFeature(feature, (test) => {
     given,
     when,
     then,
-    and,
   }) => {
     given(
       /^a logged-in student "(.*)" with email "(.*)" exists$/,
@@ -844,5 +843,468 @@ defineFeature(feature, (test) => {
     then(/^the delete is forbidden$/, () => {
       expect(context.response.status).toBe(403);
     });
+  });
+
+  test("Student loads HTMX activity dropdown with two activities", ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { name, email, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
+
+    and(
+      /^a class named "(.*)" exists and includes that student$/,
+      async (className) => {
+        context.klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+      },
+    );
+
+    and(
+      /^two activity categories "(.*)" and "(.*)" exist$/,
+      async (cat1, cat2) => {
+        context.category = await activityService.createActivityCategory({
+          name: cat1,
+          description: "First category",
+          role: "STUDENT",
+        });
+
+        context.category2 = await activityService.createActivityCategory({
+          name: cat2,
+          description: "Second category",
+          role: "ALL",
+        });
+      },
+    );
+
+    and(/^two activities for that student exist$/, async () => {
+      context.activity = await activityService.createActivity({
+        classId: context.klass.id,
+        categoryId: context.category.id,
+        userId: context.user.id,
+        startTime: "2025-01-01T10:00:00Z",
+        endTime: "2025-01-01T11:00:00Z",
+      });
+
+      context.activity2 = await activityService.createActivity({
+        classId: context.klass.id,
+        categoryId: context.category2.id,
+        userId: context.user.id,
+        startTime: "2025-01-02T10:00:00Z",
+        endTime: "2025-01-02T11:00:00Z",
+      });
+    });
+
+    when(/^the student requests their activity dropdown$/, async () => {
+      context.response = await request
+        .get(`/activity/user/dropdown`)
+        .set("Cookie", `auth_token=${context.token}`);
+    });
+
+    then(
+      /^the response contains HTML option elements for both activities$/,
+      () => {
+        expect(context.response.status).toBe(201);
+
+        const html = context.response.text;
+
+        // Activity 1
+        expect(html).toContain(`value="${context.activity.id}"`);
+        expect(html).toContain(context.category.name);
+        expect(html).toContain(context.klass.name);
+        expect(html).toContain("1/1/2025");
+
+        // Activity 2
+        expect(html).toContain(`value="${context.activity2.id}"`);
+        expect(html).toContain(context.category2.name);
+        expect(html).toContain(context.klass.name);
+        expect(html).toContain("1/2/2025");
+      },
+    );
+  });
+
+  test("Student loads dropdown but has no activities", ({
+    given,
+    when,
+    then,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { name, email, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
+
+    when(/^the student requests their activity dropdown$/, async () => {
+      context.response = await request
+        .get(`/activity/user/dropdown`)
+        .set("Cookie", `auth_token=${context.token}`);
+    });
+
+    then(/^the response is an empty HTML string$/, () => {
+      expect(context.response.status).toBe(201);
+      expect(context.response.text.trim()).toBe("");
+    });
+  });
+
+  test("Student loads HTMX activity details for a selected punch", ({
+    given,
+    when,
+    then,
+    and,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { name, email, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
+
+    and(
+      /^a class named "(.*)" exists and includes that student$/,
+      async (className) => {
+        context.klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+      },
+    );
+
+    and(/^an activity category "(.*)" exists$/, async (catName) => {
+      context.category = await activityService.createActivityCategory({
+        name: catName,
+        description: "Testing category",
+        role: "STUDENT",
+      });
+    });
+
+    and(/^a punch activity for that student exists$/, async () => {
+      context.activity = await activityService.createActivity({
+        classId: context.klass.id,
+        categoryId: context.category.id,
+        userId: context.user.id,
+        startTime: "2025-01-01T09:00:00Z",
+        endTime: "2025-01-01T10:00:00Z",
+      });
+    });
+
+    when(/^the student requests the activity details$/, async () => {
+      const id = context.activity.id;
+      context.response = await request
+        .get(`/activity/details?punchSelect=${id}`)
+        .set("Cookie", `auth_token=${context.token}`);
+    });
+
+    then(/^the response contains the formatted activity details$/, () => {
+      expect(context.response.status).toBe(201);
+
+      const html = context.response.text;
+
+      // Category
+      expect(html).toContain(context.category.name);
+
+      // Start date
+      expect(html).toContain("1/1/2025");
+
+      // Check HTML structure pieces
+      expect(html).toContain('<div class="punchcard__section">');
+      expect(html).toContain(
+        '<strong class="punchcard__label">Category</strong>',
+      );
+      expect(html).toContain(
+        '<strong class="punchcard__label">Punch In Time</strong>',
+      );
+      expect(html).toContain(
+        '<strong class="punchcard__label">Punch Out Time</strong>',
+      );
+    });
+  });
+
+  test("Activity details returns empty message when punch not found", ({
+    given,
+    when,
+    then,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { name, email, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
+
+    when(
+      /^the student requests details for a non-existent punch$/,
+      async () => {
+        context.response = await request
+          .get(`/activity/details?punchSelect=999999`)
+          .set("Cookie", `auth_token=${context.token}`);
+      },
+    );
+
+    then(/^they receive a no-activity-found message$/, () => {
+      expect(context.response.status).toBe(200);
+      expect(context.response.text.trim()).toBe(
+        "<div>No activity found.</div>",
+      );
+    });
+  });
+
+  test("Student loads the Activity Punch Card component", ({
+    given,
+    when,
+    then,
+  }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (name, email) => {
+        context.user = await prisma.user.create({
+          data: { name, email, isProf: false },
+        });
+        context.token = generateToken(context.user);
+      },
+    );
+
+    when(/^the student requests the punch card component$/, async () => {
+      context.response = await request
+        .get("/activity/user/render")
+        .set("Cookie", `auth_token=${context.token}`);
+    });
+
+    then(/^the server returns the punch card HTML$/, () => {
+      expect(context.response.status).toBe(201);
+
+      const html = context.response.text;
+
+      // Verify main container
+      expect(html).toContain('<section class="punchcard">');
+
+      // Title
+      expect(html).toContain("Activity Punch Card");
+
+      // Dropdown
+      expect(html).toContain('<select id="punch-select"');
+      expect(html).toContain('hx-get="/activity/user/dropdown"');
+      expect(html).toContain('hx-trigger="load"');
+      expect(html).toContain('hx-swap="innerHTML"');
+      expect(html).toContain(
+        "hx-on:change=\"htmx.trigger('#punch-details', 'loadDetails')\"",
+      );
+
+      // Details container
+      expect(html).toContain('<div id="punch-details"');
+      expect(html).toContain('hx-get="/activity/details"');
+      expect(html).toContain('hx-trigger="loadDetails"');
+
+      // Buttons
+      expect(html).toContain("Edit");
+      expect(html).toContain("New");
+      expect(html).toContain('hx-get="/activity/edit-modal"');
+      expect(html).toContain('hx-get="/activity/new-modal"');
+
+      // Script
+      expect(html).toContain("htmx:afterSwap");
+      expect(html).toContain("punch-details");
+    });
+  });
+
+  test("User must be authenticated to render punch card", ({ when, then }) => {
+    when(/^an unauthenticated user requests the punch card$/, async () => {
+      context.response = await request.get("/activity/user/render");
+    });
+
+    then(/^they receive an unauthorized response$/, () => {
+      expect(context.response.status).toBe(302);
+    });
+  });
+
+  test("Open new activity punch form", ({ given, when, then }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (userName, email) => {
+        context.user = await prisma.user.create({
+          data: {
+            email: email,
+            name: userName,
+            isProf: false,
+          },
+        });
+      },
+    );
+
+    when(
+      /^the student attempts to open the new activity punch form$/,
+      async () => {
+        const token = generateToken(context.user);
+        context.response = await request
+          .get("/activity/new-modal")
+          .set("Cookie", `auth_token=${token}`);
+      },
+    );
+
+    then(
+      /^the page should show a form to create a new activity punch$/,
+      async () => {
+        expect(context.response.status).toBe(201);
+        expect(context.response.text).toContain(
+          "</i> Create New Activity</h3>",
+        );
+        expect(context.response.text).toContain('<div id="activity-fields">');
+        expect(context.response.text).toContain('<div class="modal-footer">');
+      },
+    );
+  });
+
+  test("Open edit activity punch form", ({ given, and, when, then }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (userName, email) => {
+        context.user = await prisma.user.create({
+          data: {
+            email: email,
+            name: userName,
+            isProf: false,
+          },
+        });
+      },
+    );
+
+    and(
+      /^a class named "(.*)" exists and includes "(.*)"$/,
+      async (className, userName) => {
+        context.klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+      },
+    );
+
+    and(
+      /^an activity punch for "(.*)" exists and belongs to "John Student"$/,
+      async (catName) => {
+        context.category = await activityService.createActivityCategory({
+          name: catName,
+          description: "Sessions for reviewing class material",
+          role: "STUDENT",
+        });
+
+        const activityData = {
+          classId: context.klass.id,
+          categoryId: context.category.id,
+          userId: context.user.id,
+          startTime: "2025-01-01T10:00:00Z",
+          endTime: "2025-01-01T11:00:00Z",
+        };
+        context.activity = await activityService.createActivity(activityData);
+      },
+    );
+
+    when(
+      /^the student attempts to open the edit activity punch form$/,
+      async () => {
+        const token = generateToken(context.user);
+        context.response = await request
+          .get(`/activity/edit-modal?punchSelect=${context.activity.id}`)
+          .set("Cookie", `auth_token=${token}`);
+      },
+    );
+
+    then(
+      /^the page should show a form to edit an activity punch$/,
+      async () => {
+        expect(context.response.status).toBe(201);
+        expect(context.response.text).toContain("</i> Edit Activity</h3>");
+        expect(context.response.text).toContain(
+          `hx-put="/activity/${context.activity.id}"`,
+        );
+        expect(context.response.text).toContain('<div id="activity-fields">');
+      },
+    );
+  });
+
+  test("Load create or edit activity fields", ({ given, and, when, then }) => {
+    given(
+      /^a logged-in student "(.*)" with email "(.*)" exists$/,
+      async (userName, email) => {
+        context.user = await prisma.user.create({
+          data: {
+            email: email,
+            name: userName,
+            isProf: false,
+          },
+        });
+      },
+    );
+
+    and(
+      /^a class named "(.*)" exists and includes "(.*)"$/,
+      async (className, userName) => {
+        context.klass = await classService.createClass({ name: className });
+        await prisma.classRole.create({
+          data: {
+            userId: context.user.id,
+            classId: context.klass.id,
+            role: "STUDENT",
+          },
+        });
+      },
+    );
+
+    and(/^a student activity category for "(.*)" exists$/, async (catName) => {
+      context.category = await activityService.createActivityCategory({
+        name: catName,
+        description: "Sessions for reviewing class material",
+        role: "STUDENT",
+      });
+    });
+
+    when(/^the student opens the punch card form$/, async () => {
+      const token = generateToken(context.user);
+      context.response = await request
+        .get(`/activity/load-fields?classId=${context.klass.id}`)
+        .set("Cookie", `auth_token=${token}`);
+    });
+
+    then(
+      /^the page should show options for making an activity punch$/,
+      async () => {
+        expect(context.response.status).toBe(200);
+        expect(context.response.text).toContain(`<div id="activity-fields">`);
+        expect(context.response.text).toContain(
+          `<option value="${context.category.id}">${context.category.name}</option>`,
+        );
+      },
+    );
   });
 });
