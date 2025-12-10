@@ -76,7 +76,7 @@ export function renderPulseCheck(classId, currentPulse = null) {
       >
         ${item.emoji}
       </button>
-    `
+    `,
     )
     .join("");
 
@@ -184,7 +184,7 @@ export function renderClassDetail(
   classInfo,
   activeTab = "directory",
   content = "",
-  options = {}
+  options = {},
 ) {
   const {
     isStudent = false,
@@ -622,7 +622,7 @@ export function renderClassDirectory(data, user = null) {
                         memberWithRole,
                         classId,
                         user,
-                        professorCount
+                        professorCount,
                       );
                     })
                     .join("")}
@@ -918,7 +918,7 @@ export function displayInvite(inviteUrl) {
 export function renderExternalEmailsList(
   externalEmails = [],
   classId,
-  canManage = false
+  canManage = false,
 ) {
   if (externalEmails.length === 0) {
     return `
@@ -958,7 +958,7 @@ export function renderExternalEmailsList(
               : ""
           }
         </div>
-      `
+      `,
         )
         .join("")}
     </div>
@@ -977,7 +977,7 @@ export function renderClassSettings(
   klass,
   inviteUrl,
   externalEmails = [],
-  canManage = false
+  canManage = false,
 ) {
   const inviteCode = klass.inviteCode || "";
 

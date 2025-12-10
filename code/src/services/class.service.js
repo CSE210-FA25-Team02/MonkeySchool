@@ -13,7 +13,7 @@ function generateInviteCode() {
     {
       length: 8,
     },
-    () => chars[Math.floor(Math.random() * chars.length)]
+    () => chars[Math.floor(Math.random() * chars.length)],
   ).join("");
 }
 
