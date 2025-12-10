@@ -110,6 +110,49 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Load Another User's Profile Page by ID
+ * Auth: requireAuth
+ */
+export const renderUserProfilePageById = asyncHandler(async (req, res) => {
+  const isHtmx = !!req.headers["hx-request"];
+  const userId = req.params.id;
+
+  // Fetch user data from database
+  let user = await userService.getUserById(userId);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  // Fetch user's activities for the profile history
+  let activities = [];
+  try {
+    activities = await activityService.getActivitiesByUserId(userId);
+  } catch (e) {
+    console.log("Failed to fetch activities:", e.message);
+    // Continue with empty activities array
+  }
+
+  // Fetch user's work journals
+  let workJournals = [];
+  try {
+    workJournals = await workJournalService.getWorkJournalsByUserId(userId);
+  } catch (e) {
+    console.log("Failed to fetch work journals:", e.message);
+    // Continue with empty work journals array
+  }
+
+  // Render profile page with activities and work journals
+  const content = renderProfilePage(user, activities, workJournals);
+
+  if (isHtmx) {
+    res.send(content);
+  } else {
+    const fullPage = createBaseLayout("Profile", content, { user: req.user });
+    res.send(fullPage);
+  }
+});
+
+/**
  * Update User Profile
  */
 export const updateUserProfile = asyncHandler(async (req, res) => {
