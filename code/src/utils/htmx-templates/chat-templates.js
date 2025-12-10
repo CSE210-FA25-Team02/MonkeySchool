@@ -139,7 +139,7 @@ export function renderConversationList(conversations) {
           hx-get="/chat/conversations/${conv.id}"
           hx-target=".chat-main"
           hx-swap="innerHTML"
-          onclick="this.style.background='var(--color-bg-subtle)'"
+          onclick="this.style.background='var(--color-brand-light)'"
         >
           <div style="display: flex; gap: var(--space-3); align-items: center;">
             <div class="avatar" style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
@@ -307,7 +307,7 @@ export function renderMessage(message, currentUserId) {
           style="padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); word-wrap: break-word; ${
             isOwnMessage
               ? "background: var(--color-brand-deep); color: white;"
-              : "background: var(--color-bg-subtle); color: var(--color-text);"
+              : "background: var(--color-bg-surface); color: var(--color-text);"
           }"
         >
           ${escapeHtml(message.content)}
@@ -369,7 +369,7 @@ function renderNewChatModal(recipients) {
                     class="recipient-item"
                     style="padding: var(--space-3); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); cursor: pointer; transition: background 0.2s;"
                     onclick="window.startConversation && window.startConversation('${recipient.user.id}')"
-                    onmouseover="this.style.background='var(--color-bg-subtle)'"
+                    onmouseover="this.style.background='var(--color-brand-light)'"
                     onmouseout="this.style.background='white'"
                   >
                     <div style="display: flex; gap: var(--space-3); align-items: center;">
