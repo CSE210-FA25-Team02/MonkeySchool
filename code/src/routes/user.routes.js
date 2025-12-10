@@ -12,6 +12,13 @@ router.get(
   asyncHandler(userController.renderUserProfilePage),
 );
 
+// View Another User's Profile Page by ID
+router.get(
+  "/:id/profile",
+  requireAuth,
+  asyncHandler(userController.renderUserProfilePageById),
+);
+
 // Profile link field (legacy main-branch endpoint)
 router.get(
   "/profile/link-field",

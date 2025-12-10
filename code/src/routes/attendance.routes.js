@@ -30,13 +30,6 @@ router.get(
 // Create an attendance poll (professor only)
 router.post("/poll/create", asyncHandler(attendanceController.createPoll));
 
-// Submit attendance using a code (student only)
-router.post(
-  "/submit",
-  submitRateLimiter,
-  asyncHandler(attendanceController.submitAttendance),
-);
-
 // Mark attendance with course selection (student only, HTMX)
 router.post(
   "/mark",
@@ -44,8 +37,20 @@ router.post(
   asyncHandler(attendanceController.markAttendance),
 );
 
-// Note: Course and session records pages are now handled in app.js as page routes
-// They are no longer API routes
+// Attendance page route
+router.get("/", asyncHandler(attendanceController.getAttendancePage));
+
+// Legacy route for backward compatibility
+router.get(
+  "/course/session/:sessionId/records",
+  asyncHandler(attendanceController.getSessionRecordsPage),
+);
+
+// Legacy route for backward compatibility
+router.get(
+  "/course/:courseId/records",
+  asyncHandler(attendanceController.getCourseRecordsPage),
+);
 
 // Get attendance records for a session (professor only) - legacy endpoint
 router.get(

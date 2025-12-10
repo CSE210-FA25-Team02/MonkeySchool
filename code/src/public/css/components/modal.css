@@ -2,146 +2,256 @@
    Modal / Dialog Styles
    ========================================= */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(14, 83, 74, 0.2);
-    backdrop-filter: blur(4px);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: all var(--transition-fast);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(14, 83, 74, 0.2);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
 }
 
 .modal-overlay.open {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 .modal-card {
-    background: var(--color-bg-surface);
-    border-radius: var(--radius-xl);
-    width: 100%;
-    max-width: 500px;
-    box-shadow: var(--shadow-float);
-    transform: scale(0.95) translateY(10px);
-    transition: all var(--transition-smooth);
-    overflow: hidden;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-float);
+  transform: scale(0.95) translateY(10px);
+  transition: all var(--transition-smooth);
+  overflow-x: hidden;
+}
+
+.modal-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-card::-webkit-scrollbar-track {
+  background: var(--color-bg-canvas);
+}
+
+.modal-card::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 4px;
+}
+
+.modal-card::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-main);
 }
 
 .modal-overlay.open .modal-card {
-    transform: scale(1) translateY(0);
+  transform: scale(1) translateY(0);
 }
 
 .modal-header {
-    padding: var(--space-6);
-    border-bottom: 1px solid var(--color-bg-canvas);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-bg-canvas);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-title {
-    font-size: var(--text-xl);
-    font-weight: var(--weight-bold);
-    color: var(--color-text-main);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-main);
 }
 
 .btn-close {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-text-muted);
-    transition: var(--transition-fast);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  transition: var(--transition-fast);
 }
 
 .btn-close:hover {
-    background: var(--color-bg-canvas);
-    color: var(--color-text-main);
+  background: var(--color-bg-canvas);
+  color: var(--color-text-main);
 }
 
 .modal-body {
-    padding: var(--space-6);
+  padding: var(--space-6);
 }
 
 .form-group {
-    margin-bottom: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .form-label {
-    display: block;
-    font-size: var(--text-sm);
-    font-weight: var(--weight-medium);
-    color: var(--color-text-main);
-    margin-bottom: var(--space-2);
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-main);
+  margin-bottom: var(--space-2);
 }
 
-.form-input, .form-select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: var(--radius-md);
-    font-family: var(--font-sans);
-    font-size: var(--text-base);
-    transition: var(--transition-fast);
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  transition: var(--transition-fast);
 }
 
-.form-input:focus, .form-select:focus {
-    outline: none;
-    border-color: var(--color-brand-medium);
-    box-shadow: 0 0 0 3px rgba(14, 83, 74, 0.05);
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-brand-medium);
+  box-shadow: 0 0 0 3px rgba(14, 83, 74, 0.05);
+}
+
+.form-input:disabled,
+.form-select:disabled {
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .form-helper {
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
 }
 
 .modal-footer {
-    padding: var(--space-6);
-    background: var(--color-bg-canvas);
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-3);
+  padding: var(--space-6);
+  background: var(--color-bg-canvas);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
 }
 
 .btn {
-    padding: 10px 20px;
-    border-radius: var(--radius-md);
-    font-weight: var(--weight-medium);
-    font-size: var(--text-sm);
-    transition: var(--transition-fast);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  transition: var(--transition-fast);
 }
 
 .btn-secondary {
-    color: var(--color-text-muted);
-    background: transparent;
-    border: 1px solid transparent;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid transparent;
 }
 
 .btn-secondary:hover {
-    background: rgba(0,0,0,0.05);
-    color: var(--color-text-main);
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-main);
 }
 
 .btn-primary {
-    background: var(--color-brand-deep);
-    color: white;
+  background: var(--color-brand-deep);
+  color: white;
 }
 
 .btn-primary:hover {
-    background: var(--color-brand-medium);
-    box-shadow: var(--shadow-sm);
+  background: var(--color-brand-medium);
+  box-shadow: var(--shadow-sm);
 }
 
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
 
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .modal-card {
+    max-width: calc(100vw - 2rem);
+    margin: 1rem;
+    max-height: 85vh;
+    border-radius: var(--radius-lg);
+  }
 
+  .modal-header {
+    padding: var(--space-4);
+  }
+
+  .modal-title {
+    font-size: var(--text-lg);
+  }
+
+  .modal-body {
+    padding: var(--space-4);
+  }
+
+  .modal-footer {
+    padding: var(--space-4);
+    flex-direction: column-reverse;
+    gap: var(--space-2);
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
+
+  .form-input,
+  .form-select {
+    padding: 10px;
+    font-size: var(--text-sm);
+  }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .modal-card {
+    max-width: calc(100vw - 1rem);
+    margin: 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .modal-header {
+    padding: var(--space-3);
+  }
+
+  .modal-title {
+    font-size: var(--text-base);
+  }
+
+  .modal-body {
+    padding: var(--space-3);
+  }
+
+  .modal-footer {
+    padding: var(--space-3);
+  }
+
+  .form-label {
+    font-size: var(--text-xs);
+  }
+
+  .form-input,
+  .form-select {
+    padding: 8px;
+    font-size: var(--text-xs);
+  }
+}

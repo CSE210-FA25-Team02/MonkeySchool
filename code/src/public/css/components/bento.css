@@ -13,7 +13,9 @@
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   box-shadow: var(--shadow-card);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -26,12 +28,22 @@
 }
 
 /* Spanning Classes */
-.span-1 { grid-column: span 1; }
-.span-2 { grid-column: span 2; }
-.span-3 { grid-column: span 3; }
-.span-4 { grid-column: span 4; }
+.span-1 {
+  grid-column: span 1;
+}
+.span-2 {
+  grid-column: span 2;
+}
+.span-3 {
+  grid-column: span 3;
+}
+.span-4 {
+  grid-column: span 4;
+}
 
-.row-span-2 { grid-row: span 2; }
+.row-span-2 {
+  grid-row: span 2;
+}
 
 /* Card Content Styles */
 .card-header {
@@ -68,13 +80,125 @@
 
 /* Specific Card Variants */
 .card-welcome {
-  background: linear-gradient(135deg, var(--color-brand-deep) 0%, var(--color-brand-medium) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-deep) 0%,
+    var(--color-brand-medium) 100%
+  );
   color: white;
 }
 
 .card-welcome .card-title,
 .card-welcome .card-content {
   color: white;
+}
+
+.card-welcome h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.card-welcome p {
+  opacity: 0.9;
+}
+
+/* Card Content Variants */
+.card-content--actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Button Variants */
+.btn--center {
+  justify-content: center;
+}
+
+/* Activity Punch Card */
+#activity-punch-card-container .card-content {
+  padding: 16px;
+}
+
+.activity-punch-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+}
+
+.activity-punch-icon {
+  font-size: 24px;
+  color: var(--color-brand-deep);
+}
+
+.activity-punch-label {
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+  color: var(--color-brand-deep);
+}
+
+.activity-punch-button {
+  justify-content: center;
+  font-size: 12px;
+  padding: 8px 16px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 16px;
+  color: var(--color-text-muted);
+}
+
+.empty-state--large {
+  padding: 24px;
+}
+
+.empty-state-button {
+  background: transparent;
+  border: none;
+  text-decoration: underline;
+  color: var(--color-brand-medium);
+}
+
+/* List Item Actions */
+.list-item-action {
+  margin-left: auto;
+}
+
+/* Event Type Icons */
+.list-item-icon--lecture {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.list-item-icon--meeting {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.list-item-icon--office-hours {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.list-item-icon--default {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+/* Mood Buttons */
+.mood-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.mood-btn {
+  flex: 1;
 }
 
 .stat-value {
@@ -96,8 +220,12 @@
   gap: var(--space-1);
 }
 
-.trend-up { color: var(--color-status-success); }
-.trend-down { color: var(--color-status-error); }
+.trend-up {
+  color: var(--color-status-success);
+}
+.trend-down {
+  color: var(--color-status-error);
+}
 
 /* List Items in Cards */
 .list-item {
@@ -137,9 +265,200 @@
   color: var(--color-text-muted);
 }
 
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
 
+/* Tablet (max-width: 1024px) - 2 columns */
+@media (max-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
+  /* Reset all span classes to span 1 on tablet */
+  .span-1,
+  .span-2,
+  .span-3,
+  .span-4 {
+    grid-column: span 1;
+  }
 
+  /* Make welcome card span full width on tablet */
+  .card-welcome.span-2 {
+    grid-column: span 2;
+  }
 
+  /* Make "My Classes" card span full width on tablet */
+  .bento-card.span-2.row-span-2 {
+    grid-column: span 2;
+  }
 
+  /* Make "Upcoming Events" card span full width on tablet */
+  .bento-card.span-2:not(.row-span-2) {
+    grid-column: span 2;
+  }
+}
 
+/* Mobile (max-width: 768px) - Single column */
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding-bottom: var(--space-6);
+  }
+
+  /* All cards span full width on mobile */
+  .span-1,
+  .span-2,
+  .span-3,
+  .span-4 {
+    grid-column: span 1;
+  }
+
+  /* Reset row span on mobile */
+  .row-span-2 {
+    grid-row: span 1;
+  }
+
+  /* Reduce card padding on mobile */
+  .bento-card {
+    padding: var(--space-4);
+  }
+
+  /* Adjust card header for mobile */
+  .card-header {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  /* Adjust card title font size on mobile */
+  .card-title {
+    font-size: var(--text-base);
+  }
+
+  /* Adjust welcome card text on mobile */
+  .card-welcome h2 {
+    font-size: 20px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .card-welcome p {
+    font-size: var(--text-sm) !important;
+  }
+
+  /* Activity punch card on mobile */
+  #activity-punch-card-container .card-content {
+    padding: var(--space-3) !important;
+  }
+
+  .activity-punch-icon {
+    font-size: 20px !important;
+  }
+
+  .activity-punch-label {
+    font-size: var(--text-xs) !important;
+  }
+
+  .activity-punch-button {
+    font-size: 10px !important;
+  }
+
+  /* Adjust list items for mobile */
+  .list-item {
+    padding: var(--space-2) 0;
+  }
+
+  .list-item-icon {
+    width: 36px;
+    height: 36px;
+    margin-right: var(--space-2);
+  }
+
+  /* Adjust stat values for mobile */
+  .stat-value {
+    font-size: var(--text-2xl);
+  }
+
+  /* Adjust buttons in cards for mobile */
+  .bento-card .btn {
+    padding: 8px 16px;
+    font-size: var(--text-xs);
+  }
+
+  /* Ensure full-width buttons work on mobile */
+  .btn--full {
+    width: 100%;
+  }
+}
+
+/* Small Mobile (max-width: 480px) - Further optimizations */
+@media (max-width: 480px) {
+  .bento-grid {
+    gap: var(--space-2);
+    padding-bottom: var(--space-4);
+  }
+
+  .bento-card {
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+  }
+
+  .card-header {
+    margin-bottom: var(--space-2);
+  }
+
+  .card-title {
+    font-size: var(--text-sm);
+  }
+
+  .card-welcome h2 {
+    font-size: 18px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .card-welcome p {
+    font-size: var(--text-xs) !important;
+  }
+
+  /* Further reduce activity punch card content on small mobile */
+  #activity-punch-card-container .card-content {
+    padding: var(--space-2) !important;
+  }
+
+  .activity-punch-icon {
+    font-size: 18px !important;
+  }
+
+  .activity-punch-label {
+    font-size: 10px !important;
+  }
+
+  .list-item-icon {
+    width: 32px;
+    height: 32px;
+    font-size: var(--text-sm);
+  }
+
+  .list-item-title {
+    font-size: var(--text-xs);
+  }
+
+  .list-item-subtitle {
+    font-size: 10px;
+  }
+
+  .stat-value {
+    font-size: var(--text-xl);
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  /* Adjust buttons for small mobile */
+  .bento-card .btn {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+}

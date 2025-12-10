@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml, getUpcomingQuarters } from "../html-templates.js";
+import { createJoinClassModal } from "./dashboard-templates.js";
 
 /**
  * Render the Pulse Check success state (after submission)
@@ -205,8 +206,16 @@ export function renderClassDetail(
             </div>
             ${isStudent ? renderPulseCheck(classInfo.id, currentPulse) : ""}
             <!-- Quick Punch Action -->
-            <button id="class-punch-btn" style="position: absolute; right: 32px; bottom: 32px; background: var(--color-accent-gold); color: var(--color-brand-deep); padding: 12px 24px; border-radius: var(--radius-full); font-weight: bold; box-shadow: var(--shadow-lg); border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s;">
-                <i class="fa-solid fa-fingerprint"></i> Punch In
+            <button 
+                id="class-punch-btn-${classInfo.id}" 
+                class="btn-punch-me"
+                style="position: absolute; right: 32px; bottom: 32px; background: var(--color-accent-gold); color: var(--color-brand-deep); padding: 12px 24px; border-radius: var(--radius-full); font-weight: bold; box-shadow: var(--shadow-lg); border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s; z-index: 10;"
+                hx-post="/activity/quick-punch"
+                hx-vals='{"classId": "${classInfo.id}"}'
+                hx-swap="none"
+                data-class-id="${classInfo.id}"
+            >
+                <i class="fa-solid fa-fingerprint"></i> Punch me
             </button>
         </div>
 
@@ -219,7 +228,7 @@ export function renderClassDetail(
                style="padding: var(--space-3) 0; color: ${activeTab === "directory" ? "var(--color-brand-deep)" : "var(--color-text-muted)"}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === "directory" ? "var(--color-accent-gold)" : "transparent"}; cursor: pointer; text-decoration: none;">
                Directory
             </a>
-            <a href="/classes/${classInfo.id}/attendance"
+            <a href="/attendance"
                class="tab-item ${activeTab === "attendance" ? "active" : ""}"
                style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
                Attendance <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px; margin-left: 4px;"></i>
@@ -237,14 +246,12 @@ export function renderClassDetail(
             `
                 : ""
             }
-            <a href="/classes/${classInfo.id}/groups"
-               class="tab-item ${activeTab === "groups" ? "active" : ""}"
-               style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
-               Groups
-            </a>
             <a href="/classes/${classInfo.id}/settings"
+               hx-get="/classes/${classInfo.id}/settings"
+               hx-target="#tab-content"
+               hx-swap="innerHTML"
                class="tab-item ${activeTab === "settings" ? "active" : ""}"
-               style="padding: var(--space-3) 0; color: var(--color-text-muted); font-weight: var(--weight-medium); border-bottom: 2px solid transparent; cursor: pointer; text-decoration: none;">
+               style="padding: var(--space-3) 0; color: ${activeTab === "settings" ? "var(--color-brand-deep)" : "var(--color-text-muted)"}; font-weight: var(--weight-medium); border-bottom: 2px solid ${activeTab === "settings" ? "var(--color-accent-gold)" : "transparent"}; cursor: pointer; text-decoration: none;">
                Settings
             </a>
         </div>
@@ -253,12 +260,51 @@ export function renderClassDetail(
         <div id="tab-content" class="tab-pane active">
             ${content}
         </div>
+        
+        <script>
+          (function() {
+            // Handle quick punch-in button
+            document.body.addEventListener('htmx:afterRequest', function(event) {
+              const requestPath = event.detail?.pathInfo?.requestPath;
+              const elt = event.detail?.elt;
+              
+              if (requestPath === '/activity/quick-punch' && elt && elt.classList.contains('btn-punch-me')) {
+                const punchBtn = elt;
+                const status = event.detail.xhr?.status;
+                
+                if (status === 201) {
+                  // Show success toast
+                  if (typeof showToast !== 'undefined') {
+                    showToast('Success', 'Punched in for Lecture (1 hour)', 'success');
+                  }
+                  // Update button state
+                  punchBtn.innerHTML = '<i class="fa-solid fa-check"></i> Punched In';
+                  punchBtn.style.background = 'var(--color-status-success)';
+                  punchBtn.style.color = 'white';
+                  punchBtn.disabled = true;
+                  // Reload page after a short delay to show new activity in profile
+                  setTimeout(() => {
+                    if (typeof htmx !== 'undefined') {
+                      htmx.ajax('GET', window.location.pathname, {target: 'body', swap: 'none'});
+                    } else {
+                      window.location.reload();
+                    }
+                  }, 1500);
+                } else if (status && status !== 201) {
+                  if (typeof showToast !== 'undefined') {
+                    showToast('Error', 'Failed to punch in. Please try again.', 'error');
+                  }
+                }
+              }
+            });
+          })();
+        </script>
     `;
 }
 
 /**
  * Render the class directory content (Tab Content)
- * @param {Object} data Directory data with professors, tas, tutors, groups, and studentsWithoutGroup
+ * @param {Object} data Directory data with professors, tas, tutors, groups, and students
  * @param {Object} [user] Current user object with isProf property
  * @returns {string} HTML
  */
@@ -270,7 +316,7 @@ export function renderClassDirectory(data, user = null) {
     tas = [],
     tutors = [],
     groups = [],
-    studentsWithoutGroup = [],
+    students = [],
   } = data;
 
   // Check if current user is a professor in THIS class (not globally)
@@ -357,7 +403,10 @@ export function renderClassDirectory(data, user = null) {
     const style = roleStyles[person.role] || roleStyles.STUDENT;
 
     return `
-      <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm); position: relative;">
+      <div class="member-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); box-shadow: var(--shadow-sm); position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" 
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)'" 
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)'"
+           onclick="window.location.href='/users/${person.id}/profile'">
         <div class="member-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: ${style.bg}; color: ${style.color}; display: flex; align-items: center; justify-content: center; font-weight: bold;">
           ${escapeHtml(initials)}
         </div>
@@ -373,7 +422,7 @@ export function renderClassDirectory(data, user = null) {
         ${
           isProf
             ? `
-          <div class="role-management" style="position: absolute; top: 8px; right: 8px;">
+          <div class="role-management" style="position: absolute; top: 8px; right: 8px; z-index: 5;" onclick="event.stopPropagation();">
             <button class="role-change-btn" 
                     onclick="toggleRoleDropdown('${person.id}')" 
                     style="background: none; border: none; color: var(--color-text-muted); padding: 4px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;"
@@ -444,57 +493,185 @@ export function renderClassDirectory(data, user = null) {
     `;
   }
 
+  // Check if current user is a TA in THIS class
+  const isTA = user ? tas.some((ta) => ta.id === user.id) : false;
+
   // Groups Section
-  if (groups.length > 0) {
-    html += `
-      <div class="directory-section" style="margin-bottom: var(--space-8);">
-        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
-          <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
-            Groups <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${groups.length}</span>
-          </div>
+  html += `
+    <div class="directory-section" style="margin-bottom: var(--space-8);">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+        <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
+          Groups <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${groups.length}</span>
         </div>
+        ${
+          isProf || isTA
+            ? `
+          <a
+            href="/classes/${classId}/groups/create-modal"
+            class="btn btn--primary"
+            style="padding: 8px 16px; font-size: var(--text-sm); display: inline-flex; align-items: center; gap: 8px; text-decoration: none;"
+            hx-get="/classes/${classId}/groups/create-modal"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            hx-trigger="click"
+            role="button"
+          >
+            <i class="fa-solid fa-plus"></i>
+            Create Group
+          </a>
+        `
+            : ""
+        }
+      </div>
+      ${
+        groups.length > 0
+          ? `
         <div class="groups-container" style="display: flex; flex-direction: column; gap: var(--space-6);">
           ${groups
-            .map(
-              (group) => `
-            <div class="group-section" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);">
-              <div class="group-header" style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-bg-canvas);">
-                <div class="group-name" style="font-weight: var(--weight-bold); font-size: var(--text-lg);">${escapeHtml(group.name)}</div>
-                <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${group.members.length} members</span>
+            .map((group) => {
+              // Check if current user is a leader of this group
+              const isGroupLeader = user
+                ? group.members.some((m) => m.id === user.id && m.isLeader)
+                : false;
+
+              return `
+              <div class="group-section" style="background: var(--color-bg-surface); border-radius: var(--radius-md); padding: var(--space-4); box-shadow: var(--shadow-sm);">
+                <div class="group-header" style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-bg-canvas);">
+                  ${
+                    group.logoUrl
+                      ? `<img src="${escapeHtml(group.logoUrl)}" alt="${escapeHtml(group.name)}" style="width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;">`
+                      : `<div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--color-brand-deep); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">${escapeHtml(group.name.charAt(0).toUpperCase())}</div>`
+                  }
+                  <div style="flex: 1;">
+                    <div class="group-name" style="font-weight: var(--weight-bold); font-size: var(--text-lg);">${escapeHtml(group.name)}</div>
+                    ${group.mantra ? `<div style="font-size: var(--text-sm); color: var(--color-text-muted); font-style: italic;">"${escapeHtml(group.mantra)}"</div>` : ""}
+                  </div>
+                  <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${group.members.length} members</span>
+                  
+                  <!-- Group Action Buttons -->
+                  ${
+                    isProf || isTA || isGroupLeader
+                      ? `
+                    <div class="group-actions" style="display: flex; gap: var(--space-2);">
+                      ${
+                        group.github
+                          ? `
+                        <a href="${escapeHtml(group.github)}" target="_blank" class="btn btn--secondary" style="padding: 6px 10px;" title="View GitHub">
+                          <i class="fa-brands fa-github"></i>
+                        </a>
+                      `
+                          : ""
+                      }
+                      <button 
+                        class="btn btn--secondary" 
+                        style="padding: 6px 10px;"
+                        hx-get="/groups/${group.id}/edit-modal"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        title="Edit group"
+                      >
+                        <i class="fa-solid fa-pen"></i>
+                      </button>
+                      ${
+                        isProf || isTA
+                          ? `
+                        <button 
+                          class="btn btn--secondary" 
+                          style="padding: 6px 10px;"
+                          hx-get="/groups/${group.id}/manage"
+                          hx-target="#modal-container"
+                          hx-swap="innerHTML"
+                          title="Manage members"
+                        >
+                          <i class="fa-solid fa-users-gear"></i>
+                        </button>
+                        <button 
+                          class="btn btn--secondary" 
+                          style="padding: 6px 10px; color: var(--color-status-error);"
+                          hx-get="/groups/${group.id}/delete-modal"
+                          hx-target="#modal-container"
+                          hx-swap="innerHTML"
+                          title="Delete group"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      `
+                          : ""
+                      }
+                    </div>
+                  `
+                      : ""
+                  }
+                </div>
+                
+                <!-- Supervisors -->
+                ${
+                  group.supervisors && group.supervisors.length > 0
+                    ? `
+                  <div style="margin-bottom: var(--space-3);">
+                    <span style="font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Supervisors:</span>
+                    <span style="font-size: var(--text-sm); margin-left: var(--space-2);">
+                      ${group.supervisors.map((s) => escapeHtml(s.preferredName || s.name)).join(", ")}
+                    </span>
+                  </div>
+                `
+                    : ""
+                }
+                
+                <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
+                  ${group.members
+                    .map((member) => {
+                      const memberWithRole = { ...member, role: "STUDENT" };
+                      return renderPersonCard(
+                        memberWithRole,
+                        classId,
+                        user,
+                        professorCount,
+                      );
+                    })
+                    .join("")}
+                </div>
               </div>
-              <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-                ${group.members
-                  .map((member) => {
-                    const memberWithRole = { ...member, role: "STUDENT" };
-                    return renderPersonCard(
-                      memberWithRole,
-                      classId,
-                      user,
-                      professorCount,
-                    );
-                  })
-                  .join("")}
-              </div>
-            </div>
-          `,
-            )
+            `;
+            })
             .join("")}
         </div>
-      </div>
-    `;
-  }
+      `
+          : `
+        <div style="text-align: center; padding: var(--space-8); color: var(--color-text-muted); background: var(--color-bg-surface); border-radius: var(--radius-md);">
+          <i class="fa-solid fa-users-rectangle" style="font-size: 48px; margin-bottom: var(--space-4); opacity: 0.3;"></i>
+          <p style="margin-bottom: var(--space-4);">No groups have been created yet.</p>
+          ${
+            isProf || isTA
+              ? `
+            <button
+              class="btn btn--primary"
+              hx-get="/classes/${classId}/groups/create-modal"
+              hx-target="#modal-container"
+              hx-swap="innerHTML"
+            >
+              <i class="fa-solid fa-plus"></i> Create First Group
+            </button>
+          `
+              : ""
+          }
+        </div>
+      `
+      }
+    </div>
+  `;
 
-  // Students Without Group Section
-  if (studentsWithoutGroup.length > 0) {
+  // Students Section
+  if (students.length > 0) {
     html += `
       <div class="directory-section">
         <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
           <div class="section-title" style="font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--color-text-main);">
-            Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${studentsWithoutGroup.length}</span>
+            Students <span class="count-badge" style="background: var(--color-bg-canvas); padding: 2px 8px; border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--color-text-muted);">${students.length}</span>
           </div>
         </div>
         <div class="member-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-4);">
-          ${studentsWithoutGroup.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
+          ${students.map((student) => renderPersonCard(student, classId, user, professorCount)).join("")}
         </div>
       </div>
     `;
@@ -544,9 +721,10 @@ export function renderClassDirectory(data, user = null) {
  * Render the list of classes (My Classes Page)
  * Matches demo/my-classes.html structure
  * @param {Array} classes - List of class objects
+ * @param {Object} [user=null] - Current user object with isProf property
  * @returns {string} HTML string
  */
-export function renderClassList(classes) {
+export function renderClassList(classes, user = null) {
   // Header
   const headerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
@@ -596,15 +774,30 @@ export function renderClassList(classes) {
     })
     .join("");
 
-  // Create New Class Card (Always appended)
-  const createCardHTML = `
+  // Create/Join Class Card (Conditional based on user role)
+  const isProf = user?.isProf === true;
+  const createCardHTML = isProf
+    ? `
         <button class="course-card create-card" onclick="window.openModal('modal-create-class')">
             <div class="create-icon">
                 <i class="fa-solid fa-plus-circle"></i>
             </div>
-            <span style="font-weight: bold;">Create / Join Class</span>
+            <span style="font-weight: bold;">Create Class</span>
+        </button>
+    `
+    : `
+        <button class="course-card create-card" onclick="window.openModal('modal-join-class')">
+            <div class="create-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <span style="font-weight: bold;">Join Class</span>
         </button>
     `;
+
+  // Include appropriate modal based on user role
+  const modalHTML = isProf
+    ? createClassForm(getUpcomingQuarters())
+    : createJoinClassModal();
 
   return `
         ${headerHTML}
@@ -612,7 +805,7 @@ export function renderClassList(classes) {
             ${classCardsHTML}
             ${createCardHTML}
         </div>
-        ${createClassForm(getUpcomingQuarters())}
+        ${modalHTML}
     `;
 }
 
@@ -733,4 +926,325 @@ export function displayInvite(inviteUrl) {
             }
         </script>
     `;
+}
+
+/**
+ * Render external emails list (helper function)
+ * @param {Array} externalEmails - Array of external email objects
+ * @param {string} classId - Class ID
+ * @param {boolean} canManage - Whether user can manage external emails
+ * @returns {string} HTML string
+ */
+export function renderExternalEmailsList(
+  externalEmails = [],
+  classId,
+  canManage = false,
+) {
+  if (externalEmails.length === 0) {
+    return `
+      <div style="text-align: center; padding: var(--space-6); color: var(--color-text-muted);">
+        <i class="fa-solid fa-inbox" style="font-size: 32px; margin-bottom: var(--space-2); opacity: 0.5;"></i>
+        <p style="font-size: var(--text-sm);">No external emails added yet</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+      ${externalEmails
+        .map(
+          (item) => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); background: var(--color-bg-surface); border-radius: var(--radius-md); border: 1px solid var(--color-bg-canvas);">
+          <div style="display: flex; align-items: center; gap: var(--space-3); flex: 1;">
+            <i class="fa-solid fa-envelope" style="color: var(--color-text-muted);"></i>
+            <span style="font-size: var(--text-sm); color: var(--color-text-main);">${escapeHtml(item.email)}</span>
+          </div>
+          ${
+            canManage
+              ? `
+            <button
+              type="button"
+              class="btn btn-secondary"
+              style="padding: 4px 8px; font-size: var(--text-xs);"
+              hx-delete="/classes/${classId}/external-emails/${encodeURIComponent(item.email)}"
+              hx-target="#external-emails-list"
+              hx-swap="innerHTML"
+              hx-confirm="Remove this external email?"
+              title="Remove email"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          `
+              : ""
+          }
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+/**
+ * Render Class Settings Page
+ * @param {Object} klass - Class object with inviteCode
+ * @param {string} inviteUrl - Full invite URL
+ * @param {Array} [externalEmails=[]] - Array of external email objects
+ * @param {boolean} [canManage=false] - Whether user can manage external emails
+ * @returns {string} HTML string
+ */
+export function renderClassSettings(
+  klass,
+  inviteUrl,
+  externalEmails = [],
+  canManage = false,
+) {
+  const inviteCode = klass.inviteCode || "";
+
+  return `
+    <div class="pulse-analytics-container">
+      <div class="pulse-analytics-header" style="margin-bottom: var(--space-6);">
+        <h2 style="font-size: var(--text-2xl); font-weight: var(--weight-bold);">
+          Class Settings
+        </h2>
+      </div>
+
+      <!-- Invite Code Section -->
+      <div class="bento-card" style="margin-bottom: var(--space-6);">
+        <div class="card-header" style="margin-bottom: var(--space-4);">
+          <div class="card-title">
+            <i class="fa-solid fa-link"></i>
+            Invite Code
+          </div>
+        </div>
+        <div class="card-content">
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin-bottom: var(--space-6);">
+            Share this invite code or link with students to allow them to join this class.
+          </p>
+          
+          <div style="margin-bottom: var(--space-6);">
+            <label style="display: block; font-size: var(--text-sm); font-weight: var(--weight-medium); margin-bottom: var(--space-2); color: var(--color-text-main);">
+              Invite Code
+            </label>
+            <div style="display: flex; gap: var(--space-2);">
+              <input 
+                type="text" 
+                readonly 
+                value="${escapeHtml(inviteCode)}" 
+                id="invite-code-input" 
+                class="form-input" 
+                style="flex: 1; font-family: var(--font-mono); font-size: var(--text-base); font-weight: var(--weight-semibold); letter-spacing: 1px;"
+                onclick="this.select()"
+              >
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                id="copy-invite-code-btn" 
+                onclick="copyInviteCode()"
+                style="white-space: nowrap;"
+              >
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <label style="display: block; font-size: var(--text-sm); font-weight: var(--weight-medium); margin-bottom: var(--space-2); color: var(--color-text-main);">
+              Invite Link
+            </label>
+            <div style="display: flex; gap: var(--space-2);">
+              <input 
+                type="text" 
+                readonly 
+                value="${escapeHtml(inviteUrl)}" 
+                id="invite-url-input" 
+                class="form-input" 
+                style="flex: 1; font-size: var(--text-sm);"
+                onclick="this.select()"
+              >
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                id="copy-invite-url-btn" 
+                onclick="copyInviteUrl()"
+                style="white-space: nowrap;"
+              >
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- External Emails Section (only for professors/TAs) -->
+      ${
+        canManage
+          ? `
+      <div class="bento-card" style="margin-bottom: var(--space-6);">
+        <div class="card-header" style="margin-bottom: var(--space-4);">
+          <div class="card-title">
+            <i class="fa-solid fa-envelope-circle-check"></i>
+            External Emails
+          </div>
+        </div>
+        <div class="card-content">
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin-bottom: var(--space-6);">
+            Add external email addresses that should be allowed to login to this portal. These emails will be able to access the system even if they're not @ucsd.edu addresses.
+          </p>
+          
+          <!-- Add External Email Form -->
+          <form
+            id="add-external-email-form"
+            hx-post="/classes/${klass.id}/external-emails"
+            hx-target="#external-emails-list"
+            hx-swap="innerHTML"
+            style="margin-bottom: var(--space-6);"
+          >
+            <div style="display: flex; gap: var(--space-2);">
+              <input
+                type="email"
+                name="email"
+                class="form-input"
+                placeholder="example@external.com"
+                required
+                style="flex: 1;"
+                pattern="[^@]+@[^@]+\\.[^@]+"
+              >
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+                <i class="fa-solid fa-plus"></i> Add Email
+              </button>
+            </div>
+            <p class="form-helper" style="margin-top: var(--space-2); font-size: var(--text-xs);">
+              Note: UCSD emails (@ucsd.edu) are already allowed and don't need to be added.
+            </p>
+          </form>
+          
+          <!-- External Emails List -->
+          <div>
+            <label style="display: block; font-size: var(--text-sm); font-weight: var(--weight-medium); margin-bottom: var(--space-2); color: var(--color-text-main);">
+              Allowed External Emails
+            </label>
+            <div id="external-emails-list">
+              ${renderExternalEmailsList(externalEmails, klass.id, canManage)}
+            </div>
+          </div>
+        </div>
+      </div>
+      `
+          : ""
+      }
+
+      <!-- Class Information Section -->
+    </div>
+
+    <script>
+      function copyInviteCode() {
+        var input = document.getElementById('invite-code-input');
+        var btn = document.getElementById('copy-invite-code-btn');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        
+        var copyText = function() {
+          var originalHtml = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+          btn.style.background = 'var(--color-status-success)';
+          btn.style.color = 'white';
+          setTimeout(function() {
+            btn.innerHTML = originalHtml;
+            btn.style.background = '';
+            btn.style.color = '';
+          }, 2000);
+        };
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(input.value).then(copyText).catch(function() {
+            document.execCommand('copy');
+            copyText();
+          });
+        } else {
+          document.execCommand('copy');
+          copyText();
+        }
+      }
+      
+      function copyInviteUrl() {
+        var input = document.getElementById('invite-url-input');
+        var btn = document.getElementById('copy-invite-url-btn');
+        input.select();
+        input.setSelectionRange(0, 99999);
+        
+        var copyText = function() {
+          var originalHtml = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+          btn.style.background = 'var(--color-status-success)';
+          btn.style.color = 'white';
+          setTimeout(function() {
+            btn.innerHTML = originalHtml;
+            btn.style.background = '';
+            btn.style.color = '';
+          }, 2000);
+        };
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(input.value).then(copyText).catch(function() {
+            document.execCommand('copy');
+            copyText();
+          });
+        } else {
+          document.execCommand('copy');
+          copyText();
+        }
+      }
+      
+      // Update active tab state when settings loads
+      (function() {
+        // Mark settings tab as active
+        const settingsTab = document.querySelector('a[href*="/settings"]');
+        if (settingsTab) {
+          // Remove active from all tabs
+          document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.classList.remove('active');
+            tab.style.color = 'var(--color-text-muted)';
+            tab.style.borderBottom = '2px solid transparent';
+          });
+          
+          // Mark settings tab as active
+          settingsTab.classList.add('active');
+          settingsTab.style.color = 'var(--color-brand-deep)';
+          settingsTab.style.borderBottom = '2px solid var(--color-accent-gold)';
+        }
+      })();
+      
+      // Handle external email form submission
+      (function() {
+        const form = document.getElementById('add-external-email-form');
+        if (form) {
+          document.body.addEventListener('htmx:afterRequest', function(event) {
+            if (event.detail.target && event.detail.target.id === 'external-emails-list') {
+              const status = event.detail.xhr?.status;
+              const emailInput = form.querySelector('input[name=email]');
+              
+              if (status === 201) {
+                // Success - clear input and show toast
+                if (emailInput) {
+                  emailInput.value = '';
+                }
+                if (typeof showToast !== 'undefined') {
+                  showToast('Success', 'External email added successfully', 'success');
+                }
+              } else if (status && status >= 400) {
+                // Error - show error message
+                const responseText = event.detail.xhr?.responseText || 'Failed to add external email';
+                if (typeof showToast !== 'undefined') {
+                  showToast('Error', responseText, 'error');
+                } else {
+                  alert('Error: ' + responseText);
+                }
+              }
+            }
+          });
+        }
+      })();
+    </script>
+  `;
 }

@@ -15,7 +15,28 @@ import { getClassRole } from "../services/classRole.service.js";
  */
 export const createActivity = asyncHandler(async (req, res) => {
   let activity;
+  const categoryId = req.body.categoryId;
   const userId = req.user.id;
+  const classId = req.body.classId;
+
+  // Get user role
+  const classRole = await getClassRole(userId, classId);
+
+  // Lookup category
+  const category = await activityService.getActivityCategory(categoryId);
+
+  if (!category) {
+    return res.status(404).send("Category not found");
+  }
+
+  const allowed = category.role === "ALL" || category.role === classRole.role;
+
+  // Check if category and user role matches
+  if (!allowed) {
+    return res
+      .status(403)
+      .send("You are not allowed to create this type of activity.");
+  }
 
   try {
     const activityData = {
@@ -41,6 +62,15 @@ export const createActivity = asyncHandler(async (req, res) => {
 
 export const updateActivity = asyncHandler(async (req, res) => {
   const id = req.params.id;
+  const userId = req.user.id;
+
+  //Verify activity exists
+  const existing = await activityService.getActivityById(id);
+  if (!existing) return res.status(404).send("Activity not found");
+
+  if (existing.userId !== userId) {
+    return res.status(403).send("You are not allowed to modify this activity.");
+  }
 
   let updatedActivity;
   try {
@@ -98,6 +128,16 @@ export const getActivitiesByUser = asyncHandler(async (req, res) => {
  */
 export const deleteActivity = asyncHandler(async (req, res) => {
   const id = req.params.id;
+  const userId = req.user.id;
+
+  //Verify activity exists
+  const existing = await activityService.getActivityById(id);
+  if (!existing) return res.status(404).send("Activity not found");
+
+  if (existing.userId !== userId) {
+    return res.status(403).send("You are not allowed to delete this activity.");
+  }
+
   try {
     await activityService.deleteActivity(id);
   } catch {
@@ -209,9 +249,11 @@ export const loadActivityFields = asyncHandler(async (req, res) => {
 
   const userId = req.user.id;
   const classRole = await getClassRole(userId, classId);
+  console.log("Class Role:", classRole);
   const categories = await activityService.getAllCategories(classRole.role);
+  console.log("Categories:", categories);
 
-  return res.status(201).send(enableActivityFields(categories));
+  return res.status(200).send(enableActivityFields(categories));
 });
 
 /**
@@ -225,8 +267,72 @@ export const renderPunchCard = asyncHandler(async (req, res) => {
 });
 
 /**
- * Close Activity Punch Form
+ * Quick punch-in for lecture (1 hour duration)
+ * Creates an activity with Lecture category for the specified class
  */
-export const closeActivityPunchForm = asyncHandler(async (req, res) => {
-  res.status(201).send("");
+export const quickPunchIn = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { classId } = req.body;
+
+  if (!classId) {
+    return res.status(400).json({ error: "Class ID is required" });
+  }
+
+  try {
+    // Get or find Lecture category
+    let lectureCategory = await activityService.getLectureCategory();
+
+    // If Lecture category doesn't exist, create it
+    if (!lectureCategory) {
+      lectureCategory = await activityService.createActivityCategory({
+        name: "Lecture",
+        description: "Instructor-led sessions",
+        role: "ALL",
+      });
+    }
+
+    // Calculate times: start now, end in 1 hour
+    const startTime = new Date();
+    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // +1 hour
+
+    const activityData = {
+      userId,
+      classId,
+      categoryId: lectureCategory.id,
+      startTime,
+      endTime,
+    };
+
+    const activity = await activityService.createActivity(activityData);
+
+    // Return success response
+    if (req.headers["hx-request"]) {
+      // HTMX request - return HTML response
+      return res.status(201).send(`
+        <div style="display: flex; align-items: center; gap: 8px; color: var(--color-status-success);">
+          <i class="fa-solid fa-check-circle"></i>
+          <span>Punched in for Lecture (1 hour)</span>
+        </div>
+        <script>
+          if (typeof showToast !== 'undefined') {
+            showToast('Success', 'Punched in for Lecture (1 hour)', 'success');
+          }
+        </script>
+      `);
+    } else {
+      // JSON API request
+      res.status(201).json(activity);
+    }
+  } catch (error) {
+    console.error("Failed to create quick punch:", error);
+    if (req.headers["hx-request"]) {
+      return res.status(500).send(`
+        <div style="color: var(--color-status-error);">
+          <i class="fa-solid fa-exclamation-circle"></i>
+          Failed to punch in. Please try again.
+        </div>
+      `);
+    }
+    return res.status(500).json({ error: "Failed to create activity" });
+  }
 });

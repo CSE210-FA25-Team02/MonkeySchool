@@ -1,0 +1,15 @@
+model WorkJournal {
+  id        String   @id @default(cuid())
+  content   String   // What did you work on?
+  mood      String?  // Mood emoji or text (e.g., "😊", "😐", "😫")
+  userId    String
+  
+  user      User     @relation("UserWorkJournals", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@map("work_journals")
+}

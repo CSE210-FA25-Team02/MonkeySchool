@@ -28,11 +28,6 @@ router.get(
   asyncHandler(activityController.renderEditModal),
 );
 router.get(
-  "/close-form",
-  requireAuth,
-  asyncHandler(activityController.closeActivityPunchForm),
-);
-router.get(
   "/load-fields",
   requireAuth,
   asyncHandler(activityController.loadActivityFields),
@@ -44,6 +39,11 @@ router.get(
   "/user",
   requireAuth,
   asyncHandler(activityController.getActivitiesByUser),
+);
+router.post(
+  "/quick-punch",
+  requireAuth,
+  asyncHandler(activityController.quickPunchIn),
 );
 router.get("/:id", requireAuth, asyncHandler(activityController.getActivity));
 router.put(

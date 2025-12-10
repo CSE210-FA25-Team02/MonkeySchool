@@ -73,9 +73,6 @@ router.get(
   asyncHandler(pulseController.getTodayPulse),
 );
 
-// Class Detail Page (must come after pulse routes)
-router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
-
 // Class Directory (HTMX partial)
 router.get(
   "/:id/directory",
@@ -83,16 +80,27 @@ router.get(
   asyncHandler(classController.renderClassDirectory),
 );
 
+// Class Settings (HTMX partial)
+router.get(
+  "/:id/settings",
+  requireAuth,
+  asyncHandler(classController.renderClassSettings),
+);
+
 // ============================================
-// FORM ROUTES
+// GROUP MANAGEMENT ROUTES
+// These must come BEFORE /:id to avoid conflicts
 // ============================================
 
+// Create Group Modal
 router.get(
-  "/form",
+  "/:id/groups/create-modal",
   requireAuth,
-  asyncHandler(classController.renderCreateClassForm),
+  asyncHandler(classController.getCreateGroupModal),
 );
-router.get("/close-form", asyncHandler(classController.closeCreateClassForm));
+
+// Class Detail Page (must come AFTER all /:id/* routes)
+router.get("/:id", requireAuth, asyncHandler(classController.renderClassPage));
 
 // ============================================
 // JSON API ROUTES
@@ -120,13 +128,33 @@ router.get(
 );
 
 // ============================================
+// EXTERNAL EMAIL MANAGEMENT (require auth)
+// ============================================
+
+// Add external email to class
+router.post(
+  "/:id/external-emails",
+  requireAuth,
+  asyncHandler(classController.addExternalEmail),
+);
+
+// Remove external email from class
+router.delete(
+  "/:id/external-emails/:email",
+  requireAuth,
+  asyncHandler(classController.removeExternalEmail),
+);
+
+// ============================================
 // CRUD OPERATIONS (require auth)
 // ============================================
 
 router.post("/create", requireAuth, asyncHandler(classController.createClass));
 
+router.post("/join", requireAuth, asyncHandler(classController.joinClass));
+
 router.put(
-  "/:id",
+  "/:id/:quarter",
   requireAuth,
   (req, res, next) => {
     if (req.params.quarter) {
@@ -138,7 +166,7 @@ router.put(
 );
 
 router.delete(
-  "/:id",
+  "/:id/:quarter",
   requireAuth,
   (req, res, next) => {
     if (req.params.quarter) {

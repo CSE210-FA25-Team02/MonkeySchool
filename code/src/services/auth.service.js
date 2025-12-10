@@ -12,13 +12,14 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
 import { env } from "../config/env.js";
 import { getUserByEmail, createUser } from "./user.service.js";
+import { isEmailAllowedForAnyClass } from "./classExternalEmail.service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /**
  * Check if email is allowed to login
- * First checks if it's a UCSD email, then checks CSV file
+ * First checks if it's a UCSD email, then checks CSV file, then checks class-specific external emails
  * @param {string} email Email address to validate
  * @returns {Promise<boolean>} True if the email is allowed to authenticate
  */
@@ -31,11 +32,11 @@ export async function isEmailAllowed(email) {
   // Check CSV file for external emails
   const csvPath = path.join(__dirname, "../../data/external-emails.csv");
 
-  return new Promise((resolve, reject) => {
+  const csvCheck = new Promise((resolve, reject) => {
     const allowedEmails = [];
 
     if (!fs.existsSync(csvPath)) {
-      // If CSV doesn't exist, only UCSD emails are allowed
+      // If CSV doesn't exist, resolve to false
       resolve(false);
       return;
     }
@@ -56,6 +57,15 @@ export async function isEmailAllowed(email) {
         reject(error);
       });
   });
+
+  // Check both CSV and class-specific external emails
+  const [isInCsv, isInClass] = await Promise.all([
+    csvCheck.catch(() => false), // If CSV check fails, treat as false
+    isEmailAllowedForAnyClass(email).catch(() => false), // If DB check fails, treat as false
+  ]);
+
+  // Email is allowed if it's in CSV OR in any class's external emails
+  return isInCsv || isInClass;
 }
 
 /**

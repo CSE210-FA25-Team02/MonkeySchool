@@ -1,0 +1,14 @@
+model ClassExternalEmail {
+  id        String   @id @default(cuid())
+  email     String   // External email address
+  classId   String   // Class this email is associated with
+  
+  class     Class    @relation("ClassExternalEmails", fields: [classId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([email, classId]) // Prevent duplicate emails per class
+  @@index([email])
+  @@index([classId])
+  @@map("class_external_emails")
+}

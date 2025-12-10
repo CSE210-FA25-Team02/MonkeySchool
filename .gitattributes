@@ -1,0 +1,2 @@
+# Set all JS files to use LF in the repo
+*.js text eol=lf
