@@ -69,6 +69,7 @@ export function createBaseLayout(title, content, options = {}) {
     <link rel="stylesheet" href="/css/pages/profile.css">
     <link rel="stylesheet" href="/css/pages/availability.css">
     <link rel="stylesheet" href="/css/pages/schedule.css">
+    <link rel="stylesheet" href="/css/pages/chat.css">
     <!-- Legacy support for specific pages until migrated -->
     <link rel="stylesheet" href="/css/pages/attendance.css">
 
@@ -94,6 +95,9 @@ export function createBaseLayout(title, content, options = {}) {
                 </a>
                 <a href="/availability" class="nav-item ${title === "Availability" ? "active" : ""}" title="My Groups">
                     <i class="fa-solid fa-users-rectangle nav-icon"></i>
+                </a>
+                <a href="/chat" class="nav-item ${title === "Chat" ? "active" : ""}" title="Chat">
+                    <i class="fa-solid fa-comments nav-icon"></i>
                 </a>
                 <a href="/users/profile" class="nav-item ${title === "Profile" ? "active" : ""}" title="Settings">
                     <i class="fa-solid fa-gear nav-icon"></i>

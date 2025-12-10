@@ -1,0 +1,18 @@
+model Message {
+  id             String       @id @default(cuid())
+  content        String       // Message content
+  senderId       String       // User who sent the message
+  conversationId String       // Conversation this message belongs to
+  
+  sender         User         @relation("UserMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  readAt         DateTime?    // When the message was read by the recipient
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
