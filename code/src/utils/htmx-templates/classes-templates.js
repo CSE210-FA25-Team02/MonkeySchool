@@ -729,11 +729,6 @@ export function renderClassList(classes, user = null) {
   const headerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
             <h1 style="font-size: var(--text-2xl); font-weight: bold;">All Classes</h1>
-            <div style="display: flex; gap: 12px;">
-                <button style="background: white; border: 1px solid var(--color-bg-canvas); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; color: var(--color-text-muted);">
-                    <i class="fa-solid fa-filter"></i> Filter
-                </button>
-            </div>
         </div>
     `;
 

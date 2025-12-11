@@ -99,7 +99,8 @@ export const renderUserProfilePage = asyncHandler(async (req, res) => {
   }
 
   // Render profile page with activities and work journals
-  const content = renderProfilePage(user, activities, workJournals);
+  // Pass current user ID to determine if user is viewing their own profile
+  const content = renderProfilePage(user, activities, workJournals, user.id);
 
   if (isHtmx) {
     res.send(content);
@@ -142,7 +143,13 @@ export const renderUserProfilePageById = asyncHandler(async (req, res) => {
   }
 
   // Render profile page with activities and work journals
-  const content = renderProfilePage(user, activities, workJournals);
+  // Pass current user ID (req.user.id) to determine if user is viewing their own profile
+  const content = renderProfilePage(
+    user,
+    activities,
+    workJournals,
+    req.user.id,
+  );
 
   if (isHtmx) {
     res.send(content);
@@ -217,7 +224,13 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     // Continue with empty work journals array
   }
 
-  const content = renderProfilePage(updatedUser, activities, workJournals);
+  // Pass current user ID to determine if user is viewing their own profile
+  const content = renderProfilePage(
+    updatedUser,
+    activities,
+    workJournals,
+    userId,
+  );
   const isHtmx = !!req.headers["hx-request"];
 
   if (isHtmx) {
