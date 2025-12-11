@@ -1,0 +1,197 @@
+
+services:
+  # for data store
+  loki:
+    image: grafana/loki:latest
+    container_name: monkeyschool-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ../config/loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - telemetry
+    restart: unless-stopped
+  # ============================================================================
+  # LOG COLLECTION & ROUTING
+  # ============================================================================
+  fluent-bit:
+    image: fluent/fluent-bit:latest
+    container_name: monkeyschool-fluent-bit
+    ports:
+      - "24224:24224"  # Forward input (legacy)
+      - "5140:5140/udp"  # Syslog UDP input
+      - "2020:2020"    # HTTP server (metrics/health)
+    volumes:
+      - ../config/fluent-bit-fixed.conf:/fluent-bit/etc/fluent-bit.conf
+      - ../config/parsers.conf:/fluent-bit/etc/parsers.conf
+      - ../config/transform_logs.lua:/fluent-bit/transform_logs.lua
+      - ../logs:/var/log/output
+      # Mount Docker logs directory to read container logs
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      # Mount application logs from code directory
+      - ../../code/logs:/var/log/app:ro
+    depends_on:
+      - loki
+      # - log-inserter
+      # - timescaledb
+    networks:
+      - telemetry
+    restart: unless-stopped
+    environment:
+      - FLB_LOG_LEVEL=debug
+
+  # ============================================================================
+  # MESSAGE QUEUE
+  # ============================================================================
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: monkeyschool-rabbitmq
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: telemetry
+      RABBITMQ_DEFAULT_PASS: telemetry123
+      RABBITMQ_DEFAULT_VHOST: /logs
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - telemetry
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # LOG STORAGE (TimescaleDB - PostgreSQL with time-series)
+  # ============================================================================
+  # timescaledb:
+  #   image: timescale/timescaledb:latest-pg15
+  #   container_name: monkeyschool-timescaledb
+  #   ports:
+  #     - "5433:5432"    # Changed from 5432 to avoid conflicts
+  #   environment:
+  #     POSTGRES_DB: logs
+  #     POSTGRES_USER: telemetry
+  #     POSTGRES_PASSWORD: telemetry123
+  #     POSTGRES_HOST_AUTH_METHOD: md5
+  #     TIMESCALEDB_TELEMETRY: 'off'
+  #   volumes:
+  #     - timescaledb_data:/var/lib/postgresql/data
+  #     - ../scripts/timescaledb-init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   networks:
+  #     - telemetry
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U telemetry -d logs"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # ============================================================================
+  # OPENTELEMETRY COLLECTOR (For Enrichment)
+  # ============================================================================
+  # otel-collector:
+  #   image: otel/opentelemetry-collector-contrib:0.91.0
+  #   container_name: monkeyschool-otel
+  #   ports:
+  #     - "4317:4317"    # OTLP gRPC receiver
+  #     - "4318:4318"    # OTLP HTTP receiver
+  #     - "8889:8889"    # Prometheus metrics
+  #   volumes:
+  #     - ../config/otel-collector.yml:/etc/otel-collector-config.yml
+  #   command: ["--config=/etc/otel-collector-config.yml"]
+  #   depends_on:
+  #     - rabbitmq
+  #   networks:
+  #     - telemetry
+  #   restart: unless-stopped
+
+  # ============================================================================
+  # VISUALIZATION & DASHBOARDS
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: monkeyschool-grafana
+    ports:
+      - "3001:3000"  # Changed from 3000 to avoid conflict with your app
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      # GF_INSTALL_PLUGINS: grafana-postgresql-datasource
+      # GF_FEATURE_TOGGLES_ENABLE: publicDashboards
+    # volumes:
+    #   - grafana_data:/var/lib/grafana
+    #   - ../grafana/provisioning:/etc/grafana/provisioning
+    #   - ../grafana/dashboards:/var/lib/grafana/dashboards
+    # volumes:
+    #   - ../config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasource.yml
+    depends_on:
+      - loki
+    networks:
+      - telemetry
+    restart: unless-stopped
+
+  # ============================================================================
+  # DATABASE ADMIN (pgAdmin for TimescaleDB management)
+  # ============================================================================
+  # pgadmin:
+  #   image: dpage/pgadmin4:8.0
+  #   container_name: monkeyschool-pgadmin
+  #   ports:
+  #     - "8081:80"
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@monkeyschool.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin123
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #     PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+  #   volumes:
+  #     - pgadmin_data:/var/lib/pgadmin
+  #     - ../config/pgadmin/servers.json:/pgadmin4/servers.json
+  #   depends_on:
+  #     - timescaledb
+  #   networks:
+  #     - telemetry
+  #   restart: unless-stopped
+
+
+  # ============================================================================
+  # LOG PROCESSOR (For complex transformations)
+  # ============================================================================
+  # logstash:
+  #   image: elastic/logstash:8.11.0
+  #   container_name: monkeyschool-logstash
+  #   ports:
+  #     - "5044:5044"    # Beats input
+  #     - "9600:9600"    # API endpoint
+  #   volumes:
+  #     - ../config/logstash/pipeline.conf:/usr/share/logstash/pipeline/logstash.conf
+  #     - ../config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+  #   depends_on:
+  #     - rabbitmq
+  #     - timescaledb
+  #   networks:
+  #     - telemetry
+  #   restart: unless-stopped
+  #   environment:
+  #     LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+
+# ============================================================================
+# NETWORKS & VOLUMES
+# ============================================================================
+networks:
+  telemetry:
+    name: monkeyschool-telemetry
+    driver: bridge
+
+volumes:
+  timescaledb_data:
+    name: monkeyschool-timescaledb-data
+  rabbitmq_data:
+    name: monkeyschool-rabbitmq-data
+  grafana_data:
+    name: monkeyschool-grafana-data
+  pgadmin_data:
+    name: monkeyschool-pgadmin-data
