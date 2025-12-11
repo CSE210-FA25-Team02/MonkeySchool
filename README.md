@@ -376,6 +376,7 @@ Please review [Contributing.md](Contributing.md) for:
   - [ADR004](docs/ADR/ADR004-Application%20Quality%20%26%20Developer%20Workflow%20Tooling.md) - Quality & Workflow
   - [ADR005](docs/ADR/ADR005-Security%20and%20Development%20Tooling%20Strategy.md) - Security Strategy
   - [ADR006](docs/ADR/ADR006-Telemetry%20Pipeline%20Architecture.md) - Telemetry Pipeline
+  - [ADR007](docs/ADR/ADR007-Oracle%20Cloud%20Infrastructure%20VM%20Hosting.md) - Deployment Strategy
 
 ### Database
 
