@@ -121,11 +121,11 @@ npm run db:seed
 
 This creates:
 
-- 1 Professor (Prof. Powell)
-- 1 Class (CSE 210 FA25)
-- 14 Users (user1@ucsd.edu through user14@ucsd.edu)
-- 2 TAs, 2 Tutors, 10 Students
-- 2 Project Groups (Team Alpha, Team Beta)
+- 3 Professors
+- 12 Classes
+- 20 Users
+- Multiple TAs, Tutors, and Students distributed across different classes
+- Several Project Groups (see seed script for details)
 
 #### Step 8: Start the Development Server
 
