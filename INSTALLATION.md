@@ -463,7 +463,7 @@ If you encounter issues not covered here:
 
 1. Check the [README.md](README.md) for additional information
 2. Review [Contributing.md](Contributing.md) for development guidelines
-3. Check existing [GitHub Issues](https://github.com/your-repo/issues)
+3. Check existing [GitHub Issues](<repository-url>/issues)
 4. Create a new issue with:
    - Your operating system and Node.js version
    - Error messages and logs
