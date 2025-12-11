@@ -360,6 +360,115 @@ Please review [Contributing.md](Contributing.md) for:
 - **Accessibility**: WCAG AA compliance
 - **Testing**: Full stack testing with edge cases
 
+## Telemetry & Monitoring
+MonkeySchool includes a comprehensive telemetry pipeline using Fluent Bit, Loki, and Grafana for real-time log collection, storage, and visualization. This enables improved application observability and debugging capabilities.
+### Pre-Deploy Setup (Local Development)
+#### Prerequisites
+- Docker and Docker Compose installed
+- Ports available: 3001, 3100, 24224, 5140, 2020, 5672, 15672
+#### Step 1: Start the Application
+```bash
+# Navigate to MonkeySchool project directory
+cd code
+# Ensure the application is running
+docker-compose up -d
+# Verify application container is running
+docker-compose ps
+```
+
+#### Step 2: Start Telemetry Pipeline
+```bash
+# Navigate to telemetry directory
+cd ../telemetry/docker
+
+# Start telemetry services
+docker-compose up -d
+
+# Verify all telemetry services are running
+docker-compose ps
+```
+
+Expected services:
+- `monkeyschool-loki` (port 3100) - Log storage
+- `monkeyschool-fluent-bit` (ports 24224, 5140, 2020) - Log processing
+- `monkeyschool-grafana` (port 3001) - Visualization
+- `monkeyschool-rabbitmq` (ports 5672, 15672) - Message queue
+
+#### Step 3: Access Grafana Dashboard
+1. **Open Grafana UI:**
+   - URL: `http://localhost:3001`
+
+2. **Configure Loki Data Source:**
+   - Go to **Configuration** → **Data Sources**
+   - Click **"Add data source"**
+   - Search for and select **"Loki"**
+   - Set **URL** to: `http://loki:3100`
+   - Click **"Save & Test"** (should show green success)
+
+#### Step 4: View Application Logs
+1. **Navigate to Explore:**
+   - Click **Explore** in the left sidebar
+   - Ensure **Loki** is selected as data source
+
+2. **Query Logs:**
+   - In **Label filters**, select **"app"**
+   - Choose **"monkeyschool"** as the value
+   - Click the **blue "Run query"** button (top-right)
+   - View real-time application logs
+
+### 🌐 Post-Deploy Setup (Production)
+
+For production deployments, access the hosted Grafana instance:
+
+- **Production Grafana URL:** https://grafana.monkeyschool.indresh.me/
+
+The production environment has Loki pre-configured and ready for log exploration using the same query methods as local development.
+
+### 📊 Log Query Examples
+
+```logql
+# View all application logs
+{app="monkeyschool"}
+# Filter HTTP access logs only
+{app="monkeyschool"} |= "HTTP"
+# Search for errors
+{app="monkeyschool"} |= "ERROR"
+# Filter specific API endpoints
+{app="monkeyschool"} |= "/api/users"
+```
+
+### 🔧 Troubleshooting
+
+**Services not starting:**
+```bash
+# Check service logs
+docker-compose logs grafana
+docker-compose logs loki
+docker-compose logs fluent-bit
+```
+
+**Grafana connection issues:**
+- Verify Loki is running: `docker-compose ps`
+- Check Loki health: `curl http://localhost:3100/ready`
+- Ensure data source URL is exactly: `http://loki:3100`
+
+**No logs appearing:**
+```bash
+# Test log generation
+echo '<14>Test log message' | nc -u localhost 5140
+
+# Monitor Fluent Bit logs
+docker-compose logs -f fluent-bit
+```
+
+### 📋 Service Health Checks
+
+- **Grafana:** http://localhost:3001/api/health
+- **Loki:** http://localhost:3100/ready
+- **Fluent Bit:** http://localhost:2020
+- **RabbitMQ Management:** http://localhost:15672
+
+
 ## 📚 Documentation
 
 ### Getting Started
